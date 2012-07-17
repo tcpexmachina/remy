@@ -5,7 +5,7 @@
 
 Network::Network( const double s_rate )
   : _buffer(),
-    _current_tick( 0 ),
+    _current_tick( -1 ),
     _egress_process( s_rate )
 {
 }
@@ -35,6 +35,8 @@ void Network::advance( const int tick_to, Receiver & rec )
 
       rec.accept( p );
     }
+
+    _current_tick++;
   }
 
   _current_tick = tick_to;
