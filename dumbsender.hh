@@ -10,12 +10,11 @@ private:
   unsigned int _id;
   int _packets_sent;
   Poisson _sending_process;
-  int _current_tick;
 
 public:
   DumbSender( unsigned int s_id, const double s_rate );
 
-  void advance( const int tick_to, Network & rec );
+  void tick( Network & rec, const int tickno );
 };
 
 #endif

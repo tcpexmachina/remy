@@ -3,26 +3,15 @@
 DumbSender::DumbSender( unsigned int s_id, const double s_rate )
   : _id( s_id ),
     _packets_sent( 0 ),
-    _sending_process( s_rate ),
-    _current_tick( -1 )
+    _sending_process( s_rate )
 {
 }
 
-void DumbSender::advance( const int tick_to, Network & rec )
+void DumbSender::tick( Network & rec, const int tickno )
 {
-  assert( _current_tick < tick_to );
+  const int num = _sending_process.sample();
 
-  while ( _current_tick < tick_to ) {
-    /* We do transmission just before departing each tick. */
-
-    const int num = _sending_process.sample();
-
-    for ( int i = 0; i < num; i++ ) {
-      rec.send( Packet( _id, _packets_sent++, _current_tick ) );
-    }
-
-    _current_tick++;
+  for ( int i = 0; i < num; i++ ) {
+    rec.send( Packet( _id, _packets_sent++, tickno ) );
   }
-
-  assert( _current_tick == tick_to );
 }

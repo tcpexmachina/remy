@@ -12,8 +12,8 @@ int main( void )
 
   int current_tick = 0;
   while ( 1 ) {
-    sender.advance( current_tick, net );
-    net.advance( current_tick, rec );
+    sender.tick( net, current_tick );
+    net.tick( rec, current_tick );
     std::vector< Packet > packets = rec.collect( 2 );
 
     for ( auto x = packets.begin(); x != packets.end(); x++ ) {
