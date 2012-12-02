@@ -6,7 +6,7 @@
 
 int main( void )
 {
-  DumbSender sender( 2, .15 );
+  DumbSender sender( 2, .099 );
   Network net( .1 );
   Receiver rec( 3 );
 
