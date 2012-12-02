@@ -23,10 +23,7 @@ void Network::tick( Receiver & rec, const int tickno )
       break;
     }
 
-    Packet p( _buffer.front() );
+    rec.accept( _buffer.front(), tickno );
     _buffer.pop();
-    p.tick_received = tickno;
-
-    rec.accept( p );
   }
 }

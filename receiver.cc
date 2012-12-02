@@ -7,11 +7,14 @@ Receiver::Receiver( const int num_senders )
 {
 }
 
-void Receiver::accept( const Packet & p )
+void Receiver::accept( const Packet & p, const int tickno )
 {
   assert( p.src < _collector.size() );
 
-  _collector[ p.src ].push_back( p );
+  Packet time_marked( p );
+  time_marked.tick_received = tickno;
+
+  _collector[ p.src ].push_back( time_marked );
 }
 
 std::vector< Packet > Receiver::collect( const unsigned int src )

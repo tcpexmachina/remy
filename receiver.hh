@@ -13,7 +13,7 @@ private:
 public:
   Receiver( const int num_senders );
 
-  void accept( const Packet & p );
+  void accept( const Packet & p, const int tickno );
   std::vector< Packet > collect( const unsigned int src );
 };
 
