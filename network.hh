@@ -16,7 +16,7 @@ private:
 public:
   Network( const double s_rate );
 
-  void send( const Packet & p );
+  void accept( const Packet && p );
   void tick( Receiver & rec, const int tickno );
 };
 

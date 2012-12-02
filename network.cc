@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <utility>
 
 #include "network.hh"
 
@@ -9,9 +10,9 @@ Network::Network( const double s_rate )
 {
 }
 
-void Network::send( const Packet & p )
+void Network::accept( const Packet && p )
 {
-  _buffer.push( p );
+  _buffer.push( std::forward<const Packet>( p ) );
 }
 
 void Network::tick( Receiver & rec, const int tickno )
@@ -23,7 +24,7 @@ void Network::tick( Receiver & rec, const int tickno )
       break;
     }
 
-    rec.accept( _buffer.front(), tickno );
+    rec.accept( std::move( _buffer.front() ), tickno );
     _buffer.pop();
   }
 }
