@@ -20,8 +20,8 @@ std::vector< Packet > Receiver::collect( const unsigned int src )
 {
   assert( src < _collector.size() );
 
-  std::vector< Packet > ret( _collector[ src ] );
-  _collector[ src ].clear();
+  auto ret( std::move( _collector[ src ] ) );
+  assert( _collector[ src ].empty() );
 
   return ret;
 }
