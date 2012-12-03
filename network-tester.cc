@@ -10,13 +10,9 @@ int main( void )
   Network net( .1 );
   Receiver rec( 3 );
 
-  int current_tick = 0;
-
-  while ( 1 ) {
-    sender.tick( net, rec, current_tick );
-    net.tick( rec, current_tick );
-
-    current_tick++;
+  for ( int i = 0; i < 20000000; i++ ) {
+    sender.tick( net, rec, i );
+    net.tick( rec, i );
   }
 
   return 0;

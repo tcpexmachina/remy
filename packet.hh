@@ -10,7 +10,7 @@ public:
   int packet_id;
   int tick_sent, tick_received;
 
-  Packet( int s_src, int s_packet_id, int s_tick_sent )
+  Packet( const int & s_src, const int & s_packet_id, const int & s_tick_sent )
     : src( s_src ), packet_id( s_packet_id ), tick_sent( s_tick_sent ), tick_received( -1 )
   {}
 
