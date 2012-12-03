@@ -12,7 +12,7 @@ Network::Network( const double s_rate )
 
 void Network::accept( const Packet && p ) noexcept
 {
-  _buffer.push( std::forward<const Packet>( p ) );
+  _buffer.push( std::move( p ) );
 }
 
 void Network::tick( Receiver & rec, const int tickno )

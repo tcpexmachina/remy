@@ -13,7 +13,7 @@ void Receiver::accept( Packet && p, const int tickno ) noexcept
 
   p.tick_received = tickno;
 
-  _collector[ p.src ].push_back( p );
+  _collector[ p.src ].push_back( std::move( p ) );
 }
 
 std::vector< Packet > Receiver::collect( const unsigned int src )
