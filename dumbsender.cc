@@ -1,9 +1,11 @@
 #include "dumbsender.hh"
 
-DumbSender::DumbSender( unsigned int s_id, const double s_rate )
+DumbSender::DumbSender( unsigned int s_id, const double s_rate, const double s_switch_rate )
   : _id( s_id ),
     _packets_sent( 0 ),
     _sending_process( s_rate ),
+    _switching_process( s_switch_rate ),
+    _active( false ),
     /* stats */
     total_packets( 0 ),
     total_delay( 0 )
@@ -12,6 +14,16 @@ DumbSender::DumbSender( unsigned int s_id, const double s_rate )
 
 void DumbSender::tick( Network & net, Receiver & rec, const int tickno )
 {
+  const int switch_num = _switching_process.sample();
+  if ( switch_num % 2 ) {
+    _active = !_active;
+    printf( "%d tick %d: now %s\n", _id, tickno, _active ? "sending" : "dormant" );
+  }
+
+  if ( !_active ) {
+    return;
+  }
+
   /* Send */
   const int num = _sending_process.sample();
 

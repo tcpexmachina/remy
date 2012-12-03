@@ -14,15 +14,19 @@ int main( void )
   Receiver rec( num_senders );
 
   for ( int i = 0; i < num_senders; i++ ) {
-    senders.emplace_back( i, 0.009 );
+    senders.emplace_back( i, 0.013, .0000001 );
   }
 
-  for ( int i = 0; i < 20000000; i++ ) {
+  uint64_t tick = 0;
+
+  while ( 1 ) {
     for ( auto &x : senders ) {
-      x.tick( net, rec, i );
+      x.tick( net, rec, tick );
     }
 
-    net.tick( rec, i );
+    net.tick( rec, tick );
+
+    tick++;
   }
 
   return 0;
