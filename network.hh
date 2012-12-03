@@ -16,7 +16,8 @@ private:
 public:
   Network( const double s_rate );
 
-  void accept( const Packet && p );
+  void accept( const Packet && p ) noexcept;
+
   void tick( Receiver & rec, const int tickno );
 };
 

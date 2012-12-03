@@ -10,7 +10,7 @@ Network::Network( const double s_rate )
 {
 }
 
-void Network::accept( const Packet && p )
+void Network::accept( const Packet && p ) noexcept
 {
   _buffer.push( std::forward<const Packet>( p ) );
 }

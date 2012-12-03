@@ -7,7 +7,7 @@ Receiver::Receiver( const int num_senders )
 {
 }
 
-void Receiver::accept( Packet && p, const int tickno )
+void Receiver::accept( Packet && p, const int tickno ) noexcept
 {
   assert( p.src < _collector.size() );
 
