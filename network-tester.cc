@@ -5,6 +5,8 @@
 #include "network.hh"
 #include "receiver.hh"
 
+#include "exponential.hh"
+
 const int num_senders = 10;
 
 int main( void )
