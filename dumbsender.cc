@@ -14,7 +14,7 @@ DumbSender::DumbSender( unsigned int s_id, const double s_rate, const double s_s
 
 void DumbSender::tick( Network & net, Receiver & rec, const int tickno )
 {
-  const int switch_num = _switching_process.sample();
+  const int switch_num = _switching_process.tick();
   if ( switch_num % 2 ) {
     _active = !_active;
     printf( "%d tick %d: now %s\n", _id, tickno, _active ? "sending" : "dormant" );
@@ -25,7 +25,7 @@ void DumbSender::tick( Network & net, Receiver & rec, const int tickno )
   }
 
   /* Send */
-  const int num = _sending_process.sample();
+  const int num = _sending_process.tick();
 
   for ( int i = 0; i < num; i++ ) {
     net.accept( Packet( _id, _packets_sent++, tickno ) );

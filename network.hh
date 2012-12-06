@@ -5,13 +5,13 @@
 
 #include "receiver.hh"
 #include "packet.hh"
-#include "poisson.hh"
+#include "poissonptprocess.hh"
 
 class Network
 {
 private:
   std::queue< Packet > _buffer;
-  Poisson _egress_process;
+  PoissonPointProcess _egress_process;
 
 public:
   Network( const double s_rate );

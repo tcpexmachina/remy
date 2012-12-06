@@ -1,7 +1,7 @@
 #ifndef DUMBSENDER_HH
 #define DUMBSENDER_HH
 
-#include "poisson.hh"
+#include "poissonptprocess.hh"
 #include "network.hh"
 
 class DumbSender
@@ -9,7 +9,7 @@ class DumbSender
 private:
   unsigned int _id;
   int _packets_sent;
-  Poisson _sending_process, _switching_process;
+  PoissonPointProcess _sending_process, _switching_process;
   bool _active;
 
   /* stats */
