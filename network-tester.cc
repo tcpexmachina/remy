@@ -17,16 +17,12 @@ int main( void )
     senders.emplace_back( i, 0.013, .0000001 );
   }
 
-  uint64_t tick = 0;
-
-  while ( 1 ) {
+  for ( int tick = 0; tick < 100000000; tick++ ) {
     for ( auto &x : senders ) {
       x.tick( net, rec, tick );
     }
 
     net.tick( rec, tick );
-
-    tick++;
   }
 
   return 0;
