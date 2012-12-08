@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <vector>
 
-#include "dumbsender.hh"
+#include "window-sender.hh"
 #include "network.hh"
 #include "receiver.hh"
 
@@ -9,7 +9,7 @@ const int num_senders = 100;
 
 int main( void )
 {
-  DumbSender sender( 0, 0.9 );
+  WindowSender sender( 0, 3 );
   Network net( 1 );
   Receiver rec( num_senders );
 

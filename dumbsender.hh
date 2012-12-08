@@ -15,7 +15,7 @@ private:
   uint64_t total_packets, total_delay;
 
 public:
-  DumbSender( unsigned int s_id, const double s_rate );
+  DumbSender( const unsigned int s_id, const double s_rate );
 
   void tick( Network & net, Receiver & rec, const int tickno );
 };

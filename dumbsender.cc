@@ -1,6 +1,6 @@
 #include "dumbsender.hh"
 
-DumbSender::DumbSender( unsigned int s_id, const double s_rate )
+DumbSender::DumbSender( const unsigned int s_id, const double s_rate )
   : _id( s_id ),
     _packets_sent( 0 ),
     _sending_process( s_rate ),
