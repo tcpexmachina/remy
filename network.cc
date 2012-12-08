@@ -17,7 +17,7 @@ void Network::accept( Packet && p ) noexcept
 
 void Network::tick( Receiver & rec, const int tickno )
 {
-  const int num = _egress_process.tick();
+  const int num = _egress_process.sample();
 
   for ( int i = 0; i < num; i++ ) {
     if ( _buffer.empty() ) {

@@ -13,7 +13,7 @@ DumbSender::DumbSender( unsigned int s_id, const double s_rate )
 void DumbSender::tick( Network & net, Receiver & rec, const int tickno )
 {
   /* Send */
-  const int num = _sending_process.tick();
+  const int num = _sending_process.sample();
 
   for ( int i = 0; i < num; i++ ) {
     net.accept( Packet( _id, _packets_sent++, tickno ) );
