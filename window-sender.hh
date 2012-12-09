@@ -16,7 +16,9 @@ private:
 public:
   WindowSender( const unsigned int s_id, const unsigned int s_window );
 
-  void tick( Network & net, Receiver & rec, const int tickno );
+  void tick( Network & net, Receiver & rec, const unsigned int tickno );
+
+  bool operator<( const WindowSender & other ) const { return _id < other._id; }
 };
 
 #endif
