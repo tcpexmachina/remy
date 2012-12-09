@@ -11,7 +11,7 @@ int main( void )
   Network net( 1 );
   Receiver rec( 1 );
 
-  for ( int tick = 0; tick < 100000000; tick++ ) {
+  for ( unsigned int tick = 0; tick < 100000000; tick++ ) {
     senders.tick( net, rec, tick );
     net.tick( rec, tick );
   }

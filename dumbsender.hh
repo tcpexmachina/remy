@@ -17,7 +17,7 @@ private:
 public:
   DumbSender( const unsigned int s_id, const double s_rate );
 
-  void tick( Network & net, Receiver & rec, const int tickno );
+  void tick( Network & net, Receiver & rec, const unsigned int tickno );
 };
 
 #endif

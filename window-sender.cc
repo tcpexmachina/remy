@@ -9,7 +9,7 @@ WindowSender::WindowSender( const unsigned int s_id, const unsigned int s_window
 {
 }
 
-void WindowSender::tick( Network & net, Receiver & rec, const int tickno )
+void WindowSender::tick( Network & net, Receiver & rec, const unsigned int tickno )
 {
   /* Receive feedback */
   const std::vector< Packet > packets = rec.collect( _id );

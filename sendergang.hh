@@ -22,7 +22,7 @@ public:
 	      const double mean_flow_duration,
 	      const unsigned int s_window_size );
 
-  void tick( Network & net, Receiver & rec, const int tickno );
+  void tick( Network & net, Receiver & rec, const unsigned int tickno );
 };
 
 #endif

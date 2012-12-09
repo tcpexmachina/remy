@@ -15,7 +15,7 @@ void Network::accept( Packet && p ) noexcept
   _buffer.push( std::move( p ) );
 }
 
-void Network::tick( Receiver & rec, const int tickno )
+void Network::tick( Receiver & rec, const unsigned int tickno )
 {
   const int num = _egress_process.sample();
 

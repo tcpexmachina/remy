@@ -18,7 +18,7 @@ public:
 
   void accept( Packet && p ) noexcept;
 
-  void tick( Receiver & rec, const int tickno );
+  void tick( Receiver & rec, const unsigned int tickno );
 };
 
 #endif
