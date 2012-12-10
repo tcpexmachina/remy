@@ -1,7 +1,7 @@
 #ifndef SENDERGANG_HH
 #define SENDERGANG_HH
 
-#include <queue>
+#include "peekable_queue.hh"
 
 #include "window-sender.hh"
 #include "exponential.hh"
@@ -9,7 +9,17 @@
 class SenderGang
 {
 private:
-  std::priority_queue< std::pair< int, WindowSender > > _gang;
+  template< typename T, typename Container = std::deque< T > >
+  class iterable_queue : public std::priority_queue< T, Container >
+  {
+  public:
+    typedef typename Container::iterator iterator;
+
+    iterator begin() { return this->c.begin(); }
+    iterator end() { return this->c.end(); }
+  };
+
+  iterable_queue< std::pair< unsigned int, WindowSender > > _gang;
 
   Exponential _join_distribution;
   Exponential _flow_duration_distribution;

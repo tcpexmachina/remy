@@ -9,7 +9,7 @@ int main( void )
 {
   SenderGang senders( 100, 100, 5 );
   Network net( 1 );
-  Receiver rec( 1 );
+  Receiver rec;
 
   for ( unsigned int tick = 0; tick < 100000000; tick++ ) {
     senders.tick( net, rec, tick );

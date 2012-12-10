@@ -1,7 +1,7 @@
 #ifndef NETWORK_HH
 #define NETWORK_HH
 
-#include <queue>
+#include "peekable_queue.hh"
 
 #include "receiver.hh"
 #include "packet.hh"

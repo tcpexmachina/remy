@@ -11,9 +11,9 @@ private:
   boost::random::exponential_distribution<> distribution;
 
 public:
-  Exponential( double rate ) : distribution( rate ) {}
+  Exponential( const double & rate ) : distribution( rate ) {}
   
-  int sample( void ) { return distribution( get_generator() ); }
+  double sample( void ) { return distribution( get_generator() ); }
 };
 
 #endif

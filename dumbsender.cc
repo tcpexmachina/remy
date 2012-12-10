@@ -16,7 +16,7 @@ void DumbSender::tick( Network & net, Receiver & rec, const unsigned int tickno 
   const int num = _sending_process.sample();
 
   for ( int i = 0; i < num; i++ ) {
-    net.accept( Packet( _id, _packets_sent++, tickno ) );
+    net.accept( Packet( _id, 0 /* flow id */, _packets_sent++, tickno ) );
   }
 
   /* Receive feedback */
