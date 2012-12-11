@@ -12,6 +12,8 @@ private:
   std::vector< std::pair< unsigned int, std::vector< Packet > > > _collector;
   std::priority_queue< unsigned int > _free_src_numbers;
 
+  unsigned int _total_packets, _accepted_packets;
+
 public:
   Receiver();
 
@@ -20,6 +22,9 @@ public:
 
   std::pair< unsigned int, unsigned int > new_src( void );
   void free_src( const unsigned int src );
+
+  unsigned int total_packets( void ) const { return _total_packets; }
+  unsigned int accepted_packets( void ) const { return _accepted_packets; }
 };
 
 #endif

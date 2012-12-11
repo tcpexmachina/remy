@@ -27,8 +27,7 @@ private:
 
   unsigned int _next_join_tick;
 
-  std::pair< double, double > _total_stats;
-  unsigned int _num_stats;
+  std::tuple< double, double, double > _total_stats;
 
 public:
   SenderGang( const double mean_interjoin_interval,

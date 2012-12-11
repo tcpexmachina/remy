@@ -34,19 +34,9 @@ void WindowSender::tick( Network & net, Receiver & rec, const unsigned int tickn
   }
 }
 
-std::pair< double, double > WindowSender::stats( const unsigned int tickno ) const
+std::tuple< double, double, double > WindowSender::stats( const unsigned int tickno ) const
 {
-  if ( _packets_received == 0 ) {
-    return std::make_pair( -1, -1 );
-  }
+  const double age = (_flow_first_received == (unsigned int)( -1 )) ? 0 : tickno - _flow_first_received;
 
-  assert( _flow_first_received != (unsigned int)( -1 ) );
-  assert( _flow_first_received <= tickno );
-
-  const unsigned int age = tickno - _flow_first_received;
-
-  const double average_throughput = double( _packets_received ) / double( age );
-  const double average_delay = double( _total_delay ) / double( _packets_received );
-
-  return std::make_pair( average_throughput, average_delay );
+  return std::make_tuple( _packets_received, _total_delay, age );
 }

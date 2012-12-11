@@ -26,7 +26,7 @@ public:
 
   const unsigned int & id( void ) const { return _id; }
 
-  std::pair< double, double > stats( const unsigned int tickno ) const;
+  std::tuple< double, double, double > stats( const unsigned int tickno ) const;
 };
 
 #endif

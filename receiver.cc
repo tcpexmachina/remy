@@ -4,7 +4,9 @@
 
 Receiver::Receiver()
   : _collector(),
-    _free_src_numbers()
+    _free_src_numbers(),
+    _total_packets( 0 ),
+    _accepted_packets( 0 )
 {
 }
 
@@ -12,9 +14,12 @@ void Receiver::accept( Packet && p, const unsigned int tickno ) noexcept
 {
   assert( p.src < _collector.size() );
 
+  _total_packets++;
+
   if ( p.flow_id == _collector[ p.src ].first ) {
     p.tick_received = tickno;
     _collector[ p.src ].second.push_back( std::move( p ) );
+    _accepted_packets++;
   }
 }
 

@@ -7,11 +7,11 @@
 
 int main( void )
 {
-  SenderGang senders( 100, 100, 5 );
+  SenderGang senders( 10000, 10000, 500 );
   Network net( 1 );
   Receiver rec;
 
-  for ( unsigned int tick = 0; tick < 100000000; tick++ ) {
+  for ( unsigned int tick = 0;; tick++ ) {
     senders.tick( net, rec, tick );
     net.tick( rec, tick );
   }
