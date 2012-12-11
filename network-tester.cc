@@ -7,7 +7,7 @@
 
 int main( void )
 {
-  SenderGang senders( 10000, 10000, 500 );
+  SenderGang senders( 1000, 10000, 500 );
   Network net( 1 );
   Receiver rec;
 

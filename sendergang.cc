@@ -16,7 +16,7 @@ void SenderGang::tick( Network & net, Receiver & rec, const unsigned int tickno 
 {
   /* add senders */
   while ( tickno >= _next_join_tick ) {
-    auto src_and_flow = rec.new_src(); 
+    auto src_and_flow = rec.new_src();
     _gang.emplace( _next_join_tick + _flow_duration_distribution.sample(),
 		   WindowSender( src_and_flow.first,
 				 src_and_flow.second,
@@ -35,16 +35,22 @@ void SenderGang::tick( Network & net, Receiver & rec, const unsigned int tickno 
     auto x( std::move( _gang.top() ) );
     _gang.pop();
 
+    assert( x.first == tickno );
+
     const auto stats( x.second.stats( tickno ) );
     std::get< 0 >( _total_stats ) += std::get< 0 >( stats );
     std::get< 1 >( _total_stats ) += std::get< 1 >( stats );
     std::get< 2 >( _total_stats ) += std::get< 2 >( stats );
 
-    printf( "avg tput = %f, avg delay = %f, rec total tput = %f, rec accepted tput = %f\n",
+    printf( "tick = %d, avg tput = %f, avg delay = %f, rec total tput = %f, rec accepted tput = %f, used pdos avg = %f, underflow avg = %f, senders = %lu\n",
+	    tickno,
 	    std::get< 0 >( _total_stats ) / double( tickno ),
 	    std::get< 1 >( _total_stats ) / std::get< 0 >( _total_stats ),
 	    rec.total_packets() / double( tickno ),
-	    rec.accepted_packets() / double( tickno ) );
+	    rec.accepted_packets() / double( tickno ),
+	    net.used_pdos() / double( tickno ),
+	    net.underflows() / double( tickno ),
+	    _gang.size() );
     rec.free_src( x.second.id() );
   }
 }

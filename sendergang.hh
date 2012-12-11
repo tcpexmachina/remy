@@ -9,8 +9,8 @@
 class SenderGang
 {
 private:
-  template< typename T, typename Container = std::deque< T > >
-  class iterable_queue : public std::priority_queue< T, Container >
+  template< typename T, typename Container = std::deque< T >, typename Compare = std::greater< T > >
+  class iterable_queue : public std::priority_queue< T, Container, Compare >
   {
   public:
     typedef typename Container::iterator iterator;

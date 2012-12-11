@@ -6,7 +6,9 @@
 
 Network::Network( const double s_rate )
   : _buffer(),
-    _egress_process( s_rate )
+    _egress_process( s_rate ),
+    _used_pdos( 0 ),
+    _underflows( 0 )
 {
 }
 
@@ -21,10 +23,12 @@ void Network::tick( Receiver & rec, const unsigned int tickno )
 
   for ( int i = 0; i < num; i++ ) {
     if ( _buffer.empty() ) {
+      _underflows += num - i;
       break;
     }
 
     rec.accept( std::move( _buffer.front() ), tickno );
     _buffer.pop();
+    _used_pdos++;
   }
 }
