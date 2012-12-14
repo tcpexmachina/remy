@@ -3,7 +3,7 @@
 # parameters
 my @lengths = ( 8, 4 );
 my $capacity = 2;
-my @initial_allocation = ( 2/3, 4/3 );
+my @initial_allocation = ( 1, 1 );
 my $stepsize = 0.1;
 
 # set up loop
@@ -58,7 +58,8 @@ while ( 1 ) {
 
   my @utility;
   for ( my $i = 0; $i < scalar @lengths; $i++ ) {
-      $utility[ $i ] = ( $lengths[ $i ] - $lengths_remaining[ $i ] ) / $completion_times[ $i ];
+#      $utility[ $i ] = ( $lengths[ $i ] - $lengths_remaining[ $i ] ) / $completion_times[ $i ];
+      $utility[ $i ] = - $completion_times[ $i ] / ( $lengths[ $i ] - $lengths_remaining[ $i ] );
   }
 
   printf "%.4f utilities: ", $time;
