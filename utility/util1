@@ -3,8 +3,8 @@
 # parameters
 my @lengths = ( 8, 4 );
 my $capacity = 2;
-my @initial_allocation = ( 1, 1 );
-my $stepsize = 0.001;
+my @initial_allocation = ( 2/3, 4/3 );
+my $stepsize = 0.1;
 
 # set up loop
 my $time = 0;
@@ -23,6 +23,8 @@ sub normalize {
 }
 
 while ( 1 ) {
+  $time += $stepsize;
+
   my $capacity_this_step = $capacity * $stepsize;
 
   # make allocations
@@ -51,18 +53,18 @@ while ( 1 ) {
     }
   }
 
-  $time += $stepsize;
+#      print "completion times: ", join " ", map { sprintf "%.2f", $_ } @completion_times;
+#      print "\n";
+
+  my @utility;
+  for ( my $i = 0; $i < scalar @lengths; $i++ ) {
+      $utility[ $i ] = ( $lengths[ $i ] - $lengths_remaining[ $i ] ) / $completion_times[ $i ];
+  }
+
+  printf "%.4f utilities: ", $time;
+  print join " ", map { sprintf "%.2f", $_ } @utility;
+  print " ";
+
+  printf "(total utility: %.3f)\n", sum( @utility );
 }
 
-print "completion times: ", join " ", map { sprintf "%.2f", $_ } @completion_times;
-print "\n";
-
-my @utility;
-for ( my $i = 0; $i < scalar @lengths; $i++ ) {
-  $utility[ $i ] = $lengths[ $i ] / $completion_times[ $i ];
-}
-
-print "utilities: ", join " ", map { sprintf "%.2f", $_ } @utility;
-print "\n";
-
-printf "total utility: %.3f\n", sum( @utility );
