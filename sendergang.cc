@@ -1,56 +1,34 @@
 #include "sendergang.hh"
 
-SenderGang::SenderGang( const double mean_interjoin_interval,
-			const double mean_flow_duration,
-			const unsigned int s_window_size )
+using namespace std;
+
+SenderGang::SenderGang( const double mean_on_duration,
+			const double mean_off_duration,
+			const unsigned int num_senders,
+			const unsigned int window_size )
   : _gang(),
-    _join_distribution( 1.0 / mean_interjoin_interval ),
-    _flow_duration_distribution( 1.0 / mean_flow_duration ),
-    _window_size( s_window_size ),
-    _next_join_tick( _join_distribution.sample() ),
-    _total_stats()
+    _start_distribution( 1.0 / mean_off_duration ),
+    _stop_distribution( 1.0 / mean_on_duration )
 {
+  for ( unsigned int i = 0; i < num_senders; i++ ) {
+    _gang.emplace_back( _start_distribution.sample(),
+			WindowSender( i, window_size ) );
+  }
 }
 
-void SenderGang::tick( Network & net, Receiver & rec, const unsigned int tickno )
+  void SenderGang::tick( Network & net, Receiver & rec, const unsigned int tickno )
 {
-  /* add senders */
-  while ( tickno >= _next_join_tick ) {
-    auto src_and_flow = rec.new_src();
-    _gang.emplace( _next_join_tick + _flow_duration_distribution.sample(),
-		   WindowSender( src_and_flow.first,
-				 src_and_flow.second,
-				 _window_size ) );
-    _next_join_tick += _join_distribution.sample();
-  }
-
   /* run senders */
   for ( auto &x : _gang ) {
-    x.second.tick( net, rec, tickno );
-  }
+    /* should it switch? */
+    while ( get< 0 >( x ) <= tickno ) {
+      /* switch */
+      get< 1 >( x ).set_sending( ! get< 1 >( x ).sending() );
 
-  /* delete senders */
-  while ( (!_gang.empty())
-	  && (_gang.top().first <= tickno) ) {
-    auto x( std::move( _gang.top() ) );
-    _gang.pop();
+      /* increment next switch time */
+      get< 0 >( x ) += (get< 1 >( x ).sending() ? _stop_distribution : _start_distribution).sample();
+    }
 
-    assert( x.first == tickno );
-
-    const auto stats( x.second.stats( tickno ) );
-    std::get< 0 >( _total_stats ) += std::get< 0 >( stats );
-    std::get< 1 >( _total_stats ) += std::get< 1 >( stats );
-    std::get< 2 >( _total_stats ) += std::get< 2 >( stats );
-
-    printf( "tick = %d, avg tput = %f, avg delay = %f, rec total tput = %f, rec accepted tput = %f, used pdos avg = %f, underflow avg = %f, senders = %lu\n",
-	    tickno,
-	    std::get< 0 >( _total_stats ) / double( tickno ),
-	    std::get< 1 >( _total_stats ) / std::get< 0 >( _total_stats ),
-	    rec.total_packets() / double( tickno ),
-	    rec.accepted_packets() / double( tickno ),
-	    net.used_pdos() / double( tickno ),
-	    net.underflows() / double( tickno ),
-	    _gang.size() );
-    rec.free_src( x.second.id() );
+    get< 1 >( x ).tick( net, rec, tickno );
   }
 }

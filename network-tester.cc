@@ -2,12 +2,16 @@
 #include <vector>
 
 #include "sendergang.hh"
+#include "window-sender.hh"
 #include "network.hh"
 #include "receiver.hh"
 
 int main( void )
 {
-  SenderGang senders( 1000, 10000, 500 );
+  SenderGang senders( 1000,
+		      1000,
+		      2,
+		      50 );
   Network net( 1 );
   Receiver rec;
 

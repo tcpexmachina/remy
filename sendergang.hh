@@ -1,7 +1,8 @@
 #ifndef SENDERGANG_HH
 #define SENDERGANG_HH
 
-#include "peekable_queue.hh"
+#include <vector>
+#include <tuple>
 
 #include "window-sender.hh"
 #include "exponential.hh"
@@ -9,30 +10,15 @@
 class SenderGang
 {
 private:
-  template< typename T, typename Container = std::deque< T >, typename Compare = std::greater< T > >
-  class iterable_queue : public std::priority_queue< T, Container, Compare >
-  {
-  public:
-    typedef typename Container::iterator iterator;
+  std::vector< std::tuple< unsigned int, WindowSender > > _gang;
 
-    iterator begin() { return this->c.begin(); }
-    iterator end() { return this->c.end(); }
-  };
-
-  iterable_queue< std::pair< unsigned int, WindowSender > > _gang;
-
-  Exponential _join_distribution;
-  Exponential _flow_duration_distribution;
-  const unsigned int _window_size;
-
-  unsigned int _next_join_tick;
-
-  std::tuple< double, double, double > _total_stats;
+  Exponential _start_distribution, _stop_distribution;
 
 public:
-  SenderGang( const double mean_interjoin_interval,
-	      const double mean_flow_duration,
-	      const unsigned int s_window_size );
+  SenderGang( const double mean_on_duration,
+	      const double mean_off_duration,
+	      const unsigned int num_senders,
+	      const unsigned int window_size );
 
   void tick( Network & net, Receiver & rec, const unsigned int tickno );
 };

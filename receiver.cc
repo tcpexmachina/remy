@@ -1,64 +1,38 @@
 #include <assert.h>
+#include <stdio.h>
 
 #include "receiver.hh"
 
 Receiver::Receiver()
-  : _collector(),
-    _free_src_numbers(),
-    _total_packets( 0 ),
-    _accepted_packets( 0 )
+  : _collector()
 {
 }
 
 void Receiver::accept( Packet && p, const unsigned int tickno ) noexcept
 {
-  assert( p.src < _collector.size() );
+  autosize( p.src );
 
-  _total_packets++;
+  p.tick_received = tickno;
 
-  if ( p.flow_id == _collector[ p.src ].first ) {
-    p.tick_received = tickno;
-    _collector[ p.src ].second.push_back( std::move( p ) );
-    _accepted_packets++;
-  }
+  printf( "tick=%u, src=%u, delay=%d\n",
+	  tickno, p.src, p.tick_received - p.tick_sent );
+
+  _collector[ p.src ].push_back( std::move( p ) );
 }
 
 std::vector< Packet > Receiver::collect( const unsigned int src )
 {
-  assert( src < _collector.size() );
+  autosize( src );
 
-  auto ret( std::move( _collector[ src ].second ) );
-  assert( _collector[ src ].second.empty() );
+  auto ret( std::move( _collector[ src ] ) );
+  assert( _collector[ src ].empty() );
 
   return ret;
 }
 
-std::pair< unsigned int, unsigned int > Receiver::new_src( void )
+void Receiver::autosize( const unsigned int index )
 {
-  if ( _free_src_numbers.empty() ) {
-    /* need to resize collector */
-    _collector.resize( _collector.size() + 1 );
-    _free_src_numbers.push( _collector.size() - 1 );
+  if ( index >= _collector.size() ) {
+    _collector.resize( index + 1 );
   }
-
-  /* get source slot */
-  const int new_src_number = _free_src_numbers.top();
-  _free_src_numbers.pop();
-
-  /* increment flow id */
-  _collector[ new_src_number ].first++;
-
-  /* clear collector */
-  _collector[ new_src_number ].second.clear();
-
-  return std::make_pair( new_src_number, _collector[ new_src_number ].first );
-}
-
-void Receiver::free_src( const unsigned int src )
-{
-  _free_src_numbers.push( src );
-  _collector[ src ].first++;
-
-  /* make sure we don't double-free */
-  assert( _collector[ src ].first % 2 == 0 );
 }
