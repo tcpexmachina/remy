@@ -7,7 +7,8 @@ WindowSender<NextHop>::WindowSender( const unsigned int s_id,
     _window( s_window ),
     _packets_sent( 0 ),
     _packets_received( 0 ),
-    _sending( false )
+    _sending( false ),
+    _utility()
 {
 }
 
@@ -17,13 +18,8 @@ void WindowSender<NextHop>::tick( NextHop & next, Receiver & rec, const unsigned
   /* Receive feedback */
   const std::vector< Packet > packets = rec.collect( _id );
 
+  _utility.packets_received( packets );
   _packets_received += packets.size();
-
-  /*
-  for ( auto &x : packets ) {
-    _packets_received++;
-  }
-  */
 
   if ( !_sending ) {
     return;
@@ -31,6 +27,8 @@ void WindowSender<NextHop>::tick( NextHop & next, Receiver & rec, const unsigned
 
   /* Send */
   assert( _packets_sent >= _packets_received );
+
+  _utility.sending_tick();
 
   while ( _packets_sent < _packets_received + _window ) {
     next.accept( Packet( _id, _packets_sent++, tickno ) );

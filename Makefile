@@ -3,8 +3,8 @@ objects = network.o receiver.o random.o window-sender.o sendergang.o delay.o
 executables = network-tester
 CXX = g++
 LANGFLAGS = -std=c++0x
-CXXFLAGS = -g -O3 $(LANGFLAGS) -ffast-math -pedantic -Werror -Wall -Wextra -Weffc++ -fno-default-inline -pipe -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500 -D_GNU_SOURCE
-LIBS = -lm -lrt
+CXXFLAGS = -g -O3 $(LANGFLAGS) -ffast-math -pedantic -Werror -Wall -Wextra -Weffc++ -fno-default-inline -pipe
+LIBS = -lm
 
 all: $(executables)
 

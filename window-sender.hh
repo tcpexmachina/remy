@@ -3,6 +3,7 @@
 
 #include "poisson.hh"
 #include "network.hh"
+#include "utility.hh"
 
 template <class NextHop>
 class WindowSender
@@ -14,6 +15,8 @@ private:
 
   bool _sending;
 
+  Utility _utility;
+
 public:
   WindowSender( const unsigned int s_id,
 		const unsigned int s_window );
@@ -21,7 +24,9 @@ public:
   void tick( NextHop & next, Receiver & rec, const unsigned int tickno );
 
   void set_sending( const bool s_sending ) { _sending = s_sending; }
-  bool sending( void ) { return _sending; }
+  bool sending( void ) const { return _sending; }
+
+  double utility( void ) const { return _utility.utility(); }
 };
 
 #endif

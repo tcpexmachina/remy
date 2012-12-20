@@ -22,6 +22,8 @@ public:
 	      const unsigned int window_size );
 
   void tick( NextHop & next, Receiver & rec, const unsigned int tickno );
+
+  double utility( void ) const;
 };
 
 #endif

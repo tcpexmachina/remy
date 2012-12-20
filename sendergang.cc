@@ -36,3 +36,14 @@ void SenderGang<NextHop>::tick( NextHop & next, Receiver & rec, const unsigned i
     get< 1 >( x ).tick( next, rec, tickno );
   }
 }
+
+template <class NextHop>
+double SenderGang<NextHop>::utility( void ) const
+{
+  double total_utility = 0.0;
+  for ( auto &x : _gang ) {
+    total_utility += get< 1 >( x ).utility();
+  }
+
+  return total_utility;
+}
