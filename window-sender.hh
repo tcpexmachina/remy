@@ -4,6 +4,7 @@
 #include "poisson.hh"
 #include "network.hh"
 
+template <class NextHop>
 class WindowSender
 {
 private:
@@ -17,7 +18,7 @@ public:
   WindowSender( const unsigned int s_id,
 		const unsigned int s_window );
 
-  void tick( Network & net, Receiver & rec, const unsigned int tickno );
+  void tick( NextHop & next, Receiver & rec, const unsigned int tickno );
 
   void set_sending( const bool s_sending ) { _sending = s_sending; }
   bool sending( void ) { return _sending; }

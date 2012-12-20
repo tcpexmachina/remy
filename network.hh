@@ -7,6 +7,7 @@
 #include "packet.hh"
 #include "poisson.hh"
 
+template <class NextHop>
 class Network
 {
 private:
@@ -18,7 +19,7 @@ public:
 
   void accept( Packet && p ) noexcept;
 
-  void tick( Receiver & rec, const unsigned int tickno );
+  void tick( NextHop & next, const unsigned int tickno );
 };
 
 #endif

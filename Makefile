@@ -1,5 +1,5 @@
-source = network.cc receiver.cc network-tester.cc random.cc window-sender.cc sendergang.cc
-objects = network.o receiver.o random.o window-sender.o sendergang.o
+source = network.cc receiver.cc network-tester.cc random.cc window-sender.cc sendergang.cc delay.cc
+objects = network.o receiver.o random.o window-sender.o sendergang.o delay.o
 executables = network-tester
 CXX = g++
 LANGFLAGS = -std=c++0x

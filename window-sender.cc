@@ -1,7 +1,8 @@
 #include "window-sender.hh"
 
-WindowSender::WindowSender( const unsigned int s_id,
-			    const unsigned int s_window )
+template <class NextHop>
+WindowSender<NextHop>::WindowSender( const unsigned int s_id,
+				     const unsigned int s_window )
   : _id( s_id ),
     _window( s_window ),
     _packets_sent( 0 ),
@@ -10,7 +11,8 @@ WindowSender::WindowSender( const unsigned int s_id,
 {
 }
 
-void WindowSender::tick( Network & net, Receiver & rec, const unsigned int tickno )
+template <class NextHop>
+void WindowSender<NextHop>::tick( NextHop & next, Receiver & rec, const unsigned int tickno )
 {
   /* Receive feedback */
   const std::vector< Packet > packets = rec.collect( _id );
@@ -31,6 +33,6 @@ void WindowSender::tick( Network & net, Receiver & rec, const unsigned int tickn
   assert( _packets_sent >= _packets_received );
 
   while ( _packets_sent < _packets_received + _window ) {
-    net.accept( Packet( _id, _packets_sent++, tickno ) );
+    next.accept( Packet( _id, _packets_sent++, tickno ) );
   }
 }

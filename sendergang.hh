@@ -7,10 +7,11 @@
 #include "window-sender.hh"
 #include "exponential.hh"
 
+template <class NextHop>
 class SenderGang
 {
 private:
-  std::vector< std::tuple< unsigned int, WindowSender > > _gang;
+  std::vector< std::tuple< unsigned int, WindowSender<NextHop> > > _gang;
 
   Exponential _start_distribution, _stop_distribution;
 
@@ -20,7 +21,7 @@ public:
 	      const unsigned int num_senders,
 	      const unsigned int window_size );
 
-  void tick( Network & net, Receiver & rec, const unsigned int tickno );
+  void tick( NextHop & next, Receiver & rec, const unsigned int tickno );
 };
 
 #endif

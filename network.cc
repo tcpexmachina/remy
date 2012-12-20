@@ -4,18 +4,21 @@
 
 #include "network.hh"
 
-Network::Network( const double s_rate )
+template <class NextHop>
+Network<NextHop>::Network( const double s_rate )
   : _buffer(),
     _egress_process( s_rate )
 {
 }
 
-void Network::accept( Packet && p ) noexcept
+template <class NextHop>
+void Network<NextHop>::accept( Packet && p ) noexcept
 {
   _buffer.push( std::move( p ) );
 }
 
-void Network::tick( Receiver & rec, const unsigned int tickno )
+template <class NextHop>
+void Network<NextHop>::tick( NextHop & next, const unsigned int tickno )
 {
   const int num = _egress_process.sample();
 
@@ -24,7 +27,7 @@ void Network::tick( Receiver & rec, const unsigned int tickno )
       break;
     }
 
-    rec.accept( std::move( _buffer.front() ), tickno );
+    next.accept( std::move( _buffer.front() ), tickno );
     _buffer.pop();
   }
 }
