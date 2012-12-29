@@ -16,7 +16,7 @@ double utility( const unsigned int window_size )
   Delay< Receiver > delay( 100 );
   Receiver rec;
 
-  for ( unsigned int tick = 0; tick < 10000000; tick++ ) {
+  for ( unsigned int tick = 0; tick < 100000; tick++ ) {
     senders.tick( net, rec, tick );
     net.tick( delay, tick );
     delay.tick( rec, tick );
