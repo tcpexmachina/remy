@@ -1,14 +1,12 @@
 #include "sendergang.hh"
 
-#include "window-sender.cc"
-
 using namespace std;
 
-template <class NextHop>
-SenderGang<NextHop>::SenderGang( const double mean_on_duration,
-				 const double mean_off_duration,
-				 const unsigned int num_senders,
-				 const WindowSender<NextHop> & exemplar )
+template <class SenderType, class NextHop>
+SenderGang<SenderType, NextHop>::SenderGang( const double mean_on_duration,
+					     const double mean_off_duration,
+					     const unsigned int num_senders,
+					     const SenderType & exemplar )
   : _gang(),
     _start_distribution( 1.0 / mean_off_duration ),
     _stop_distribution( 1.0 / mean_on_duration )
@@ -20,8 +18,8 @@ SenderGang<NextHop>::SenderGang( const double mean_on_duration,
   }
 }
 
-template <class NextHop>
-void SenderGang<NextHop>::tick( NextHop & next, Receiver & rec, const unsigned int tickno )
+template <class SenderType, class NextHop>
+void SenderGang<SenderType, NextHop>::tick( NextHop & next, Receiver & rec, const unsigned int tickno )
 {
   /* run senders */
   for ( auto &x : _gang ) {
@@ -38,8 +36,8 @@ void SenderGang<NextHop>::tick( NextHop & next, Receiver & rec, const unsigned i
   }
 }
 
-template <class NextHop>
-double SenderGang<NextHop>::utility( void ) const
+template <class SenderType, class NextHop>
+double SenderGang<SenderType, NextHop>::utility( void ) const
 {
   double total_utility = 0.0;
   for ( auto &x : _gang ) {
