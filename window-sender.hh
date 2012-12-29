@@ -18,8 +18,9 @@ private:
   Utility _utility;
 
 public:
-  WindowSender( const unsigned int s_id,
-		const unsigned int s_window );
+  WindowSender( const unsigned int s_window );
+
+  void set_id( const unsigned int s_id ) { assert( _packets_sent == 0 ); _id = s_id; }
 
   void tick( NextHop & next, Receiver & rec, const unsigned int tickno );
 

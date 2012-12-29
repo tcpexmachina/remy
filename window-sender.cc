@@ -1,9 +1,11 @@
+#ifndef WINDOWSENDER_CC
+#define WINDOWSENDER_CC
+
 #include "window-sender.hh"
 
 template <class NextHop>
-WindowSender<NextHop>::WindowSender( const unsigned int s_id,
-				     const unsigned int s_window )
-  : _id( s_id ),
+WindowSender<NextHop>::WindowSender( const unsigned int s_window )
+  : _id( 0 ),
     _window( s_window ),
     _packets_sent( 0 ),
     _packets_received( 0 ),
@@ -34,3 +36,5 @@ void WindowSender<NextHop>::tick( NextHop & next, Receiver & rec, const unsigned
     next.accept( Packet( _id, _packets_sent++, tickno ) );
   }
 }
+
+#endif

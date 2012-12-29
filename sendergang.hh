@@ -19,7 +19,7 @@ public:
   SenderGang( const double mean_on_duration,
 	      const double mean_off_duration,
 	      const unsigned int num_senders,
-	      const unsigned int window_size );
+	      const WindowSender<NextHop> & exemplar );
 
   void tick( NextHop & next, Receiver & rec, const unsigned int tickno );
 

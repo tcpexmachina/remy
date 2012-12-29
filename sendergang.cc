@@ -8,14 +8,15 @@ template <class NextHop>
 SenderGang<NextHop>::SenderGang( const double mean_on_duration,
 				 const double mean_off_duration,
 				 const unsigned int num_senders,
-				 const unsigned int window_size )
+				 const WindowSender<NextHop> & exemplar )
   : _gang(),
     _start_distribution( 1.0 / mean_off_duration ),
     _stop_distribution( 1.0 / mean_on_duration )
 {
   for ( unsigned int i = 0; i < num_senders; i++ ) {
     _gang.emplace_back( _start_distribution.sample(),
-			WindowSender<NextHop>( i, window_size ) );
+			exemplar );
+    get< 1 >( _gang.back() ).set_id( i );
   }
 }
 

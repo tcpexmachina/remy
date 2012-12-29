@@ -5,13 +5,16 @@
 #include "network.cc"
 #include "delay.cc"
 #include "receiver.hh"
+#include "window-sender.cc"
 
 double utility( const unsigned int window_size )
 {
+  const WindowSender< Network< Delay< Receiver > > > exemplar( window_size );
+
   SenderGang< Network< Delay< Receiver> > > senders( 1000,
 						     1000,
 						     2,
-						     window_size );
+						     exemplar );
   Network< Delay< Receiver > > net( 1 );
   Delay< Receiver > delay( 100 );
   Receiver rec;
