@@ -5,36 +5,30 @@
 
 template <class NextHop>
 WindowSender<NextHop>::WindowSender( const unsigned int s_window )
-  : _id( 0 ),
-    _window( s_window ),
+  : _window( s_window ),
     _packets_sent( 0 ),
-    _packets_received( 0 ),
-    _sending( false ),
-    _utility()
+    _packets_received( 0 )
 {
 }
 
 template <class NextHop>
-void WindowSender<NextHop>::tick( NextHop & next, Receiver & rec, const unsigned int tickno )
-{
-  /* Receive feedback */
-  const std::vector< Packet > packets = rec.collect( _id );
-
-  _utility.packets_received( packets );
+void WindowSender<NextHop>::packets_received( const std::vector< Packet > & packets ) {
   _packets_received += packets.size();
+}
 
-  if ( !_sending ) {
-    return;
-  }
-
-  /* Send */
+template <class NextHop>
+void WindowSender<NextHop>::send( const unsigned int id, NextHop & next, const unsigned int tickno )
+{
   assert( _packets_sent >= _packets_received );
 
-  _utility.sending_tick();
-
   while ( _packets_sent < _packets_received + _window ) {
-    next.accept( Packet( _id, _packets_sent++, tickno ) );
+    next.accept( Packet( id, _packets_sent++, tickno ) );
   }
+}
+
+template <class NextHop>
+void WindowSender<NextHop>::dormant_tick( const unsigned int tickno __attribute((unused)) )
+{
 }
 
 #endif
