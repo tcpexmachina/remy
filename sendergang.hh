@@ -49,6 +49,7 @@ public:
   void tick( NextHop & next, Receiver & rec, const unsigned int tickno );
 
   double utility( void ) const;
+  std::vector< std::pair< double, double > > throughputs_delays( void ) const;
 };
 
 #endif

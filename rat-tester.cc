@@ -38,14 +38,19 @@ int main( void )
     const double utility = senders.utility();
 
     if ( fabs( ( utility - last_utility ) / last_utility ) < .0001 ) {
-      printf( "* Utility ( @ %u ): %f\n", tick, senders.utility() );
       break;
     }
 
-    printf( "Utility ( @ %u ): %f\n", tick, senders.utility() );
-
     last_utility = utility;
   }
+
+  printf( "%d ticks: util=%9.5f", tick, senders.utility() );
+
+  const auto tds = senders.throughputs_delays();
+  for ( auto &x : tds ) {
+    printf( "    [ tp=%.4f del=%.4f ]", x.first, x.second );
+  }
+  printf( "\n" );
 
   return 0;
 }

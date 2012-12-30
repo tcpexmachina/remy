@@ -69,3 +69,16 @@ double SenderGang<SenderType, NextHop>::utility( void ) const
 
   return total_utility;
 }
+
+template <template< class NextHop > class SenderType, class NextHop>
+vector< pair< double, double > > SenderGang<SenderType, NextHop>::throughputs_delays( void ) const
+{
+  vector< pair< double, double > > ret;
+  ret.reserve( _gang.size() );
+
+  for ( auto &x : _gang ) {
+    ret.emplace_back( x.utility.average_throughput(), x.utility.average_delay() );
+  }
+
+  return ret;
+}
