@@ -5,18 +5,18 @@
 #include "network.cc"
 #include "delay.cc"
 #include "receiver.hh"
-#include "window-sender.cc"
+#include "rat.cc"
 
 double utility( const unsigned int window_size )
 {
   typedef Network< Delay< Receiver > > MyNetwork;
 
-  const WindowSender< MyNetwork > exemplar( window_size );
+  const Rat< MyNetwork > exemplar( window_size );
 
-  SenderGang< WindowSender, MyNetwork > senders( 1000,
-						 1000,
-						 2,
-						 exemplar );
+  SenderGang< Rat, MyNetwork > senders( 1000,
+					1000,
+					2,
+					exemplar );
 
   MyNetwork net( 1 );
   Delay< Receiver > delay( 100 );
