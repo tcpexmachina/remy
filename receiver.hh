@@ -16,6 +16,8 @@ public:
 
   void accept( Packet && p, const unsigned int tickno ) noexcept;
   std::vector< Packet > collect( const unsigned int src );
+  bool readable( const unsigned int src ) const noexcept
+  { return (src < _collector.size()) && (!_collector[ src ].empty()); }
 };
 
 #endif

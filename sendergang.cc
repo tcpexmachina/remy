@@ -43,10 +43,12 @@ void SenderGang<SenderType, NextHop>::SwitchedSender::tick( NextHop & next, Rece
   }
 
   /* receive feedback */
-  const std::vector< Packet > packets = rec.collect( id );
+  if ( rec.readable( id ) ) {
+    const std::vector< Packet > packets = rec.collect( id );
 
-  utility.packets_received( packets );
-  sender.packets_received( packets );
+    utility.packets_received( packets );
+    sender.packets_received( packets );
+  }
 
   /* possibly send packets */
   if ( sending ) {

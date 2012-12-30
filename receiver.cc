@@ -24,8 +24,6 @@ void Receiver::accept( Packet && p, const unsigned int tickno ) noexcept
 
 std::vector< Packet > Receiver::collect( const unsigned int src )
 {
-  autosize( src );
-
   auto ret( std::move( _collector[ src ] ) );
   assert( _collector[ src ].empty() );
 
