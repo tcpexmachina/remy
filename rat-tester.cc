@@ -25,6 +25,8 @@ int main( void )
   Receiver rec;
 
   unsigned int tick = 0;
+  double last_utility = -INT_MAX;
+
   while ( 1 ) {
     for ( unsigned int j = 0; j < 100000; j++ ) {
       senders.tick( net, rec, tick );
@@ -33,7 +35,16 @@ int main( void )
       tick++;
     }
 
+    const double utility = senders.utility();
+
+    if ( fabs( ( utility - last_utility ) / last_utility ) < .0001 ) {
+      printf( "* Utility ( @ %u ): %f\n", tick, senders.utility() );
+      break;
+    }
+
     printf( "Utility ( @ %u ): %f\n", tick, senders.utility() );
+
+    last_utility = utility;
   }
 
   return 0;
