@@ -13,12 +13,10 @@ void utility( const unsigned int window_size )
 {
   typedef Network< Delay< Receiver > > MyNetwork;
 
-  const WindowSender< MyNetwork > exemplar( window_size );
-
   SenderGang< WindowSender, MyNetwork > senders( 1000,
 						 1000,
 						 2,
-						 exemplar );
+						 window_size );
 
   MyNetwork net( 1 );
   Delay< Receiver > delay( 100 );

@@ -13,12 +13,10 @@ int main( void )
 
   Rat< MyNetwork >::Whiskers default_whiskers;
 
-  const Rat< MyNetwork > exemplar( default_whiskers );
-
   SenderGang< Rat, MyNetwork > senders( 1000,
 					1000,
 					2,
-					exemplar );
+					default_whiskers );
 
   MyNetwork net( 1 );
   Delay< Receiver > delay( 100 );
