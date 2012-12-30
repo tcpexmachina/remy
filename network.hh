@@ -3,7 +3,6 @@
 
 #include <queue>
 
-#include "receiver.hh"
 #include "packet.hh"
 #include "poisson.hh"
 

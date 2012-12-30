@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <stdio.h>
 
 #include "receiver.hh"
 
@@ -13,11 +12,6 @@ void Receiver::accept( Packet && p, const unsigned int tickno ) noexcept
   autosize( p.src );
 
   p.tick_received = tickno;
-
-  /*
-  printf( "tick=%u, src=%u, delay=%d\n",
-	  tickno, p.src, p.tick_received - p.tick_sent );
-  */
 
   _collector[ p.src ].push_back( std::move( p ) );
 }

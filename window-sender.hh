@@ -1,7 +1,9 @@
 #ifndef WINDOWSENDER_HH
 #define WINDOWSENDER_HH
 
-#include "network.hh"
+#include <vector>
+
+#include "packet.hh"
 
 template <class NextHop>
 class WindowSender

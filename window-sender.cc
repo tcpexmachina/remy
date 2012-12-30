@@ -1,6 +1,8 @@
 #ifndef WINDOWSENDER_CC
 #define WINDOWSENDER_CC
 
+#include <assert.h>
+
 #include "window-sender.hh"
 
 template <class NextHop>

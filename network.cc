@@ -1,5 +1,3 @@
-#include <assert.h>
-#include <stdlib.h>
 #include <utility>
 
 #include "network.hh"
