@@ -9,13 +9,16 @@
 
 double utility( const unsigned int window_size )
 {
-  const WindowSender< Network< Delay< Receiver > > > exemplar( window_size );
+  typedef Network< Delay< Receiver > > MyNetwork;
 
-  SenderGang< WindowSender< Network< Delay< Receiver > > >, Network< Delay< Receiver> > > senders( 1000,
-												   1000,
-												   2,
-												   exemplar );
-  Network< Delay< Receiver > > net( 1 );
+  const WindowSender< MyNetwork > exemplar( window_size );
+
+  SenderGang< WindowSender, MyNetwork > senders( 1000,
+						 1000,
+						 2,
+						 exemplar );
+
+  MyNetwork net( 1 );
   Delay< Receiver > delay( 100 );
   Receiver rec;
 
