@@ -7,11 +7,13 @@
 #include "receiver.hh"
 #include "rat.cc"
 
-double utility( const unsigned int window_size )
+int main( void )
 {
   typedef Network< Delay< Receiver > > MyNetwork;
 
-  const Rat< MyNetwork > exemplar( window_size );
+  Rat< MyNetwork >::Whiskers default_whiskers;
+
+  const Rat< MyNetwork > exemplar( default_whiskers );
 
   SenderGang< Rat, MyNetwork > senders( 1000,
 					1000,
@@ -22,20 +24,16 @@ double utility( const unsigned int window_size )
   Delay< Receiver > delay( 100 );
   Receiver rec;
 
-  for ( unsigned int tick = 0; tick < 100000; tick++ ) {
-    senders.tick( net, rec, tick );
-    net.tick( delay, tick );
-    delay.tick( rec, tick );
-  }
+  unsigned int tick = 0;
+  while ( 1 ) {
+    for ( unsigned int j = 0; j < 100000; j++ ) {
+      senders.tick( net, rec, tick );
+      net.tick( delay, tick );
+      delay.tick( rec, tick );
+      tick++;
+    }
 
-  return senders.utility();
-}
-
-int main( void )
-{
-  for ( unsigned int window_size = 1; window_size < 1000; window_size++ ) {
-    printf( "%d %f\n", window_size, utility( window_size ) );
-    fflush( NULL );
+    printf( "Utility ( @ %u ): %f\n", tick, senders.utility() );
   }
 
   return 0;

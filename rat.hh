@@ -11,20 +11,19 @@ class Rat
 public:
   class Whiskers {
   public:
-    Whiskers();
+    Whiskers() {}
 
-    void packet_sent( const Packet & packet );
-    void packets_received( const std::vector< Packet > & packets );
-    void advance_to( const unsigned int tickno );
-    unsigned int window( void ) const;
+    void packet_sent( const Packet & packet __attribute((unused)) ) {}
+    void packets_received( const std::vector< Packet > & packets __attribute((unused)) ) {}
+    unsigned int window( const unsigned int tickno __attribute((unused)) ) const { return 100; }
   };
 
 private:
-  unsigned int _window;
+  Whiskers _whiskers;
   unsigned int _packets_sent, _packets_received;
 
 public:
-  Rat( const unsigned int s_window );
+  Rat( const Whiskers & s_whiskers );
 
   void packets_received( const std::vector< Packet > & packets );
   void send( const unsigned int id, NextHop & next, const unsigned int tickno );

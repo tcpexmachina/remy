@@ -7,7 +7,7 @@ class Utility
 {
 private:
   unsigned int _ticks_sending, _packets_received;
-  unsigned int _total_delay;
+  uint64_t _total_delay;
 
 public:
   Utility( void ) : _ticks_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ) {}
