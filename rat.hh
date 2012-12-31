@@ -13,7 +13,7 @@ private:
     double last_delay;
 
     void packet_sent( const Packet & packet __attribute((unused)) ) {}
-    void packets_received( const std::vector< Packet > & packets __attribute((unused)) ) {}
+    void packets_received( const std::vector< Packet > & packets );
     void advance_to( const unsigned int tickno __attribute((unused)) ) {}
   };
 
@@ -24,9 +24,15 @@ public:
     unsigned int _window;
     unsigned int _count;
 
+    double _representative_value;
+
   public:
-    Whisker();
+    Whisker( const double & s_representative_value );
     unsigned int window( void ) const { return _window; }
+    void use( void ) { _count++; }
+
+    const double & representative_value( void ) const { return _representative_value; }
+    const unsigned int & count( void ) const { return _count; }
   };
 
   class Whiskers {
@@ -34,8 +40,9 @@ public:
     std::vector< Whisker > _whiskers;
 
   public:
-    Whiskers() : _whiskers( 1 ) {}
-    const Whisker & get_whisker( const Memory & _memory );
+    Whiskers();
+    const Whisker & use_whisker( const Memory & _memory );
+    const std::vector< Whisker > & whiskers( void ) const { return _whiskers; }
   };
 
 private:
@@ -54,6 +61,8 @@ public:
 
   template <class NextHop>
   void send( const unsigned int id, NextHop & next, const unsigned int tickno );
+
+  const Whiskers & whiskers( void ) const { return _whiskers; }
 };
 
 #endif

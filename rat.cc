@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "rat.hh"
 
 using namespace std;
@@ -22,17 +24,44 @@ void Rat::dormant_tick( const unsigned int tickno __attribute((unused)) )
 unsigned int Rat::window( const unsigned int tickno )
 {
   _memory.advance_to( tickno );
-  return _whiskers.get_whisker( _memory ).window();
+  return _whiskers.use_whisker( _memory ).window();
 }
 
-const typename Rat::Whisker & Rat::Whiskers::get_whisker( const Rat::Memory & _memory __attribute((unused)) )
+Rat::Whiskers::Whiskers()
+  : _whiskers()
 {
-  return _whiskers[ 0 ]; /* XXX */
+  _whiskers.reserve( 32 );
+  for ( int i = 0; i < 32; i++ ) {
+    _whiskers.emplace_back( i * 10.0 );
+  }
 }
 
-Rat::Whisker::Whisker()
+const typename Rat::Whisker & Rat::Whiskers::use_whisker( const Rat::Memory & _memory )
+{
+  unsigned int index = _memory.last_delay / 10.0;
+
+  Whisker & ret( index >= _whiskers.size() ? _whiskers.back() : _whiskers[ index ] );
+
+  ret.use();
+
+  return ret;
+}
+
+Rat::Whisker::Whisker( const double & s_representative_value )
   : _generation( 0 ),
     _window( 100 ),
-    _count( 0 )
+    _count( 0 ),
+    _representative_value( s_representative_value )
 {
+}
+
+void Rat::Memory::packets_received( const vector< Packet > & packets )
+{
+  if ( packets.empty() ) {
+    return;
+  }
+
+  last_delay = packets.back().tick_received - packets.back().tick_sent;
+
+  assert( last_delay >= 0 );
 }
