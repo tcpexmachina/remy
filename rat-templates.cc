@@ -1,6 +1,3 @@
-#ifndef RAT_TEMPLATES_CC
-#define RAT_TEMPLATES_CC
-
 #include <assert.h>
 #include <utility>
 
@@ -21,5 +18,3 @@ void Rat::send( const unsigned int id, NextHop & next, const unsigned int tickno
     next.accept( move( p ) );
   }
 }
-
-#endif

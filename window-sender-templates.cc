@@ -1,6 +1,3 @@
-#ifndef WINDOW_SENDER_TEMPLATES_CC
-#define WINDOW_SENDER_TEMPLATES_CC
-
 #include <assert.h>
 
 #include "window-sender.hh"
@@ -14,5 +11,3 @@ void WindowSender::send( const unsigned int id, NextHop & next, const unsigned i
     next.accept( Packet( id, _packets_sent++, tickno ) );
   }
 }
-
-#endif
