@@ -6,7 +6,6 @@
 #include "packet.hh"
 #include "poisson.hh"
 
-template <class NextHop>
 class Network
 {
 private:
@@ -18,6 +17,7 @@ public:
 
   void accept( Packet && p ) noexcept;
 
+  template <class NextHop>
   void tick( NextHop & next, const unsigned int tickno );
 };
 

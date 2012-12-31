@@ -6,7 +6,6 @@
 
 #include "packet.hh"
 
-template <class NextHop>
 class Delay
 {
 private:
@@ -14,10 +13,21 @@ private:
   const unsigned int _delay;
 
 public:
-  Delay( const unsigned int s_delay );
-  
-  void accept( Packet && p, const unsigned int tickno ) noexcept;
-  void tick( NextHop & s_next, const unsigned int tickno );
+  Delay( const unsigned int s_delay ) : _queue(), _delay( s_delay ) {}
+ 
+  void accept( Packet && p, const unsigned int tickno ) noexcept
+  {
+    _queue.emplace( tickno + _delay, std::move( p ) );
+  }
+
+  template <class NextHop>
+  void tick( NextHop & next, const unsigned int tickno )
+  {
+    while ( (!_queue.empty()) && (std::get< 0 >( _queue.front() ) <= tickno) ) {
+      next.accept( std::move( std::get< 1 >( _queue.front() ) ), tickno );
+      _queue.pop();
+    }
+  }
 };
 
 #endif

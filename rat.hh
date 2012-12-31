@@ -5,7 +5,6 @@
 
 #include "packet.hh"
 
-template <class NextHop>
 class Rat
 {
 private:
@@ -51,8 +50,10 @@ public:
   Rat( const Whiskers & s_whiskers );
 
   void packets_received( const std::vector< Packet > & packets );
-  void send( const unsigned int id, NextHop & next, const unsigned int tickno );
   void dormant_tick( const unsigned int tickno ); /* do nothing */
+
+  template <class NextHop>
+  void send( const unsigned int id, NextHop & next, const unsigned int tickno );
 };
 
 #endif

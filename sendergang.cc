@@ -2,11 +2,11 @@
 
 using namespace std;
 
-template <template< class NextHop > class SenderType, class NextHop>
-SenderGang<SenderType, NextHop>::SenderGang( const double mean_on_duration,
-					     const double mean_off_duration,
-					     const unsigned int num_senders,
-					     const SenderType<NextHop> & exemplar )
+template <class SenderType>
+SenderGang<SenderType>::SenderGang( const double mean_on_duration,
+				    const double mean_off_duration,
+				    const unsigned int num_senders,
+				    const SenderType & exemplar )
   : _gang(),
     _start_distribution( 1.0 / mean_off_duration ),
     _stop_distribution( 1.0 / mean_on_duration )
@@ -18,8 +18,9 @@ SenderGang<SenderType, NextHop>::SenderGang( const double mean_on_duration,
   }
 }
 
-template <template< class NextHop > class SenderType, class NextHop>
-void SenderGang<SenderType, NextHop>::tick( NextHop & next, Receiver & rec, const unsigned int tickno )
+template <class SenderType>
+template <class NextHop>
+void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const unsigned int tickno )
 {
   /* run senders */
   for ( auto &x : _gang ) {
@@ -27,11 +28,12 @@ void SenderGang<SenderType, NextHop>::tick( NextHop & next, Receiver & rec, cons
   }
 }
 
-template <template< class NextHop > class SenderType, class NextHop>
-void SenderGang<SenderType, NextHop>::SwitchedSender::tick( NextHop & next, Receiver & rec,
-							    const unsigned int tickno,
-							    Exponential & start_distribution,
-							    Exponential & stop_distribution )
+template <class SenderType>
+template <class NextHop>
+void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & rec,
+						   const unsigned int tickno,
+						   Exponential & start_distribution,
+						   Exponential & stop_distribution )
 {
   /* should it switch? */
   while ( next_switch_tick <= tickno ) {
@@ -59,8 +61,8 @@ void SenderGang<SenderType, NextHop>::SwitchedSender::tick( NextHop & next, Rece
   }
 }
 
-template <template< class NextHop > class SenderType, class NextHop>
-double SenderGang<SenderType, NextHop>::utility( void ) const
+template <class SenderType>
+double SenderGang<SenderType>::utility( void ) const
 {
   double total_utility = 0.0;
   for ( auto &x : _gang ) {
@@ -70,8 +72,8 @@ double SenderGang<SenderType, NextHop>::utility( void ) const
   return total_utility;
 }
 
-template <template< class NextHop > class SenderType, class NextHop>
-vector< pair< double, double > > SenderGang<SenderType, NextHop>::throughputs_delays( void ) const
+template <class SenderType>
+vector< pair< double, double > > SenderGang<SenderType>::throughputs_delays( void ) const
 {
   vector< pair< double, double > > ret;
   ret.reserve( _gang.size() );

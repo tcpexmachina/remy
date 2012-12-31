@@ -2,24 +2,22 @@
 #include <vector>
 
 #include "sendergang.cc"
-#include "network.cc"
-#include "delay.cc"
+#include "network-templates.cc"
+#include "delay.hh"
 #include "receiver.hh"
-#include "rat.cc"
+#include "rat-templates.cc"
 
 int main( void )
 {
-  typedef Network< Delay< Receiver > > MyMaze;
+  const Rat::Whiskers default_whiskers;
 
-  const Rat< MyMaze >::Whiskers default_whiskers;
+  SenderGang<Rat> senders( 1000,
+			   1000,
+			   2,
+			   default_whiskers );
 
-  SenderGang< Rat, MyMaze > senders( 1000,
-				     1000,
-				     2,
-				     default_whiskers );
-
-  MyMaze net( 1 );
-  Delay< Receiver > delay( 100 );
+  Network net( 1 );
+  Delay delay( 100 );
   Receiver rec;
 
   unsigned int tick = 0;

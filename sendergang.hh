@@ -8,7 +8,7 @@
 #include "receiver.hh"
 #include "utility.hh"
 
-template <template< class NextHop > class SenderType, class NextHop>
+template <class SenderType>
 class SenderGang
 {
 private:
@@ -17,12 +17,12 @@ private:
     unsigned int id;
     unsigned int next_switch_tick;
     bool sending;
-    SenderType<NextHop> sender;
+    SenderType sender;
     Utility utility;
 
     SwitchedSender( const unsigned int s_id,
 		    const unsigned int start_tick,
-		    const SenderType<NextHop> & s_sender )
+		    const SenderType & s_sender )
       : id( s_id ),
 	next_switch_tick( start_tick ),
 	sending( false ),
@@ -30,6 +30,7 @@ private:
 	utility()
     {}
 
+    template <class NextHop>
     void tick( NextHop & next, Receiver & rec,
 	       const unsigned int tickno,
 	       Exponential & start_distribution,
@@ -44,8 +45,9 @@ public:
   SenderGang( const double mean_on_duration,
 	      const double mean_off_duration,
 	      const unsigned int num_senders,
-	      const SenderType<NextHop> & exemplar );
+	      const SenderType & exemplar );
 
+  template <class NextHop>
   void tick( NextHop & next, Receiver & rec, const unsigned int tickno );
 
   double utility( void ) const;
