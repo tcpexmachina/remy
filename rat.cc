@@ -30,15 +30,15 @@ unsigned int Rat::window( const unsigned int tickno )
 Rat::Whiskers::Whiskers()
   : _whiskers()
 {
-  _whiskers.reserve( 32 );
-  for ( int i = 0; i < 32; i++ ) {
-    _whiskers.emplace_back( i * 10.0 );
+  _whiskers.reserve( 16 );
+  for ( int i = 0; i < 16; i++ ) {
+    _whiskers.emplace_back( i * 20.0 );
   }
 }
 
 const typename Rat::Whisker & Rat::Whiskers::use_whisker( const Rat::Memory & _memory )
 {
-  unsigned int index = _memory.last_delay / 10.0;
+  unsigned int index = _memory.last_delay / 20.0;
 
   Whisker & ret( index >= _whiskers.size() ? _whiskers.back() : _whiskers[ index ] );
 
