@@ -9,16 +9,16 @@
 
 int main( void )
 {
-  typedef Network< Delay< Receiver > > MyNetwork;
+  typedef Network< Delay< Receiver > > MyMaze;
 
-  Rat< MyNetwork >::Whiskers default_whiskers;
+  const Rat< MyMaze >::Whiskers default_whiskers;
 
-  SenderGang< Rat, MyNetwork > senders( 1000,
-					1000,
-					2,
-					default_whiskers );
+  SenderGang< Rat, MyMaze > senders( 1000,
+				     1000,
+				     2,
+				     default_whiskers );
 
-  MyNetwork net( 1 );
+  MyMaze net( 1 );
   Delay< Receiver > delay( 100 );
   Receiver rec;
 

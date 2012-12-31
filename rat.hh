@@ -8,18 +8,43 @@
 template <class NextHop>
 class Rat
 {
-public:
-  class Whiskers {
+private:
+  class Memory {
   public:
-    Whiskers() {}
+    double last_delay;
 
     void packet_sent( const Packet & packet __attribute((unused)) ) {}
     void packets_received( const std::vector< Packet > & packets __attribute((unused)) ) {}
-    unsigned int window( const unsigned int tickno __attribute((unused)) ) const { return 100; }
+    void advance_to( const unsigned int tickno __attribute((unused)) ) {}
+  };
+
+public:
+  class Whisker {
+  private:
+    unsigned int _generation;
+    unsigned int _window;
+    unsigned int _count;
+
+  public:
+    Whisker();
+    unsigned int window( void ) const { return _window; }
+  };
+
+  class Whiskers {
+  private:
+    std::vector< Whisker > _whiskers;
+
+  public:
+    Whiskers() : _whiskers( 1 ) {}
+    const Whisker & get_whisker( const Memory & _memory );
   };
 
 private:
   Whiskers _whiskers;
+  Memory _memory;
+
+  unsigned int window( const unsigned int tickno );
+
   unsigned int _packets_sent, _packets_received;
 
 public:
