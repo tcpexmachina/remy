@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "sendergang.cc"
-#include "network-templates.cc"
+#include "link-templates.cc"
 #include "delay.hh"
 #include "receiver.hh"
 #include "rat-templates.cc"
@@ -18,7 +18,7 @@ int main( void )
 			   default_whiskers,
 			   global_PRNG() );
 
-  Network net( 1, global_PRNG() );
+  Link link( 1, global_PRNG() );
   Delay delay( 100 );
   Receiver rec;
 
@@ -27,8 +27,8 @@ int main( void )
 
   while ( 1 ) {
     for ( unsigned int j = 0; j < 100000; j++ ) {
-      senders.tick( net, rec, tick );
-      net.tick( delay, tick );
+      senders.tick( link, rec, tick );
+      link.tick( delay, tick );
       delay.tick( rec, tick );
       tick++;
     }

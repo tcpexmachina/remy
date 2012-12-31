@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "sendergang.cc"
-#include "network-templates.cc"
+#include "link-templates.cc"
 #include "delay.hh"
 #include "receiver.hh"
 #include "window-sender-templates.cc"
@@ -18,13 +18,13 @@ void utility( const unsigned int window_size )
 				    window_size,
 				    global_PRNG() );
 
-  Network net( 1, global_PRNG() );
+  Link link( 1, global_PRNG() );
   Delay delay( 100 );
   Receiver rec;
 
   for ( unsigned int tick = 0; tick < 100000; tick++ ) {
-    senders.tick( net, rec, tick );
-    net.tick( delay, tick );
+    senders.tick( link, rec, tick );
+    link.tick( delay, tick );
     delay.tick( rec, tick );
   }
 

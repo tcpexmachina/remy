@@ -1,9 +1,9 @@
 #include <utility>
 
-#include "network.hh"
+#include "link.hh"
 
 template <class NextHop>
-void Network::tick( NextHop & next, const unsigned int tickno )
+void Link::tick( NextHop & next, const unsigned int tickno )
 {
   const int num = _egress_process.sample();
 
