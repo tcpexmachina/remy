@@ -1,36 +1,23 @@
 #include <stdio.h>
 #include <vector>
 
-#include "sendergang.cc"
-#include "link-templates.cc"
-#include "delay.hh"
-#include "receiver.hh"
 #include "window-sender-templates.cc"
 #include "random.hh"
+#include "network.cc"
 
 using namespace std;
 
 void utility( const unsigned int window_size )
 {
-  SenderGang<WindowSender> senders( 1000,
-				    1000,
-				    2,
-				    window_size,
-				    global_PRNG() );
+  Network<WindowSender> network( window_size, global_PRNG() );
 
-  Link link( 1, global_PRNG() );
-  Delay delay( 100 );
-  Receiver rec;
-
-  for ( unsigned int tick = 0; tick < 100000; tick++ ) {
-    senders.tick( link, rec, tick );
-    link.tick( delay, tick );
-    delay.tick( rec, tick );
+  for ( unsigned int i = 0; i < 100000; i++ ) {
+    network.tick();
   }
 
-  printf( "%3d: util=%9.5f", window_size, senders.utility() );
+  printf( "%3d: util=%9.5f", window_size, network.senders().utility() );
 
-  const auto tds = senders.throughputs_delays();
+  const auto tds = network.senders().throughputs_delays();
   for ( auto &x : tds ) {
     printf( "    [ tp=%.4f del=%.4f ]", x.first, x.second );
   }
