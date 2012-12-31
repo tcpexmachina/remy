@@ -10,10 +10,12 @@ class Poisson
 private:
   boost::random::poisson_distribution<> distribution;
 
+  PRNG & prng;
+
 public:
-  Poisson( double rate ) : distribution( rate ) {}
-  
-  int sample( void ) { return distribution( get_generator() ); }
+  Poisson( const double & rate, PRNG & s_prng ) : distribution( rate ), prng( s_prng ) {}
+
+  int sample( void ) { return distribution( prng ); }
 };
 
 #endif

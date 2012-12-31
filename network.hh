@@ -13,7 +13,7 @@ private:
   Poisson _egress_process;
 
 public:
-  Network( const double s_rate );
+  Network( const double s_rate, PRNG & s_prng );
 
   void accept( Packet && p ) noexcept;
 

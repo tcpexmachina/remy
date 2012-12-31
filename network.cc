@@ -2,9 +2,9 @@
 
 #include "network.hh"
 
-Network::Network( const double s_rate )
+Network::Network( const double s_rate, PRNG & s_prng )
   : _buffer(),
-    _egress_process( s_rate )
+    _egress_process( s_rate, s_prng )
 {
 }
 

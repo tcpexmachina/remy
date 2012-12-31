@@ -45,7 +45,8 @@ public:
   SenderGang( const double mean_on_duration,
 	      const double mean_off_duration,
 	      const unsigned int num_senders,
-	      const SenderType & exemplar );
+	      const SenderType & exemplar,
+	      PRNG & s_prng );
 
   template <class NextHop>
   void tick( NextHop & next, Receiver & rec, const unsigned int tickno );

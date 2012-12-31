@@ -6,6 +6,7 @@
 #include "delay.hh"
 #include "receiver.hh"
 #include "window-sender-templates.cc"
+#include "random.hh"
 
 using namespace std;
 
@@ -14,9 +15,10 @@ void utility( const unsigned int window_size )
   SenderGang<WindowSender> senders( 1000,
 				    1000,
 				    2,
-				    window_size );
+				    window_size,
+				    global_PRNG() );
 
-  Network net( 1 );
+  Network net( 1, global_PRNG() );
   Delay delay( 100 );
   Receiver rec;
 

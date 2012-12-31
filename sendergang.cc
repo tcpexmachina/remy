@@ -6,10 +6,11 @@ template <class SenderType>
 SenderGang<SenderType>::SenderGang( const double mean_on_duration,
 				    const double mean_off_duration,
 				    const unsigned int num_senders,
-				    const SenderType & exemplar )
+				    const SenderType & exemplar,
+				    PRNG & prng )
   : _gang(),
-    _start_distribution( 1.0 / mean_off_duration ),
-    _stop_distribution( 1.0 / mean_on_duration )
+    _start_distribution( 1.0 / mean_off_duration, prng ),
+    _stop_distribution( 1.0 / mean_on_duration, prng )
 {
   for ( unsigned int i = 0; i < num_senders; i++ ) {
     _gang.emplace_back( i,

@@ -2,8 +2,8 @@
 
 #include "random.hh"
 
-boost::random::mt19937 & get_generator( void )
+PRNG & global_PRNG( void )
 {
-  static boost::random::mt19937 generator( time( NULL ) );
+  static PRNG generator( time( NULL ) );
   return generator;
 }

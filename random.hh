@@ -3,6 +3,8 @@
 
 #include <boost/random/mersenne_twister.hpp>
 
-extern boost::random::mt19937 & get_generator( void );
+typedef boost::random::mt19937 PRNG;
+
+extern PRNG & global_PRNG();
 
 #endif

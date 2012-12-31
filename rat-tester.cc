@@ -6,6 +6,7 @@
 #include "delay.hh"
 #include "receiver.hh"
 #include "rat-templates.cc"
+#include "random.hh"
 
 int main( void )
 {
@@ -14,9 +15,10 @@ int main( void )
   SenderGang<Rat> senders( 1000,
 			   1000,
 			   2,
-			   default_whiskers );
+			   default_whiskers,
+			   global_PRNG() );
 
-  Network net( 1 );
+  Network net( 1, global_PRNG() );
   Delay delay( 100 );
   Receiver rec;
 
