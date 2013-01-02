@@ -15,6 +15,7 @@ private:
     void packet_sent( const Packet & packet __attribute((unused)) ) {}
     void packets_received( const std::vector< Packet > & packets );
     void advance_to( const unsigned int tickno __attribute((unused)) ) {}
+    bool operator==( const Memory & other ) const;
   };
 
 public:
@@ -24,15 +25,16 @@ public:
     unsigned int _window;
     unsigned int _count;
 
-    double _representative_value;
+    Memory _representative_value;
 
   public:
-    Whisker( const double & s_representative_value );
+    Whisker( const Memory & s_representative_value );
     unsigned int window( void ) const { return _window; }
     void use( void ) { _count++; }
 
-    const double & representative_value( void ) const { return _representative_value; }
+    const Memory & representative_value( void ) const { return _representative_value; }
     const unsigned int & count( void ) const { return _count; }
+    bool operator==( const Whisker & other ) const;
   };
 
   class Whiskers {
@@ -41,6 +43,7 @@ public:
 
   public:
     Whiskers();
+    Whisker & mutable_whisker( const Memory & _memory );
     const Whisker & use_whisker( const Memory & _memory );
     const std::vector< Whisker > & whiskers( void ) const { return _whiskers; }
   };

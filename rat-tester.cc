@@ -26,7 +26,7 @@ int main( void )
   const auto senders = network.senders().senders();
   for ( auto &x : senders ) {
     for ( auto &y : x->whiskers().whiskers() ) {
-      printf( " [val=%.0f, count=%d]", y.representative_value(), y.count() );
+      printf( " [val=%.0f, count=%d]", y.representative_value().last_delay, y.count() );
     }
     printf( "\n\n" );
   }

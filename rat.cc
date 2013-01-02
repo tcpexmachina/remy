@@ -32,22 +32,42 @@ Rat::Whiskers::Whiskers()
 {
   _whiskers.reserve( 16 );
   for ( int i = 0; i < 16; i++ ) {
-    _whiskers.emplace_back( i * 20.0 );
+    Memory mem;
+    mem.last_delay = i * 20.0;
+    _whiskers.emplace_back( mem );
   }
+}
+
+bool Rat::Memory::operator==( const Memory & other ) const
+{
+  return last_delay == other.last_delay;
+}
+
+bool Rat::Whisker::operator==( const Whisker & other ) const
+{
+  return (_generation == other._generation) && (_window == other._window) && (_count == other._count) && (_representative_value == other._representative_value);
 }
 
 const typename Rat::Whisker & Rat::Whiskers::use_whisker( const Rat::Memory & _memory )
 {
-  unsigned int index = _memory.last_delay / 20.0;
+  Whisker & ret( mutable_whisker( _memory ) );
+  Whisker & loopback( mutable_whisker( ret.representative_value() ) );
 
-  Whisker & ret( index >= _whiskers.size() ? _whiskers.back() : _whiskers[ index ] );
+  assert( ret == loopback );
 
   ret.use();
 
   return ret;
 }
 
-Rat::Whisker::Whisker( const double & s_representative_value )
+typename Rat::Whisker & Rat::Whiskers::mutable_whisker( const Rat::Memory & _memory )
+{
+  unsigned int index = _memory.last_delay / 20.0;
+
+  return index >= _whiskers.size() ? _whiskers.back() : _whiskers[ index ];
+}
+
+Rat::Whisker::Whisker( const Memory & s_representative_value )
   : _generation( 0 ),
     _window( 100 ),
     _count( 0 ),
