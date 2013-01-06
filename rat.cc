@@ -152,6 +152,18 @@ const Rat::Whisker * Rat::Whiskers::most_used( const unsigned int max_generation
   return ret;
 }
 
+void Rat::Whiskers::promote( const unsigned int generation )
+{
+  for ( auto &x : _whiskers ) {
+    x.promote( generation );
+  }
+}
+
+void Rat::Whisker::promote( const unsigned int generation )
+{
+  _generation = min( _generation, generation );
+}
+
 string Rat::Memory::str( void ) const
 {
   char tmp[ 64 ];

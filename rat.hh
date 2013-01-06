@@ -48,6 +48,7 @@ public:
     std::string summary( void ) const;
 
     void reset_count( void ) { _count = 0; }
+    void promote( const unsigned int generation );
   };
 
   class Whiskers {
@@ -63,6 +64,7 @@ public:
     const Whisker * most_used( const unsigned int max_generation ) const;
 
     void reset_counts( void );
+    void promote( const unsigned int generation );
   };
 
 private:
