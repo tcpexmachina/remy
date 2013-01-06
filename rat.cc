@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <math.h>
 
 #include "rat.hh"
 
@@ -86,8 +87,10 @@ const typename Rat::Whisker & Rat::Whiskers::whisker( const Rat::Memory & _memor
   unsigned int index( _memory.bin( _whiskers.size() - 1) );
 
   const Rat::Whisker & ret( _whiskers[ index ] );
-  const Rat::Whisker & loopback( whisker( ret.representative_value() ) );
-  assert( ret == loopback );
+
+  unsigned int loopback_index( ret.representative_value().bin( _whiskers.size() - 1 ) );
+
+  assert( index == loopback_index );
 
   return ret;
 }
@@ -116,7 +119,7 @@ vector< Rat::Whisker > Rat::Whisker::next_generation( void ) const
   vector< Rat::Whisker > ret;
 
   /* generate all window sizes */
-  for ( unsigned int i = 0; i < 200; i += 20 ) {
+  for ( unsigned int i = 20; i <= 120; i += 10 ) {
     Whisker new_whisker( _representative_value );
     new_whisker._generation = _generation + 1;
     new_whisker._window = i;
@@ -129,9 +132,24 @@ vector< Rat::Whisker > Rat::Whisker::next_generation( void ) const
 string Rat::Whisker::summary( void ) const
 {
   char tmp[ 64 ];
+  /*
   snprintf( tmp, 64, "[%s gen=%u count=%u win=%u]", _representative_value.str().c_str(),
 	    _generation, _count, _window );
-  return tmp;
+  */
+  if ( _count > 0 ) {
+    snprintf( tmp, 64, "%u", _window );
+  } else {
+    snprintf( tmp, 64, " " );
+  }
+
+  string stars;
+  if ( _count > 0 ) {
+    for ( int i = 0; i < log10( _count ); i++ ) {
+      stars += string( "*" );
+    }
+  }
+
+  return string( "[" ) + string( tmp ) + string( stars ) + string( "]" );
 }
 
 const Rat::Whisker * Rat::Whiskers::most_used( const unsigned int max_generation ) const
@@ -169,4 +187,10 @@ string Rat::Memory::str( void ) const
   char tmp[ 64 ];
   snprintf( tmp, 64, "ld=%.0f", _last_delay );
   return tmp;
+}
+
+void Rat::Whiskers::replace( const Whisker & w )
+{
+  unsigned int index( w.representative_value().bin( _whiskers.size() - 1) );  
+  _whiskers[ index ] = w;
 }

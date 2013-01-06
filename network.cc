@@ -10,9 +10,10 @@ static const double LINK_MEAN_PPS = 1.0;
 static const double DELAY = 100;
 
 template <class SenderType>
-Network<SenderType>::Network( const SenderType & example_sender, PRNG & prng )
-  : _senders( MEAN_ON_DURATION, MEAN_OFF_DURATION, NUM_SENDERS, example_sender, prng ),
-    _link( LINK_MEAN_PPS, prng ),
+Network<SenderType>::Network( const SenderType & example_sender, const unsigned int random_seed )
+  : _prng( random_seed ),
+    _senders( MEAN_ON_DURATION, MEAN_OFF_DURATION, NUM_SENDERS, example_sender, _prng ),
+    _link( LINK_MEAN_PPS, _prng ),
     _delay( DELAY ),
     _rec(),
     _tickno( 0 )
@@ -26,4 +27,12 @@ void Network<SenderType>::tick( void )
   _link.tick( _delay, _tickno );
   _delay.tick( _rec, _tickno );
   _tickno++;
+}
+
+template <class SenderType>
+void Network<SenderType>::tick( const unsigned int reps )
+{
+  for ( unsigned int i = 0; i < reps; i++ ) {
+    tick();
+  }
 }

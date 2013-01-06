@@ -13,7 +13,7 @@ private:
   private:
     double _last_delay;
 
-    static unsigned int binsize( void ) { return 20; }
+    static const unsigned int & binsize( void ) { static const unsigned int x = 20; return x; }
 
   public:
     void packet_sent( const Packet & packet __attribute((unused)) ) {}
