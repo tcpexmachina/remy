@@ -23,7 +23,7 @@ public:
 
   void tick( void );
 
-  const SenderGang<SenderType> & senders( void ) { return _senders; }
+  const SenderGang<SenderType> & senders( void ) const { return _senders; }
 };
 
 #endif
