@@ -11,14 +11,15 @@ class Rat
 private:
   class Memory {
   private:
-    double _last_delay;
+    unsigned int _last_delay;
+    unsigned int _last_delivery;
 
-    static const unsigned int & binsize( void ) { static const unsigned int x = 20; return x; }
+    unsigned int _current_tick;
 
   public:
     void packet_sent( const Packet & packet __attribute((unused)) ) {}
     void packets_received( const std::vector< Packet > & packets );
-    void advance_to( const unsigned int tickno __attribute((unused)) ) {}
+    void advance_to( const unsigned int tickno ) { _current_tick = tickno; }
     bool operator==( const Memory & other ) const;
 
     static std::vector< Memory > all_memories( void );

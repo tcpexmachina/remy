@@ -28,14 +28,39 @@ unsigned int Rat::window( const unsigned int tickno )
   return _whiskers.use_whisker( _memory ).window();
 }
 
+static const unsigned int DELAY_BINSIZE = 20;
+static const unsigned int DELIVERY_BINSIZE = 1;
+
+static const unsigned int NUM_DELAY_BINS = 16;
+static const unsigned int NUM_DELIVERY_BINS = 8;
+
 vector< Rat::Memory > Rat::Memory::all_memories( void )
 {
   vector< Memory > ret;
-  for ( int i = 0; i < 16; i++ ) {
-    Memory new_mem;
-    new_mem._last_delay = i * binsize();
-    ret.push_back( new_mem );
+  for ( unsigned int i = 0; i < NUM_DELAY_BINS; i++ ) {
+    for ( unsigned int j = 0; j < NUM_DELIVERY_BINS; j++ ) {
+      Memory new_mem;
+      new_mem._last_delay = i * DELAY_BINSIZE;
+      new_mem._last_delivery = 0;
+      new_mem._current_tick = j * DELIVERY_BINSIZE;
+      ret.push_back( new_mem );
+    }
   }
+  return ret;
+}
+
+unsigned int Rat::Memory::bin( const unsigned int max_val ) const
+{
+  unsigned int delay_index = _last_delay / DELAY_BINSIZE;
+  unsigned int delivery_index = (_current_tick - _last_delivery) / DELIVERY_BINSIZE;
+
+  delay_index = min( delay_index, NUM_DELAY_BINS - 1 );
+  delivery_index = min( delivery_index, NUM_DELIVERY_BINS - 1 );
+
+  unsigned int ret = delay_index * NUM_DELIVERY_BINS + delivery_index;
+  
+  assert( ret <= max_val );
+
   return ret;
 }
 
@@ -73,15 +98,6 @@ const typename Rat::Whisker & Rat::Whiskers::use_whisker( const Rat::Memory & _m
   return ret;
 }
 
-unsigned int Rat::Memory::bin( const unsigned int max_val ) const
-{
-  assert( _last_delay >= 0 );
-
-  unsigned int index( _last_delay / binsize() );
-  
-  return min( max_val, index );
-}
-
 const typename Rat::Whisker & Rat::Whiskers::whisker( const Rat::Memory & _memory ) const
 {
   unsigned int index( _memory.bin( _whiskers.size() - 1) );
@@ -110,8 +126,7 @@ void Rat::Memory::packets_received( const vector< Packet > & packets )
   }
 
   _last_delay = packets.back().tick_received - packets.back().tick_sent;
-
-  assert( _last_delay >= 0 );
+  _last_delivery = packets.back().tick_received;
 }
 
 vector< Rat::Whisker > Rat::Whisker::next_generation( void ) const
@@ -185,7 +200,7 @@ void Rat::Whisker::promote( const unsigned int generation )
 string Rat::Memory::str( void ) const
 {
   char tmp[ 64 ];
-  snprintf( tmp, 64, "ld=%.0f", _last_delay );
+  snprintf( tmp, 64, "ld=%d lr=%d", _last_delay, _current_tick - _last_delivery );
   return tmp;
 }
 
