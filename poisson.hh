@@ -2,6 +2,7 @@
 #define POISSON_HH
 
 #include <boost/random/poisson_distribution.hpp>
+#include <assert.h>
 
 #include "random.hh"
 
@@ -16,6 +17,8 @@ public:
   Poisson( const double & rate, PRNG & s_prng ) : distribution( rate ), prng( s_prng ) {}
 
   int sample( void ) { return distribution( prng ); }
+
+  Poisson & operator=( const Poisson & ) { assert( false ); return *this; }
 };
 
 #endif

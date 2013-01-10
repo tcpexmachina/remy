@@ -1,18 +1,24 @@
-#ifndef WINDOWSENDER_HH
-#define WINDOWSENDER_HH
+#ifndef EMIL_HH
+#define EMIL_HH
 
 #include <vector>
 
 #include "packet.hh"
+#include "poisson.hh"
 
-class WindowSender
+class Emil
 {
 private:
-  unsigned int _window;
+  double _ewma;
+
   unsigned int _packets_sent, _packets_received;
 
+  Poisson _fast_send_process, _slow_send_process;
+
+  static constexpr double alpha = 0.9;
+
 public:
-  WindowSender( const unsigned int s_window );
+  Emil( PRNG & prng );
 
   void packets_received( const std::vector< Packet > & packets );
   void dormant_tick( const unsigned int tickno ); /* do nothing */

@@ -11,7 +11,7 @@ template <class SenderType>
 class Network
 {
 private:
-  PRNG _prng;
+  PRNG & _prng;
   SenderGang<SenderType> _senders;
   Link _link;
   Delay _delay;
@@ -20,7 +20,7 @@ private:
   unsigned int _tickno;
 
 public:
-  Network( const SenderType & example_sender, const unsigned int random_seed );
+  Network( const SenderType & example_sender, PRNG & s_prng );
 
   void tick( void );
   void tick( const unsigned int reps );

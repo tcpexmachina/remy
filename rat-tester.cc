@@ -37,10 +37,11 @@ int main( void )
 
   while ( 1 ) {
     /* evaluate the whiskers we have */
-    const unsigned int random_seed = global_PRNG()();
+    const PRNG the_prng = PRNG( global_PRNG()() );
 
     /* run with existing whiskers */
-    Network<Rat> network( whiskers, random_seed );
+    PRNG run_prng( the_prng );
+    Network<Rat> network( whiskers, run_prng );
     network.tick( TICK_COUNT );
     printf( "gen %d, score = %.12f\n", generation, network.senders().utility() );
 
@@ -67,7 +68,8 @@ int main( void )
     for ( const auto &test_replacement : replacements ) {
       auto new_whiskers( whiskers );
       new_whiskers.replace( test_replacement );
-      Network<Rat> test_network( new_whiskers, random_seed );
+      PRNG new_run_prng( the_prng );
+      Network<Rat> test_network( new_whiskers, new_run_prng );
       test_network.tick( TICK_COUNT );
 
       const double score( test_network.senders().utility() );

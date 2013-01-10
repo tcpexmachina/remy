@@ -10,8 +10,8 @@ static const double LINK_MEAN_PPS = 1.0;
 static const double DELAY = 100;
 
 template <class SenderType>
-Network<SenderType>::Network( const SenderType & example_sender, const unsigned int random_seed )
-  : _prng( random_seed ),
+Network<SenderType>::Network( const SenderType & example_sender, PRNG & s_prng )
+  : _prng( s_prng ),
     _senders( MEAN_ON_DURATION, MEAN_OFF_DURATION, NUM_SENDERS, example_sender, _prng ),
     _link( LINK_MEAN_PPS, _prng ),
     _delay( DELAY ),
