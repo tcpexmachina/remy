@@ -29,10 +29,10 @@ unsigned int Rat::window( const unsigned int tickno )
 }
 
 static const unsigned int DELAY_BINSIZE = 20;
-static const unsigned int DELIVERY_BINSIZE = 1;
+static const unsigned int DELIVERY_BINSIZE = 10;
 
 static const unsigned int NUM_DELAY_BINS = 16;
-static const unsigned int NUM_DELIVERY_BINS = 8;
+static const unsigned int NUM_DELIVERY_BINS = 4;
 
 vector< Rat::Memory > Rat::Memory::all_memories( void )
 {
@@ -152,7 +152,7 @@ string Rat::Whisker::summary( void ) const
 	    _generation, _count, _window );
   */
   if ( _count > 0 ) {
-    snprintf( tmp, 64, "%u", _window );
+    snprintf( tmp, 64, "%s %u", _representative_value.str().c_str(), _window );
   } else {
     snprintf( tmp, 64, " " );
   }
