@@ -43,7 +43,8 @@ int main( void )
     PRNG run_prng( the_prng );
     Network<Rat> network( whiskers, run_prng );
     network.tick( TICK_COUNT );
-    printf( "gen %d, score = %.12f\n", generation, network.senders().utility() );
+    const double orig_score( network.senders().utility() );
+    printf( "gen %d, score = %.12f\n", generation, orig_score );
 
     summarize( network );
 
@@ -82,7 +83,9 @@ int main( void )
     assert( best_whisker );
 
     /* replace with best nexgen choice and repeat */
-    printf( "Replacing with whisker that scored %.12f\n", best_score );
+    if ( best_score > orig_score ) {
+      printf( "Replacing with whisker that scored %.12f\n", best_score );
+    }
     whiskers.replace( *best_whisker );
   }
 

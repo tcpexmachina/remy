@@ -32,7 +32,7 @@ static const unsigned int DELAY_BINSIZE = 20;
 static const unsigned int DELIVERY_BINSIZE = 10;
 
 static const unsigned int NUM_DELAY_BINS = 16;
-static const unsigned int NUM_DELIVERY_BINS = 4;
+static const unsigned int NUM_DELIVERY_BINS = 1;
 
 vector< Rat::Memory > Rat::Memory::all_memories( void )
 {
