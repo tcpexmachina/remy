@@ -9,14 +9,15 @@ using namespace std;
 
 void summarize( const Network<Rat> & network )
 {
-  printf( "util=%9.5f", network.senders().utility() );
+  //  printf( "util=%9.5f", network.senders().utility() );
 
   auto tds = network.senders().throughputs_delays();
   for ( auto &x : tds ) {
     printf( "    [ tp=%.4f del=%.4f ]", x.first, x.second );
   }
-  printf( "\n\n" );
+  //  printf( "\n\n" );
 
+  /*
   auto senders = network.senders().senders();
   for ( auto &x : senders ) {
     printf( "Whiskers:" );
@@ -25,6 +26,7 @@ void summarize( const Network<Rat> & network )
     }
     printf( "\n\n" );
   }
+  */
 }
 
 int main( void )
@@ -44,9 +46,9 @@ int main( void )
     Network<Rat> network( whiskers, run_prng );
     network.tick( TICK_COUNT );
     const double orig_score( network.senders().utility() );
-    printf( "gen %d, score = %.12f\n", generation, orig_score );
+    //    printf( "gen %d, score = %.12f\n", generation, orig_score );
 
-    summarize( network );
+    //    summarize( network );
 
     /* is there a whisker at this generation that we can improve? */
     auto my_sender( network.senders().senders()[ 0 ] );
@@ -84,7 +86,10 @@ int main( void )
 
     /* replace with best nexgen choice and repeat */
     if ( best_score > orig_score ) {
-      printf( "Replacing with whisker that scored %.12f\n", best_score );
+      printf( "Replacing with whisker that scored %.12f => %.12f (+%.12f) ", orig_score, best_score,
+	      best_score - orig_score );
+      summarize( network );
+      printf( "\n" );
     }
     whiskers.replace( *best_whisker );
   }
