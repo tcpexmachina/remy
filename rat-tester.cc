@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void summarize( const Network<Rat> & network )
+void summarize( const Network<Rat> & network, const bool all=false )
 {
   //  printf( "util=%9.5f", network.senders().utility() );
 
@@ -17,16 +17,17 @@ void summarize( const Network<Rat> & network )
   }
   //  printf( "\n\n" );
 
-  /*
-  auto senders = network.senders().senders();
-  for ( auto &x : senders ) {
-    printf( "Whiskers:" );
-    for ( auto &y : x->whiskers().whiskers() ) {
-      printf( " %s", y.summary().c_str() );
-    }
+  if ( all ) {
     printf( "\n\n" );
+    auto senders = network.senders().senders();
+    for ( auto &x : senders ) {
+      printf( "Whiskers:" );
+      for ( auto &y : x->whiskers().whiskers() ) {
+	printf( " %s", y.summary().c_str() );
+      }
+      printf( "\n\n" );
+    }
   }
-  */
 }
 
 int main( void )
@@ -59,6 +60,7 @@ int main( void )
       generation++;
       printf( "Advancing to generation %d\n", generation );
       whiskers.promote( generation );
+      summarize( network, true );
       continue;
     }
 

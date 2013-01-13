@@ -12,14 +12,14 @@ private:
   class Memory {
   private:
     unsigned int _last_delay;
-    unsigned int _last_delivery;
-
-    unsigned int _current_tick;
+    unsigned int _last_window;
 
   public:
+    void new_window( const unsigned int s_window ) { _last_window = s_window; }
+
     void packet_sent( const Packet & packet __attribute((unused)) ) {}
     void packets_received( const std::vector< Packet > & packets );
-    void advance_to( const unsigned int tickno ) { _current_tick = tickno; }
+    void advance_to( const unsigned int tickno __attribute((unused)) ) {}
     bool operator==( const Memory & other ) const;
 
     static std::vector< Memory > all_memories( void );
@@ -72,9 +72,9 @@ private:
   Whiskers _whiskers;
   Memory _memory;
 
-  unsigned int window( const unsigned int tickno );
-
   unsigned int _packets_sent, _packets_received;
+
+  unsigned int _the_window;
 
 public:
   Rat( const Whiskers & s_whiskers );

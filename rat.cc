@@ -9,40 +9,40 @@ Rat::Rat( const Whiskers & s_whiskers )
   :  _whiskers( s_whiskers ),
      _memory(),
      _packets_sent( 0 ),
-     _packets_received( 0 )
+     _packets_received( 0 ),
+     _the_window( 100 )
 {
 }
 
 void Rat::packets_received( const vector< Packet > & packets ) {
   _packets_received += packets.size();
   _memory.packets_received( packets );
+
+  if ( !packets.empty() ) {
+    _memory.advance_to( packets.back().tick_received );
+    _the_window = _whiskers.use_whisker( _memory ).window();
+    _memory.new_window( _the_window );
+  }
 }
 
 void Rat::dormant_tick( const unsigned int tickno __attribute((unused)) )
 {
 }
 
-unsigned int Rat::window( const unsigned int tickno )
-{
-  _memory.advance_to( tickno );
-  return _whiskers.use_whisker( _memory ).window();
-}
+static const unsigned int DELAY_BINSIZE = 10;
+static const unsigned int WINDOW_BINSIZE = 5;
 
-static const unsigned int DELAY_BINSIZE = 20;
-static const unsigned int DELIVERY_BINSIZE = 10;
-
-static const unsigned int NUM_DELAY_BINS = 16;
-static const unsigned int NUM_DELIVERY_BINS = 1;
+static const unsigned int NUM_DELAY_BINS = 20;
+static const unsigned int NUM_WINDOW_BINS = 24;
 
 vector< Rat::Memory > Rat::Memory::all_memories( void )
 {
   vector< Memory > ret;
   for ( unsigned int i = 0; i < NUM_DELAY_BINS; i++ ) {
-    for ( unsigned int j = 0; j < NUM_DELIVERY_BINS; j++ ) {
+    for ( unsigned int j = 0; j < NUM_WINDOW_BINS; j++ ) {
       Memory new_mem;
       new_mem._last_delay = i * DELAY_BINSIZE;
-      new_mem._last_delivery = 0;
-      new_mem._current_tick = j * DELIVERY_BINSIZE;
+      new_mem._last_window = j * WINDOW_BINSIZE;
       ret.push_back( new_mem );
     }
   }
@@ -52,12 +52,12 @@ vector< Rat::Memory > Rat::Memory::all_memories( void )
 unsigned int Rat::Memory::bin( const unsigned int max_val ) const
 {
   unsigned int delay_index = _last_delay / DELAY_BINSIZE;
-  unsigned int delivery_index = (_current_tick - _last_delivery) / DELIVERY_BINSIZE;
+  unsigned int window_index = _last_window / WINDOW_BINSIZE;
 
   delay_index = min( delay_index, NUM_DELAY_BINS - 1 );
-  delivery_index = min( delivery_index, NUM_DELIVERY_BINS - 1 );
+  window_index = min( window_index, NUM_WINDOW_BINS - 1 );
 
-  unsigned int ret = delay_index * NUM_DELIVERY_BINS + delivery_index;
+  unsigned int ret = delay_index * NUM_WINDOW_BINS + window_index;
   
   assert( ret <= max_val );
 
@@ -83,7 +83,7 @@ void Rat::Whiskers::reset_counts( void )
 
 bool Rat::Memory::operator==( const Memory & other ) const
 {
-  return _last_delay == other._last_delay;
+  return (_last_delay == other._last_delay) && (_last_window == other._last_window);
 }
 
 bool Rat::Whisker::operator==( const Whisker & other ) const
@@ -126,7 +126,6 @@ void Rat::Memory::packets_received( const vector< Packet > & packets )
   }
 
   _last_delay = packets.back().tick_received - packets.back().tick_sent;
-  _last_delivery = packets.back().tick_received;
 }
 
 vector< Rat::Whisker > Rat::Whisker::next_generation( void ) const
@@ -134,7 +133,7 @@ vector< Rat::Whisker > Rat::Whisker::next_generation( void ) const
   vector< Rat::Whisker > ret;
 
   /* generate all window sizes */
-  for ( unsigned int i = 20; i <= 120; i += 10 ) {
+  for ( unsigned int i = WINDOW_BINSIZE; i <= WINDOW_BINSIZE * NUM_WINDOW_BINS; i += WINDOW_BINSIZE ) {
     Whisker new_whisker( _representative_value );
     new_whisker._generation = _generation + 1;
     new_whisker._window = i;
@@ -200,12 +199,12 @@ void Rat::Whisker::promote( const unsigned int generation )
 string Rat::Memory::str( void ) const
 {
   char tmp[ 64 ];
-  snprintf( tmp, 64, "ld=%d lr=%d", _last_delay, _current_tick - _last_delivery );
+  snprintf( tmp, 64, "ld=%d lw=%d", _last_delay, _last_window );
   return tmp;
 }
 
 void Rat::Whiskers::replace( const Whisker & w )
 {
-  unsigned int index( w.representative_value().bin( _whiskers.size() - 1) );  
+  unsigned int index( w.representative_value().bin( _whiskers.size() - 1 ) );  
   _whiskers[ index ] = w;
 }
