@@ -29,11 +29,11 @@ void Rat::dormant_tick( const unsigned int tickno __attribute((unused)) )
 {
 }
 
-static const unsigned int DELAY_BINSIZE = 10;
-static const unsigned int WINDOW_BINSIZE = 5;
+static const unsigned int DELAY_BINSIZE = 20;
+static const unsigned int WINDOW_BINSIZE = 10;
 
-static const unsigned int NUM_DELAY_BINS = 20;
-static const unsigned int NUM_WINDOW_BINS = 24;
+static const unsigned int NUM_DELAY_BINS = 10;
+static const unsigned int NUM_WINDOW_BINS = 12;
 
 vector< Rat::Memory > Rat::Memory::all_memories( void )
 {

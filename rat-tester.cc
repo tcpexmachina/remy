@@ -32,7 +32,7 @@ void summarize( const Network<Rat> & network, const bool all=false )
 
 int main( void )
 {
-  unsigned int TICK_COUNT = 1000000;
+  const unsigned int TICK_COUNT = 500000;
 
   Rat::Whiskers whiskers;
 

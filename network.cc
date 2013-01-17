@@ -5,7 +5,7 @@
 
 static const double MEAN_ON_DURATION  = 1000.0;
 static const double MEAN_OFF_DURATION = 1000.0;
-static const unsigned int NUM_SENDERS = 10;
+static const unsigned int NUM_SENDERS = 2;
 static const double LINK_MEAN_PPS = 1.0;
 static const double DELAY = 100;
 
