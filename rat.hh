@@ -5,69 +5,11 @@
 #include <string>
 
 #include "packet.hh"
+#include "whisker.hh"
+#include "memory.hh"
 
 class Rat
 {
-private:
-  class Memory {
-  private:
-    unsigned int _last_delay;
-    unsigned int _last_window;
-
-  public:
-    void new_window( const unsigned int s_window ) { _last_window = s_window; }
-
-    void packet_sent( const Packet & packet __attribute((unused)) ) {}
-    void packets_received( const std::vector< Packet > & packets );
-    void advance_to( const unsigned int tickno __attribute((unused)) ) {}
-    bool operator==( const Memory & other ) const;
-
-    static std::vector< Memory > all_memories( void );
-    unsigned int bin( const unsigned int max_val ) const;
-    std::string str( void ) const;
-  };
-
-public:
-  class Whisker {
-  private:
-    unsigned int _generation;
-    unsigned int _window;
-    mutable unsigned int _count;
-
-    Memory _representative_value;
-
-  public:
-    Whisker( const Memory & s_representative_value );
-    void use( void ) const { _count++; }
-
-    const Memory & representative_value( void ) const { return _representative_value; }
-    const unsigned int & generation( void ) const { return _generation; }
-    const unsigned int & window( void ) const { return _window; }
-    const unsigned int & count( void ) const { return _count; }
-    bool operator==( const Whisker & other ) const;
-    std::vector< Whisker > next_generation( void ) const;
-    std::string summary( void ) const;
-
-    void reset_count( void ) { _count = 0; }
-    void promote( const unsigned int generation );
-  };
-
-  class Whiskers {
-  private:
-    std::vector< Whisker > _whiskers;
-
-  public:
-    Whiskers();
-    const Whisker & whisker( const Memory & _memory ) const;
-    const Whisker & use_whisker( const Memory & _memory );
-    const std::vector< Whisker > & whiskers( void ) const { return _whiskers; }
-    void replace( const Whisker & w );
-    const Whisker * most_used( const unsigned int max_generation ) const;
-
-    void reset_counts( void );
-    void promote( const unsigned int generation );
-  };
-
 private:
   Whiskers _whiskers;
   Memory _memory;

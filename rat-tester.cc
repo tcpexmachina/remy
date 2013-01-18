@@ -34,7 +34,7 @@ int main( void )
 {
   const unsigned int TICK_COUNT = 500000;
 
-  Rat::Whiskers whiskers;
+  Whiskers whiskers;
 
   unsigned int generation = 0;
 
@@ -67,7 +67,7 @@ int main( void )
     /* otherwise, get all nexgen alternatives for that whisker and replace each in turn */
     auto replacements( my_whisker->next_generation() );
     double best_score = -INT_MAX;
-    const Rat::Whisker *best_whisker = nullptr;
+    const Whisker *best_whisker = nullptr;
 
     /* find best case (using same randseed) */
     for ( const auto &test_replacement : replacements ) {
