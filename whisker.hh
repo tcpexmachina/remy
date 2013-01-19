@@ -1,6 +1,9 @@
 #ifndef WHISKER_HH
 #define WHISKER_HH
 
+#include <string>
+#include <vector>
+
 #include "memoryrange.hh"
 
 class Whisker {
@@ -12,6 +15,7 @@ private:
   MemoryRange _domain;
 
 public:
+  Whisker( const Whisker & other );
   Whisker( const unsigned int s_window, const MemoryRange & s_domain );
   void use( void ) const { _count++; }
 
@@ -26,6 +30,8 @@ public:
 
   void reset_count( void ) { _count = 0; }
   void promote( const unsigned int generation );
+
+  std::string str( void ) const;
 };
 
 class Whiskers {
@@ -45,6 +51,8 @@ public:
 
   void reset_counts( void );
   void promote( const unsigned int generation );
+
+  std::string str( void ) const;
 };
 
 #endif

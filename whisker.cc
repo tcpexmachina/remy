@@ -80,6 +80,14 @@ Whisker::Whisker( const unsigned int s_window, const MemoryRange & s_domain )
 {
 }
 
+Whisker::Whisker( const Whisker & other )
+  : _generation( other._generation ),
+    _window( other._window ),
+    _count( 0 ),
+    _domain( other._domain )
+{
+}
+
 vector< Whisker > Whisker::next_generation( void ) const
 {
   vector< Whisker > ret;
@@ -98,7 +106,7 @@ vector< Whisker > Whisker::next_generation( void ) const
       ret.push_back( new_whisker );
     }
 
-    if ( _window - i >= 1 ) {
+    if ( _window > i ) {
       new_whisker._window = _window - i;
       ret.push_back( new_whisker );
     }
@@ -167,4 +175,31 @@ bool Whiskers::replace( const Whisker & w )
   }
 
   return false;
+}
+
+string Whisker::str( void ) const
+{
+  char tmp[ 128 ];
+  snprintf( tmp, 128, "{%s} gen=%u ct=%u => win=%u",
+	    _domain.str().c_str(), _generation, _count, _window );
+  return tmp;
+}
+
+string Whiskers::str( void ) const
+{
+
+  if ( !_leaf.empty() ) {
+    assert( _children.empty() );
+    char tmp[ 128 ];
+    snprintf( tmp, 128, "[%s]", _leaf.front().str().c_str() );
+    return tmp;
+  }
+
+  string ret;
+
+  for ( auto &x : _children ) {
+    ret += x.str();
+  }
+
+  return ret;
 }

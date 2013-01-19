@@ -7,7 +7,6 @@
 
 using namespace std;
 
-#if 0
 void summarize( const Network<Rat> & network, const bool all=false )
 {
   //  printf( "util=%9.5f", network.senders().utility() );
@@ -16,21 +15,18 @@ void summarize( const Network<Rat> & network, const bool all=false )
   for ( auto &x : tds ) {
     printf( "    [ tp=%.4f del=%.4f ]", x.first, x.second );
   }
-  //  printf( "\n\n" );
+  printf( "\n\n" );
 
   if ( all ) {
     printf( "\n\n" );
     auto senders = network.senders().senders();
     for ( auto &x : senders ) {
       printf( "Whiskers:" );
-      for ( auto &y : x->whiskers().whiskers() ) {
-	printf( " %s", y.summary().c_str() );
-      }
+      printf( " %s", x->whiskers().str().c_str() );
       printf( "\n\n" );
     }
   }
 }
-#endif
 
 int main( void )
 {
@@ -51,7 +47,7 @@ int main( void )
     const double orig_score( network.senders().utility() );
     //    printf( "gen %d, score = %.12f\n", generation, orig_score );
 
-    //    summarize( network );
+    summarize( network );
 
     /* is there a whisker at this generation that we can improve? */
     auto my_sender( network.senders().senders()[ 0 ] );
@@ -62,7 +58,7 @@ int main( void )
       generation++;
       printf( "Advancing to generation %d\n", generation );
       whiskers.promote( generation );
-      //      summarize( network, true );
+      summarize( network, true );
       continue;
     }
 
@@ -92,7 +88,7 @@ int main( void )
     if ( best_score > orig_score ) {
       printf( "Replacing with whisker that scored %.12f => %.12f (+%.12f) ", orig_score, best_score,
 	      best_score - orig_score );
-      //      summarize( network );
+      summarize( network );
       printf( "\n" );
     }
     whiskers.replace( *best_whisker );

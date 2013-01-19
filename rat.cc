@@ -18,6 +18,9 @@ void Rat::packets_received( const vector< Packet > & packets ) {
   if ( !packets.empty() ) {
     _memory.advance_to( packets.back().tick_received );
     _the_window = _whiskers.use_whisker( _memory ).window();
+    if ( _the_window > 2048 ) {
+      fprintf( stderr, "new window: %d\n", _the_window );
+    }
     _memory.new_window( _the_window );
   }
 }

@@ -5,6 +5,7 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/median.hpp>
 #include <vector>
+#include <string>
 
 #include "memory.hh"
 
@@ -28,6 +29,8 @@ public:
   bool contains( const Memory & query ) const;
 
   bool operator==( const MemoryRange & other ) const;
+
+  std::string str( void ) const;
 };
 
 #endif
