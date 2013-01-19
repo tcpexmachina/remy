@@ -15,10 +15,18 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
       //      ersatz_lower[ i ] = ersatz_upper[ i ] = (x._lower.data()[ i ] + x._upper.data()[ i ]) / 2;
       ersatz_lower[ i ] = ersatz_upper[ i ] = median( _acc[ i ] );
 
-      doubled.emplace_back( x._lower, ersatz_upper );
-      doubled.emplace_back( ersatz_lower, x._upper );
+      if ( !(x._lower.data() == ersatz_upper) ) {
+	doubled.emplace_back( x._lower, ersatz_upper );
+      }
+
+      if ( !(ersatz_lower == x._upper.data()) ) {
+	doubled.emplace_back( ersatz_lower, x._upper );
+      }
     }
-    ret = doubled;
+
+    if ( !ret.empty() ) {
+      ret = doubled;
+    }
   }
 
   return ret;
