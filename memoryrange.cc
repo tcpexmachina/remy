@@ -15,19 +15,21 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
       //      ersatz_lower[ i ] = ersatz_upper[ i ] = (x._lower.data()[ i ] + x._upper.data()[ i ]) / 2;
       ersatz_lower[ i ] = ersatz_upper[ i ] = median( _acc[ i ] );
 
-      if ( !(x._lower.data() == ersatz_upper) ) {
+      if ( x._lower.data() == ersatz_upper ) {
+	assert( !(ersatz_lower == x._upper.data()) );
+	assert( x._lower.data() == ersatz_lower );
+	/* cannot double on this axis */
+	doubled.push_back( x );
+      } else {
 	doubled.emplace_back( x._lower, ersatz_upper );
-      }
-
-      if ( !(ersatz_lower == x._upper.data()) ) {
 	doubled.emplace_back( ersatz_lower, x._upper );
       }
     }
 
-    if ( !ret.empty() ) {
-      ret = doubled;
-    }
+    ret = doubled;
   }
+
+  assert( ret.size() > 1 );
 
   return ret;
 }

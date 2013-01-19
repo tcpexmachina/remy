@@ -72,7 +72,7 @@ int main( void )
     const double orig_score( network.senders().utility() );
     printf( "gen %d, score = %.12f\n", generation, orig_score );
 
-    summarize( network );
+    summarize( network, true );
 
     /* is there a whisker at this generation that we can improve? */
     auto my_sender( network.senders().senders()[ 0 ] );
@@ -80,11 +80,11 @@ int main( void )
 
     /* if not, increase generation and promote all whiskers */
     if ( !my_whisker ) {
-      generation++;
       printf( "Advancing to generation %d\n", generation );
+      generation++;
       whiskers.promote( generation );
 
-      if ( (generation % 8) == 0 ) {
+      if ( (generation % 4) == 0 ) {
 	printf( "Splitting most popular whisker.\n" );
 	apply_best_split( whiskers );
       }
@@ -116,7 +116,7 @@ int main( void )
 
     /* replace with best nexgen choice and repeat */
     if ( best_score > orig_score ) {
-      printf( "Replacing with whisker that scored %.12f => %.12f (+%.12f) ", orig_score, best_score,
+      printf( "Replacing with whisker that scored %.12f => %.12f (+%.12f)\n", orig_score, best_score,
 	      best_score - orig_score );
     }
     assert( whiskers.replace( *best_whisker ) );
