@@ -12,7 +12,7 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
     vector< MemoryRange > doubled;
     for ( auto &x : ret ) {
       auto ersatz_lower( x._lower.data() ), ersatz_upper( x._upper.data() );
-      ersatz_lower[ i ] = ersatz_upper[ i ] = median( _acc[ i ] );
+      ersatz_lower[ i ] = ersatz_upper[ i ] = (x._lower.data()[ i ] + x._upper.data()[ i ]) / 2;
 
       doubled.emplace_back( x._lower, ersatz_upper );
       doubled.emplace_back( ersatz_lower, x._upper );
@@ -56,6 +56,7 @@ bool MemoryRange::contains( const Memory & query ) const
 
 void MemoryRange::track( const Memory & query ) const
 {
+  return;
   /* log it */
   for ( unsigned int i = 0; i < Memory::datasize(); i++ ) {
     _acc[ i ]( query.data()[ i ] );
