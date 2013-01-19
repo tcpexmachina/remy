@@ -28,10 +28,31 @@ void summarize( const Network<Rat> & network, const bool all=false )
   }
 }
 
+const unsigned int TICK_COUNT = 500000;
+
+void apply_best_split( Whiskers & whiskers )
+{
+  whiskers.reset_counts();
+  
+  const PRNG the_prng = PRNG( global_PRNG()() );
+
+  /* run to get counts */
+  PRNG run_prng( the_prng );
+  Network<Rat> network( Rat( whiskers, true ), run_prng );
+  network.tick( TICK_COUNT );
+
+  auto my_sender( network.senders().senders()[ 0 ] );
+  auto my_whisker( my_sender->whiskers().most_used( -1 ) );
+
+  assert( my_whisker );
+
+  Whiskers bisected_whisker( *my_whisker, true );
+
+  assert( whiskers.replace( *my_whisker, bisected_whisker ) );
+}
+
 int main( void )
 {
-  const unsigned int TICK_COUNT = 500000;
-
   Whiskers whiskers;
 
   unsigned int generation = 0;
@@ -45,9 +66,9 @@ int main( void )
     Network<Rat> network( whiskers, run_prng );
     network.tick( TICK_COUNT );
     const double orig_score( network.senders().utility() );
-    //    printf( "gen %d, score = %.12f\n", generation, orig_score );
+    printf( "gen %d, score = %.12f\n", generation, orig_score );
 
-    summarize( network );
+    //    summarize( network, true );
 
     /* is there a whisker at this generation that we can improve? */
     auto my_sender( network.senders().senders()[ 0 ] );
@@ -58,7 +79,12 @@ int main( void )
       generation++;
       printf( "Advancing to generation %d\n", generation );
       whiskers.promote( generation );
-      summarize( network, true );
+
+      if ( (generation % 8) == 0 ) {
+	printf( "Splitting most popular whisker.\n" );
+	apply_best_split( whiskers );
+      }
+      
       continue;
     }
 
@@ -88,8 +114,6 @@ int main( void )
     if ( best_score > orig_score ) {
       printf( "Replacing with whisker that scored %.12f => %.12f (+%.12f) ", orig_score, best_score,
 	      best_score - orig_score );
-      summarize( network );
-      printf( "\n" );
     }
     assert( whiskers.replace( *best_whisker ) );
   }

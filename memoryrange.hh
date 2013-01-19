@@ -27,6 +27,7 @@ public:
   Memory query_median( void ) const;
 
   bool contains( const Memory & query ) const;
+  void track( const Memory & query ) const;
 
   bool operator==( const MemoryRange & other ) const;
 

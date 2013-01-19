@@ -18,8 +18,10 @@ private:
 
   unsigned int _the_window;
 
+  bool _track;
+
 public:
-  Rat( const Whiskers & s_whiskers );
+  Rat( const Whiskers & s_whiskers, const bool s_track=false );
 
   void packets_received( const std::vector< Packet > & packets );
   void dormant_tick( const unsigned int tickno ); /* do nothing */

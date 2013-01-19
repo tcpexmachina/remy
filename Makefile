@@ -3,7 +3,7 @@ objects = link.o receiver.o random.o window-sender.o sendergang.o rat.o window-s
 executables = window-tester rat-tester emil-tester
 CXX = g++
 LANGFLAGS = -std=c++0x
-CXXFLAGS = -g -O3 $(LANGFLAGS) -ffast-math -pedantic -Werror -Wall -Wextra -Weffc++ -fno-default-inline -pipe
+CXXFLAGS = -g $(LANGFLAGS) -ffast-math -pedantic -Werror -Wall -Wextra -Weffc++ -fno-default-inline -pipe
 LIBS = -lm
 
 all: $(executables)

@@ -32,10 +32,14 @@ public:
   void promote( const unsigned int generation );
 
   std::string str( void ) const;
+
+  std::vector< Whisker > bisect( void ) const;
 };
 
 class Whiskers {
 private:
+  MemoryRange _domain;
+
   std::vector< Whiskers > _children;
   std::vector< Whisker > _leaf;
 
@@ -43,7 +47,10 @@ private:
 
 public:
   Whiskers();
-  const Whisker & use_whisker( const Memory & _memory ) const;
+
+  Whiskers( const Whisker & whisker, const bool bisect );
+
+  const Whisker & use_whisker( const Memory & _memory, const bool track ) const;
 
   bool replace( const Whisker & w );
   bool replace( const Whisker & src, const Whiskers & dst );

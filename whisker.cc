@@ -10,15 +10,41 @@ static const unsigned int MAX_WINDOW = 256;
 static const unsigned int DEFAULT_WINDOW = 1;
 
 Whiskers::Whiskers()
-  : _children(),
-    _leaf( 1, Whisker( DEFAULT_WINDOW, MemoryRange( Memory(), MAX_MEMORY() ) ) )
+  : _domain( Memory(), MAX_MEMORY() ),
+    _children(),
+    _leaf( 1, Whisker( DEFAULT_WINDOW, _domain ) )
 {
+}
+
+Whiskers::Whiskers( const Whisker & whisker, const bool bisect )
+  : _domain( whisker.domain() ),
+    _children(),
+    _leaf()
+{
+  if ( !bisect ) {
+    _leaf.push_back( whisker );
+  } else {
+    for ( auto &x : whisker.bisect() ) {
+      _children.push_back( Whiskers( x, false ) );
+    }
+  }
+}
+
+vector< Whisker > Whisker::bisect( void ) const
+{
+  vector< Whisker > ret;
+  for ( auto &x : _domain.bisect() ) {
+    Whisker new_whisker( *this );
+    new_whisker._domain = x;
+    ret.push_back( new_whisker );
+  }
+  return ret;
 }
 
 void Whiskers::reset_counts( void )
 {
-  for ( auto &x : _leaf ) {
-    x.reset_count();
+  if ( !_leaf.empty() ) {
+    _leaf.front().reset_count();
   }
 
   for ( auto &x : _children ) {
@@ -31,20 +57,27 @@ bool Whisker::operator==( const Whisker & other ) const
   return (_generation == other._generation) && (_window == other._window) && (_domain == other._domain); /* ignore count for now */
 }
 
-const Whisker & Whiskers::use_whisker( const Memory & _memory ) const
+const Whisker & Whiskers::use_whisker( const Memory & _memory, const bool track ) const
 {
   const Whisker * ret( whisker( _memory ) );
   assert( ret );
 
   ret->use();
+
+  if ( track ) {
+    ret->domain().track( _memory );
+  }
+
   return *ret;
 }
 
 const Whisker * Whiskers::whisker( const Memory & _memory ) const
 {
+  if ( !_domain.contains( _memory ) ) {
+    return nullptr;
+  }
+
   if ( !_leaf.empty() ) {
-    assert( _children.empty() );
-    assert( _leaf.front().domain().contains( _memory ) );
     return &_leaf[ 0 ];
   }
 
@@ -56,7 +89,7 @@ const Whisker * Whiskers::whisker( const Memory & _memory ) const
     }
   }
 
-  return nullptr;
+  assert( false );
 }
 
 Whisker::Whisker( const unsigned int s_window, const MemoryRange & s_domain )
@@ -130,8 +163,8 @@ const Whisker * Whiskers::most_used( const unsigned int max_generation ) const
 
 void Whiskers::promote( const unsigned int generation )
 {
-  for ( auto &x : _leaf ) {
-    x.promote( generation );
+  if ( !_leaf.empty() ) {
+    _leaf.front().promote( generation );
   }
 
   for ( auto &x : _children ) {
@@ -146,13 +179,14 @@ void Whisker::promote( const unsigned int generation )
 
 bool Whiskers::replace( const Whisker & w )
 {
-  if ( !_leaf.empty() ) {
-    if ( w.domain() == _leaf.front().domain() ) {
-      _leaf.front() = w;
-      return true;
-    }
-
+  if ( !_domain.contains( w.domain().range_median() ) ) {
     return false;
+  }
+
+  if ( !_leaf.empty() ) {
+    assert( w.domain() == _leaf.front().domain() );
+    _leaf.front() = w;
+    return true;
   }
 
   for ( auto &x : _children ) {
@@ -161,7 +195,29 @@ bool Whiskers::replace( const Whisker & w )
     }
   }
 
-  return false;
+  assert( false );
+}
+
+bool Whiskers::replace( const Whisker & src, const Whiskers & dst )
+{
+  if ( !_domain.contains( src.domain().range_median() ) ) {
+    return false;
+  }
+ 
+  if ( !_leaf.empty() ) {
+    assert( src.domain() == _leaf.front().domain() );
+    /* convert from leaf to interior node */
+    *this = dst;
+    return true;
+  }
+
+  for ( auto &x : _children ) {
+    if ( x.replace( src, dst ) ) {
+      return true;
+    }
+  }
+
+  assert( false );
 }
 
 string Whisker::str( void ) const
