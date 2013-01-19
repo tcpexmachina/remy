@@ -46,6 +46,7 @@ public:
   const Whisker & use_whisker( const Memory & _memory ) const;
 
   bool replace( const Whisker & w );
+  bool replace( const Whisker & src, const Whiskers & dst );
   const Whisker * most_used( const unsigned int max_generation ) const;
 
   void reset_counts( void );

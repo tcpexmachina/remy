@@ -27,5 +27,6 @@ void Rat::packets_received( const vector< Packet > & packets ) {
 
 void Rat::dormant_tick( const unsigned int tickno __attribute((unused)) )
 {
+  _memory = Memory();
 }
 

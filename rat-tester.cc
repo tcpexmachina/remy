@@ -70,7 +70,7 @@ int main( void )
     /* find best case (using same randseed) */
     for ( const auto &test_replacement : replacements ) {
       auto new_whiskers( whiskers );
-      new_whiskers.replace( test_replacement );
+      assert( new_whiskers.replace( test_replacement ) );
       PRNG new_run_prng( the_prng );
       Network<Rat> test_network( new_whiskers, new_run_prng );
       test_network.tick( TICK_COUNT );
@@ -91,7 +91,7 @@ int main( void )
       summarize( network );
       printf( "\n" );
     }
-    whiskers.replace( *best_whisker );
+    assert( whiskers.replace( *best_whisker ) );
   }
 
   return 0;
