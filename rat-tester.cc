@@ -68,7 +68,7 @@ int main( void )
     const double orig_score( network.senders().utility() );
     printf( "gen %d, score = %.12f\n", generation, orig_score );
 
-    //    summarize( network, true );
+    summarize( network, true );
 
     /* is there a whisker at this generation that we can improve? */
     auto my_sender( network.senders().senders()[ 0 ] );

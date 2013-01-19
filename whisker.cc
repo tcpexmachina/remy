@@ -138,7 +138,8 @@ vector< Whisker > Whisker::next_generation( void ) const
 const Whisker * Whiskers::most_used( const unsigned int max_generation ) const
 {
   if ( !_leaf.empty() ) {
-    if ( _leaf.front().generation() <= max_generation ) {
+    if ( (_leaf.front().generation() <= max_generation)
+	 && (_leaf.front().count() > 0) ) {
       return &_leaf[ 0 ];
     }
     return nullptr;
