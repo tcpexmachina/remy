@@ -1,5 +1,5 @@
-source = link.cc receiver.cc window-tester.cc random.cc window-sender.cc sendergang.cc rat.cc rat-tester.cc window-sender-templates.cc rat-templates.cc link-templates.cc network.cc emil-tester.cc emil.cc emil-templates.cc whisker.cc memory.cc
-objects = link.o receiver.o random.o window-sender.o sendergang.o rat.o window-sender-templates.o rat-templates.o link-templates.o network.o emil.o emil-templates.o whisker.o memory.o
+source = link.cc receiver.cc window-tester.cc random.cc window-sender.cc sendergang.cc rat.cc rat-tester.cc window-sender-templates.cc rat-templates.cc link-templates.cc network.cc emil-tester.cc emil.cc emil-templates.cc whisker.cc memory.cc memoryrange.cc
+objects = link.o receiver.o random.o window-sender.o sendergang.o rat.o window-sender-templates.o rat-templates.o link-templates.o network.o emil.o emil-templates.o whisker.o memory.o memoryrange.o
 executables = window-tester rat-tester emil-tester
 CXX = g++
 LANGFLAGS = -std=c++0x

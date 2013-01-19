@@ -7,20 +7,33 @@
 #include "packet.hh"
 
 class Memory {
+public:
+  typedef unsigned int DataType;
+
 private:
-  unsigned int _last_delay;
-  unsigned int _last_window;
+  std::vector< DataType > _data;
+
+  enum fields { LAST_DELAY, LAST_WINDOW };
 
 public:
-  void new_window( const unsigned int s_window ) { _last_window = s_window; }
+  Memory( const std::vector< DataType > & s_data )
+    : _data( s_data )
+  {}
+
+  Memory()
+    : _data( datasize(), 0 )
+  {}
+
+  static constexpr unsigned int datasize( void ) { return 2; }
+  const std::vector< DataType > & data( void ) const { return _data; }
+
+  void new_window( const DataType s_window ) { _data[ LAST_WINDOW ] = s_window; }
 
   void packet_sent( const Packet & packet __attribute((unused)) ) {}
   void packets_received( const std::vector< Packet > & packets );
   void advance_to( const unsigned int tickno __attribute((unused)) ) {}
   bool operator==( const Memory & other ) const;
 
-  static std::vector< Memory > all_memories( void );
-  unsigned int bin( const unsigned int max_val ) const;
   std::string str( void ) const;
 };
 
