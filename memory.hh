@@ -37,4 +37,6 @@ public:
   std::string str( void ) const;
 };
 
+extern const Memory & MAX_MEMORY( void );
+
 #endif

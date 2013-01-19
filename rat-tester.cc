@@ -7,6 +7,7 @@
 
 using namespace std;
 
+#if 0
 void summarize( const Network<Rat> & network, const bool all=false )
 {
   //  printf( "util=%9.5f", network.senders().utility() );
@@ -29,6 +30,7 @@ void summarize( const Network<Rat> & network, const bool all=false )
     }
   }
 }
+#endif
 
 int main( void )
 {
@@ -60,7 +62,7 @@ int main( void )
       generation++;
       printf( "Advancing to generation %d\n", generation );
       whiskers.promote( generation );
-      summarize( network, true );
+      //      summarize( network, true );
       continue;
     }
 
@@ -90,7 +92,7 @@ int main( void )
     if ( best_score > orig_score ) {
       printf( "Replacing with whisker that scored %.12f => %.12f (+%.12f) ", orig_score, best_score,
 	      best_score - orig_score );
-      summarize( network );
+      //      summarize( network );
       printf( "\n" );
     }
     whiskers.replace( *best_whisker );

@@ -24,3 +24,9 @@ string Memory::str( void ) const
   snprintf( tmp, 64, "ld=%u lw=%u", _data[ LAST_DELAY ], _data[ LAST_WINDOW ] );
   return tmp;
 }
+
+const Memory & MAX_MEMORY( void )
+{
+  static const Memory max_memory( { 1024 /* delay */, 1024 /* window */ } );
+  return max_memory;
+}

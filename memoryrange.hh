@@ -12,11 +12,9 @@ class MemoryRange {
 private:
   Memory _lower, _upper;  
 
-  std::vector< boost::accumulators::accumulator_set< Memory::DataType,
-						     boost::accumulators::stats<
-						       boost::accumulators::tag::median > > > _acc;
-
-  Memory query_median( void ) const;
+  mutable std::vector< boost::accumulators::accumulator_set< Memory::DataType,
+							     boost::accumulators::stats<
+							       boost::accumulators::tag::median > > > _acc;
 
 public:
   MemoryRange( const Memory & s_lower, const Memory & s_upper )
@@ -25,8 +23,11 @@ public:
 
   std::vector< MemoryRange > bisect( void ) const;
   Memory range_median( void ) const;
-  bool contains( const Memory & query );
-};
+  Memory query_median( void ) const;
 
+  bool contains( const Memory & query ) const;
+
+  bool operator==( const MemoryRange & other ) const;
+};
 
 #endif

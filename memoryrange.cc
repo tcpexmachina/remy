@@ -28,8 +28,7 @@ Memory MemoryRange::range_median( void ) const
 {
   auto median_data( _lower.data() );
   for ( unsigned int i = 0; i < Memory::datasize(); i++ ) {
-    median_data[ i ] += _upper.data()[ i ];
-    median_data[ i ] /= 2;
+    median_data[ i ] = (_lower.data()[ i ] + _upper.data()[ i ]) / 2;
   }
   return Memory( median_data );
 }
@@ -44,7 +43,7 @@ Memory MemoryRange::query_median( void ) const
   return ret;
 }
 
-bool MemoryRange::contains( const Memory & query )
+bool MemoryRange::contains( const Memory & query ) const
 {
   for ( unsigned int i = 0; i < Memory::datasize(); i++ ) {
     if ( (query.data()[ i ] < _lower.data()[ i ])
@@ -59,4 +58,9 @@ bool MemoryRange::contains( const Memory & query )
   }
 
   return true;
+}
+
+bool MemoryRange::operator==( const MemoryRange & other ) const
+{
+  return (_lower == other._lower) && (_upper == other._upper); /* ignore median estimator for now */
 }
