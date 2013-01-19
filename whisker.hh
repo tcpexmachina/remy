@@ -39,15 +39,14 @@ private:
   std::vector< Whiskers > _children;
   std::vector< Whisker > _leaf;
 
+  const Whisker * whisker( const Memory & _memory ) const;
+
 public:
   Whiskers();
-  const Whisker & whisker( const Memory & _memory ) const;
-  const Whisker & use_whisker( const Memory & _memory );
+  const Whisker & use_whisker( const Memory & _memory ) const;
 
   bool replace( const Whisker & w );
   const Whisker * most_used( const unsigned int max_generation ) const;
-
-  bool contains( const Memory & _memory ) const;
 
   void reset_counts( void );
   void promote( const unsigned int generation );

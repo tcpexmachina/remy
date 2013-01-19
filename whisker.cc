@@ -31,45 +31,32 @@ bool Whisker::operator==( const Whisker & other ) const
   return (_generation == other._generation) && (_window == other._window) && (_domain == other._domain); /* ignore count for now */
 }
 
-const Whisker & Whiskers::use_whisker( const Memory & _memory )
+const Whisker & Whiskers::use_whisker( const Memory & _memory ) const
 {
-  const Whisker & ret( whisker( _memory ) );
-  ret.use();
-  return ret;
+  const Whisker * ret( whisker( _memory ) );
+  assert( ret );
+
+  ret->use();
+  return *ret;
 }
 
-bool Whiskers::contains( const Memory & _memory ) const
-{
-  if ( !_leaf.empty() ) {
-    return _leaf.front().domain().contains( _memory );
-  }
-
-  for ( auto &x : _children ) {
-    if ( x.contains( _memory ) ) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-const Whisker & Whiskers::whisker( const Memory & _memory ) const
+const Whisker * Whiskers::whisker( const Memory & _memory ) const
 {
   if ( !_leaf.empty() ) {
     assert( _children.empty() );
     assert( _leaf.front().domain().contains( _memory ) );
-    return _leaf.front();
+    return &_leaf[ 0 ];
   }
 
   /* need to descend */
   for ( auto &x : _children ) {
-    if ( x.contains( _memory ) ) {
-      return x.whisker( _memory );
+    auto ret( x.whisker( _memory ) );
+    if ( ret ) {
+      return ret;
     }
   }
 
-  /* didn't find it */
-  assert( false );
+  return nullptr;
 }
 
 Whisker::Whisker( const unsigned int s_window, const MemoryRange & s_domain )
