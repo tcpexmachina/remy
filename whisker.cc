@@ -165,6 +165,8 @@ const Whisker * Whiskers::most_used( const unsigned int max_generation ) const
 void Whiskers::promote( const unsigned int generation )
 {
   if ( !_leaf.empty() ) {
+    assert( _leaf.size() == 1 );
+    assert( _children.empty() );
     _leaf.front().promote( generation );
   }
 
@@ -175,7 +177,7 @@ void Whiskers::promote( const unsigned int generation )
 
 void Whisker::promote( const unsigned int generation )
 {
-  _generation = min( _generation, generation );
+  _generation = max( _generation, generation );
 }
 
 bool Whiskers::replace( const Whisker & w )

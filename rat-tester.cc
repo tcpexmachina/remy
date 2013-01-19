@@ -58,6 +58,10 @@ int main( void )
   unsigned int generation = 0;
 
   while ( 1 ) {
+    if ( generation >= 128 ) {
+      exit( 0 );
+    }
+
     /* evaluate the whiskers we have */
     const PRNG the_prng = PRNG( global_PRNG()() );
 
@@ -68,7 +72,7 @@ int main( void )
     const double orig_score( network.senders().utility() );
     printf( "gen %d, score = %.12f\n", generation, orig_score );
 
-    summarize( network, true );
+    summarize( network );
 
     /* is there a whisker at this generation that we can improve? */
     auto my_sender( network.senders().senders()[ 0 ] );
