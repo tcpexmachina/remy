@@ -16,9 +16,9 @@ private:
 
   unsigned int _packets_sent, _packets_received;
 
-  unsigned int _the_window;
-
   bool _track;
+
+  double _internal_tick;
 
 public:
   Rat( const Whiskers & s_whiskers, const bool s_track=false );
