@@ -13,7 +13,7 @@ public:
 private:
   std::vector< DataType > _data;
 
-  enum fields { LAST_DELAY, LAST_WINDOW };
+  enum fields { LAST_DELAY };
 
 public:
   Memory( const std::vector< DataType > & s_data )
@@ -24,10 +24,10 @@ public:
     : _data( datasize(), 0 )
   {}
 
-  static constexpr unsigned int datasize( void ) { return 2; }
+  static constexpr unsigned int datasize( void ) { return 1; }
   const std::vector< DataType > & data( void ) const { return _data; }
 
-  void new_window( const DataType s_window ) { _data[ LAST_WINDOW ] = s_window; }
+  void new_window( const DataType s_window __attribute((unused)) ) {}
 
   void packet_sent( const Packet & packet __attribute((unused)) ) {}
   void packets_received( const std::vector< Packet > & packets );

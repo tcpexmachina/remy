@@ -103,7 +103,7 @@ Whisker::Whisker( const unsigned int s_window, const MemoryRange & s_domain )
 Whisker::Whisker( const Whisker & other )
   : _generation( other._generation ),
     _window( other._window ),
-    _count( 0 ),
+    _count( other._count ),
     _domain( other._domain )
 {
 }
@@ -249,3 +249,14 @@ string Whiskers::str( void ) const
 
   return ret;
 }
+
+unsigned int Whiskers::num_children( void ) const
+{
+  if ( !_leaf.empty() ) {
+    assert( _leaf.size() == 1 );
+    return 1;
+  }
+
+  return _children.size();
+}
+

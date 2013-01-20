@@ -21,12 +21,12 @@ void Memory::packets_received( const vector< Packet > & packets )
 string Memory::str( void ) const
 {
   char tmp[ 64 ];
-  snprintf( tmp, 64, "ld=%u lw=%u", _data[ LAST_DELAY ], _data[ LAST_WINDOW ] );
+  snprintf( tmp, 64, "ld=%u", _data[ LAST_DELAY ] );
   return tmp;
 }
 
 const Memory & MAX_MEMORY( void )
 {
-  static const Memory max_memory( { 1024 /* delay */, 1024 /* window */ } );
+  static const Memory max_memory( { 1024 /* delay */ } );
   return max_memory;
 }

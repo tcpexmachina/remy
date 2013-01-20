@@ -30,25 +30,40 @@ void summarize( const Network<Rat> & network, const bool all=false )
 
 const unsigned int TICK_COUNT = 500000;
 
-void apply_best_split( Whiskers & whiskers )
+void apply_best_split( Whiskers & whiskers, const unsigned int generation )
 {
-  whiskers.reset_counts();
-  
   const PRNG the_prng = PRNG( global_PRNG()() );
 
   /* run to get counts */
   PRNG run_prng( the_prng );
+  whiskers.reset_counts();
   Network<Rat> network( Rat( whiskers, true ), run_prng );
   network.tick( TICK_COUNT );
 
   auto my_sender( network.senders().senders()[ 0 ] );
-  auto my_whisker( my_sender->whiskers().most_used( -1 ) );
 
-  assert( my_whisker );
+  auto counted_whiskers( my_sender->whiskers() );
 
-  Whiskers bisected_whisker( *my_whisker, true );
+  printf( "Whiskers after use by sender #0: %s\n", counted_whiskers.str().c_str() );
 
-  assert( whiskers.replace( *my_whisker, bisected_whisker ) );
+  while ( 1 ) {
+    auto my_whisker( counted_whiskers.most_used( generation ) );
+    assert( my_whisker );
+
+    Whiskers bisected_whisker( *my_whisker, true );
+
+    if ( bisected_whisker.num_children() == 1 ) {
+      printf( "Got unbisectable whisker! %s\n", my_whisker->str().c_str() );
+      auto mutable_whisker( *my_whisker );
+      mutable_whisker.promote( generation + 1 );
+      assert( counted_whiskers.replace( mutable_whisker ) );
+      continue;
+    }
+
+    printf( "Turning %s into %s\n", my_whisker->str().c_str(), bisected_whisker.str().c_str() );
+    assert( whiskers.replace( *my_whisker, bisected_whisker ) );
+    break;
+  }
 }
 
 int main( void )
@@ -67,6 +82,7 @@ int main( void )
 
     /* run with existing whiskers */
     PRNG run_prng( the_prng );
+    whiskers.reset_counts();
     Network<Rat> network( whiskers, run_prng );
     network.tick( TICK_COUNT );
     const double orig_score( network.senders().utility() );
@@ -86,7 +102,9 @@ int main( void )
 
       if ( (generation % 4) == 0 ) {
 	printf( "Splitting most popular whisker.\n" );
-	apply_best_split( whiskers );
+	apply_best_split( whiskers, generation );
+	generation++;
+	whiskers.promote( generation );
       }
       
       continue;
@@ -102,6 +120,7 @@ int main( void )
       auto new_whiskers( whiskers );
       assert( new_whiskers.replace( test_replacement ) );
       PRNG new_run_prng( the_prng );
+      new_whiskers.reset_counts();
       Network<Rat> test_network( new_whiskers, new_run_prng );
       test_network.tick( TICK_COUNT );
 

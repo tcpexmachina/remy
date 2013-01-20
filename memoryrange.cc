@@ -16,6 +16,11 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
       ersatz_lower[ i ] = ersatz_upper[ i ] = median( _acc[ i ] );
 
       if ( x._lower.data() == ersatz_upper ) {
+	/* try range midpoint instead */
+	ersatz_lower[ i ] = ersatz_upper[ i ] = (x._lower.data()[ i ] + x._upper.data()[ i ]) / 2;
+      }
+
+      if ( x._lower.data() == ersatz_upper ) {
 	assert( !(ersatz_lower == x._upper.data()) );
 	assert( x._lower.data() == ersatz_lower );
 	/* cannot double on this axis */
@@ -29,7 +34,7 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
     ret = doubled;
   }
 
-  assert( ret.size() > 1 );
+  assert( !ret.empty());
 
   return ret;
 }
