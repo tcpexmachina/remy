@@ -5,14 +5,11 @@
 template <class NextHop>
 void Link::tick( NextHop & next, const unsigned int tickno )
 {
-  const int num = 1; // _egress_process.sample();
-
-  for ( int i = 0; i < num; i++ ) {
-    if ( _buffer.empty() ) {
-      break;
+  while ( _next_delivery_time <= tickno ) {
+    if ( !_buffer.empty() ) {
+      next.accept( std::move( _buffer.front() ), tickno );
+      _buffer.pop();
     }
-
-    next.accept( std::move( _buffer.front() ), tickno );
-    _buffer.pop();
+    _next_delivery_time += 1.0 / _rate;
   }
 }

@@ -2,9 +2,10 @@
 
 #include "link.hh"
 
-Link::Link( const double s_rate, PRNG & s_prng )
+Link::Link( const double s_rate )
   : _buffer(),
-    _egress_process( s_rate, s_prng )
+    _rate( s_rate ),
+    _next_delivery_time( 0 )
 {
 }
 

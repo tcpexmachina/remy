@@ -10,10 +10,11 @@ class Link
 {
 private:
   std::queue< Packet > _buffer;
-  Poisson _egress_process;
+  const double _rate;
+  double _next_delivery_time;
 
 public:
-  Link( const double s_rate, PRNG & s_prng );
+  Link( const double s_rate );
 
   void accept( Packet && p ) noexcept;
 
