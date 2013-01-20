@@ -22,7 +22,7 @@ void Rat::send( const unsigned int id, NextHop & next, const unsigned int tickno
     _memory.packet_sent( p );
     next.accept( move( p ) );
     _internal_tick += 1.0 / rate_cap;
-    if ( _internal_tick >= tickno + 1 ) {
+    if ( _internal_tick >= tickno ) {
       return;
     }
   }

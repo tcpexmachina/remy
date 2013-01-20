@@ -28,7 +28,7 @@ void summarize( const Network<Rat> & network, const bool all=false )
   }
 }
 
-const unsigned int TICK_COUNT = 500000;
+const unsigned int TICK_COUNT = 100000;
 
 void apply_best_split( Whiskers & whiskers, const unsigned int generation )
 {
@@ -38,7 +38,7 @@ void apply_best_split( Whiskers & whiskers, const unsigned int generation )
   PRNG run_prng( the_prng );
   whiskers.reset_counts();
   Network<Rat> network( Rat( whiskers, true ), run_prng );
-  network.tick( TICK_COUNT );
+  network.tick( TICK_COUNT * 10 );
 
   auto my_sender( network.senders().senders()[ 0 ] );
 
