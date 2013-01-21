@@ -10,6 +10,7 @@ Rat::Rat( const Whiskers & s_whiskers, const bool s_track )
      _track( s_track ),
      _internal_tick( 0 )
 {
+  _whiskers.reset_counts();
 }
 
 void Rat::packets_received( const vector< Packet > & packets ) {
