@@ -7,13 +7,17 @@
 using namespace std;
 
 static const unsigned int MAX_WINDOW = 256;
-static constexpr double MAX_RATE = 4.0;
+static constexpr double MAX_INTERSEND = 10.0;
+static constexpr double MIN_INTERSEND = 0.1;
 static const unsigned int DEFAULT_WINDOW = 1;
+
+static const unsigned int MAX_WINDOW_INCR = 32;
+static constexpr double MAX_INTERSEND_INCR = 4;
 
 Whiskers::Whiskers()
   : _domain( Memory(), MAX_MEMORY() ),
     _children(),
-    _leaf( 1, Whisker( DEFAULT_WINDOW, MAX_RATE, _domain ) )
+    _leaf( 1, Whisker( DEFAULT_WINDOW, MIN_INTERSEND, _domain ) )
 {
 }
 
@@ -55,7 +59,7 @@ void Whiskers::reset_counts( void )
 
 bool Whisker::operator==( const Whisker & other ) const
 {
-  return (_generation == other._generation) && (_window == other._window) && (_rate == other._rate) && (_domain == other._domain); /* ignore count for now */
+  return (_generation == other._generation) && (_window == other._window) && (_intersend == other._intersend) && (_domain == other._domain); /* ignore count for now */
 }
 
 const Whisker & Whiskers::use_whisker( const Memory & _memory, const bool track ) const
@@ -93,10 +97,10 @@ const Whisker * Whiskers::whisker( const Memory & _memory ) const
   assert( false );
 }
 
-Whisker::Whisker( const unsigned int s_window, const double s_rate, const MemoryRange & s_domain )
+Whisker::Whisker( const unsigned int s_window, const double s_intersend, const MemoryRange & s_domain )
   : _generation( 0 ),
     _window( s_window ),
-    _rate( s_rate ),
+    _intersend( s_intersend ),
     _count( 0 ),
     _domain( s_domain )
 {
@@ -105,7 +109,7 @@ Whisker::Whisker( const unsigned int s_window, const double s_rate, const Memory
 Whisker::Whisker( const Whisker & other )
   : _generation( other._generation ),
     _window( other._window ),
-    _rate( other._rate ),
+    _intersend( other._intersend ),
     _count( other._count ),
     _domain( other._domain )
 {
@@ -120,7 +124,7 @@ vector< Whisker > Whisker::next_generation( void ) const
   copy._generation++;
   ret_windows.push_back( copy );
 
-  for ( unsigned int i = 1; i <= MAX_WINDOW ; i *= 2 ) {
+  for ( unsigned int i = 1; i <= MAX_WINDOW_INCR; i *= 2 ) {
     Whisker new_whisker( *this );
     new_whisker._generation++;
 
@@ -138,19 +142,19 @@ vector< Whisker > Whisker::next_generation( void ) const
   /* generate all rates */
   vector< Whisker > ret;
   for ( auto &x : ret_windows ) {
-    Whisker rate_copy( x );
-    ret.push_back( rate_copy );
+    Whisker intersend_copy( x );
+    ret.push_back( intersend_copy );
 
-    for ( double rate_incr = 0.1; rate_incr <= MAX_RATE; rate_incr *= 2 ) {
+    for ( double intersend_incr = 0.25; intersend_incr <= MAX_INTERSEND_INCR; intersend_incr += 0.5 ) {
       Whisker new_whisker( x );
 
-      if ( x._rate + rate_incr <= MAX_RATE ) {
-	new_whisker._rate = x._rate + rate_incr;
+      if ( x._intersend + intersend_incr <= MAX_INTERSEND ) {
+	new_whisker._intersend = x._intersend + intersend_incr;
 	ret.push_back( new_whisker );
       }
 
-      if ( x._rate > rate_incr ) {
-	new_whisker._rate = x._rate - rate_incr;
+      if ( x._intersend - intersend_incr >= MIN_INTERSEND ) {
+	new_whisker._intersend = x._intersend - intersend_incr;
 	ret.push_back( new_whisker );
       }
     }
@@ -250,8 +254,8 @@ bool Whiskers::replace( const Whisker & src, const Whiskers & dst )
 string Whisker::str( void ) const
 {
   char tmp[ 128 ];
-  snprintf( tmp, 128, "{%s} gen=%u ct=%u => (win=%u, rate=%.2f)",
-	    _domain.str().c_str(), _generation, _count, _window, _rate );
+  snprintf( tmp, 128, "{%s} gen=%u ct=%u => (win=%u, intersend=%.2f)",
+	    _domain.str().c_str(), _generation, _count, _window, _intersend );
   return tmp;
 }
 

@@ -10,7 +10,7 @@ class Whisker {
 private:
   unsigned int _generation;
   unsigned int _window;
-  double _rate;
+  double _intersend;
 
   mutable unsigned int _count;
 
@@ -18,12 +18,12 @@ private:
 
 public:
   Whisker( const Whisker & other );
-  Whisker( const unsigned int s_window, const double s_rate, const MemoryRange & s_domain );
+  Whisker( const unsigned int s_window, const double s_intersend, const MemoryRange & s_domain );
   void use( void ) const { _count++; }
 
   const unsigned int & generation( void ) const { return _generation; }
   const unsigned int & window( void ) const { return _window; }
-  const double & rate( void ) const { return _rate; }
+  const double & intersend( void ) const { return _intersend; }
   const unsigned int & count( void ) const { return _count; }
   const MemoryRange & domain( void ) const { return _domain; }
 
