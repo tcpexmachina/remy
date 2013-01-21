@@ -39,32 +39,14 @@ public:
   std::vector< Whisker > bisect( void ) const;
 };
 
-class Whiskers {
-private:
-  MemoryRange _domain;
+static const unsigned int MAX_WINDOW = 256;
+static constexpr double MAX_INTERSEND = 10.0;
 
-  std::vector< Whiskers > _children;
-  std::vector< Whisker > _leaf;
+static const unsigned int MAX_WINDOW_INCR = 32;
+static constexpr double MAX_INTERSEND_INCR = 4;
 
-  const Whisker * whisker( const Memory & _memory ) const;
+static const unsigned int DEFAULT_WINDOW = 1;
+static constexpr double MIN_INTERSEND = 0.1;
 
-public:
-  Whiskers();
-
-  Whiskers( const Whisker & whisker, const bool bisect );
-
-  const Whisker & use_whisker( const Memory & _memory, const bool track ) const;
-
-  bool replace( const Whisker & w );
-  bool replace( const Whisker & src, const Whiskers & dst );
-  const Whisker * most_used( const unsigned int max_generation ) const;
-
-  void reset_counts( void );
-  void promote( const unsigned int generation );
-
-  std::string str( void ) const;
-
-  unsigned int num_children( void ) const;
-};
-
+static constexpr double INTERSEND_INCR = 0.5;
 #endif

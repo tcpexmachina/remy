@@ -4,7 +4,7 @@
 
 const unsigned int TICK_COUNT = 100000;
 
-Evaluator::Evaluator( const Whiskers & s_whiskers )
+Evaluator::Evaluator( const WhiskerTree & s_whiskers )
   : _prng( global_PRNG()() ),
     _whiskers( s_whiskers )
 {
@@ -14,7 +14,7 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
 {
   PRNG run_prng( _prng );
 
-  Whiskers run_whiskers( _whiskers );
+  WhiskerTree run_whiskers( _whiskers );
   for ( auto &x : replacements ) {
     assert( run_whiskers.replace( x ) );
   }

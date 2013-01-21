@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void apply_best_split( Whiskers & whiskers, const unsigned int generation )
+void apply_best_split( WhiskerTree & whiskers, const unsigned int generation )
 {
   Evaluator eval( whiskers );
   auto outcome( eval.score( {}, true ) );
@@ -14,7 +14,7 @@ void apply_best_split( Whiskers & whiskers, const unsigned int generation )
     auto my_whisker( outcome.used_whiskers.most_used( generation ) );
     assert( my_whisker );
 
-    Whiskers bisected_whisker( *my_whisker, true );
+    WhiskerTree bisected_whisker( *my_whisker, true );
 
     if ( bisected_whisker.num_children() == 1 ) {
       printf( "Got unbisectable whisker! %s\n", my_whisker->str().c_str() );
@@ -32,7 +32,7 @@ void apply_best_split( Whiskers & whiskers, const unsigned int generation )
 
 int main( void )
 {
-  Whiskers whiskers;
+  WhiskerTree whiskers;
 
   unsigned int generation = 0;
 

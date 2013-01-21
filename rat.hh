@@ -5,13 +5,13 @@
 #include <string>
 
 #include "packet.hh"
-#include "whisker.hh"
+#include "whiskertree.hh"
 #include "memory.hh"
 
 class Rat
 {
 private:
-  Whiskers _whiskers;
+  WhiskerTree _whiskers;
   Memory _memory;
 
   unsigned int _packets_sent, _packets_received;
@@ -21,7 +21,7 @@ private:
   double _internal_tick;
 
 public:
-  Rat( const Whiskers & s_whiskers, const bool s_track=false );
+  Rat( const WhiskerTree & s_whiskers, const bool s_track=false );
 
   void packets_received( const std::vector< Packet > & packets );
   void dormant_tick( const unsigned int tickno ); /* do nothing */
@@ -29,7 +29,7 @@ public:
   template <class NextHop>
   void send( const unsigned int id, NextHop & next, const unsigned int tickno );
 
-  const Whiskers & whiskers( void ) const { return _whiskers; }
+  const WhiskerTree & whiskers( void ) const { return _whiskers; }
 };
 
 #endif

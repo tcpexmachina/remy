@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Rat::Rat( const Whiskers & s_whiskers, const bool s_track )
+Rat::Rat( const WhiskerTree & s_whiskers, const bool s_track )
   :  _whiskers( s_whiskers ),
      _memory(),
      _packets_sent( 0 ),
