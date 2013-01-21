@@ -42,7 +42,7 @@ int main( void )
     }
 
     /* evaluate the whiskers we have */
-    Evaluator eval( whiskers );
+    const Evaluator eval( whiskers );
 
     auto outcome( eval.score( {} ) );
 
@@ -71,6 +71,8 @@ int main( void )
     auto replacements( my_whisker->next_generation() );
     double best_score = -INT_MAX;
     const Whisker *best_whisker = nullptr;
+
+    printf( "Evaluating %lu replacements.\n", replacements.size() );
 
     /* find best case (using same randseed) */
     for ( const auto &test_replacement : replacements ) {

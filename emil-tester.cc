@@ -9,7 +9,7 @@ using namespace std;
 
 void utility( void )
 {
-  Network<Emil> network( Emil( global_PRNG() ), global_PRNG() );
+  Network<Emil> network( Emil( global_PRNG() ), global_PRNG(), NetConfig() );
 
   for ( unsigned int i = 0; i < 1000000; i++ ) {
     network.tick();

@@ -10,7 +10,7 @@ Evaluator::Evaluator( const Whiskers & s_whiskers )
 {
 }
 
-Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements, const bool trace )
+Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements, const bool trace ) const
 {
   PRNG run_prng( _prng );
 
@@ -19,7 +19,7 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
     assert( run_whiskers.replace( x ) );
   }
 
-  Network<Rat> network( Rat( run_whiskers, trace ), run_prng );
+  Network<Rat> network( Rat( run_whiskers, trace ), run_prng, NetConfig() );
   network.tick( TICK_COUNT );
 
   return Outcome( network.senders().utility(),

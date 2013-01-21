@@ -7,6 +7,23 @@
 #include "receiver.hh"
 #include "random.hh"
 
+class NetConfig
+{
+public:
+  double mean_on_duration, mean_off_duration;
+  unsigned int num_senders;
+  double link_ppt;
+  double delay;
+
+  NetConfig( void )
+    : mean_on_duration( 1000.0 ),
+      mean_off_duration( 1000.0 ),
+      num_senders( 2 ),
+      link_ppt( 1.0 ),
+      delay( 100 )
+  {}
+};
+
 template <class SenderType>
 class Network
 {
@@ -20,7 +37,7 @@ private:
   unsigned int _tickno;
 
 public:
-  Network( const SenderType & example_sender, PRNG & s_prng );
+  Network( const SenderType & example_sender, PRNG & s_prng, const NetConfig & config );
 
   void tick( void );
   void tick( const unsigned int reps );

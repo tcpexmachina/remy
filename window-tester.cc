@@ -9,7 +9,7 @@ using namespace std;
 
 void utility( const unsigned int window_size )
 {
-  Network<WindowSender> network( window_size, global_PRNG() );
+  Network<WindowSender> network( window_size, global_PRNG(), NetConfig() );
 
   for ( unsigned int i = 0; i < 1000000; i++ ) {
     network.tick();

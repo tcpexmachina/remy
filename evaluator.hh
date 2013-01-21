@@ -24,9 +24,7 @@ private:
 
 public:
   Evaluator( const Whiskers & s_whiskers );
-  Outcome score( const std::vector< Whisker > & replacements, const bool trace = false );
-
-  const Whiskers & used_whiskers( void );
+  Outcome score( const std::vector< Whisker > & replacements, const bool trace = false ) const;
 };
 
 #endif

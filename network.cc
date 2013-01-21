@@ -3,18 +3,12 @@
 #include "sendergang.cc"
 #include "link-templates.cc"
 
-static const double MEAN_ON_DURATION  = 1000.0;
-static const double MEAN_OFF_DURATION = 1000.0;
-static const unsigned int NUM_SENDERS = 2;
-static const double LINK_MEAN_PPS = 1.0;
-static const double DELAY = 100;
-
 template <class SenderType>
-Network<SenderType>::Network( const SenderType & example_sender, PRNG & s_prng )
+Network<SenderType>::Network( const SenderType & example_sender, PRNG & s_prng, const NetConfig & config )
   : _prng( s_prng ),
-    _senders( MEAN_ON_DURATION, MEAN_OFF_DURATION, NUM_SENDERS, example_sender, _prng ),
-    _link( LINK_MEAN_PPS ),
-    _delay( DELAY ),
+    _senders( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender, _prng ),
+    _link( config.link_ppt ),
+    _delay( config.delay ),
     _rec(),
     _tickno( 0 )
 {
