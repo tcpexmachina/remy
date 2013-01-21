@@ -1,15 +1,27 @@
 #include "evaluator.hh"
+#include "network.cc"
+#include "rat-templates.cc"
 
-Evaluator( const Whiskers & s_whiskers )
+const unsigned int TICK_COUNT = 100000;
+
+Evaluator::Evaluator( const Whiskers & s_whiskers )
   : _prng( global_PRNG()() ),
     _whiskers( s_whiskers )
 {
 }
 
-double Evaluator::score( const Whiskers & run_whiskers ) const
+Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements, const bool trace )
 {
   PRNG run_prng( _prng );
-  Network<Rat> network( run_whiskers, run_prng );
-  network.tick( TICK_COUNT );  
-  
+
+  Whiskers run_whiskers( _whiskers );
+  for ( auto &x : replacements ) {
+    assert( run_whiskers.replace( x ) );
+  }
+
+  Network<Rat> network( Rat( run_whiskers, trace ), run_prng );
+  network.tick( TICK_COUNT );
+
+  return Outcome( network.senders().utility(),
+		  network.senders().senders().at( 0 )->whiskers() );
 }
