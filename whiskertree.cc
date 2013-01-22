@@ -29,12 +29,12 @@ WhiskerTree::WhiskerTree( const Whisker & whisker, const bool bisect )
 
 void WhiskerTree::reset_counts( void )
 {
-  if ( !_leaf.empty() ) {
+  if ( is_leaf() ) {
     _leaf.front().reset_count();
-  }
-
-  for ( auto &x : _children ) {
-    x.reset_counts();
+  } else {
+    for ( auto &x : _children ) {
+      x.reset_counts();
+    }
   }
 }
 
@@ -58,7 +58,7 @@ const Whisker * WhiskerTree::whisker( const Memory & _memory ) const
     return nullptr;
   }
 
-  if ( !_leaf.empty() ) {
+  if ( is_leaf() ) {
     return &_leaf[ 0 ];
   }
 
@@ -75,7 +75,7 @@ const Whisker * WhiskerTree::whisker( const Memory & _memory ) const
 
 const Whisker * WhiskerTree::most_used( const unsigned int max_generation ) const
 {
-  if ( !_leaf.empty() ) {
+  if ( is_leaf() ) {
     if ( (_leaf.front().generation() <= max_generation)
 	 && (_leaf.front().count() > 0) ) {
       return &_leaf[ 0 ];
@@ -102,14 +102,14 @@ const Whisker * WhiskerTree::most_used( const unsigned int max_generation ) cons
 
 void WhiskerTree::promote( const unsigned int generation )
 {
-  if ( !_leaf.empty() ) {
+  if ( is_leaf() ) {
     assert( _leaf.size() == 1 );
     assert( _children.empty() );
     _leaf.front().promote( generation );
-  }
-
-  for ( auto &x : _children ) {
-    x.promote( generation );
+  } else {
+    for ( auto &x : _children ) {
+      x.promote( generation );
+    }
   }
 }
 
@@ -119,7 +119,7 @@ bool WhiskerTree::replace( const Whisker & w )
     return false;
   }
 
-  if ( !_leaf.empty() ) {
+  if ( is_leaf() ) {
     assert( w.domain() == _leaf.front().domain() );
     _leaf.front() = w;
     return true;
@@ -140,7 +140,7 @@ bool WhiskerTree::replace( const Whisker & src, const WhiskerTree & dst )
     return false;
   }
  
-  if ( !_leaf.empty() ) {
+  if ( is_leaf() ) {
     assert( src.domain() == _leaf.front().domain() );
     /* convert from leaf to interior node */
     *this = dst;
@@ -158,8 +158,7 @@ bool WhiskerTree::replace( const Whisker & src, const WhiskerTree & dst )
 
 string WhiskerTree::str( void ) const
 {
-
-  if ( !_leaf.empty() ) {
+  if ( is_leaf() ) {
     assert( _children.empty() );
     char tmp[ 128 ];
     snprintf( tmp, 128, "[%s]", _leaf.front().str().c_str() );
@@ -177,10 +176,15 @@ string WhiskerTree::str( void ) const
 
 unsigned int WhiskerTree::num_children( void ) const
 {
-  if ( !_leaf.empty() ) {
+  if ( is_leaf() ) {
     assert( _leaf.size() == 1 );
     return 1;
   }
 
   return _children.size();
+}
+
+bool WhiskerTree::is_leaf( void ) const
+{
+  return !_leaf.empty();
 }

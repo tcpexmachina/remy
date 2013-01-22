@@ -30,6 +30,8 @@ public:
   std::string str( void ) const;
 
   unsigned int num_children( void ) const;
+
+  bool is_leaf( void ) const;
 };
 
 #endif
