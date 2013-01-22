@@ -19,9 +19,11 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
     assert( run_whiskers.replace( x ) );
   }
 
+  run_whiskers.reset_counts();
+
   Network<Rat> network( Rat( run_whiskers, trace ), run_prng, NetConfig() );
   network.tick( TICK_COUNT );
 
   return Outcome( network.senders().utility(),
-		  network.senders().senders().at( 0 )->whiskers() );
+		  run_whiskers );
 }

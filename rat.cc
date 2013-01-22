@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Rat::Rat( const WhiskerTree & s_whiskers, const bool s_track )
+Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
   :  _whiskers( s_whiskers ),
      _memory(),
      _packets_sent( 0 ),
@@ -10,7 +10,6 @@ Rat::Rat( const WhiskerTree & s_whiskers, const bool s_track )
      _track( s_track ),
      _internal_tick( 0 )
 {
-  _whiskers.reset_counts();
 }
 
 void Rat::packets_received( const vector< Packet > & packets ) {
