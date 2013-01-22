@@ -48,16 +48,6 @@ Memory MemoryRange::range_median( void ) const
   return Memory( median_data );
 }
 
-Memory MemoryRange::query_median( void ) const
-{
-  auto ret( _lower.data() );
-  for ( unsigned int i = 0; i < Memory::datasize(); i++ ) {
-    ret[ i ] = median( _acc[ i ] );
-  }
-
-  return ret;
-}
-
 bool MemoryRange::contains( const Memory & query ) const
 {
   for ( unsigned int i = 0; i < Memory::datasize(); i++ ) {

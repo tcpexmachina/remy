@@ -24,7 +24,6 @@ public:
 
   std::vector< MemoryRange > bisect( void ) const;
   Memory range_median( void ) const;
-  Memory query_median( void ) const;
 
   bool contains( const Memory & query ) const;
   void track( const Memory & query ) const;
