@@ -12,24 +12,23 @@ private:
   unsigned int _window;
   double _intersend;
 
-  mutable unsigned int _count;
-
   MemoryRange _domain;
 
 public:
   Whisker( const Whisker & other );
   Whisker( const unsigned int s_window, const double s_intersend, const MemoryRange & s_domain );
-  void use( void ) const { _count++; }
+
+  void use( void ) const { _domain.use(); }
+  void reset_count( void ) const { _domain.reset_count(); }
+  unsigned int count( void ) const { return _domain.count(); }
 
   const unsigned int & generation( void ) const { return _generation; }
   const unsigned int & window( void ) const { return _window; }
   const double & intersend( void ) const { return _intersend; }
-  const unsigned int & count( void ) const { return _count; }
   const MemoryRange & domain( void ) const { return _domain; }
 
   std::vector< Whisker > next_generation( void ) const;
 
-  void reset_count( void ) { _count = 0; }
   void promote( const unsigned int generation );
 
   std::string str( void ) const;

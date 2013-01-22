@@ -21,7 +21,6 @@ Whisker::Whisker( const unsigned int s_window, const double s_intersend, const M
   : _generation( 0 ),
     _window( s_window ),
     _intersend( s_intersend ),
-    _count( 0 ),
     _domain( s_domain )
 {
 }
@@ -30,7 +29,6 @@ Whisker::Whisker( const Whisker & other )
   : _generation( other._generation ),
     _window( other._window ),
     _intersend( other._intersend ),
-    _count( other._count ),
     _domain( other._domain )
 {
 }
@@ -92,7 +90,7 @@ string Whisker::str( void ) const
 {
   char tmp[ 128 ];
   snprintf( tmp, 128, "{%s} gen=%u ct=%u => (win=%u, intersend=%.2f)",
-	    _domain.str().c_str(), _generation, _count, _window, _intersend );
+	    _domain.str().c_str(), _generation, _domain.count(), _window, _intersend );
   return tmp;
 }
 
