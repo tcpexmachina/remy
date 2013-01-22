@@ -27,8 +27,6 @@ public:
   const unsigned int & count( void ) const { return _count; }
   const MemoryRange & domain( void ) const { return _domain; }
 
-  bool operator==( const Whisker & other ) const;
-
   std::vector< Whisker > next_generation( void ) const;
 
   void reset_count( void ) { _count = 0; }

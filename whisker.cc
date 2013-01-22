@@ -17,11 +17,6 @@ vector< Whisker > Whisker::bisect( void ) const
   return ret;
 }
 
-bool Whisker::operator==( const Whisker & other ) const
-{
-  return (_generation == other._generation) && (_window == other._window) && (_intersend == other._intersend) && (_domain == other._domain); /* ignore count for now */
-}
-
 Whisker::Whisker( const unsigned int s_window, const double s_intersend, const MemoryRange & s_domain )
   : _generation( 0 ),
     _window( s_window ),
