@@ -13,11 +13,11 @@ public:
   {
   public:
     double score;
-    std::vector< std::pair< double, double > > throughputs_delays;
+    std::vector< std::vector< std::pair< double, double > > > throughputs_delays;
     WhiskerTree used_whiskers;
 
     Outcome( const double s_score,
-	     const std::vector< std::pair< double, double > > & s_throughputs_delays,
+	     const std::vector< std::vector< std::pair< double, double > > > & s_throughputs_delays,
 	     const WhiskerTree & s_used_whiskers )
       : score( s_score ), throughputs_delays( s_throughputs_delays ), used_whiskers( s_used_whiskers )
     {}

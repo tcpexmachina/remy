@@ -44,8 +44,10 @@ int main( void )
 
     printf( "gen %d, score = %.12f\n", generation, outcome.score );
 
-    for ( auto &x : outcome.throughputs_delays ) {
-      printf( "sender: [tp=%f, del=%f]\n", x.first, x.second );
+    for ( auto &run : outcome.throughputs_delays ) {
+      for ( auto &x : run ) {
+	printf( "sender: [tp=%f, del=%f]\n", x.first, x.second );
+      }
     }
 
     printf( "whiskers: %s\n\n", outcome.used_whiskers.str().c_str() );
