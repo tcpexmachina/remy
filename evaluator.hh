@@ -1,6 +1,8 @@
 #ifndef EVALUATOR_HH
 #define EVALUATOR_HH
 
+#include <vector>
+
 #include "random.hh"
 #include "whiskertree.hh"
 
@@ -11,10 +13,13 @@ public:
   {
   public:
     double score;
+    std::vector< std::pair< double, double > > throughputs_delays;
     WhiskerTree used_whiskers;
 
-    Outcome( const double s_score, const WhiskerTree & s_used_whiskers )
-      : score( s_score ), used_whiskers( s_used_whiskers )
+    Outcome( const double s_score,
+	     const std::vector< std::pair< double, double > > & s_throughputs_delays,
+	     const WhiskerTree & s_used_whiskers )
+      : score( s_score ), throughputs_delays( s_throughputs_delays ), used_whiskers( s_used_whiskers )
     {}
   };
 

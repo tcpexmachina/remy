@@ -37,16 +37,18 @@ int main( void )
   unsigned int generation = 0;
 
   while ( 1 ) {
-    if ( generation >= 128 ) {
-      exit( 0 );
-    }
-
     /* evaluate the whiskers we have */
     const Evaluator eval( whiskers );
 
     auto outcome( eval.score( {} ) );
 
     printf( "gen %d, score = %.12f\n", generation, outcome.score );
+
+    for ( auto &x : outcome.throughputs_delays ) {
+      printf( "sender: [tp=%f, del=%f]\n", x.first, x.second );
+    }
+
+    printf( "whiskers: %s\n\n", outcome.used_whiskers.str().c_str() );
 
     /* is there a whisker at this generation that we can improve? */
     auto my_whisker( outcome.used_whiskers.most_used( generation ) );

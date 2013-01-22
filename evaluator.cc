@@ -25,5 +25,6 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
   network.tick( TICK_COUNT );
 
   return Outcome( network.senders().utility(),
+		  network.senders().throughputs_delays(),
 		  run_whiskers );
 }

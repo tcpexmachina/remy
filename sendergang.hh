@@ -2,7 +2,6 @@
 #define SENDERGANG_HH
 
 #include <vector>
-#include <tuple>
 
 #include "exponential.hh"
 #include "receiver.hh"
