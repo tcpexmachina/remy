@@ -20,7 +20,7 @@ private:
 
 public:
   MemoryRange( const Memory & s_lower, const Memory & s_upper )
-    : _lower( s_lower ), _upper( s_upper ), _acc( Memory::datasize() ), _count( 0 )
+    : _lower( s_lower ), _upper( s_upper ), _acc( Memory::datasize ), _count( 0 )
   {}
 
   std::vector< MemoryRange > bisect( void ) const;

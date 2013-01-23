@@ -12,7 +12,7 @@ void Rat::send( const unsigned int id, NextHop & next, const unsigned int tickno
 
   _memory.advance_to( tickno );
 
-  auto current_whisker( _whiskers.use_whisker( _memory, _track ) );
+  const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
 
   const unsigned int window( current_whisker.window() );
   const double wait_time( current_whisker.intersend() );

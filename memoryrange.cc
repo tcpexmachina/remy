@@ -8,21 +8,20 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
   vector< MemoryRange > ret { *this };
 
   /* bisect in each axis */
-  for ( unsigned int i = 0; i < Memory::datasize(); i++ ) {
+  for ( unsigned int i = 0; i < Memory::datasize; i++ ) {
     vector< MemoryRange > doubled;
     for ( auto &x : ret ) {
-      auto ersatz_lower( x._lower.data() ), ersatz_upper( x._upper.data() );
-      //      ersatz_lower[ i ] = ersatz_upper[ i ] = (x._lower.data()[ i ] + x._upper.data()[ i ]) / 2;
-      ersatz_lower[ i ] = ersatz_upper[ i ] = median( _acc[ i ] );
+      auto ersatz_lower( x._lower ), ersatz_upper( x._upper );
+      ersatz_lower.mutable_field( i ) = ersatz_upper.mutable_field( i ) = median( _acc[ i ] );
 
-      if ( x._lower.data() == ersatz_upper ) {
+      if ( x._lower == ersatz_upper ) {
 	/* try range midpoint instead */
-	ersatz_lower[ i ] = ersatz_upper[ i ] = (x._lower.data()[ i ] + x._upper.data()[ i ]) / 2;
+	ersatz_lower.mutable_field( i ) = ersatz_upper.mutable_field( i ) = (x._lower.field( i ) + x._upper.field( i )) / 2;
       }
 
-      if ( x._lower.data() == ersatz_upper ) {
-	assert( !(ersatz_lower == x._upper.data()) );
-	assert( x._lower.data() == ersatz_lower );
+      if ( x._lower == ersatz_upper ) {
+	assert( !(ersatz_lower == x._upper) );
+	assert( x._lower == ersatz_lower );
 	/* cannot double on this axis */
 	doubled.push_back( x );
       } else {
@@ -41,30 +40,23 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
 
 Memory MemoryRange::range_median( void ) const
 {
-  auto median_data( _lower.data() );
-  for ( unsigned int i = 0; i < Memory::datasize(); i++ ) {
-    median_data[ i ] = (_lower.data()[ i ] + _upper.data()[ i ]) / 2;
+  Memory median_data( _lower );
+  for ( unsigned int i = 0; i < Memory::datasize; i++ ) {
+    median_data.mutable_field( i ) = (_lower.field( i ) + _upper.field( i )) / 2;
   }
-  return Memory( median_data );
+  return median_data;
 }
 
 bool MemoryRange::contains( const Memory & query ) const
 {
-  for ( unsigned int i = 0; i < Memory::datasize(); i++ ) {
-    if ( (query.data()[ i ] < _lower.data()[ i ])
-	 || (query.data()[ i ] >= _upper.data()[ i ]) ) { /* half-open range */
-      return false;
-    }
-  }
-
-  return true;
+  return (query >= _lower) && (query < _upper);
 }
 
 void MemoryRange::track( const Memory & query ) const
 {
   /* log it */
-  for ( unsigned int i = 0; i < Memory::datasize(); i++ ) {
-    _acc[ i ]( query.data()[ i ] );
+  for ( unsigned int i = 0; i < Memory::datasize; i++ ) {
+    _acc[ i ]( query.field( i ) );
   }
 }
 

@@ -6,7 +6,7 @@ using namespace std;
 
 bool Memory::operator==( const Memory & other ) const
 {
-  return _data == other._data;
+  return _last_delay == other._last_delay;
 }
 
 void Memory::packets_received( const vector< Packet > & packets )
@@ -15,13 +15,13 @@ void Memory::packets_received( const vector< Packet > & packets )
     return;
   }
 
-  _data[ LAST_DELAY ] = packets.back().tick_received - packets.back().tick_sent;
+  _last_delay = packets.back().tick_received - packets.back().tick_sent;
 }
 
 string Memory::str( void ) const
 {
   char tmp[ 64 ];
-  snprintf( tmp, 64, "ld=%u", _data[ LAST_DELAY ] );
+  snprintf( tmp, 64, "ld=%u", _last_delay );
   return tmp;
 }
 

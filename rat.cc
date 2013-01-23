@@ -19,7 +19,6 @@ void Rat::packets_received( const vector< Packet > & packets ) {
 
 void Rat::dormant_tick( const unsigned int tickno )
 {
-  _memory = Memory();
+  _memory.reset();
   _internal_tick = tickno;
 }
-
