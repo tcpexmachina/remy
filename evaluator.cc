@@ -15,7 +15,7 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
   PRNG run_prng( _prng );
 
   WhiskerTree run_whiskers( _whiskers );
-  for ( auto &x : replacements ) {
+  for ( const auto &x : replacements ) {
     assert( run_whiskers.replace( x ) );
   }
 

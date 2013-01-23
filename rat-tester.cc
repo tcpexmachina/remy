@@ -78,7 +78,7 @@ int main( void )
 
     /* otherwise, get all nexgen alternatives for that whisker and replace each in turn */
     while ( 1 ) {
-      auto replacements( differential_whisker.next_generation() );
+      const auto replacements( differential_whisker.next_generation() );
       double best_score = -INT_MAX;
       const Whisker *best_whisker = nullptr;
 

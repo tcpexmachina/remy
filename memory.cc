@@ -4,29 +4,32 @@
 
 using namespace std;
 
-bool Memory::operator==( const Memory & other ) const
-{
-  return _last_delay == other._last_delay;
-}
+static const double alpha = 1.0 / 8.0;
 
 void Memory::packets_received( const vector< Packet > & packets )
 {
-  if ( packets.empty() ) {
-    return;
+  for ( const auto &x : packets ) {
+    if ( _last_tick_sent == 0 || _last_tick_received == 0 ) {
+      _last_tick_sent = x.tick_sent;
+      _last_tick_received = x.tick_received;
+    } else {
+      _rec_send_ewma = (1 - alpha) * _rec_send_ewma + alpha * (x.tick_sent - _last_tick_sent);
+      _rec_rec_ewma = (1 - alpha) * _rec_rec_ewma + alpha * (x.tick_received - _last_tick_received);
+      _last_tick_sent = x.tick_sent;
+      _last_tick_received = x.tick_received;
+    }
   }
-
-  _last_delay = packets.back().tick_received - packets.back().tick_sent;
 }
 
 string Memory::str( void ) const
 {
   char tmp[ 64 ];
-  snprintf( tmp, 64, "ld=%u", _last_delay );
+  snprintf( tmp, 64, "sewma=%f, rewma=%f", _rec_send_ewma, _rec_rec_ewma );
   return tmp;
 }
 
 const Memory & MAX_MEMORY( void )
 {
-  static const Memory max_memory( { 1024 /* delay */ } );
+  static const Memory max_memory( { 256, 256 } );
   return max_memory;
 }
