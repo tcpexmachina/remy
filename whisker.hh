@@ -41,6 +41,7 @@ public:
   void demote( const unsigned int generation ) { _generation = generation; }
 
   RemyBuffers::Whisker DNA( void ) const;
+  Whisker( const RemyBuffers::Whisker & dna );
 };
 
 static const unsigned int MAX_WINDOW = 256;

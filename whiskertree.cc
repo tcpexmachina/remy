@@ -213,3 +213,19 @@ RemyBuffers::WhiskerTree WhiskerTree::DNA( void ) const
 
   return ret;
 }
+
+WhiskerTree::WhiskerTree( const RemyBuffers::WhiskerTree & dna )
+  : _domain( dna.domain() ),
+    _children(),
+    _leaf()
+{
+  if ( dna.has_leaf() ) {
+    assert( dna.children_size() == 0 );
+    _leaf.emplace_back( dna.leaf() );
+  } else {
+    assert( dna.children_size() > 0 );
+    for ( const auto &x : dna.children() ) {
+      _children.emplace_back( x );
+    }
+  }
+}

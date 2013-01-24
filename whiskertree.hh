@@ -35,6 +35,7 @@ public:
   bool is_leaf( void ) const;
 
   RemyBuffers::WhiskerTree DNA( void ) const;
+  WhiskerTree( const RemyBuffers::WhiskerTree & dna );
 };
 
 #endif

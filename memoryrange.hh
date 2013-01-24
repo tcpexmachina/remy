@@ -40,6 +40,7 @@ public:
   std::string str( void ) const;
 
   RemyBuffers::MemoryRange DNA( void ) const;
+  MemoryRange( const RemyBuffers::MemoryRange & dna );
 };
 
 #endif

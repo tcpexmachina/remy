@@ -49,3 +49,13 @@ RemyBuffers::Memory Memory::DNA( void ) const
   ret.set_rtt_ratio( _rtt_ratio );
   return ret;
 }
+
+Memory::Memory( const RemyBuffers::Memory & dna )
+  : _rec_send_ewma( dna.rec_send_ewma() ),
+    _rec_rec_ewma( dna.rec_rec_ewma() ),
+    _rtt_ratio( dna.rtt_ratio() ),
+    _last_tick_sent( 0 ),
+    _last_tick_received( 0 ),
+    _min_rtt( 0 )
+{
+}

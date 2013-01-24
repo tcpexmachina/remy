@@ -83,3 +83,11 @@ RemyBuffers::MemoryRange MemoryRange::DNA( void ) const
 
   return ret;
 }
+
+MemoryRange::MemoryRange( const RemyBuffers::MemoryRange & dna )
+  : _lower( dna.lower() ),
+    _upper( dna.upper() ),
+    _acc( Memory::datasize ),
+    _count( 0 )
+{
+}
