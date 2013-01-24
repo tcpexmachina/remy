@@ -5,6 +5,7 @@
 #include <string>
 
 #include "packet.hh"
+#include "dna.pb.h"
 
 class Memory {
 public:
@@ -54,6 +55,8 @@ public:
   bool operator>=( const Memory & other ) const { return (_rec_send_ewma >= other._rec_send_ewma) && (_rec_rec_ewma >= other._rec_rec_ewma) && (_rtt_ratio >= other._rtt_ratio); }
   bool operator<( const Memory & other ) const { return (_rec_send_ewma < other._rec_send_ewma) && (_rec_rec_ewma < other._rec_rec_ewma) && (_rtt_ratio < other._rtt_ratio); }
   bool operator==( const Memory & other ) const { return (_rec_send_ewma == other._rec_send_ewma) && (_rec_rec_ewma == _rec_rec_ewma) && (_rtt_ratio == other._rtt_ratio); }
+
+  RemyBuffers::Memory DNA( void ) const;
 };
 
 extern const Memory & MAX_MEMORY( void );

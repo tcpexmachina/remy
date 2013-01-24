@@ -73,3 +73,13 @@ string MemoryRange::str( void ) const
 	    _upper.str().c_str() );
   return tmp;
 }
+
+RemyBuffers::MemoryRange MemoryRange::DNA( void ) const
+{
+  RemyBuffers::MemoryRange ret;
+
+  *(ret.mutable_lower()) = _lower.DNA();
+  *(ret.mutable_upper()) = _upper.DNA();
+
+  return ret;
+}

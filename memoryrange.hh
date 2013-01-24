@@ -8,6 +8,7 @@
 #include <string>
 
 #include "memory.hh"
+#include "dna.pb.h"
 
 class MemoryRange {
 private:
@@ -37,6 +38,8 @@ public:
   bool operator==( const MemoryRange & other ) const;
 
   std::string str( void ) const;
+
+  RemyBuffers::MemoryRange DNA( void ) const;
 };
 
 #endif

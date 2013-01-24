@@ -40,3 +40,12 @@ const Memory & MAX_MEMORY( void )
   static const Memory max_memory( { 1024, 1024, 1024 } );
   return max_memory;
 }
+
+RemyBuffers::Memory Memory::DNA( void ) const
+{
+  RemyBuffers::Memory ret;
+  ret.set_rec_send_ewma( _rec_send_ewma );
+  ret.set_rec_rec_ewma( _rec_rec_ewma );
+  ret.set_rtt_ratio( _rtt_ratio );
+  return ret;
+}

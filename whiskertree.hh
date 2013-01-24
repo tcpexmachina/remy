@@ -3,6 +3,7 @@
 
 #include "whisker.hh"
 #include "memoryrange.hh"
+#include "dna.pb.h"
 
 class WhiskerTree {
 private:
@@ -32,6 +33,8 @@ public:
   unsigned int num_children( void ) const;
 
   bool is_leaf( void ) const;
+
+  RemyBuffers::WhiskerTree DNA( void ) const;
 };
 
 #endif

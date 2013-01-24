@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "memoryrange.hh"
+#include "dna.pb.h"
 
 class Whisker {
 private:
@@ -38,6 +39,8 @@ public:
   std::vector< Whisker > bisect( void ) const;
 
   void demote( const unsigned int generation ) { _generation = generation; }
+
+  RemyBuffers::Whisker DNA( void ) const;
 };
 
 static const unsigned int MAX_WINDOW = 256;

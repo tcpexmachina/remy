@@ -193,3 +193,23 @@ bool WhiskerTree::is_leaf( void ) const
 {
   return !_leaf.empty();
 }
+
+RemyBuffers::WhiskerTree WhiskerTree::DNA( void ) const
+{
+  RemyBuffers::WhiskerTree ret;
+
+  /* set domain */
+  *(ret.mutable_domain()) = _domain.DNA();
+
+  /* set children */
+  if ( is_leaf() ) {
+    *(ret.mutable_leaf()) = _leaf.front().DNA();
+  } else {
+    for ( auto &x : _children ) {
+      RemyBuffers::WhiskerTree *child = ret.add_children();
+      *child = x.DNA();
+    }
+  }
+
+  return ret;
+}
