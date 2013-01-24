@@ -29,7 +29,7 @@ private:
 
 public:
   Evaluator( const WhiskerTree & s_whiskers );
-  Outcome score( const std::vector< Whisker > & replacements, const bool trace = false ) const;
+  Outcome score( const std::vector< Whisker > & replacements, const bool trace = false, const unsigned int carefulness = 1 ) const;
 };
 
 #endif

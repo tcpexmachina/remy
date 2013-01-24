@@ -10,7 +10,7 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers )
 {
 }
 
-Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements, const bool trace ) const
+Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements, const bool trace, const unsigned int carefulness ) const
 {
   PRNG run_prng( _prng );
 
@@ -23,12 +23,12 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
 
   NetConfig run1;
   Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, run1 );
-  network1.tick( TICK_COUNT );
+  network1.tick( TICK_COUNT * carefulness );
 
   NetConfig run2;
   run2.delay = 200;
   Network<Rat> network2( Rat( run_whiskers, trace ), run_prng, run2 );
-  network2.tick( TICK_COUNT );
+  network2.tick( TICK_COUNT * carefulness );
 
   return Outcome( 0.5 * (network1.senders().utility() + network2.senders().utility()),
 		  { network1.senders().throughputs_delays(),

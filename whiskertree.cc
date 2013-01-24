@@ -106,6 +106,19 @@ const Whisker * WhiskerTree::most_used( const unsigned int max_generation ) cons
   return ret;
 }
 
+void WhiskerTree::reset_generation( void )
+{
+  if ( is_leaf() ) {
+    assert( _leaf.size() == 1 );
+    assert( _children.empty() );
+    _leaf.front().demote( 0 );
+  } else {
+    for ( auto &x : _children ) {
+      x.reset_generation();
+    }
+  }
+}
+
 void WhiskerTree::promote( const unsigned int generation )
 {
   if ( is_leaf() ) {

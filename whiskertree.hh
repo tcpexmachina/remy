@@ -27,6 +27,7 @@ public:
 
   void reset_counts( void );
   void promote( const unsigned int generation );
+  void reset_generation( void );
 
   std::string str( void ) const;
 
