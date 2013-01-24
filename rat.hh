@@ -23,6 +23,8 @@ private:
   unsigned int _the_window;
   double _intersend_time;
 
+  unsigned int _flow_id;
+
 public:
   Rat( WhiskerTree & s_whiskers, const bool s_track=false );
 

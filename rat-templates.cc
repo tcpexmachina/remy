@@ -21,7 +21,8 @@ void Rat::send( const unsigned int id, NextHop & next, const unsigned int tickno
       return;
     }
 
-    Packet p( id, _packets_sent++, tickno );
+    Packet p( id, _flow_id, tickno );
+    _packets_sent++;
     _memory.packet_sent( p );
     next.accept( move( p ) );
     _internal_tick += _intersend_time;

@@ -44,7 +44,7 @@ public:
   Whisker( const RemyBuffers::Whisker & dna );
 };
 
-static const unsigned int MAX_WINDOW = 256;
+static const unsigned int MAX_WINDOW = 1024;
 static constexpr double MAX_INTERSEND = 10.0;
 static constexpr double MAX_MULTIPLE = 4.0;
 

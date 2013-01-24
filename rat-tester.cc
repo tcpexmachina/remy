@@ -63,7 +63,7 @@ int main( int argc, char *argv[] )
 
     if ( !output_filename.empty() ) {
       fprintf( stderr, "Writing to \"%s\"... ", output_filename.c_str() );
-      int fd = open( output_filename.c_str(), O_WRONLY | O_TRUNC );
+      int fd = open( output_filename.c_str(), O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR );
       if ( fd < 0 ) {
 	perror( "open" );
 	exit( 1 );

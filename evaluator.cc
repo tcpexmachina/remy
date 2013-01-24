@@ -30,8 +30,22 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
   Network<Rat> network2( Rat( run_whiskers, trace ), run_prng, run2 );
   network2.tick( TICK_COUNT * carefulness );
 
-  return Outcome( 0.5 * (network1.senders().utility() + network2.senders().utility()),
+  NetConfig run3;
+  run3.link_ppt = 2.0;
+  Network<Rat> network3( Rat( run_whiskers, trace ), run_prng, run3 );
+  network3.tick( TICK_COUNT * carefulness );
+
+  NetConfig run4;
+  run4.link_ppt = 2.0;
+  run4.num_senders = 4;
+  Network<Rat> network4( Rat( run_whiskers, trace ), run_prng, run4 );
+  network4.tick( TICK_COUNT * carefulness );
+
+  return Outcome( network1.senders().utility() + network2.senders().utility()
+		  + network3.senders().utility() + network4.senders().utility(),
 		  { network1.senders().throughputs_delays(),
-		      network2.senders().throughputs_delays() },
+		      network2.senders().throughputs_delays(),
+		      network3.senders().throughputs_delays(),
+		      network4.senders().throughputs_delays() },
 		  run_whiskers );
 }

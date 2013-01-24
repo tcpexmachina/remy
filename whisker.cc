@@ -74,7 +74,7 @@ vector< Whisker > Whisker::next_generation( void ) const
 	ret_multiples.push_back( new_whisker );
       }
 
-      if ( x._window_multiple - multiple_incr ) {
+      if ( x._window_multiple - multiple_incr >= 0 ) {
 	new_whisker._window_multiple = x._window_multiple - multiple_incr;
 	ret_multiples.push_back( new_whisker );
       }
