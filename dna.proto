@@ -1,0 +1,30 @@
+option optimize_for = LITE_RUNTIME;
+
+package RemyBuffers;
+
+message WhiskerTree {
+  optional MemoryRange domain = 1;
+
+  repeated WhiskerTree children = 2;
+
+  optional Whisker leaf = 3;
+}
+
+message MemoryRange {
+  optional Memory lower = 11;
+  optional Memory upper = 12;
+}
+
+message Memory {
+  optional double rec_send_ewma = 21;
+  optional double rec_rec_ewma = 22;
+  optional double rtt_ratio = 23;
+}
+
+message Whisker {
+  optional sint32 window_increment = 31;
+  optional double window_multiple = 32;
+  optional double intersend = 33;
+
+  optional MemoryRange domain = 34;
+}
