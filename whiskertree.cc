@@ -199,11 +199,11 @@ RemyBuffers::WhiskerTree WhiskerTree::DNA( void ) const
   RemyBuffers::WhiskerTree ret;
 
   /* set domain */
-  *(ret.mutable_domain()) = _domain.DNA();
+  ret.mutable_domain()->CopyFrom( _domain.DNA() );
 
   /* set children */
   if ( is_leaf() ) {
-    *(ret.mutable_leaf()) = _leaf.front().DNA();
+    ret.mutable_leaf()->CopyFrom( _leaf.front().DNA() );
   } else {
     for ( auto &x : _children ) {
       RemyBuffers::WhiskerTree *child = ret.add_children();

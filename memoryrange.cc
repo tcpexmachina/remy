@@ -78,8 +78,8 @@ RemyBuffers::MemoryRange MemoryRange::DNA( void ) const
 {
   RemyBuffers::MemoryRange ret;
 
-  *(ret.mutable_lower()) = _lower.DNA();
-  *(ret.mutable_upper()) = _upper.DNA();
+  ret.mutable_lower()->CopyFrom( _lower.DNA() );
+  ret.mutable_upper()->CopyFrom( _upper.DNA() );
 
   return ret;
 }
