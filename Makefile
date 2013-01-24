@@ -4,7 +4,7 @@ executables = window-tester rat-tester emil-tester
 CXX = g++
 LANGFLAGS = -std=c++0x
 CXXFLAGS = -g -O3 $(LANGFLAGS) -ffast-math -pedantic -Werror -Wall -Wextra -Weffc++ -fno-default-inline -pipe
-LIBS = -lm -lprotobuf-lite
+LIBS = -lm -lprotobuf
 PROTOC = protoc
 
 all: $(executables)

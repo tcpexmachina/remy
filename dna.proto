@@ -1,5 +1,3 @@
-option optimize_for = LITE_RUNTIME;
-
 package RemyBuffers;
 
 message WhiskerTree {
