@@ -30,8 +30,8 @@ void Memory::packets_received( const vector< Packet > & packets )
 
 string Memory::str( void ) const
 {
-  char tmp[ 64 ];
-  snprintf( tmp, 64, "sewma=%f, rewma=%f, rttr=%f", _rec_send_ewma, _rec_rec_ewma, _rtt_ratio );
+  char tmp[ 256 ];
+  snprintf( tmp, 256, "sewma=%f, rewma=%f, rttr=%f", _rec_send_ewma, _rec_rec_ewma, _rtt_ratio );
   return tmp;
 }
 

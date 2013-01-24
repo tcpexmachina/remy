@@ -9,7 +9,7 @@ using namespace std;
 WhiskerTree::WhiskerTree()
   : _domain( Memory(), MAX_MEMORY() ),
     _children(),
-    _leaf( 1, Whisker( DEFAULT_WINDOW, MIN_INTERSEND, _domain ) )
+    _leaf( 1, Whisker( DEFAULT_WINDOW, DEFAULT_MULTIPLE, MIN_INTERSEND, _domain ) )
 {
 }
 
@@ -160,8 +160,7 @@ string WhiskerTree::str( void ) const
 {
   if ( is_leaf() ) {
     assert( _children.empty() );
-    char tmp[ 128 ];
-    snprintf( tmp, 128, "[%s]", _leaf.front().str().c_str() );
+    string tmp = string( "[" ) + _leaf.front().str().c_str() + "]";
     return tmp;
   }
 

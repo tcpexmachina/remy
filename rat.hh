@@ -20,6 +20,9 @@ private:
 
   double _internal_tick;
 
+  unsigned int _the_window;
+  double _intersend_time;
+
 public:
   Rat( WhiskerTree & s_whiskers, const bool s_track=false );
 

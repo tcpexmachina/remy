@@ -8,17 +8,26 @@ Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
      _packets_sent( 0 ),
      _packets_received( 0 ),
      _track( s_track ),
-     _internal_tick( 0 )
+     _internal_tick( 0 ),
+     _the_window( 0 ),
+     _intersend_time( 0 )
 {
 }
 
 void Rat::packets_received( const vector< Packet > & packets ) {
   _packets_received += packets.size();
   _memory.packets_received( packets );
+
+  const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
+
+  _the_window = current_whisker.window( _the_window );
+  _intersend_time = current_whisker.intersend();
 }
 
 void Rat::dormant_tick( const unsigned int tickno )
 {
   _memory.reset();
   _internal_tick = tickno;
+  _the_window = 0;
+  _intersend_time = 0;
 }
