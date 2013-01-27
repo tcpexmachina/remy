@@ -6,13 +6,14 @@
 class Utility
 {
 private:
-  unsigned int _ticks_sending, _packets_received;
+  double _tick_share_sending;
+  unsigned int _packets_received;
   uint64_t _total_delay;
 
 public:
-  Utility( void ) : _ticks_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ) {}
+  Utility( void ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ) {}
 
-  void sending_tick( void ) { _ticks_sending++; }
+  void sending_tick( const unsigned int num_sending ) { _tick_share_sending += 1.0 / double( num_sending ); }
   void packets_received( const std::vector< Packet > & packets ) {
     _packets_received += packets.size();
 
@@ -24,10 +25,10 @@ public:
 
   double average_throughput( void ) const
   {
-    if ( _ticks_sending == 0 ) {
+    if ( _tick_share_sending == 0 ) {
       return 0.0;
     }
-    return double( _packets_received ) / double( _ticks_sending );
+    return double( _packets_received ) / _tick_share_sending;
   }
 
   double average_delay( void ) const
@@ -40,7 +41,7 @@ public:
 
   double utility( void ) const
   {
-    if ( _ticks_sending == 0 ) {
+    if ( _tick_share_sending == 0 ) {
       return 0.0;
     }
 

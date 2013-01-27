@@ -23,18 +23,29 @@ template <class SenderType>
 template <class NextHop>
 void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const unsigned int tickno )
 {
+  /* let senders switch */
+  for ( auto &x : _gang ) {
+    x.switcher( tickno, _start_distribution, _stop_distribution );
+  }
+
+  /* count number sending */
+  unsigned int num_sending = 0;
+  for ( auto &x : _gang ) {
+    if ( x.sending ) {
+      num_sending++;
+    }
+  }
+
   /* run senders */
   for ( auto &x : _gang ) {
-    x.tick( next, rec, tickno, _start_distribution, _stop_distribution );
+    x.tick( next, rec, tickno, num_sending );
   }
 }
 
 template <class SenderType>
-template <class NextHop>
-void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & rec,
-						   const unsigned int tickno,
-						   Exponential & start_distribution,
-						   Exponential & stop_distribution )
+void SenderGang<SenderType>::SwitchedSender::switcher( unsigned int tickno,
+						       Exponential & start_distribution,
+						       Exponential & stop_distribution )
 {
   /* should it switch? */
   while ( next_switch_tick <= tickno ) {
@@ -43,8 +54,15 @@ void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & re
 
     /* increment next switch time */
     next_switch_tick += (sending ? stop_distribution : start_distribution).sample();
-  }
+  }    
+ }
 
+template <class SenderType>
+template <class NextHop>
+void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & rec,
+						   const unsigned int tickno,
+						   const unsigned int num_sending )
+{
   /* receive feedback */
   if ( rec.readable( id ) ) {
     const std::vector< Packet > & packets = rec.packets_for( id );
@@ -57,7 +75,7 @@ void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & re
 
   /* possibly send packets */
   if ( sending ) {
-    utility.sending_tick();
+    utility.sending_tick( num_sending );
     sender.send( id, next, tickno );
   } else {
     sender.dormant_tick( tickno );

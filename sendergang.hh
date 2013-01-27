@@ -29,11 +29,14 @@ private:
 	utility()
     {}
 
+    void switcher( const unsigned int tickno,
+		   Exponential & start_distribution,
+		   Exponential & stop_distribution );
+
     template <class NextHop>
     void tick( NextHop & next, Receiver & rec,
 	       const unsigned int tickno,
-	       Exponential & start_distribution,
-	       Exponential & stop_distribution );
+	       const unsigned int num_sending );
   };
 
   std::vector< SwitchedSender > _gang;
