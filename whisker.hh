@@ -42,21 +42,23 @@ public:
 
   RemyBuffers::Whisker DNA( void ) const;
   Whisker( const RemyBuffers::Whisker & dna );
+
+  void round( void );
 };
 
-static const unsigned int MAX_WINDOW = 512;
-static constexpr double MAX_INTERSEND = 100.0;
-static constexpr double MAX_MULTIPLE = 1.5;
+static const unsigned int MAX_WINDOW = 10;
+static constexpr double MAX_INTERSEND = 8;
+static constexpr double MAX_MULTIPLE = 1.1;
 
-static const unsigned int MAX_WINDOW_INCR = 32;
-static constexpr double MAX_INTERSEND_INCR = 16;
+static const unsigned int MAX_WINDOW_INCR = 20;
+static constexpr double MAX_INTERSEND_INCR = 8;
 static constexpr double MAX_MULTIPLE_INCR = 0.5;
 
 static const unsigned int DEFAULT_WINDOW = 1;
-static const unsigned int DEFAULT_MULTIPLE = 0;
+static const unsigned int DEFAULT_MULTIPLE = 1;
 
 static constexpr double MIN_INTERSEND = 0.05;
-static constexpr double MULTIPLE_INCR = 0.01;
+static constexpr double MULTIPLE_INCR = 0.05;
 
 static constexpr double INTERSEND_INCR = 0.05;
 #endif

@@ -102,6 +102,10 @@ vector< Whisker > Whisker::next_generation( void ) const
     }
   }
 
+  for ( auto &x : ret ) {
+    x.round();
+  }
+
   return ret;
 }
 
@@ -137,4 +141,10 @@ Whisker::Whisker( const RemyBuffers::Whisker & dna )
     _intersend( dna.intersend() ),
     _domain( dna.domain() )
 {
+}
+
+void Whisker::round( void )
+{
+  _window_multiple = (1.0/10000.0) * int( 10000 * _window_multiple );
+  _intersend = (1.0/10000.0) * int( 10000 * _intersend );
 }
