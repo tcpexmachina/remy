@@ -45,6 +45,7 @@ int main( int argc, char *argv[] )
   configuration_range.link_packets_per_ms = make_pair( 0.1, 1 ); /* 1 Mbps to 10 Mbps */
   configuration_range.rtt_ms = make_pair( 40, 400 ); /* ms */
   configuration_range.max_senders = 4;
+  configuration_range.lo_only = true; /* XXX */
   RatBreeder breeder( configuration_range );
 
   unsigned int run = 0;
@@ -58,6 +59,8 @@ int main( int argc, char *argv[] )
   while ( 1 ) {
     auto outcome = breeder.improve( whiskers );
     printf( "run = %u, score = %f\n", run, outcome.score );
+
+    printf( "whiskers: %s\n", whiskers.str().c_str() );
 
     for ( auto &run : outcome.throughputs_delays ) {
       printf( "===\nconfig: %s\n", run.first.str().c_str() );
