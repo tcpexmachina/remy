@@ -82,11 +82,13 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       double best_score = -INT_MAX;
       const Whisker *best_whisker = nullptr;
 
-      //      printf( "Evaluating %lu replacements.\n", replacements.size() );
+      //      printf( "Evaluating %lu replacements for %s.\n", replacements.size(), differential_whisker.str().c_str() );
 
       /* find best case (using same randseed) */
       for ( const auto &test_replacement : replacements ) {
+	//	printf( "Evaluating %s... ", test_replacement.str().c_str() );
 	const double score( eval.score( { test_replacement } ).score );
+	//	printf( "score = %f\n", score );
 	if ( score > best_score ) {
 	  best_whisker = &test_replacement;
 	  best_score = score;
@@ -99,12 +101,14 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       if ( best_score > outcome.score ) {
 	//	printf( "Replacing with whisker that scored %.12f => %.12f (+%.12f)\n", outcome.score, best_score,
 	//		best_score - outcome.score );
+	//	printf( "=> %s\n", best_whisker->str().c_str() );
 	assert( whiskers.replace( *best_whisker ) );
 	differential_whisker = *best_whisker;
 	differential_whisker.demote( diffgen );
 	outcome.score = best_score;
       } else {
 	assert( whiskers.replace( *best_whisker ) );
+	//	printf( "Done with search.\n" );
 	break;
       }
     }

@@ -113,12 +113,8 @@ void Whisker::promote( const unsigned int generation )
 string Whisker::str( void ) const
 {
   char tmp[ 256 ];
-  if ( _domain.count() ) {
-    snprintf( tmp, 256, "{%s} gen=%u ct=%u => (win=%d + %f * win, intersend=%f)",
-	      _domain.str().c_str(), _generation, _domain.count(), _window_increment, _window_multiple, _intersend );
-  } else {
-    tmp[ 0 ] = 0;
-  }
+  snprintf( tmp, 256, "{%s} gen=%u ct=%u => (win=%d + %f * win, intersend=%f)",
+	    _domain.str().c_str(), _generation, _domain.count(), _window_increment, _window_multiple, _intersend );
   return tmp;
 }
 
