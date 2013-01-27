@@ -5,6 +5,7 @@
 
 #include "random.hh"
 #include "whiskertree.hh"
+#include "network.hh"
 
 class Evaluator
 {
@@ -13,22 +14,31 @@ public:
   {
   public:
     double score;
-    std::vector< std::vector< std::pair< double, double > > > throughputs_delays;
+    std::vector< std::pair< NetConfig, std::vector< std::pair< double, double > > > > throughputs_delays;
     WhiskerTree used_whiskers;
 
-    Outcome( const double s_score,
-	     const std::vector< std::vector< std::pair< double, double > > > & s_throughputs_delays,
-	     const WhiskerTree & s_used_whiskers )
-      : score( s_score ), throughputs_delays( s_throughputs_delays ), used_whiskers( s_used_whiskers )
-    {}
+    Outcome() : score( 0 ), throughputs_delays(), used_whiskers() {}
+  };
+
+  class ConfigRange
+  {
+  public:
+    std::pair< double, double > link_packets_per_ms;
+    std::pair< double, double > rtt_ms;
+    unsigned int max_senders;
+    bool lo_only;
+
+    ConfigRange( void ) : link_packets_per_ms(), rtt_ms(), max_senders( 1 ), lo_only( false ) {}
   };
 
 private:
   const PRNG _prng;
   const WhiskerTree _whiskers;
 
+  std::vector< NetConfig > _configs;
+
 public:
-  Evaluator( const WhiskerTree & s_whiskers );
+  Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range );
   Outcome score( const std::vector< Whisker > & replacements, const bool trace = false, const unsigned int carefulness = 1 ) const;
 };
 

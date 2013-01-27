@@ -8,7 +8,7 @@ using namespace std;
 
 void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int generation )
 {
-  Evaluator eval( whiskers );
+  const Evaluator eval( whiskers, _range );
   auto outcome( eval.score( {}, true ) );
 
   while ( 1 ) {
@@ -38,7 +38,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   unsigned int generation = 0;
 
   while ( 1 ) {
-    const Evaluator eval( whiskers );
+    const Evaluator eval( whiskers, _range );
     auto outcome( eval.score( {} ) );
 
     //    printf( "gen %d, score = %.12f\n", generation, outcome.score );
@@ -111,6 +111,6 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   }
 
   /* carefully evaluate and return score */
-  const Evaluator eval2( whiskers );
+  const Evaluator eval2( whiskers, _range );
   return eval2.score( {}, false, 10 );  
 }

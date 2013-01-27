@@ -6,10 +6,12 @@
 class RatBreeder
 {
 private:
+  Evaluator::ConfigRange _range;
+
   void apply_best_split( WhiskerTree & whiskers, const unsigned int generation );
 
 public:
-  RatBreeder() {}
+  RatBreeder( Evaluator::ConfigRange & s_range ) : _range( s_range ) {}
 
   Evaluator::Outcome improve( WhiskerTree & whiskers );
 };

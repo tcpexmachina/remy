@@ -1,6 +1,8 @@
 #ifndef NETWORK_HH
 #define NETWORK_HH
 
+#include <string>
+
 #include "sendergang.hh"
 #include "link.hh"
 #include "delay.hh"
@@ -18,10 +20,22 @@ public:
   NetConfig( void )
     : mean_on_duration( 1000.0 ),
       mean_off_duration( 1000.0 ),
-      num_senders( 2 ),
+      num_senders( 8 ),
       link_ppt( 1.0 ),
       delay( 100 )
   {}
+
+  NetConfig set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
+  NetConfig set_delay( const double s_delay ) { delay = s_delay; return *this; }
+  NetConfig set_num_senders( const unsigned int n ) { num_senders = n; return *this; }
+
+  std::string str( void ) const
+  {
+    char tmp[ 256 ];
+    snprintf( tmp, 256, "mean_on=%f, mean_off=%f, nsrc=%d, link_ppt=%f, delay=%f\n",
+	      mean_on_duration, mean_off_duration, num_senders, link_ppt, delay );
+    return tmp;
+  }
 };
 
 template <class SenderType>

@@ -41,7 +41,11 @@ int main( int argc, char *argv[] )
     }
   }
 
-  RatBreeder breeder;
+  Evaluator::ConfigRange configuration_range;
+  configuration_range.link_packets_per_ms = make_pair( 0.1, 1 ); /* 1 Mbps to 10 Mbps */
+  configuration_range.rtt_ms = make_pair( 40, 400 ); /* ms */
+  configuration_range.max_senders = 4;
+  RatBreeder breeder( configuration_range );
 
   unsigned int run = 0;
 
@@ -56,7 +60,8 @@ int main( int argc, char *argv[] )
     printf( "run = %u, score = %f\n", run, outcome.score );
 
     for ( auto &run : outcome.throughputs_delays ) {
-      for ( auto &x : run ) {
+      printf( "===\nconfig: %s\n", run.first.str().c_str() );
+      for ( auto &x : run.second ) {
 	printf( "sender: [tp=%f, del=%f]\n", x.first, x.second );
       }
     }

@@ -1,16 +1,40 @@
+#include <boost/random/uniform_real_distribution.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
+
 #include "evaluator.hh"
 #include "network.cc"
 #include "rat-templates.cc"
 
 const unsigned int TICK_COUNT = 100000;
 
-Evaluator::Evaluator( const WhiskerTree & s_whiskers )
-  : _prng( global_PRNG()() ),
-    _whiskers( s_whiskers )
+Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range )
+  : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
+    _whiskers( s_whiskers ),
+    _configs()
 {
+  /* first load "anchors" */
+  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ) );
+
+  if ( range.lo_only ) {
+    return;
+  }
+
+  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ) );
+  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ) );
+  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ) );
+
+  /* now load some random ones just for fun */
+  for ( int i = 0; i < 8; i++ ) {
+    boost::random::uniform_real_distribution<> link_speed( range.link_packets_per_ms.first, range.link_packets_per_ms.second );
+    boost::random::uniform_real_distribution<> rtt( range.rtt_ms.first, range.rtt_ms.second );
+    boost::random::uniform_int_distribution<> num_senders( 1, range.max_senders );
+
+    _configs.push_back( NetConfig().set_link_ppt( link_speed( global_PRNG() ) ).set_delay( rtt( global_PRNG() ) ).set_num_senders( num_senders( global_PRNG() ) ) );
+  }
 }
 
-Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements, const bool trace, const unsigned int carefulness ) const
+Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements,
+				     const bool trace, const unsigned int carefulness ) const
 {
   PRNG run_prng( _prng );
 
@@ -21,31 +45,17 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
 
   run_whiskers.reset_counts();
 
-  NetConfig run1;
-  Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, run1 );
-  network1.tick( TICK_COUNT * carefulness );
+  /* run tests */
+  Outcome the_outcome;
+  for ( auto &x : _configs ) {
+    Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
+    network1.tick( TICK_COUNT * carefulness );
+    
+    the_outcome.score += network1.senders().utility();
+    the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
+  }
 
-  NetConfig run2;
-  run2.delay = 200;
-  Network<Rat> network2( Rat( run_whiskers, trace ), run_prng, run2 );
-  network2.tick( TICK_COUNT * carefulness );
+  the_outcome.used_whiskers = run_whiskers;
 
-  NetConfig run3;
-  run3.link_ppt = 2.0;
-  Network<Rat> network3( Rat( run_whiskers, trace ), run_prng, run3 );
-  network3.tick( TICK_COUNT * carefulness );
-
-  NetConfig run4;
-  run4.link_ppt = 2.0;
-  run4.num_senders = 4;
-  Network<Rat> network4( Rat( run_whiskers, trace ), run_prng, run4 );
-  network4.tick( TICK_COUNT * carefulness );
-
-  return Outcome( network1.senders().utility() + network2.senders().utility()
-		  + network3.senders().utility() + network4.senders().utility(),
-		  { network1.senders().throughputs_delays(),
-		      network2.senders().throughputs_delays(),
-		      network3.senders().throughputs_delays(),
-		      network4.senders().throughputs_delays() },
-		  run_whiskers );
+  return the_outcome;
 }
