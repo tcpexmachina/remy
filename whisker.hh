@@ -44,11 +44,15 @@ public:
   Whisker( const RemyBuffers::Whisker & dna );
 
   void round( void );
+
+  bool operator==( const Whisker & other ) const { return (_window_increment == other._window_increment) && (_window_multiple == other._window_multiple) && (_intersend == other._intersend) && (_domain == other._domain); }
+
+  friend size_t hash_value( const Whisker & whisker );
 };
 
 static const unsigned int MAX_WINDOW = 10;
 static constexpr double MAX_INTERSEND = 8;
-static constexpr double MAX_MULTIPLE = 1.1;
+static constexpr double MAX_MULTIPLE = 1.0;
 
 static const unsigned int MAX_WINDOW_INCR = 20;
 static constexpr double MAX_INTERSEND_INCR = 8;

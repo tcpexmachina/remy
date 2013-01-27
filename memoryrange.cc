@@ -1,3 +1,5 @@
+#include <boost/functional/hash.hpp>
+
 #include "memoryrange.hh"
 
 using namespace std;
@@ -90,4 +92,13 @@ MemoryRange::MemoryRange( const RemyBuffers::MemoryRange & dna )
     _acc( Memory::datasize ),
     _count( 0 )
 {
+}
+
+size_t hash_value( const MemoryRange & mr )
+{
+  size_t seed = 0;
+  boost::hash_combine( seed, mr._lower );
+  boost::hash_combine( seed, mr._upper );
+
+  return seed;
 }

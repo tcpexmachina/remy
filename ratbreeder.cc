@@ -2,6 +2,8 @@
 #include <vector>
 #include <assert.h>
 #include <future>
+#include <unordered_map>
+#include <boost/functional/hash.hpp>
 
 #include "ratbreeder.hh"
 
@@ -40,6 +42,8 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
   while ( 1 ) {
     const Evaluator eval( whiskers, _range );
+    unordered_map< Whisker, bool, boost::hash< Whisker > > evalcache;
+
     auto outcome( eval.score( {} ) );
 
     //    printf( "gen %d, score = %.12f\n", generation, outcome.score );
@@ -87,12 +91,13 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
       vector< pair< Whisker &, future< double > > > scores;
 
-      fprintf( stderr, "Running %lu threads... ", replacements.size() );
-
       /* find best case (using same randseed) */
       for ( auto &test_replacement : replacements ) {
 	//	printf( "Evaluating %s... ", test_replacement.str().c_str() );
-	scores.emplace_back( test_replacement, async( launch::async, [] (const Evaluator &e, const Whisker &r) { return e.score( { r } ).score; }, eval, test_replacement ) );
+	if ( evalcache.find( test_replacement ) == evalcache.end() ) {
+	  scores.emplace_back( test_replacement, async( launch::async, [] (const Evaluator &e, const Whisker &r) { return e.score( { r } ).score; }, eval, test_replacement ) );
+	  evalcache.insert( make_pair( test_replacement, true ) );
+	}
       }
 
       for ( auto &x : scores ) {
@@ -103,8 +108,6 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 	  best_score = score;
 	}
       }
-
-      fprintf( stderr, "done.\n" );
 
       assert( best_whisker );
 

@@ -41,6 +41,8 @@ public:
 
   RemyBuffers::MemoryRange DNA( void ) const;
   MemoryRange( const RemyBuffers::MemoryRange & dna );
+
+  friend size_t hash_value( const MemoryRange & mr );
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <math.h>
 #include <algorithm>
+#include <boost/functional/hash.hpp>
 
 #include "whisker.hh"
 
@@ -147,4 +148,15 @@ void Whisker::round( void )
 {
   _window_multiple = (1.0/10000.0) * int( 10000 * _window_multiple );
   _intersend = (1.0/10000.0) * int( 10000 * _intersend );
+}
+
+size_t hash_value( const Whisker & whisker )
+{
+  size_t seed = 0;
+  boost::hash_combine( seed, whisker._window_increment );
+  boost::hash_combine( seed, whisker._window_multiple );
+  boost::hash_combine( seed, whisker._intersend );
+  boost::hash_combine( seed, whisker._domain );
+
+  return seed;
 }

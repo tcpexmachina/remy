@@ -58,6 +58,8 @@ public:
 
   RemyBuffers::Memory DNA( void ) const;
   Memory( const RemyBuffers::Memory & dna );
+
+  friend size_t hash_value( const Memory & mem );
 };
 
 extern const Memory & MAX_MEMORY( void );

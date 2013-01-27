@@ -1,3 +1,4 @@
+#include <boost/functional/hash.hpp>
 #include <vector>
 #include <assert.h>
 
@@ -62,4 +63,14 @@ Memory::Memory( const RemyBuffers::Memory & dna )
     _last_tick_received( 0 ),
     _min_rtt( 0 )
 {
+}
+
+size_t hash_value( const Memory & mem )
+{
+  size_t seed = 0;
+  boost::hash_combine( seed, mem._rec_send_ewma );
+  boost::hash_combine( seed, mem._rec_rec_ewma );
+  boost::hash_combine( seed, mem._rtt_ratio );
+
+  return seed;
 }
