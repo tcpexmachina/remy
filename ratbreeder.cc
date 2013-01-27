@@ -42,7 +42,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
   while ( 1 ) {
     const Evaluator eval( whiskers, _range );
-    unordered_map< Whisker, bool, boost::hash< Whisker > > evalcache;
+    unordered_map< Whisker, double, boost::hash< Whisker > > evalcache;
 
     auto outcome( eval.score( {} ) );
 
@@ -90,18 +90,30 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       //      printf( "Evaluating %lu replacements for %s.\n", replacements.size(), differential_whisker.str().c_str() );
 
       vector< pair< Whisker &, future< double > > > scores;
+      vector< pair< Whisker &, double > > memoized_scores;
 
       /* find best case (using same randseed) */
       for ( auto &test_replacement : replacements ) {
 	//	printf( "Evaluating %s... ", test_replacement.str().c_str() );
 	if ( evalcache.find( test_replacement ) == evalcache.end() ) {
 	  scores.emplace_back( test_replacement, async( launch::async, [] (const Evaluator &e, const Whisker &r) { return e.score( { r } ).score; }, eval, test_replacement ) );
-	  evalcache.insert( make_pair( test_replacement, true ) );
+	} else {
+	  memoized_scores.emplace_back( test_replacement, evalcache.at( test_replacement ) );
+	}
+      }
+
+      for ( auto &x : memoized_scores ) {
+	const double score( x.second );
+	//	printf( "score = %f\n", score );
+	if ( score > best_score ) {
+	  best_whisker = &x.first;
+	  best_score = score;
 	}
       }
 
       for ( auto &x : scores ) {
 	const double score( x.second.get() );
+	evalcache.insert( make_pair( x.first, score ) );
 	//	printf( "score = %f\n", score );
 	if ( score > best_score ) {
 	  best_whisker = &x.first;
