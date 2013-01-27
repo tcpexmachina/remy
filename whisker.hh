@@ -61,8 +61,8 @@ static constexpr double MAX_MULTIPLE_INCR = 0.5;
 static const unsigned int DEFAULT_WINDOW = 1;
 static const unsigned int DEFAULT_MULTIPLE = 1;
 
-static constexpr double MIN_INTERSEND = 0.05;
-static constexpr double MULTIPLE_INCR = 0.05;
+static constexpr double MIN_INTERSEND = 0.01;
+static constexpr double MULTIPLE_INCR = 0.01;
 
-static constexpr double INTERSEND_INCR = 0.05;
+static constexpr double INTERSEND_INCR = 0.01;
 #endif
