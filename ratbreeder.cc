@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <vector>
 #include <assert.h>
+#include <future>
 
 #include "ratbreeder.hh"
 
@@ -78,22 +79,32 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
     /* otherwise, get all nexgen alternatives for that whisker and replace each in turn */
     while ( 1 ) {
-      const auto replacements( differential_whisker.next_generation() );
+      auto replacements( differential_whisker.next_generation() );
       double best_score = -INT_MAX;
       const Whisker *best_whisker = nullptr;
 
       //      printf( "Evaluating %lu replacements for %s.\n", replacements.size(), differential_whisker.str().c_str() );
 
+      vector< pair< Whisker &, future< double > > > scores;
+
+      fprintf( stderr, "Running %lu threads... ", replacements.size() );
+
       /* find best case (using same randseed) */
-      for ( const auto &test_replacement : replacements ) {
+      for ( auto &test_replacement : replacements ) {
 	//	printf( "Evaluating %s... ", test_replacement.str().c_str() );
-	const double score( eval.score( { test_replacement } ).score );
+	scores.emplace_back( test_replacement, async( launch::async, [] (const Evaluator &e, const Whisker &r) { return e.score( { r } ).score; }, eval, test_replacement ) );
+      }
+
+      for ( auto &x : scores ) {
+	const double score( x.second.get() );
 	//	printf( "score = %f\n", score );
 	if ( score > best_score ) {
-	  best_whisker = &test_replacement;
+	  best_whisker = &x.first;
 	  best_score = score;
 	}
       }
+
+      fprintf( stderr, "done.\n" );
 
       assert( best_whisker );
 
