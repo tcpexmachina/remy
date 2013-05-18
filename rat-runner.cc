@@ -56,18 +56,20 @@ int main( int argc, char *argv[] )
   configuration_range.max_senders = num_senders;
   configuration_range.lo_only = true;
 
-  while ( 1 ) {
-    Evaluator eval( whiskers, configuration_range );
-    auto outcome = eval.score( {}, false, 10 );
-    printf( "score = %f\n", outcome.score );
+  Evaluator eval( whiskers, configuration_range );
+  auto outcome = eval.score( {}, false, 1000 );
+  printf( "score = %f\n", outcome.score );
+  double norm_score = 0;
 
-    for ( auto &run : outcome.throughputs_delays ) {
-      printf( "===\nconfig: %s\n", run.first.str().c_str() );
-      for ( auto &x : run.second ) {
-	printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
-      }
+  for ( auto &run : outcome.throughputs_delays ) {
+    printf( "===\nconfig: %s\n", run.first.str().c_str() );
+    for ( auto &x : run.second ) {
+      printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
+      norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
     }
   }
+
+  printf( "normalized_score = %f\n", norm_score );
 
   return 0;
 }
