@@ -57,7 +57,7 @@ int main( int argc, char *argv[] )
   configuration_range.lo_only = true;
 
   Evaluator eval( whiskers, configuration_range );
-  auto outcome = eval.score( {}, false, 1000 );
+  auto outcome = eval.score( {}, false, 10 );
   printf( "score = %f\n", outcome.score );
   double norm_score = 0;
 
