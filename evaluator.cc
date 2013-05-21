@@ -5,8 +5,7 @@
 #include "network.cc"
 #include "rat-templates.cc"
 
-const unsigned int TICK_COUNT = 250000;
-constexpr double CONVERGENCE_GOAL = 0.1;
+const unsigned int TICK_COUNT = 1000000;
 
 Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
@@ -52,27 +51,6 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
     /* run once */
     Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
     network1.tick( TICK_COUNT * carefulness );
-
-    double last_score = network1.senders().utility();
-
-    if ( !trace ) {
-      /* run until converges */
-      for ( int multiplier = 1;; multiplier *= 2 ) {
-	//	fprintf( stderr, "Running %d iterations... ", TICK_COUNT * multiplier );
-	network1.tick( TICK_COUNT * multiplier );
-	double new_score = network1.senders().utility();
-
-	const double reldiff = fabs( (new_score - last_score) / last_score );
-
-	//	fprintf( stderr, "done (%f, reldiff = %f).\n", new_score, reldiff );
-
-	if ( reldiff < ( CONVERGENCE_GOAL / double( carefulness ) ) ) {
-	  break;
-	}
-      
-	last_score = new_score;
-      }
-    }
 
     the_outcome.score += network1.senders().utility();
     the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
