@@ -42,7 +42,7 @@ string Memory::str( void ) const
 
 const Memory & MAX_MEMORY( void )
 {
-  static const Memory max_memory( { 16384, 16384, 16384 } );
+  static const Memory max_memory( { 163840, 163840, 163840 } );
   return max_memory;
 }
 

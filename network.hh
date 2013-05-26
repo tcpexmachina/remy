@@ -18,11 +18,11 @@ public:
   double delay;
 
   NetConfig( void )
-    : mean_on_duration( 5000.0 ),
-      mean_off_duration( 5000.0 ),
+    : mean_on_duration( 50000.0 ),
+      mean_off_duration( 50000.0 ),
       num_senders( 8 ),
-      link_ppt( 1.0 ),
-      delay( 100 )
+      link_ppt( 0.1 ),
+      delay( 1000 )
   {}
 
   NetConfig set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
