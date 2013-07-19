@@ -83,7 +83,7 @@ int main( int argc, char *argv[] )
 
     if ( !output_filename.empty() ) {
       char of[ 128 ];
-      snprintf( of, 128, "%s.%d", output_filename.c_str(), run );
+      snprintf( of, 128, "%s.%u", output_filename.c_str(), run );
       fprintf( stderr, "Writing to \"%s\"... ", of );
       int fd = open( of, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR );
       if ( fd < 0 ) {

@@ -40,7 +40,7 @@ int main( int argc, char *argv[] )
       }
     } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
       num_senders = atoi( arg.substr( 5 ).c_str() );
-      fprintf( stderr, "Setting num_senders to %d\n", num_senders );
+      fprintf( stderr, "Setting num_senders to %u\n", num_senders );
     } else if ( arg.substr( 0, 5 ) == "link=" ) {
       link_ppt = atof( arg.substr( 5 ).c_str() );
       fprintf( stderr, "Setting link packets per ms to %f\n", link_ppt );
