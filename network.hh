@@ -2,6 +2,7 @@
 #define NETWORK_HH
 
 #include <string>
+#include <cstdio>
 
 #include "sendergang.hh"
 #include "link.hh"
