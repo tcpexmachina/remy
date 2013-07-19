@@ -18,7 +18,7 @@ void Emil::send( const unsigned int id, NextHop & next, const unsigned int tickn
 
   Poisson & send_process( window > 100 ? _fast_send_process : _slow_send_process );
 
-  fprintf( stderr, "%d adj_ewma=%f, window=%d\n", id, adj_ewma, window );
+  fprintf( stderr, "%u adj_ewma=%f, window=%u\n", id, adj_ewma, window );
 
   const unsigned int packets_to_send( send_process.sample() );
 

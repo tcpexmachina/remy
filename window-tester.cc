@@ -15,7 +15,7 @@ void utility( const unsigned int window_size )
     network.tick();
   }
 
-  printf( "%3d: util=%9.5f", window_size, network.senders().utility() );
+  printf( "%3u: util=%9.5f", window_size, network.senders().utility() );
 
   const auto tds = network.senders().throughputs_delays();
   for ( auto &x : tds ) {
