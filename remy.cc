@@ -74,10 +74,10 @@ int main( int argc, char *argv[] )
 
     printf( "whiskers: %s\n", whiskers.str().c_str() );
 
-    for ( auto &run : outcome.throughputs_delays ) {
-      printf( "===\nconfig: %s\n", run.first.str().c_str() );
-      for ( auto &x : run.second ) {
-	printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
+    for ( auto &xrun : outcome.throughputs_delays ) {
+      printf( "===\nconfig: %s\n", xrun.first.str().c_str() );
+      for ( auto &x : xrun.second ) {
+	printf( "sender: [tp=%f, del=%f]\n", x.first / xrun.first.link_ppt, x.second / xrun.first.delay );
       }
     }
 
