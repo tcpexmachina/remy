@@ -50,10 +50,22 @@ int main( int argc, char *argv[] )
 
   unsigned int run = 0;
 
-  printf( "Optimizing whisker: %s\n", whiskers.str().c_str() );
+  printf( "#######################\n" );
+  printf( "Optimizing for link packets_per_ms in [%f, %f]\n",
+	  configuration_range.link_packets_per_ms.first,
+	  configuration_range.link_packets_per_ms.second );
+  printf( "Optimizing for rtt_ms in [%f, %f]\n",
+	  configuration_range.rtt_ms.first,
+	  configuration_range.rtt_ms.second );
+  printf( "Optimizing for max_senders = %d\n",
+	  configuration_range.max_senders );
+  printf( "Initial rules (use if=FILENAME to read from disk): %s\n", whiskers.str().c_str() );
+  printf( "#######################\n" );
 
   if ( !output_filename.empty() ) {
     printf( "Writing to \"%s.N\".\n", output_filename.c_str() );
+  } else {
+    printf( "Not saving output. Use the of=FILENAME argument to save the results.\n" );
   }
 
   while ( 1 ) {
