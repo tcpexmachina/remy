@@ -15,19 +15,9 @@ public:
       tick_received( -1 )
   {}
 
-  Packet( const Packet & other )
-    : src( other.src ),
-      flow_id( other.flow_id ),
-      tick_sent( other.tick_sent ),
-      tick_received( other.tick_received )
-  {}
+  Packet( const Packet & other ) = delete;
 
-  Packet( const Packet && other )
-    : src( other.src ),
-      flow_id( other.flow_id ),
-      tick_sent( other.tick_sent ),
-      tick_received( other.tick_received )
-  {}
+  Packet( Packet && other ) = default;
 };
 
 #endif
