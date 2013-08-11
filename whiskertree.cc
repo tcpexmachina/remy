@@ -179,7 +179,7 @@ string WhiskerTree::str( void ) const
 {
   if ( is_leaf() ) {
     assert( _children.empty() );
-    string tmp = string( "[" ) + _leaf.front().str().c_str() + "]";
+    string tmp = string( "[" ) + _leaf.front().str().c_str() + "]\n";
     return tmp;
   }
 
