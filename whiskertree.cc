@@ -9,14 +9,16 @@ using namespace std;
 WhiskerTree::WhiskerTree()
   : _domain( Memory(), MAX_MEMORY() ),
     _children(),
-    _leaf( 1, Whisker( DEFAULT_WINDOW, DEFAULT_MULTIPLE, MIN_INTERSEND, _domain ) )
+    _leaf( 1, Whisker( DEFAULT_WINDOW, DEFAULT_MULTIPLE, MIN_INTERSEND, _domain ) ),
+    _used_windows()
 {
 }
 
 WhiskerTree::WhiskerTree( const Whisker & whisker, const bool bisect )
   : _domain( whisker.domain() ),
     _children(),
-    _leaf()
+    _leaf(),
+    _used_windows()
 {
   if ( !bisect ) {
     _leaf.push_back( whisker );
@@ -27,8 +29,17 @@ WhiskerTree::WhiskerTree( const Whisker & whisker, const bool bisect )
   }
 }
 
+void WhiskerTree::use_window( const unsigned int win ) const
+{
+  const unsigned int newwin = min( win, MAX_WINDOW );
+
+  _used_windows[ newwin ]++;
+}
+
 void WhiskerTree::reset_counts( void )
 {
+  _used_windows.fill( 0 );
+
   if ( is_leaf() ) {
     _leaf.front().reset_count();
   } else {
@@ -175,18 +186,38 @@ bool WhiskerTree::replace( const Whisker & src, const WhiskerTree & dst )
   assert( false );
 }
 
-string WhiskerTree::str( void ) const
+unsigned int WhiskerTree::total_whisker_queries( void ) const
 {
   if ( is_leaf() ) {
     assert( _children.empty() );
-    string tmp = string( "[" ) + _leaf.front().str().c_str() + "]\n";
+    return _leaf.front().domain().count();
+  }
+
+  return accumulate( _children.begin(),
+		     _children.end(),
+		     0,
+		     []( const unsigned int sum, 
+			 const WhiskerTree & x )
+		     { return sum + x.total_whisker_queries(); } );
+}
+
+string WhiskerTree::str() const
+{
+  return str( total_whisker_queries() );
+}
+
+string WhiskerTree::str( const unsigned int total ) const
+{
+  if ( is_leaf() ) {
+    assert( _children.empty() );
+    string tmp = string( "[" ) + _leaf.front().str( total ) + "]";
     return tmp;
   }
 
   string ret;
 
-  for ( auto &x : _children ) {
-    ret += x.str();
+  for ( const auto &x : _children ) {
+    ret += x.str( total );
   }
 
   return ret;
@@ -230,7 +261,8 @@ RemyBuffers::WhiskerTree WhiskerTree::DNA( void ) const
 WhiskerTree::WhiskerTree( const RemyBuffers::WhiskerTree & dna )
   : _domain( dna.domain() ),
     _children(),
-    _leaf()
+    _leaf(),
+    _used_windows()
 {
   if ( dna.has_leaf() ) {
     assert( dna.children_size() == 0 );

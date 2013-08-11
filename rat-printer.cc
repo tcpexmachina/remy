@@ -71,7 +71,23 @@ int main( int argc, char *argv[] )
 
   printf( "normalized_score = %f\n", norm_score );
 
-  printf( "Whiskers:\n%s\n", outcome.used_whiskers.str().c_str() );
+
+  printf( "Windows:" );
+  unsigned int total_count = 0;
+
+  for ( unsigned int i = 0; i <= MAX_WINDOW; i++ ) {
+    total_count += outcome.used_whiskers.used_windows()[ i ];
+  }
+
+  for ( unsigned int i = 0; i <= MAX_WINDOW; i++ ) {
+    unsigned int count = outcome.used_whiskers.used_windows()[ i ];
+    if ( count ) {
+      printf( " [%u=%.4f]", i, double( count ) / double( total_count ) );
+    }
+  }
+  printf( "\n" );
+
+  printf( "Whiskers: %s\n", outcome.used_whiskers.str().c_str() );
 
   return 0;
 }

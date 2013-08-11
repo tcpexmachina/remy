@@ -115,11 +115,11 @@ void Whisker::promote( const unsigned int generation )
   _generation = max( _generation, generation );
 }
 
-string Whisker::str( void ) const
+string Whisker::str( const unsigned int total ) const
 {
   char tmp[ 256 ];
-  snprintf( tmp, 256, "{%s} gen=%u ct=%u => (win=%d + %f * win, intersend=%f)",
-	    _domain.str().c_str(), _generation, _domain.count(), _window_increment, _window_multiple, _intersend );
+  snprintf( tmp, 256, "{%s} gen=%u usage=%.4f => (win=%d + %f * win, intersend=%f)",
+	    _domain.str().c_str(), _generation, double( _domain.count() ) / double( total ), _window_increment, _window_multiple, _intersend );
   return tmp;
 }
 

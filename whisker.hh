@@ -34,7 +34,7 @@ public:
 
   void promote( const unsigned int generation );
 
-  std::string str( void ) const;
+  std::string str( const unsigned int total=1 ) const;
 
   std::vector< Whisker > bisect( void ) const;
 

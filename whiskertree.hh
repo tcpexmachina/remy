@@ -1,6 +1,8 @@
 #ifndef WHISKERTREE_HH
 #define WHISKERTREE_HH
 
+#include <array>
+
 #include "whisker.hh"
 #include "memoryrange.hh"
 #include "dna.pb.h"
@@ -14,12 +16,17 @@ private:
 
   const Whisker * whisker( const Memory & _memory ) const;
 
+  mutable std::array< unsigned int, MAX_WINDOW + 1 > _used_windows;
+
 public:
   WhiskerTree();
 
   WhiskerTree( const Whisker & whisker, const bool bisect );
 
   const Whisker & use_whisker( const Memory & _memory, const bool track ) const;
+
+  void use_window( const unsigned int win ) const;
+  const std::array< unsigned int, MAX_WINDOW + 1 > & used_windows( void ) const { return _used_windows; }
 
   bool replace( const Whisker & w );
   bool replace( const Whisker & src, const WhiskerTree & dst );
@@ -30,6 +37,8 @@ public:
   void reset_generation( void );
 
   std::string str( void ) const;
+  std::string str( const unsigned int total ) const;
+  unsigned int total_whisker_queries( void ) const;
 
   unsigned int num_children( void ) const;
 

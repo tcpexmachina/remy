@@ -16,6 +16,8 @@ void Rat::send( const unsigned int id, NextHop & next, const unsigned int tickno
     _intersend_time = current_whisker.intersend();
   }
 
+  _whiskers.use_window( _the_window );
+
   while ( _packets_sent < _packets_received + _the_window ) {
     if ( _internal_tick > tickno + 1 ) {
       return;
