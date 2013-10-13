@@ -18,7 +18,7 @@ Basic usage:
 * Run `./remy` to design a RemyCC (congestion-control algorithm) for
   the default scenario, with link speed drawn uniformly between 10 and
   20 Mbps, minRTT drawn uniformly between 100 and 200 ms, the maximum
-  degree of multiplexing drawn uniformly between 1 and 32, and each
+  degree of multiplexing drawn uniformly between 1 and 16, and each
   sender "on" for an exponentially-distributed amount of time (mean 5
   s) and off for durations drawn from the same distribution.
 
