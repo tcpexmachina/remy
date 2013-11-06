@@ -13,7 +13,10 @@ Basic usage:
 
 * Remy requires a C++11 compiler to compile, e.g. gcc 4.6 or
   contemporary clang++. You will also need the Google
-  protobuf-compiler.
+  protobuf-compiler and the Boost C++ libraries.
+
+* From the version-control repository checkout, run `./autogen.sh`,
+  `./configure`, and `make` to build Remy.
 
 * Run `./remy` to design a RemyCC (congestion-control algorithm) for
   the default scenario, with link speed drawn uniformly between 10 and
