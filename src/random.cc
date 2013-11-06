@@ -1,4 +1,4 @@
-#include <time.h>
+#include <ctime>
 #include <sys/types.h>
 #include <unistd.h>
 

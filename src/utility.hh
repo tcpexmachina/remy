@@ -1,7 +1,7 @@
 #ifndef UTILITY_HH
 #define UTILITY_HH
 
-#include <math.h>
+#include <cmath>
 
 class Utility
 {

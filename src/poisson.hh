@@ -2,7 +2,7 @@
 #define POISSON_HH
 
 #include <boost/random/poisson_distribution.hpp>
-#include <assert.h>
+#include <cassert>
 
 #include "random.hh"
 

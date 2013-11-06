@@ -1,6 +1,6 @@
-#include <stdio.h>
+#include <cstdio>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 #include <future>
 #include <unordered_map>
 #include <boost/functional/hash.hpp>

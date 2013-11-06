@@ -20,7 +20,7 @@ PKG_CHECK_MODULES([protobuf], [protobuf])
 
 # Add picky CXXFLAGS
 CPPFLAGS="-std=c++11"
-PICKY_CXXFLAGS="-std=c++11 -pedantic -Wall -Wextra -Weffc++ -fno-default-inline -pipe -pthread -Wno-unused-function -Werror"
+PICKY_CXXFLAGS="-pedantic -Wall -Wextra -Weffc++ -fno-default-inline -pipe -pthread -Wno-unused-function -Werror"
 AC_SUBST([PICKY_CXXFLAGS])
 
 # Checks for header files.
@@ -33,7 +33,7 @@ boost/random/exponential_distribution.hpp boost/random/mersenne_twister.hpp \
 boost/random/poisson_distribution.hpp \
 boost/random/uniform_int_distribution.hpp \
 boost/random/uniform_real_distribution.hpp fcntl.h future cmath queue \
-cstdio string sys/stat.h sys/types.h time.h tuple unistd.h unordered_map \
+cstdio string sys/stat.h sys/types.h ctime tuple unistd.h unordered_map \
 utility vector], [], [AC_MSG_ERROR([Missing header file])])
 
 # Checks for typedefs, structures, and compiler characteristics.

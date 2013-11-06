@@ -1,6 +1,6 @@
 #include <boost/functional/hash.hpp>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 
 #include "memory.hh"
 
