@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I$(srcdir)/../protobufs
+AM_CPPFLAGS = -I../protobufs
 AM_CXXFLAGS = $(PICKY_CXXFLAGS)
 LDADD = ../protobufs/libremyprotos.a -lm $(protobuf_LIBS)
 
