@@ -4,6 +4,7 @@
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/median.hpp>
+#include <boost/accumulators/statistics/variance.hpp>
 #include <vector>
 #include <string>
 
@@ -16,7 +17,8 @@ private:
 
   mutable std::vector< boost::accumulators::accumulator_set< Memory::DataType,
 							     boost::accumulators::stats<
-							       boost::accumulators::tag::median > > > _acc;
+							       boost::accumulators::tag::median,
+							       boost::accumulators::tag::lazy_variance > > > _acc;
   mutable unsigned int _count;
 
 public:
