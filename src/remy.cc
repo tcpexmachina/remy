@@ -74,9 +74,11 @@ int main( int argc, char *argv[] )
     printf( "Not saving output. Use the of=FILENAME argument to save the results.\n" );
   }
 
+  auto start_time = time( NULL );
+
   while ( 1 ) {
     auto outcome = breeder.improve( whiskers );
-    printf( "run = %u, score = %f\n", run, outcome.score );
+    printf( "time = %lu, run = %u, score = %f\n", time( NULL ) - start_time, run, outcome.score );
 
     printf( "whiskers: %s\n", whiskers.str().c_str() );
 
