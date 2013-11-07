@@ -6,6 +6,6 @@
 
 PRNG & global_PRNG( void )
 {
-  static PRNG generator( time( NULL ) ^ getpid() );
+  static PRNG generator( 123 );
   return generator;
 }
