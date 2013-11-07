@@ -29,7 +29,9 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range 
     boost::random::uniform_real_distribution<> rtt( range.rtt_ms.first, range.rtt_ms.second );
     boost::random::uniform_int_distribution<> num_senders( 1, range.max_senders );
 
-    _configs.push_back( NetConfig().set_link_ppt( link_speed( global_PRNG() ) ).set_delay( rtt( global_PRNG() ) ).set_num_senders( num_senders( global_PRNG() ) ) );
+    PRNG deterministic_rng = PRNG( i );
+
+    _configs.push_back( NetConfig().set_link_ppt( link_speed( deterministic_rng ) ).set_delay( rtt( deterministic_rng ) ).set_num_senders( num_senders( deterministic_rng ) ) );
   }
 }
 
