@@ -37,7 +37,9 @@ void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & re
 						   Exponential & stop_distribution )
 {
   /* should it switch? */
-  while ( next_switch_tick < tickno ) {
+  while ( next_switch_tick <= tickno ) {
+    assert( next_switch_tick == tickno );
+
     /* switch */
     sending = !sending;
 
