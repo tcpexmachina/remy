@@ -3,7 +3,7 @@
 #include "link.hh"
 
 template <class NextHop>
-void Link::tick( NextHop & next, const unsigned int tickno )
+void Link::tick( NextHop & next, const double & tickno )
 {
   while ( _next_delivery_time <= tickno ) {
     if ( !_buffer.empty() ) {

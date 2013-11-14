@@ -19,7 +19,7 @@ public:
   void accept( Packet && p ) noexcept { _buffer.push( std::move( p ) ); }
 
   template <class NextHop>
-  void tick( NextHop & next, const unsigned int tickno );
+  void tick( NextHop & next, const double & tickno );
 };
 
 #endif
