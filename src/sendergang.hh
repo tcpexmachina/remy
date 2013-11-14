@@ -35,8 +35,7 @@ private:
 
     template <class NextHop>
     void tick( NextHop & next, Receiver & rec,
-	       const unsigned int tickno,
-	       const unsigned int num_sending );
+	       const unsigned int tickno  );
   };
 
   std::vector< SwitchedSender > _gang;

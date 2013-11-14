@@ -28,17 +28,9 @@ void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const unsigne
     x.switcher( tickno, _start_distribution, _stop_distribution );
   }
 
-  /* count number sending */
-  unsigned int num_sending = 0;
-  for ( auto &x : _gang ) {
-    if ( x.sending ) {
-      num_sending++;
-    }
-  }
-
   /* run senders */
   for ( auto &x : _gang ) {
-    x.tick( next, rec, tickno, num_sending );
+    x.tick( next, rec, tickno );
   }
 }
 
@@ -60,8 +52,7 @@ void SenderGang<SenderType>::SwitchedSender::switcher( unsigned int tickno,
 template <class SenderType>
 template <class NextHop>
 void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & rec,
-						   const unsigned int tickno,
-						   const unsigned int num_sending )
+						   const unsigned int tickno )
 {
   /* receive feedback */
   if ( rec.readable( id ) ) {
@@ -75,7 +66,7 @@ void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & re
 
   /* possibly send packets */
   if ( sending ) {
-    utility.sending_tick( num_sending );
+    utility.sending_duration( 1 );
     sender.send( id, next, tickno );
   } else {
     sender.reset( tickno );

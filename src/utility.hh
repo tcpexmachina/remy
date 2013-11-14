@@ -13,7 +13,7 @@ private:
 public:
   Utility( void ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ) {}
 
-  void sending_tick( const unsigned int num_sending ) { _tick_share_sending += 1.0 / double( num_sending ); }
+  void sending_duration( const double & duration ) { _tick_share_sending += duration; }
   void packets_received( const std::vector< Packet > & packets ) {
     _packets_received += packets.size();
 
