@@ -48,6 +48,8 @@ void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & re
 
     /* reset sender */
     sender.reset( tickno );
+
+    internal_tick = tickno;
   }
 
   /* receive feedback */
