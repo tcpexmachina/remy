@@ -7,7 +7,7 @@ Receiver::Receiver()
 {
 }
 
-void Receiver::accept( Packet && p, const unsigned int tickno ) noexcept
+void Receiver::accept( Packet && p, const double & tickno ) noexcept
 {
   autosize( p.src );
 
