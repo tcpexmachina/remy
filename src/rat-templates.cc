@@ -20,7 +20,7 @@ void Rat::send( const unsigned int id, NextHop & next, const double & tickno )
   _whiskers.use_window( _the_window );
 
   while ( _packets_sent < _packets_received + _the_window ) {
-    if ( _internal_tick >= tickno ) {
+    if ( _internal_tick > tickno ) {
       return;
     }
 

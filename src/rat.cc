@@ -1,3 +1,5 @@
+#include <limits>
+
 #include "rat.hh"
 
 using namespace std;
@@ -33,4 +35,18 @@ void Rat::reset( const double & tickno )
   _intersend_time = 0;
   _flow_id++;
   assert( _flow_id != 0 );
+}
+
+double Rat::next_event_time( const double & tickno ) const
+{
+  if ( _packets_sent < _packets_received + _the_window ) {
+    if ( _internal_tick > tickno ) {
+      return _internal_tick + _intersend_time;
+    } else {
+      return tickno; /* right now */
+    }
+  } else {
+    /* window is currently closed */
+    return std::numeric_limits<double>::max();
+  }
 }
