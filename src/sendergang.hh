@@ -14,28 +14,30 @@ private:
   class SwitchedSender {
   public:
     unsigned int id;
-    unsigned int next_switch_tick;
+    double next_switch_tick;
     bool sending;
     SenderType sender;
     Utility utility;
+    double internal_tick;
 
     SwitchedSender( const unsigned int s_id,
-		    const unsigned int start_tick,
+		    const double & start_tick,
 		    const SenderType & s_sender )
       : id( s_id ),
 	next_switch_tick( start_tick ),
 	sending( false ),
 	sender( s_sender ),
-	utility()
+	utility(),
+	internal_tick( 0 )
     {}
-
-    void switcher( const unsigned int tickno,
-		   Exponential & start_distribution,
-		   Exponential & stop_distribution );
 
     template <class NextHop>
     void tick( NextHop & next, Receiver & rec,
-	       const unsigned int tickno  );
+	       const double & tickno,
+	       Exponential & start_distribution,
+	       Exponential & stop_distribution );
+
+    double next_event_time( const double & tickno ) const;
   };
 
   std::vector< SwitchedSender > _gang;
@@ -50,12 +52,14 @@ public:
 	      PRNG & s_prng );
 
   template <class NextHop>
-  void tick( NextHop & next, Receiver & rec, const unsigned int tickno );
+  void tick( NextHop & next, Receiver & rec, const double & tickno );
 
   double utility( void ) const;
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
 
   const std::vector< const SenderType * > senders( void ) const;
+
+  double next_event_time( const double & tickno ) const;
 };
 
 #endif

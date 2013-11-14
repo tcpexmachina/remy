@@ -21,39 +21,33 @@ SenderGang<SenderType>::SenderGang( const double mean_on_duration,
 
 template <class SenderType>
 template <class NextHop>
-void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const unsigned int tickno )
+void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const double & tickno )
 {
-  /* let senders switch */
-  for ( auto &x : _gang ) {
-    x.switcher( tickno, _start_distribution, _stop_distribution );
-  }
-
   /* run senders */
   for ( auto &x : _gang ) {
-    x.tick( next, rec, tickno );
+    x.tick( next, rec, tickno, _start_distribution, _stop_distribution );
   }
 }
 
 template <class SenderType>
-void SenderGang<SenderType>::SwitchedSender::switcher( unsigned int tickno,
-						       Exponential & start_distribution,
-						       Exponential & stop_distribution )
+template <class NextHop>
+void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & rec,
+						   const double & tickno,
+						   Exponential & start_distribution,
+						   Exponential & stop_distribution )
 {
   /* should it switch? */
-  while ( next_switch_tick <= tickno ) {
+  while ( next_switch_tick < tickno ) {
     /* switch */
     sending = !sending;
 
     /* increment next switch time */
     next_switch_tick += (sending ? stop_distribution : start_distribution).sample();
-  }    
- }
 
-template <class SenderType>
-template <class NextHop>
-void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & rec,
-						   const unsigned int tickno )
-{
+    /* reset sender */
+    sender.reset( tickno );
+  }
+
   /* receive feedback */
   if ( rec.readable( id ) ) {
     const std::vector< Packet > & packets = rec.packets_for( id );
@@ -66,11 +60,11 @@ void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & re
 
   /* possibly send packets */
   if ( sending ) {
-    utility.sending_duration( 1 );
     sender.send( id, next, tickno );
-  } else {
-    sender.reset( tickno );
+    utility.sending_duration( tickno - internal_tick );
   }
+
+  internal_tick = tickno;
 }
 
 template <class SenderType>
@@ -105,6 +99,29 @@ const vector< const SenderType * > SenderGang<SenderType>::senders( void ) const
 
   for ( auto &x : _gang ) {
     ret.emplace_back( &x.sender );
+  }
+
+  return ret;
+}
+
+template <class SenderType>
+double SenderGang<SenderType>::SwitchedSender::next_event_time( const double & tickno ) const
+{
+  assert( next_switch_tick >= tickno );
+
+  return min( next_switch_tick, sender.next_event_time( tickno ) );
+}
+
+template <class SenderType>
+double SenderGang<SenderType>::next_event_time( const double & tickno ) const
+{
+  double ret = std::numeric_limits<double>::max();
+  for ( const auto & x : _gang ) {
+    const double the_next_event = x.next_event_time();
+    assert( the_next_event >= tickno );
+    if ( the_next_event < ret ) {
+      ret = the_next_event;
+    }
   }
 
   return ret;
