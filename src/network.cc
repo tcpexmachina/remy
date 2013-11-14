@@ -28,17 +28,10 @@ void Network<SenderType>::run_simulation( const double & duration )
   assert( _tickno == 0 );
 
   while ( _tickno < duration ) {
-    fprintf( stderr, "_tickno = %f, senders=%f, link=%f, delay=%f\n",
-	     _tickno, _senders.next_event_time( _tickno ),
-	     _link.next_event_time( _tickno ),
-	     _delay.next_event_time( _tickno ) );
-
     /* find element with soonest event */
     _tickno = min( min( _senders.next_event_time( _tickno ),
 			_link.next_event_time( _tickno ) ),
 		   _delay.next_event_time( _tickno ) );
-
-    fprintf( stderr, "tickno now %f\n", _tickno );
 
     assert( _tickno < std::numeric_limits<double>::max() );
 

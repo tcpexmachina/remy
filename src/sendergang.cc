@@ -111,7 +111,7 @@ double SenderGang<SenderType>::SwitchedSender::next_event_time( const double & t
 {
   assert( next_switch_tick >= tickno );
 
-  return min( next_switch_tick, sender.next_event_time( tickno ) );
+  return min( next_switch_tick, sending ? sender.next_event_time( tickno ) : std::numeric_limits<double>::max() );
 }
 
 template <class SenderType>
