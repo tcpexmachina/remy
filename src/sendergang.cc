@@ -78,7 +78,7 @@ void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & re
     utility.sending_tick( num_sending );
     sender.send( id, next, tickno );
   } else {
-    sender.dormant_tick( tickno );
+    sender.reset( tickno );
   }
 }
 

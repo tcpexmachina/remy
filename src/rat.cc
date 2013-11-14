@@ -25,11 +25,12 @@ void Rat::packets_received( const vector< Packet > & packets ) {
   _intersend_time = current_whisker.intersend();
 }
 
-void Rat::dormant_tick( const unsigned int tickno )
+void Rat::reset( const double & tickno )
 {
   _memory.reset();
   _internal_tick = tickno;
   _the_window = 0;
   _intersend_time = 0;
-  _flow_id = tickno;
+  _flow_id++;
+  assert( _flow_id != 0 );
 }
