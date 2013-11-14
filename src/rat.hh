@@ -18,7 +18,7 @@ private:
 
   bool _track;
 
-  double _internal_tick;
+  double _last_send_time;
 
   unsigned int _the_window;
   double _intersend_time;

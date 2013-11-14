@@ -50,7 +50,7 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
   for ( auto &x : _configs ) {
     /* run once */
     Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
-    network1.tick( TICK_COUNT * carefulness );
+    network1.run_simulation( TICK_COUNT * carefulness );
 
     the_outcome.score += network1.senders().utility();
     the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );

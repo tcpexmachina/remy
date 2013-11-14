@@ -48,13 +48,14 @@ private:
   Delay _delay;
   Receiver _rec;
 
-  unsigned int _tickno;
+  double _tickno;
+
+  void tick( void );
 
 public:
   Network( const SenderType & example_sender, PRNG & s_prng, const NetConfig & config );
 
-  void tick( void );
-  void tick( const unsigned int reps );
+  void run_simulation( const double & duration );
 
   const SenderGang<SenderType> & senders( void ) const { return _senders; }
 };

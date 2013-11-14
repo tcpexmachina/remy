@@ -20,13 +20,28 @@ void Network<SenderType>::tick( void )
   _senders.tick( _link, _rec, _tickno );
   _link.tick( _delay, _tickno );
   _delay.tick( _rec, _tickno );
-  _tickno++;
 }
 
 template <class SenderType>
-void Network<SenderType>::tick( const unsigned int reps )
+void Network<SenderType>::run_simulation( const double & duration )
 {
-  for ( unsigned int i = 0; i < reps; i++ ) {
+  assert( _tickno == 0 );
+
+  while ( _tickno < duration ) {
+    fprintf( stderr, "_tickno = %f, senders=%f, link=%f, delay=%f\n",
+	     _tickno, _senders.next_event_time( _tickno ),
+	     _link.next_event_time( _tickno ),
+	     _delay.next_event_time( _tickno ) );
+
+    /* find element with soonest event */
+    _tickno = min( min( _senders.next_event_time( _tickno ),
+			_link.next_event_time( _tickno ) ),
+		   _delay.next_event_time( _tickno ) );
+
+    fprintf( stderr, "tickno now %f\n", _tickno );
+
+    assert( _tickno < std::numeric_limits<double>::max() );
+
     tick();
   }
 }

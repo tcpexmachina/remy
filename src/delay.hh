@@ -35,7 +35,11 @@ public:
     if ( _queue.empty() ) {
       return std::numeric_limits<double>::max();
     } else {
-      assert( tickno >= std::get< 0 >( _queue.front() ) );
+      if ( tickno > std::get< 0 >( _queue.front() ) ) {
+	fprintf( stderr, "Error, tickno = %f but packet should have been released at time %f\n",
+		 tickno, std::get< 0 >( _queue.front() ) );
+	assert( false );
+      }
       return std::get< 0 >( _queue.front() );
     }
   }

@@ -10,7 +10,7 @@ Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
      _packets_sent( 0 ),
      _packets_received( 0 ),
      _track( s_track ),
-     _internal_tick( 0 ),
+     _last_send_time( 0 ),
      _the_window( 0 ),
      _intersend_time( 0 ),
      _flow_id( 0 )
@@ -27,10 +27,10 @@ void Rat::packets_received( const vector< Packet > & packets ) {
   _intersend_time = current_whisker.intersend();
 }
 
-void Rat::reset( const double & tickno )
+void Rat::reset( const double & )
 {
   _memory.reset();
-  _internal_tick = tickno;
+  _last_send_time = 0;
   _the_window = 0;
   _intersend_time = 0;
   _flow_id++;
@@ -40,10 +40,10 @@ void Rat::reset( const double & tickno )
 double Rat::next_event_time( const double & tickno ) const
 {
   if ( _packets_sent < _packets_received + _the_window ) {
-    if ( _internal_tick > tickno ) {
-      return _internal_tick + _intersend_time;
+    if ( _last_send_time + _intersend_time <= tickno ) {
+      return tickno;
     } else {
-      return tickno; /* right now */
+      return _last_send_time + _intersend_time;
     }
   } else {
     /* window is currently closed */

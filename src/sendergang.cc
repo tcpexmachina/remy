@@ -119,7 +119,7 @@ double SenderGang<SenderType>::next_event_time( const double & tickno ) const
 {
   double ret = std::numeric_limits<double>::max();
   for ( const auto & x : _gang ) {
-    const double the_next_event = x.next_event_time();
+    const double the_next_event = x.next_event_time( tickno );
     assert( the_next_event >= tickno );
     if ( the_next_event < ret ) {
       ret = the_next_event;
