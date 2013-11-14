@@ -16,9 +16,9 @@ private:
   DataType _rec_rec_ewma;
   DataType _rtt_ratio;
 
-  unsigned int _last_tick_sent;
-  unsigned int _last_tick_received;
-  unsigned int _min_rtt;
+  double _last_tick_sent;
+  double _last_tick_received;
+  double _min_rtt;
 
 public:
   Memory( const std::vector< DataType > & s_data )
