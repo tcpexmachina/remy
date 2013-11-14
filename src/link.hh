@@ -20,6 +20,8 @@ public:
 
   template <class NextHop>
   void tick( NextHop & next, const double & tickno );
+
+  double next_event_time( const double & tickno ) const;
 };
 
 #endif
