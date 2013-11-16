@@ -82,7 +82,7 @@ int main( int argc, char *argv[] )
   for ( auto &run : outcome.throughputs_delays ) {
     printf( "===\nconfig: %s\n", run.first.str().c_str() );
     for ( auto &x : run.second ) {
-      printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
+      printf( "sender: [tp=%f mbps, del=%f ms]\n", 1000 * x.first * 1260 * 8.0 / 1.0e6 , x.second );
       norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
     }
   }
