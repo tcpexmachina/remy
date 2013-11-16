@@ -19,8 +19,8 @@ AS_IF([test x"$PROTOC" = x],
 PKG_CHECK_MODULES([protobuf], [protobuf])
 
 # Add picky CXXFLAGS
-CPPFLAGS="-std=c++11"
-PICKY_CXXFLAGS="-pedantic -Wall -Wextra -Weffc++ -fno-default-inline -pipe -pthread -Wno-unused-function -Werror"
+CPPFLAGS="-std=c++11 -pthread"
+PICKY_CXXFLAGS="-pedantic -Wall -Wextra -Weffc++ -Werror -fno-default-inline"
 AC_SUBST([PICKY_CXXFLAGS])
 
 # Checks for header files.
