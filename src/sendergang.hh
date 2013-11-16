@@ -34,8 +34,12 @@ private:
     template <class NextHop>
     void tick( NextHop & next, Receiver & rec,
 	       const double & tickno,
-	       Exponential & start_distribution,
-	       Exponential & stop_distribution );
+	       const unsigned int num_sending );
+
+    void switcher( const double & tickno,
+		   Exponential & start_distribution,
+		   Exponential & stop_distribution,
+		   const unsigned int num_sending );
 
     double next_event_time( const double & tickno ) const;
   };
@@ -43,6 +47,8 @@ private:
   std::vector< SwitchedSender > _gang;
 
   Exponential _start_distribution, _stop_distribution;
+
+  unsigned int _num_sending;
 
 public:
   SenderGang( const double mean_on_duration,
