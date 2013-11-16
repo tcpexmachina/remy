@@ -28,7 +28,7 @@ void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int ge
       continue;
     }
 
-    printf( "Bisecting === %s === into === %s ===\n", my_whisker->str().c_str(), bisected_whisker.str().c_str() );
+    //    printf( "Bisecting === %s === into === %s ===\n", my_whisker->str().c_str(), bisected_whisker.str().c_str() );
     assert( whiskers.replace( *my_whisker, bisected_whisker ) );
     break;
   }
@@ -56,7 +56,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
     }
     */
 
-    printf( "Whiskers at generation %u: %s\n\n", generation, outcome.used_whiskers.str().c_str() );
+    //    printf( "Whiskers at generation %u: %s\n\n", generation, outcome.used_whiskers.str().c_str() );
 
     /* is there a whisker at this generation that we can improve? */
     auto my_whisker( outcome.used_whiskers.most_used( generation ) );
@@ -69,9 +69,9 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
       if ( (generation % 4) == 0 ) {
 	//	printf( "Splitting most popular whisker.\n" );
-	printf( "Whiskers before split at generation %u: %s\n\n", generation, whiskers.str().c_str() );
+	//	printf( "Whiskers before split at generation %u: %s\n\n", generation, whiskers.str().c_str() );
 	apply_best_split( whiskers, generation );
-	printf( "Whiskers after split at generation %u: %s\n\n", generation, whiskers.str().c_str() );
+	//	printf( "Whiskers after split at generation %u: %s\n\n", generation, whiskers.str().c_str() );
 	generation++;
 	whiskers.promote( generation );
 	break;
