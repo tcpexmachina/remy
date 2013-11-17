@@ -104,7 +104,7 @@ double SenderGang<SenderType>::utility( void ) const
     total_utility += x.utility.utility();
   }
 
-  return total_utility;
+  return total_utility / _gang.size(); /* mean utility per sender */
 }
 
 template <class SenderType>
