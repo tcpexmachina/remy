@@ -16,6 +16,8 @@ int main( int argc, char *argv[] )
   unsigned int num_senders = 2;
   double link_ppt = 1.0;
   double delay = 100.0;
+  double mean_on_duration = 5000.0;
+  double mean_off_duration = 5000.0;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -47,6 +49,12 @@ int main( int argc, char *argv[] )
     } else if ( arg.substr( 0, 4 ) == "rtt=" ) {
       delay = atof( arg.substr( 4 ).c_str() );
       fprintf( stderr, "Setting delay to %f ms\n", delay );
+    } else if ( arg.substr( 0, 3 ) == "on=" ) {
+      mean_on_duration = atof( arg.substr( 3 ).c_str() );
+      fprintf( stderr, "Setting mean_on_duration to %f ms\n", mean_on_duration );
+    } else if ( arg.substr( 0, 4 ) == "off=" ) {
+      mean_off_duration = atof( arg.substr( 4 ).c_str() );
+      fprintf( stderr, "Setting mean_off_duration to %f ms\n", mean_off_duration );
     }
   }
 
@@ -54,6 +62,8 @@ int main( int argc, char *argv[] )
   configuration_range.link_packets_per_ms = make_pair( link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
   configuration_range.rtt_ms = make_pair( delay, 0 ); /* ms */
   configuration_range.max_senders = num_senders;
+  configuration_range.mean_on_duration = mean_on_duration;
+  configuration_range.mean_off_duration = mean_off_duration;
   configuration_range.lo_only = true;
 
   Evaluator eval( whiskers, configuration_range );
