@@ -4,24 +4,30 @@
 #include <queue>
 
 #include "packet.hh"
-#include "poisson.hh"
+#include "delay.hh"
 
 class Link
 {
 private:
   std::queue< Packet > _buffer;
-  const double _rate;
-  double _next_delivery_time;
+
+  Delay _pending_packet;
 
 public:
-  Link( const double s_rate );
+  Link( const double s_rate ) : _buffer(), _pending_packet( 1.0 / s_rate ) {}
 
-  void accept( Packet && p ) noexcept { _buffer.push( std::move( p ) ); }
+  void accept( Packet && p, const double & tickno ) noexcept {
+    if ( _pending_packet.empty() ) {
+      _pending_packet.accept( std::move( p ), tickno );
+    } else {
+      _buffer.push( std::move( p ) );
+    }
+  }
 
   template <class NextHop>
   void tick( NextHop & next, const double & tickno );
 
-  double next_event_time( const double & tickno ) const;
+  double next_event_time( const double & tickno ) const { return _pending_packet.next_event_time( tickno ); }
 };
 
 #endif

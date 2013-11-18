@@ -3,6 +3,8 @@
 
 #include <queue>
 #include <tuple>
+#include <cassert>
+#include <limits>
 
 #include "packet.hh"
 
@@ -43,6 +45,8 @@ public:
       return std::get< 0 >( _queue.front() );
     }
   }
+
+  bool empty( void ) const { return _queue.empty(); }
 };
 
 #endif
