@@ -5,6 +5,7 @@
 #include <tuple>
 #include <cassert>
 #include <limits>
+#include <cstdio>
 
 #include "packet.hh"
 
