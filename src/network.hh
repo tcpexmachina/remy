@@ -28,6 +28,8 @@ public:
   NetConfig set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
   NetConfig set_delay( const double s_delay ) { delay = s_delay; return *this; }
   NetConfig set_num_senders( const unsigned int n ) { num_senders = n; return *this; }
+  NetConfig set_on_duration( const double & duration ) { mean_on_duration = duration; return *this; }
+  NetConfig set_off_duration( const double & duration ) { mean_off_duration = duration; return *this; }
 
   std::string str( void ) const
   {
