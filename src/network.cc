@@ -31,7 +31,8 @@ void Network<SenderType>::run_simulation( const double & duration )
     /* find element with soonest event */
     _tickno = min( min( _senders.next_event_time( _tickno ),
 			_link.next_event_time( _tickno ) ),
-		   _delay.next_event_time( _tickno ) );
+		   min( _delay.next_event_time( _tickno ),
+			_rec.next_event_time( _tickno ) ) );
 
     assert( _tickno < std::numeric_limits<double>::max() );
 
