@@ -36,6 +36,7 @@ void Network<SenderType>::run_simulation( const double & duration )
 
     assert( _tickno < std::numeric_limits<double>::max() );
 
+    if ( _tickno > duration ) break;
     tick();
   }
 }
