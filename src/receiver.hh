@@ -19,6 +19,8 @@ public:
   void clear( const unsigned int src ) { _collector[ src ].clear(); }
   bool readable( const unsigned int src ) const noexcept
   { return (src < _collector.size()) && (!_collector[ src ].empty()); }
+
+  double next_event_time( const double & tickno ) const;
 };
 
 #endif
