@@ -8,7 +8,7 @@ Network<SenderType>::Network( const SenderType & example_sender, PRNG & s_prng, 
   : _prng( s_prng ),
     _senders( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender, _prng ),
     _link( config.link_ppt ),
-    _delay( config.delay ),
+    _delay( config.delay, "prop" ),
     _rec(),
     _tickno( 0 )
 {

@@ -6,6 +6,7 @@
 #include <cassert>
 #include <limits>
 #include <cstdio>
+#include <string>
 
 #include "packet.hh"
 
@@ -14,9 +15,10 @@ class Delay
 private:
   std::queue< std::tuple< double, Packet > > _queue;
   const double _delay;
+  std::string tag_;
 
 public:
-  Delay( const double s_delay ) : _queue(), _delay( s_delay ) {}
+  Delay( const double s_delay, const std::string t_tag ) : _queue(), _delay( s_delay ), tag_( t_tag ) {}
  
   void accept( Packet && p, const double & tickno ) noexcept
   {
@@ -27,6 +29,7 @@ public:
   void tick( NextHop & next, const double & tickno )
   {
     while ( (!_queue.empty()) && (std::get< 0 >( _queue.front() ) <= tickno) ) {
+      if (tag_ == "prop") printf("%f, received feedback\n", tickno);
       assert( std::get< 0 >( _queue.front() ) == tickno );
       next.accept( std::move( std::get< 1 >( _queue.front() ) ), tickno );
       _queue.pop();

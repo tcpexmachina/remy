@@ -14,7 +14,7 @@ private:
   Delay _pending_packet;
 
 public:
-  Link( const double s_rate ) : _buffer(), _pending_packet( 1.0 / s_rate ) {}
+  Link( const double s_rate ) : _buffer(), _pending_packet( 1.0 / s_rate, "tx" ) {}
 
   void accept( Packet && p, const double & tickno ) noexcept {
     if ( _pending_packet.empty() ) {
