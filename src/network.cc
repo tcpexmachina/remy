@@ -17,6 +17,7 @@ Network<SenderType>::Network( const SenderType & example_sender, PRNG & s_prng, 
 template <class SenderType>
 void Network<SenderType>::tick( void )
 {
+//  printf("This tick: %f\n", _tickno);
   _senders.tick( _link, _rec, _tickno );
   _link.tick( _delay, _tickno );
   _delay.tick( _rec, _tickno );

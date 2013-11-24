@@ -19,7 +19,7 @@ public:
 
   NetConfig( void )
     : mean_on_duration( 5000.0 ),
-      mean_off_duration( 5000.0 ),
+      mean_off_duration( 0.0 ),
       num_senders( 8 ),
       link_ppt( 1.0 ),
       delay( 150 )

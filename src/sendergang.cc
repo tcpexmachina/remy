@@ -82,7 +82,7 @@ void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & re
     const std::vector< Packet > & packets = rec.packets_for( id );
 
     utility.packets_received( packets );
-    sender.packets_received( packets );
+    sender.packets_received( packets, tickno );
 
     rec.clear( id );
   }

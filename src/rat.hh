@@ -28,7 +28,7 @@ private:
 public:
   Rat( WhiskerTree & s_whiskers, const bool s_track=false );
 
-  void packets_received( const std::vector< Packet > & packets );
+  void packets_received( const std::vector< Packet > & packets, const double tickno );
   void reset( const double & tickno ); /* start new flow */
 
   template <class NextHop>

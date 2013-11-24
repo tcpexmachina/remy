@@ -17,14 +17,19 @@ Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
 {
 }
 
-void Rat::packets_received( const vector< Packet > & packets ) {
+void Rat::packets_received( const vector< Packet > & packets, const double tickno ) {
   _packets_received += packets.size();
   _memory.packets_received( packets, _flow_id );
-
+  printf("%f, updated memory to %s\n", tickno, _memory.str().c_str());
   const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
 
   _the_window = current_whisker.window( _the_window );
   _intersend_time = current_whisker.intersend();
+  printf("%f, _last_send_time %f, _intersend_time updated to %f, next tx at %f\n",
+         tickno,
+         _last_send_time,
+         _intersend_time,
+         _last_send_time + _intersend_time);
 }
 
 void Rat::reset( const double & )

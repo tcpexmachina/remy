@@ -60,6 +60,7 @@ public:
     if ( _on_duration == 0 ) {
       return 0.0;
     }
+    printf("%u packets, %f time\n", _packets_received, _on_duration);
     return double( _packets_received ) / ( _on_duration );
   }
 };
