@@ -6,8 +6,6 @@
 #include "network.cc"
 #include "rat-templates.cc"
 
-const unsigned int TICK_COUNT = 100000;
-
 Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _whiskers( s_whiskers ),
@@ -35,7 +33,7 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range 
 }
 
 Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements,
-				     const bool trace, const unsigned int carefulness ) const
+				     const bool trace, const unsigned int sim_ticks ) const
 {
   PRNG run_prng( _prng );
 
@@ -51,7 +49,7 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
   for ( auto &x : _configs ) {
     /* run once */
     Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
-    network1.run_simulation( TICK_COUNT * carefulness );
+    network1.run_simulation( sim_ticks );
 
     the_outcome.score += network1.senders().utility();
     the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
