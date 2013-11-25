@@ -45,6 +45,8 @@ int main( int argc, char *argv[] )
   configuration_range.link_packets_per_ms = make_pair( 1.0, 2.0 ); /* 10 Mbps to 20 Mbps */
   configuration_range.rtt_ms = make_pair( 100, 200 ); /* ms */
   configuration_range.max_senders = 16;
+  configuration_range.mean_on_duration = 5000;
+  configuration_range.mean_off_duration = 5000;
   //  configuration_range.lo_only = true;
   RatBreeder breeder( configuration_range );
 
@@ -59,11 +61,8 @@ int main( int argc, char *argv[] )
 	  configuration_range.rtt_ms.second );
   printf( "Optimizing for num_senders = 1-%d\n",
 	  configuration_range.max_senders );
-
-  const NetConfig defaultnet;
-
   printf( "Optimizing for mean_on_duration = %f, mean_off_duration = %f\n",
-	  defaultnet.mean_on_duration, defaultnet.mean_off_duration );
+	  configuration_range.mean_on_duration, configuration_range.mean_off_duration );
 
   printf( "Initial rules (use if=FILENAME to read from disk): %s\n", whiskers.str().c_str() );
   printf( "#######################\n" );
