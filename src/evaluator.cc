@@ -5,16 +5,14 @@
 #include "network.cc"
 #include "rat-templates.cc"
 
-const unsigned int TICK_COUNT = 1000000;
-
 Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _whiskers( s_whiskers ),
     _configs()
 {
-  /* sample 64 link speeds */
+  /* sample 32 link speeds */
 
-  const double steps = 64.0;
+  const double steps = 32.0;
 
   const double link_speed_dynamic_range = range.link_packets_per_ms.second / range.link_packets_per_ms.first;
 
@@ -44,12 +42,20 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
 
   run_whiskers.reset_counts();
 
+  if ( trace ) {
+    assert( carefulness == 10 );
+  } else {
+    assert( carefulness == 1 );
+  }
+
   /* run tests */
   Outcome the_outcome;
   for ( auto &x : _configs ) {
+    const double dynamic_tick_count = 500000.0 / x.link_ppt;
+
     /* run once */
     Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
-    network1.run_simulation( TICK_COUNT * carefulness );
+    network1.run_simulation( dynamic_tick_count * carefulness );
 
     the_outcome.score += network1.senders().utility();
     the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
