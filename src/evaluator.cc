@@ -42,12 +42,6 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
 
   run_whiskers.reset_counts();
 
-  if ( trace ) {
-    assert( carefulness == 10 );
-  } else {
-    assert( carefulness == 1 );
-  }
-
   /* run tests */
   Outcome the_outcome;
   for ( auto &x : _configs ) {
