@@ -55,6 +55,7 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
 
     /* run once */
     Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
+    fprintf( stderr, "(%f for %f ticks) ", x.link_ppt, dynamic_tick_count );
     network1.run_simulation( dynamic_tick_count * carefulness );
 
     the_outcome.score += network1.senders().utility();
