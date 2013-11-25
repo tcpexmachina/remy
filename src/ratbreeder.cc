@@ -46,32 +46,16 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
     auto outcome( eval.score( {} ) );
 
-    //    printf( "gen %d, score = %.12f\n", generation, outcome.score );
-
-    /*
-    for ( auto &run : outcome.throughputs_delays ) {
-      for ( auto &x : run ) {
-	printf( "sender: [tp=%f, del=%f]\n", x.first, x.second );
-      }
-    }
-    */
-
-    //    printf( "Whiskers at generation %u: %s\n\n", generation, outcome.used_whiskers.str().c_str() );
-
     /* is there a whisker at this generation that we can improve? */
     auto my_whisker( outcome.used_whiskers.most_used( generation ) );
 
     /* if not, increase generation and promote all whiskers */
     if ( !my_whisker ) {
       generation++;
-      //      printf( "Advancing to generation %d\n", generation );
       whiskers.promote( generation );
 
       if ( (generation % 4) == 0 ) {
-	//	printf( "Splitting most popular whisker.\n" );
-	//	printf( "Whiskers before split at generation %u: %s\n\n", generation, whiskers.str().c_str() );
 	apply_best_split( whiskers, generation );
-	//	printf( "Whiskers after split at generation %u: %s\n\n", generation, whiskers.str().c_str() );
 	generation++;
 	whiskers.promote( generation );
 	break;
@@ -89,7 +73,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       double best_score = -INT_MAX;
       const Whisker *best_whisker = nullptr;
 
-      //      printf( "Evaluating %lu replacements for %s.\n", replacements.size(), differential_whisker.str().c_str() );
+      printf( "Evaluating %lu replacements for %s.\n", replacements.size(), differential_whisker.str().c_str() );
 
       vector< pair< Whisker &, future< double > > > scores;
       vector< pair< Whisker &, double > > memoized_scores;
@@ -127,8 +111,8 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
       /* replace with best nexgen choice and repeat */
       if ( best_score > outcome.score ) {
-	//	printf( "Replacing with whisker that scored %.12f => %.12f (+%.12f)\n", outcome.score, best_score,
-	//		best_score - outcome.score );
+	printf( "Replacing with whisker that scored %.12f => %.12f (+%.12f)\n", outcome.score, best_score,
+		best_score - outcome.score );
 	//	printf( "=> %s\n", best_whisker->str().c_str() );
 	assert( whiskers.replace( *best_whisker ) );
 	differential_whisker = *best_whisker;
@@ -136,7 +120,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 	outcome.score = best_score;
       } else {
 	assert( whiskers.replace( *best_whisker ) );
-	//	printf( "Done with search.\n" );
+	printf( "Done with search.\n" );
 	break;
       }
     }
