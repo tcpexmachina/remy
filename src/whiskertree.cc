@@ -9,7 +9,7 @@ using namespace std;
 WhiskerTree::WhiskerTree()
   : _domain( Memory(), MAX_MEMORY() ),
     _children(),
-    _leaf( 1, Whisker( DEFAULT_WINDOW, DEFAULT_MULTIPLE, MIN_INTERSEND, _domain ) ),
+    _leaf( 1, Whisker( DEFAULT_WINDOW, DEFAULT_MULTIPLE, (MAX_INTERSEND + MIN_INTERSEND) / 2, _domain ) ),
     _used_windows()
 {
 }
