@@ -3,6 +3,7 @@
 
 #include <array>
 
+#include "configrange.hh"
 #include "whisker.hh"
 #include "memoryrange.hh"
 #include "dna.pb.h"
@@ -44,7 +45,7 @@ public:
 
   bool is_leaf( void ) const;
 
-  RemyBuffers::WhiskerTree DNA( void ) const;
+  RemyBuffers::WhiskerTree DNA( const ConfigRange * config_range ) const;
   WhiskerTree( const RemyBuffers::WhiskerTree & dna );
 };
 
