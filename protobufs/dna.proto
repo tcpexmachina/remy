@@ -6,6 +6,8 @@ message WhiskerTree {
   repeated WhiskerTree children = 2;
 
   optional Whisker leaf = 3;
+
+  optional ConfigRange config = 4;
 }
 
 message MemoryRange {
@@ -25,4 +27,15 @@ message Whisker {
   optional double intersend = 33;
 
   optional MemoryRange domain = 34;
+}
+
+message ConfigRange {
+  required double bw_low = 41;
+  required double bw_high = 42;
+  required double rtt_low = 43;
+  required double rtt_high = 44;
+  required uint32 min_senders = 45;
+  required uint32 max_senders = 46;
+  required double mean_off_duration = 47;
+  required double mean_on_duration = 48;
 }

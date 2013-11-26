@@ -97,7 +97,7 @@ int main( int argc, char *argv[] )
 	exit( 1 );
       }
 
-      if ( !whiskers.DNA().SerializeToFileDescriptor( fd ) ) {
+      if ( !whiskers.DNA( &configuration_range ).SerializeToFileDescriptor( fd ) ) {
 	fprintf( stderr, "Could not serialize whiskers.\n" );
 	exit( 1 );
       }
