@@ -238,9 +238,14 @@ bool WhiskerTree::is_leaf( void ) const
   return !_leaf.empty();
 }
 
-RemyBuffers::WhiskerTree WhiskerTree::DNA( void ) const
+RemyBuffers::WhiskerTree WhiskerTree::DNA( const ConfigRange * config_range ) const
 {
   RemyBuffers::WhiskerTree ret;
+
+  /* Set Network Config to track provenance, if required */
+  if ( config_range != nullptr ) {
+    ret.mutable_config()->CopyFrom( config_range->DNA() );
+  }
 
   /* set domain */
   ret.mutable_domain()->CopyFrom( _domain.DNA() );
@@ -251,7 +256,7 @@ RemyBuffers::WhiskerTree WhiskerTree::DNA( void ) const
   } else {
     for ( auto &x : _children ) {
       RemyBuffers::WhiskerTree *child = ret.add_children();
-      *child = x.DNA();
+      *child = x.DNA( nullptr );
     }
   }
 
