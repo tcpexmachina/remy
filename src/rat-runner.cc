@@ -58,7 +58,7 @@ int main( int argc, char *argv[] )
     }
   }
 
-  Evaluator::ConfigRange configuration_range;
+  ConfigRange configuration_range;
   configuration_range.link_packets_per_ms = make_pair( link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
   configuration_range.rtt_ms = make_pair( delay, 0 ); /* ms */
   configuration_range.max_senders = num_senders;
