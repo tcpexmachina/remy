@@ -19,7 +19,7 @@ void Rat::send( const unsigned int id, NextHop & next, const double & tickno )
 
   if ( (_packets_sent < _packets_received + _the_window)
        and (_last_send_time + _intersend_time <= tickno) ) {
-    printf("Sent out a packet at %f, last_send_time was %f, _intersend_time is %f\n", tickno, _last_send_time, _intersend_time);
+    printf("%u: Sent out a packet at %f, last_send_time was %f, _intersend_time is %f\n", id, tickno, _last_send_time, _intersend_time);
     Packet p( id, _flow_id, tickno );
     _packets_sent++;
     _memory.packet_sent( p );

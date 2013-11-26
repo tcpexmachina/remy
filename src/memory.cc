@@ -8,7 +8,7 @@ using namespace std;
 
 static const double alpha = 1.0 / 8.0;
 
-void Memory::packets_received( const vector< Packet > & packets, const unsigned int flow_id )
+void Memory::packets_received( const vector< Packet > & packets, const unsigned int flow_id, const unsigned int rat_id )
 {
   for ( const auto &x : packets ) {
     if ( x.flow_id != flow_id ) {
@@ -21,6 +21,8 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
       _last_tick_received = x.tick_received;
       _min_rtt = rtt;
     } else {
+      printf("%u: _last_tick_received %f, tick_received %f, new rtt %f\n", rat_id, _last_tick_received,
+                x.tick_received, rtt);
       _rec_send_ewma = (1 - alpha) * _rec_send_ewma + alpha * (x.tick_sent - _last_tick_sent);
       _rec_rec_ewma = (1 - alpha) * _rec_rec_ewma + alpha * (x.tick_received - _last_tick_received);
       _last_tick_sent = x.tick_sent;

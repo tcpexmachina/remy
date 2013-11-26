@@ -17,10 +17,11 @@ Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
 {
 }
 
-void Rat::packets_received( const vector< Packet > & packets, const double tickno ) {
+void Rat::packets_received( const vector< Packet > & packets, const double tickno, const unsigned int rat_id ) {
   _packets_received += packets.size();
-  _memory.packets_received( packets, _flow_id );
-  printf("%f, updated memory to %s\n", tickno, _memory.str().c_str());
+  printf("%u: %f, memory was %s\n", rat_id, tickno, _memory.str().c_str());
+  _memory.packets_received( packets, _flow_id, rat_id );
+  printf("%u: %f, updated memory to %s\n", rat_id, tickno, _memory.str().c_str());
   const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
 
   _the_window = current_whisker.window( _the_window );
