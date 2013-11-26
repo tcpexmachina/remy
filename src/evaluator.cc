@@ -1,6 +1,7 @@
 #include <boost/random/uniform_real_distribution.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 
+#include "configrange.hh"
 #include "evaluator.hh"
 #include "network.cc"
 #include "rat-templates.cc"
