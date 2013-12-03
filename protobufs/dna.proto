@@ -8,6 +8,8 @@ message WhiskerTree {
   optional Whisker leaf = 3;
 
   optional ConfigRange config = 4;
+
+  optional OptimizationSettings optimizer = 5;
 }
 
 message MemoryRange {
@@ -29,13 +31,34 @@ message Whisker {
   optional MemoryRange domain = 34;
 }
 
+message OptimizationSetting {
+  optional double min_value = 41;
+  optional double max_value = 42;
+
+  optional double min_change = 43;
+  optional double max_change = 44;
+
+  optional double multiplier = 45;
+
+  optional double default_value = 46;
+}
+
+message OptimizationSettings {
+  optional OptimizationSetting window_increment = 51;
+  optional OptimizationSetting window_multiple = 52;
+  optional OptimizationSetting intersend = 53;
+}
+
+message Range {
+  optional double low = 61;
+  optional double high = 62;
+}
+
 message ConfigRange {
-  required double bw_low = 41;
-  required double bw_high = 42;
-  required double rtt_low = 43;
-  required double rtt_high = 44;
-  required uint32 min_senders = 45;
-  required uint32 max_senders = 46;
-  required double mean_off_duration = 47;
-  required double mean_on_duration = 48;
+  optional Range link_packets_per_ms = 71;
+  optional Range rtt = 72;
+  optional Range num_senders = 73;
+
+  optional double mean_off_duration = 81;
+  optional double mean_on_duration = 82;
 }

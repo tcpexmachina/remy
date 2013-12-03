@@ -17,8 +17,6 @@ private:
 
   const Whisker * whisker( const Memory & _memory ) const;
 
-  mutable std::array< unsigned int, MAX_WINDOW + 1 > _used_windows;
-
 public:
   WhiskerTree();
 
@@ -27,7 +25,6 @@ public:
   const Whisker & use_whisker( const Memory & _memory, const bool track ) const;
 
   void use_window( const unsigned int win ) const;
-  const std::array< unsigned int, MAX_WINDOW + 1 > & used_windows( void ) const { return _used_windows; }
 
   bool replace( const Whisker & w );
   bool replace( const Whisker & src, const WhiskerTree & dst );
@@ -45,7 +42,7 @@ public:
 
   bool is_leaf( void ) const;
 
-  RemyBuffers::WhiskerTree DNA( const ConfigRange * config_range ) const;
+  RemyBuffers::WhiskerTree DNA( void ) const;
   WhiskerTree( const RemyBuffers::WhiskerTree & dna );
 };
 

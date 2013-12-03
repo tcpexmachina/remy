@@ -36,75 +36,57 @@ Whisker::Whisker( const Whisker & other )
 {
 }
 
+template < typename T >
+bool Whisker::OptimizationSetting< T >::eligible_value( const T & value ) const
+{
+  return value >= min_value and value <= max_value;
+}
+
+template < typename T >
+vector< T > Whisker::OptimizationSetting< T >::alternatives( const T & value ) const
+{
+  assert( eligible_value( value ) );
+
+  vector< T > ret( 1, value );
+
+  for ( T proposed_change = min_change;
+	proposed_change <= max_change;
+	proposed_change *= multiplier ) {
+    /* explore positive change */
+    const T proposed_value_up = value + proposed_change;
+    const T proposed_value_down = value - proposed_change;
+
+    if ( eligible_value( proposed_value_up ) ) {
+      ret.push_back( proposed_value_up );
+    }
+
+    if ( eligible_value( proposed_value_down ) ) {
+      ret.push_back( proposed_value_down );
+    }
+  }
+
+  return ret;
+}
+
 vector< Whisker > Whisker::next_generation( void ) const
 {
-  /* generate all window increments */
-  vector< Whisker > ret_windows;
-
-  Whisker copy( *this );
-  copy._generation++;
-  ret_windows.push_back( copy );
-
-  for ( unsigned int i = 1; i <= MAX_WINDOW_INCR; i *= 8 ) {
-    Whisker new_whisker( *this );
-    new_whisker._generation++;
-
-    if ( _window_increment + i <= MAX_WINDOW ) {
-      new_whisker._window_increment = _window_increment + i;
-      ret_windows.push_back( new_whisker );
-    }
-
-    if ( _window_increment - i >= -MAX_WINDOW ) {
-      new_whisker._window_increment = _window_increment - i;
-      ret_windows.push_back( new_whisker );
-    }
-  }
-
-  /* generate all window multiples */
-  vector< Whisker > ret_multiples;
-
-  for ( auto &x : ret_windows ) {
-    Whisker multiple_copy( x );
-    ret_multiples.push_back( multiple_copy );
-
-    for ( double multiple_incr = MULTIPLE_INCR; multiple_incr <= MAX_MULTIPLE_INCR; multiple_incr *= 8.0 ) {
-      Whisker new_whisker( x );
-
-      if ( x._window_multiple + multiple_incr <= MAX_MULTIPLE ) {
-	new_whisker._window_multiple = x._window_multiple + multiple_incr;
-	ret_multiples.push_back( new_whisker );
-      }
-
-      if ( x._window_multiple - multiple_incr >= 0 ) {
-	new_whisker._window_multiple = x._window_multiple - multiple_incr;
-	ret_multiples.push_back( new_whisker );
-      }
-    }
-  }
-
-  /* generate all rates */
   vector< Whisker > ret;
-  for ( auto &x : ret_multiples ) {
-    Whisker intersend_copy( x );
-    ret.push_back( intersend_copy );
 
-    for ( double intersend_incr = INTERSEND_INCR; intersend_incr <= MAX_INTERSEND_INCR; intersend_incr *= 8.0 ) {
-      Whisker new_whisker( x );
+  for ( const auto & alt_window : get_optimizer().window_increment.alternatives( _window_increment ) ) {
+    for ( const auto & alt_multiple : get_optimizer().window_multiple.alternatives( _window_multiple ) ) {
+      for ( const auto & alt_intersend : get_optimizer().intersend.alternatives( _intersend ) ) {
+	Whisker new_whisker { *this };
+	new_whisker._generation++;
 
-      if ( x._intersend + intersend_incr <= MAX_INTERSEND ) {
-	new_whisker._intersend = x._intersend + intersend_incr;
-	ret.push_back( new_whisker );
-      }
+	new_whisker._window_increment = alt_window;
+	new_whisker._window_multiple = alt_multiple;
+	new_whisker._intersend = alt_intersend;
 
-      if ( x._intersend - intersend_incr >= MIN_INTERSEND ) {
-	new_whisker._intersend = x._intersend - intersend_incr;
+	new_whisker.round();
+
 	ret.push_back( new_whisker );
       }
     }
-  }
-
-  for ( auto &x : ret ) {
-    x.round();
   }
 
   return ret;

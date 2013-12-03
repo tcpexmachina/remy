@@ -96,8 +96,12 @@ int main( int argc, char *argv[] )
 	exit( 1 );
       }
 
-      if ( !whiskers.DNA( &configuration_range ).SerializeToFileDescriptor( fd ) ) {
-	fprintf( stderr, "Could not serialize whiskers.\n" );
+      auto remycc = whiskers.DNA();
+      remycc.mutable_config()->CopyFrom( configuration_range.DNA() );
+      remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
+
+      if ( not remycc.SerializeToFileDescriptor( fd ) ) {
+	fprintf( stderr, "Could not serialize RemyCC.\n" );
 	exit( 1 );
       }
 

@@ -17,8 +17,6 @@ void Rat::send( const unsigned int id, NextHop & next, const double & tickno )
     _intersend_time = current_whisker.intersend();
   }
 
-  _whiskers.use_window( _the_window );
-
   if ( (_packets_sent < _packets_received + _the_window)
        and (_last_send_time + _intersend_time <= tickno) ) {
     Packet p( id, _flow_id, tickno );

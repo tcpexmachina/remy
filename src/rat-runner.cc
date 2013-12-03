@@ -40,6 +40,14 @@ int main( int argc, char *argv[] )
 	perror( "close" );
 	exit( 1 );
       }
+
+      if ( tree.has_config() ) {
+	printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
+      }
+
+      if ( tree.has_optimizer() ) {
+	printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
+      }
     } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
       num_senders = atoi( arg.substr( 5 ).c_str() );
       fprintf( stderr, "Setting num_senders to %d\n", num_senders );
@@ -80,22 +88,6 @@ int main( int argc, char *argv[] )
   }
 
   printf( "normalized_score = %f\n", norm_score );
-
-
-  printf( "Windows:" );
-  unsigned int total_count = 0;
-
-  for ( unsigned int i = 0; i <= MAX_WINDOW; i++ ) {
-    total_count += outcome.used_whiskers.used_windows()[ i ];
-  }
-
-  for ( unsigned int i = 0; i <= MAX_WINDOW; i++ ) {
-    unsigned int count = outcome.used_whiskers.used_windows()[ i ];
-    if ( count ) {
-      printf( " [%u=%.4f]", i, double( count ) / double( total_count ) );
-    }
-  }
-  printf( "\n" );
 
   printf( "Whiskers: %s\n", outcome.used_whiskers.str().c_str() );
 

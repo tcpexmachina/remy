@@ -9,16 +9,14 @@ using namespace std;
 WhiskerTree::WhiskerTree()
   : _domain( Memory(), MAX_MEMORY() ),
     _children(),
-    _leaf( 1, Whisker( DEFAULT_WINDOW, DEFAULT_MULTIPLE, MIN_INTERSEND, _domain ) ),
-    _used_windows()
+    _leaf( 1, Whisker( _domain ) )
 {
 }
 
 WhiskerTree::WhiskerTree( const Whisker & whisker, const bool bisect )
   : _domain( whisker.domain() ),
     _children(),
-    _leaf(),
-    _used_windows()
+    _leaf()
 {
   if ( !bisect ) {
     _leaf.push_back( whisker );
@@ -29,17 +27,8 @@ WhiskerTree::WhiskerTree( const Whisker & whisker, const bool bisect )
   }
 }
 
-void WhiskerTree::use_window( const unsigned int win ) const
-{
-  const unsigned int newwin = min( win, MAX_WINDOW );
-
-  _used_windows[ newwin ]++;
-}
-
 void WhiskerTree::reset_counts( void )
 {
-  _used_windows.fill( 0 );
-
   if ( is_leaf() ) {
     _leaf.front().reset_count();
   } else {
@@ -238,14 +227,9 @@ bool WhiskerTree::is_leaf( void ) const
   return !_leaf.empty();
 }
 
-RemyBuffers::WhiskerTree WhiskerTree::DNA( const ConfigRange * config_range ) const
+RemyBuffers::WhiskerTree WhiskerTree::DNA( void ) const
 {
   RemyBuffers::WhiskerTree ret;
-
-  /* Set Network Config to track provenance, if required */
-  if ( config_range != nullptr ) {
-    ret.mutable_config()->CopyFrom( config_range->DNA() );
-  }
 
   /* set domain */
   ret.mutable_domain()->CopyFrom( _domain.DNA() );
@@ -256,7 +240,7 @@ RemyBuffers::WhiskerTree WhiskerTree::DNA( const ConfigRange * config_range ) co
   } else {
     for ( auto &x : _children ) {
       RemyBuffers::WhiskerTree *child = ret.add_children();
-      *child = x.DNA( nullptr );
+      *child = x.DNA();
     }
   }
 
@@ -266,8 +250,7 @@ RemyBuffers::WhiskerTree WhiskerTree::DNA( const ConfigRange * config_range ) co
 WhiskerTree::WhiskerTree( const RemyBuffers::WhiskerTree & dna )
   : _domain( dna.domain() ),
     _children(),
-    _leaf(),
-    _used_windows()
+    _leaf()
 {
   if ( dna.has_leaf() ) {
     assert( dna.children_size() == 0 );
