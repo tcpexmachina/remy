@@ -1,5 +1,6 @@
 #include <boost/functional/hash.hpp>
 
+#include "constants.hh"
 #include "memoryrange.hh"
 
 using namespace std;
@@ -10,7 +11,7 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
   vector< MemoryRange > ret { *this };
 
   /* bisect in each axis */
-  for ( unsigned int i = 0; i < Memory::datasize; i++ ) {
+  for ( auto i : g_constants.axis_values ) {
     vector< MemoryRange > doubled;
     for ( const auto &x : ret ) {
       auto ersatz_lower( x._lower ), ersatz_upper( x._upper );

@@ -6,7 +6,7 @@
 #include "network.cc"
 #include "rat-templates.cc"
 
-const unsigned int TICK_COUNT = 1000000;
+const unsigned int TICK_COUNT = 100000;
 
 Evaluator::Evaluator( const WhiskerTree & s_whiskers, std::vector<NetConfig> & configs )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */

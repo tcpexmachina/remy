@@ -46,7 +46,7 @@ int main( int argc, char *argv[] )
   ConfigRange range;
   range.link_packets_per_ms = make_pair( 1.0, 2.0 ); /* 10 Mbps to 20 Mbps */
   range.rtt_ms = make_pair( 100, 200 ); /* ms */
-  range.max_senders = 16;
+  range.max_senders = 2;
   range.mean_on_duration = 5000;
   range.mean_off_duration = 5000;
   //  range.lo_only = true;
