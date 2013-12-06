@@ -114,7 +114,7 @@ vector< pair< double, double > > SenderGang<SenderType>::throughputs_delays( voi
   ret.reserve( _gang.size() );
 
   for ( auto &x : _gang ) {
-    ret.emplace_back( x.utility.average_throughput(), x.utility.average_delay() );
+    ret.emplace_back( x.utility.effective_throughput(), x.utility.average_delay() );
   }
 
   return ret;
