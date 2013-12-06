@@ -66,15 +66,20 @@ int main( int argc, char *argv[] )
     }
   }
 
-  ConfigRange configuration_range;
-  configuration_range.link_packets_per_ms = make_pair( link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
-  configuration_range.rtt_ms = make_pair( delay, 0 ); /* ms */
-  configuration_range.max_senders = num_senders;
-  configuration_range.mean_on_duration = mean_on_duration;
-  configuration_range.mean_off_duration = mean_off_duration;
-  configuration_range.lo_only = true;
+  ConfigRange range;
+  range.link_packets_per_ms = make_pair( link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
+  range.rtt_ms = make_pair( delay, 0 ); /* ms */
+  range.max_senders = num_senders;
+  range.mean_on_duration = mean_on_duration;
+  range.mean_off_duration = mean_off_duration;
+  range.lo_only = true;
 
-  Evaluator eval( whiskers, configuration_range );
+  std::vector<NetConfig> configs;
+
+  // evaluation, so only load a single configuration
+  configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+
+  Evaluator eval( whiskers, configs );
   auto outcome = eval.score( {}, false, 10 );
   printf( "score = %f\n", outcome.score );
   double norm_score = 0;
