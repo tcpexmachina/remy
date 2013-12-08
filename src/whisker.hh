@@ -30,7 +30,7 @@ public:
   unsigned int count( void ) const { return _domain.count(); }
 
   const unsigned int & generation( void ) const { return _generation; }
-  unsigned int window( const unsigned int previous_window ) const { return std::max( 0, int( previous_window * _window_multiple + _window_increment ) ); }
+  unsigned int window( const unsigned int previous_window ) const { return std::min( std::max( 0, int( previous_window * _window_multiple + _window_increment ) ), 1000000 ); }
   const double & intersend( void ) const { return _intersend; }
   const MemoryRange & domain( void ) const { return _domain; }
 
