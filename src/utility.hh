@@ -8,7 +8,7 @@ class Utility
 private:
   double _tick_share_sending;
   unsigned int _packets_received;
-  uint64_t _total_delay;
+  double _total_delay;
 
 public:
   Utility( void ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ) {}
