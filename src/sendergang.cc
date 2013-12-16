@@ -31,7 +31,7 @@ void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const double 
 
   /* recount number sending */
   _num_sending = accumulate( _gang.begin(), _gang.end(),
-			     0, []( const unsigned int a, const SwitchedSender & b )
+			     0, []( const unsigned int a, const TimeSwitchedSender & b )
 			     { return a + b.sending; } );
 
   /* run senders */
@@ -41,59 +41,59 @@ void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const double 
 }
 
 template <class SenderType>
-void SenderGang<SenderType>::SwitchedSender::switcher( const double & tickno,
-						       Exponential & start_distribution,
-						       Exponential & stop_distribution,
-						       const unsigned int num_sending )
+void SenderGang<SenderType>::TimeSwitchedSender::switcher( const double & tickno,
+							   Exponential & start_distribution,
+							   Exponential & stop_distribution,
+							   const unsigned int num_sending )
 {
   /* should it switch? */
-  while ( next_switch_tick <= tickno ) {
-    assert( next_switch_tick == tickno );
+  while ( this->next_switch_tick <= tickno ) {
+    assert( this->next_switch_tick == tickno );
 
     /* switch */
-    sending = !sending;
+    this->sending = !this->sending;
 
     /* increment next switch time */
-    next_switch_tick += (sending ? stop_distribution : start_distribution).sample();
+    this->next_switch_tick += (this->sending ? stop_distribution : start_distribution).sample();
 
     /* reset sender */
-    sender.reset( tickno );
+    this->sender.reset( tickno );
 
-    if ( sending ) {
+    if ( this->sending ) {
       /* switch from off to on */
-      internal_tick = tickno;
+      this->internal_tick = tickno;
     } else {
       /* switch from on to off */
-      utility.sending_duration( tickno - internal_tick, num_sending );
+      this->utility.sending_duration( tickno - this->internal_tick, num_sending );
     }
 
-    internal_tick = tickno;
+    this->internal_tick = tickno;
   }
 }
 
 template <class SenderType>
 template <class NextHop>
-void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & rec,
-						   const double & tickno,
-						   const unsigned int num_sending )
+void SenderGang<SenderType>::TimeSwitchedSender::tick( NextHop & next, Receiver & rec,
+						       const double & tickno,
+						       const unsigned int num_sending )
 {
   /* receive feedback */
-  if ( rec.readable( id ) ) {
-    const std::vector< Packet > & packets = rec.packets_for( id );
+  if ( rec.readable( this->id ) ) {
+    const std::vector< Packet > & packets = rec.packets_for( this->id );
 
-    utility.packets_received( packets );
-    sender.packets_received( packets );
+    this->utility.packets_received( packets );
+    this->sender.packets_received( packets );
 
-    rec.clear( id );
+    rec.clear( this->id );
   }
 
   /* possibly send packets */
-  if ( sending ) {
-    sender.send( id, next, tickno );
-    utility.sending_duration( tickno - internal_tick, num_sending );
+  if ( this->sending ) {
+    this->sender.send( this->id, next, tickno );
+    this->utility.sending_duration( tickno - this->internal_tick, num_sending );
   }
 
-  internal_tick = tickno;
+  this->internal_tick = tickno;
 }
 
 template <class SenderType>
