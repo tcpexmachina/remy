@@ -47,28 +47,46 @@ void SenderGang<SenderType>::TimeSwitchedSender::switcher( const double & tickno
 							   const unsigned int num_sending )
 {
   /* should it switch? */
-  while ( this->next_switch_tick <= tickno ) {
-    assert( this->next_switch_tick == tickno );
+  while ( SwitchedSender::next_switch_tick <= tickno ) {
+    assert( SwitchedSender::next_switch_tick == tickno );
 
     /* switch */
-    this->sending = !this->sending;
+    SwitchedSender::sending ? SwitchedSender::switch_off( tickno, num_sending ) : SwitchedSender::switch_on( tickno );
 
     /* increment next switch time */
-    this->next_switch_tick += (this->sending ? stop_distribution : start_distribution).sample();
-
-    /* reset sender */
-    this->sender.reset( tickno );
-
-    if ( this->sending ) {
-      /* switch from off to on */
-      this->internal_tick = tickno;
-    } else {
-      /* switch from on to off */
-      this->utility.sending_duration( tickno - this->internal_tick, num_sending );
-    }
-
-    this->internal_tick = tickno;
+    SwitchedSender::next_switch_tick += (SwitchedSender::sending ? stop_distribution : start_distribution).sample();
   }
+}
+
+template <class SenderType>
+void SenderGang<SenderType>::SwitchedSender::switch_on( const double & tickno )
+{
+  assert( !sending );
+  sending = true;
+  internal_tick = tickno;
+  sender.reset( tickno );
+}
+
+template <class SenderType>
+void SenderGang<SenderType>::SwitchedSender::switch_off( const double & tickno,
+							 const unsigned int num_sending )
+{
+  assert( sending );
+
+  /* account for final extent of sending time */
+  accumulate_sending_time_until( tickno, num_sending );
+  internal_tick = tickno;
+
+  sending = false;
+}
+
+template <class SenderType>
+void SenderGang<SenderType>::SwitchedSender::accumulate_sending_time_until( const double & tickno,
+									    const unsigned int num_sending ) {
+  assert( sending );
+  assert( tickno >= internal_tick );
+
+  utility.sending_duration( tickno - internal_tick, num_sending );
 }
 
 template <class SenderType>
