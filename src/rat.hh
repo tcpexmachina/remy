@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <limits>
 
 #include "packet.hh"
 #include "whiskertree.hh"
@@ -32,7 +33,8 @@ public:
   void reset( const double & tickno ); /* start new flow */
 
   template <class NextHop>
-  void send( const unsigned int id, NextHop & next, const double & tickno );
+  void send( const unsigned int id, NextHop & next, const double & tickno,
+	     const unsigned int packets_sent_cap = std::numeric_limits<unsigned int>::max() );
 
   const WhiskerTree & whiskers( void ) const { return _whiskers; }
 
