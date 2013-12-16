@@ -31,20 +31,44 @@ private:
 	internal_tick( 0 )
     {}
 
+    double next_event_time( const double & tickno ) const;
+
+    /* is abstract base class */
+    virtual void switcher( const double & tickno,
+			   Exponential & start_distribution,
+			   Exponential & stop_distribution,
+			   const unsigned int num_sending ) = 0;
+  };
+
+  class TimeSwitchedSender : public SwitchedSender {
+  public:
     template <class NextHop>
     void tick( NextHop & next, Receiver & rec,
 	       const double & tickno,
-	       const unsigned int num_sending );
+	       const unsigned int num_sending ) override;
 
     void switcher( const double & tickno,
 		   Exponential & start_distribution,
 		   Exponential & stop_distribution,
-		   const unsigned int num_sending );
+		   const unsigned int num_sending ) override;
 
-    double next_event_time( const double & tickno ) const;
+    using SwitchedSender::SwitchedSender;
   };
 
-  std::vector< SwitchedSender > _gang;
+  class ByteSwitchedSender : public SwitchedSender {
+  public:
+    template <class NextHop>
+    void tick( NextHop & next, Receiver & rec,
+	       const double & tickno,
+	       const unsigned int num_sending ) override;
+
+    void switcher( const double & tickno,
+		   Exponential & start_distribution,
+		   Exponential & stop_distribution,
+		   const unsigned int num_sending ) override;
+  };
+
+  std::vector< TimeSwitchedSender > _gang;
 
   Exponential _start_distribution, _stop_distribution;
 
