@@ -31,6 +31,8 @@ private:
 
     void accumulate_sending_time_until( const double & tickno, const unsigned int num_sending );
 
+    void receive_feedback( Receiver & rec );
+
   public:
     double next_event_time( const double & tickno ) const;
     Utility utility;
@@ -53,7 +55,8 @@ private:
     template <class NextHop>
     void tick( NextHop & next, Receiver & rec,
 	       const double & tickno,
-	       const unsigned int num_sending ) override;
+	       const unsigned int num_sending,
+	       Exponential & start_distribution ) override;
 
     void switcher( const double & tickno,
 		   Exponential & start_distribution,
@@ -64,16 +67,22 @@ private:
   };
 
   class ByteSwitchedSender : public SwitchedSender {
+  private:
+    unsigned int packets_sent_cap_ { 0 };
+
   public:
     template <class NextHop>
     void tick( NextHop & next, Receiver & rec,
 	       const double & tickno,
-	       const unsigned int num_sending ) override;
+	       const unsigned int num_sending,
+	       Exponential & start_distribution ) override;
 
     void switcher( const double & tickno,
 		   Exponential & start_distribution,
 		   Exponential & stop_distribution,
 		   const unsigned int num_sending ) override;
+
+    using SwitchedSender::SwitchedSender;
   };
 
   std::vector< TimeSwitchedSender > _gang;
