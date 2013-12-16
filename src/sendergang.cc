@@ -36,7 +36,7 @@ void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const double 
 
   /* run senders */
   for ( auto &x : _gang ) {
-    x.tick( next, rec, tickno, _num_sending );
+    x.tick( next, rec, tickno, _num_sending, _start_distribution );
   }
 }
 
@@ -55,6 +55,29 @@ void SenderGang<SenderType>::TimeSwitchedSender::switcher( const double & tickno
 
     /* increment next switch time */
     SwitchedSender::next_switch_tick += (SwitchedSender::sending ? stop_distribution : start_distribution).sample();
+  }
+}
+
+template <class SenderType>
+void SenderGang<SenderType>::ByteSwitchedSender::switcher( const double & tickno,
+							   Exponential & start_distribution __attribute((unused)),
+							   Exponential & stop_distribution,
+							   const unsigned int num_sending __attribute((unused)) )
+{
+  /* should it switch? */
+  while ( SwitchedSender::next_switch_tick <= tickno ) {
+    assert( SwitchedSender::next_switch_tick == tickno );
+
+    assert( not SwitchedSender::sending ); /* never sets a time to switch off */
+
+    /* switch on */
+    SwitchedSender::switch_on( tickno );
+
+    /* set next switch time to dummy value */
+    SwitchedSender::next_switch_tick = numeric_limits<double>::max();
+
+    /* set length of flow */
+    packets_sent_cap_ += lround( stop_distribution.sample() );
   }
 }
 
@@ -92,25 +115,55 @@ void SenderGang<SenderType>::SwitchedSender::accumulate_sending_time_until( cons
 }
 
 template <class SenderType>
+void SenderGang<SenderType>::SwitchedSender::receive_feedback( Receiver & rec )
+{
+  if ( rec.readable( id ) ) {
+    const std::vector< Packet > & packets = rec.packets_for( id );
+
+    utility.packets_received( packets );
+    sender.packets_received( packets );
+
+    rec.clear( id );
+  }
+}
+
+template <class SenderType>
 template <class NextHop>
 void SenderGang<SenderType>::TimeSwitchedSender::tick( NextHop & next, Receiver & rec,
 						       const double & tickno,
-						       const unsigned int num_sending )
+						       const unsigned int num_sending,
+						       Exponential & start_distribution __attribute((unused)) )
 {
-  /* receive feedback */
-  if ( rec.readable( this->id ) ) {
-    const std::vector< Packet > & packets = rec.packets_for( this->id );
-
-    this->utility.packets_received( packets );
-    this->sender.packets_received( packets );
-
-    rec.clear( this->id );
-  }
+  SwitchedSender::receive_feedback( rec );
 
   /* possibly send packets */
-  if ( this->sending ) {
-    this->sender.send( this->id, next, tickno );
-    this->accumulate_sending_time_until( tickno, num_sending );
+  if ( SwitchedSender::sending ) {
+    SwitchedSender::sender.send( SwitchedSender::id, next, tickno );
+    SwitchedSender::accumulate_sending_time_until( tickno, num_sending );
+  }
+}
+
+template <class SenderType>
+template <class NextHop>
+void SenderGang<SenderType>::ByteSwitchedSender::tick( NextHop & next, Receiver & rec,
+						       const double & tickno,
+						       const unsigned int num_sending,
+						       Exponential & start_distribution )
+{
+  SwitchedSender::receive_feedback( rec );
+
+  /* possibly send packets */
+  if ( SwitchedSender::sending ) {
+    /* do we need to switch ourselves off? */
+    if ( SwitchedSender::sender.packets_sent() >= packets_sent_cap_ ) {
+      assert( SwitchedSender::sender.packets_sent() == packets_sent_cap_ );
+
+      SwitchedSender::switch_off( tickno, num_sending );
+      SwitchedSender::next_switch_tick = tickno + start_distribution.sample();
+    } else {
+      SwitchedSender::sender.send( SwitchedSender::id, next, tickno, packets_sent_cap_ );
+      SwitchedSender::accumulate_sending_time_until( tickno, num_sending );
+    }
   }
 }
 

@@ -41,6 +41,8 @@ public:
   Rat & operator=( const Rat & ) { assert( false ); }
 
   double next_event_time( const double & tickno ) const;
+
+  const unsigned int & packets_sent( void ) const { return _packets_sent; }
 };
 
 #endif
