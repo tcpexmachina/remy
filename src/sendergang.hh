@@ -12,11 +12,13 @@ class SenderGang
 {
 private:
   class SwitchedSender {
+  private:
+    double internal_tick;
+
   protected:
     unsigned int id;
     double next_switch_tick;
     SenderType sender;
-    double internal_tick;
 
     /* is abstract base class */
     virtual void switcher( const double & tickno,
@@ -37,10 +39,10 @@ private:
     SwitchedSender( const unsigned int s_id,
 		    const double & start_tick,
 		    const SenderType & s_sender )
-      : id( s_id ),
+      : internal_tick( 0 ),
+	id( s_id ),
 	next_switch_tick( start_tick ),
 	sender( s_sender ),
-	internal_tick( 0 ),
 	utility(),
 	sending( false )
     {}

@@ -31,7 +31,7 @@ void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const double 
 
   /* recount number sending */
   _num_sending = accumulate( _gang.begin(), _gang.end(),
-			     0, []( const unsigned int a, const TimeSwitchedSender & b )
+			     0, []( const unsigned int a, const SwitchedSender & b )
 			     { return a + b.sending; } );
 
   /* run senders */
@@ -63,8 +63,10 @@ void SenderGang<SenderType>::SwitchedSender::switch_on( const double & tickno )
 {
   assert( !sending );
   sending = true;
-  internal_tick = tickno;
   sender.reset( tickno );
+
+  /* Advance internal_tick without accumulating sending time */
+  internal_tick = tickno;
 }
 
 template <class SenderType>
@@ -75,7 +77,6 @@ void SenderGang<SenderType>::SwitchedSender::switch_off( const double & tickno,
 
   /* account for final extent of sending time */
   accumulate_sending_time_until( tickno, num_sending );
-  internal_tick = tickno;
 
   sending = false;
 }
@@ -87,6 +88,7 @@ void SenderGang<SenderType>::SwitchedSender::accumulate_sending_time_until( cons
   assert( tickno >= internal_tick );
 
   utility.sending_duration( tickno - internal_tick, num_sending );
+  internal_tick = tickno;
 }
 
 template <class SenderType>
@@ -108,10 +110,8 @@ void SenderGang<SenderType>::TimeSwitchedSender::tick( NextHop & next, Receiver 
   /* possibly send packets */
   if ( this->sending ) {
     this->sender.send( this->id, next, tickno );
-    this->utility.sending_duration( tickno - this->internal_tick, num_sending );
+    this->accumulate_sending_time_until( tickno, num_sending );
   }
-
-  this->internal_tick = tickno;
 }
 
 template <class SenderType>
