@@ -154,15 +154,14 @@ void SenderGang<SenderType>::ByteSwitchedSender::tick( NextHop & next, Receiver 
 
   /* possibly send packets */
   if ( SwitchedSender::sending ) {
-    /* do we need to switch ourselves off? */
-    if ( SwitchedSender::sender.packets_sent() >= packets_sent_cap_ ) {
-      assert( SwitchedSender::sender.packets_sent() == packets_sent_cap_ );
+    assert( SwitchedSender::sender.packets_sent() < packets_sent_cap_ );
+    SwitchedSender::sender.send( SwitchedSender::id, next, tickno, packets_sent_cap_ );
+    SwitchedSender::accumulate_sending_time_until( tickno, num_sending );
 
+    /* do we need to switch ourselves off? */
+    if ( SwitchedSender::sender.packets_sent() == packets_sent_cap_ ) {
       SwitchedSender::switch_off( tickno, num_sending );
       SwitchedSender::next_switch_tick = tickno + start_distribution.sample();
-    } else {
-      SwitchedSender::sender.send( SwitchedSender::id, next, tickno, packets_sent_cap_ );
-      SwitchedSender::accumulate_sending_time_until( tickno, num_sending );
     }
   }
 }
