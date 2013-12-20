@@ -77,7 +77,9 @@ void SenderGang<SenderType>::ByteSwitchedSender::switcher( const double & tickno
     SwitchedSender::next_switch_tick = numeric_limits<double>::max();
 
     /* set length of flow */
-    packets_sent_cap_ += lround( stop_distribution.sample() );
+    unsigned int new_flow_length = lrint( ceil( stop_distribution.sample() ) );
+    assert( new_flow_length > 0 );
+    packets_sent_cap_ += new_flow_length;
   }
 }
 
