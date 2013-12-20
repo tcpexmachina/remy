@@ -11,9 +11,9 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range 
     _whiskers( s_whiskers ),
     _configs()
 {
-  /* sample 32 link speeds */
+  /* sample 100 link speeds */
 
-  const double steps = 32.0;
+  const double steps = 100.0;
 
   const double link_speed_dynamic_range = range.link_packets_per_ms.second / range.link_packets_per_ms.first;
 
