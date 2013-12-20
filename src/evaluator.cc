@@ -31,15 +31,10 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range 
   }
 }
 
-Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements,
+Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
 				     const bool trace, const unsigned int carefulness ) const
 {
   PRNG run_prng( _prng );
-
-  WhiskerTree run_whiskers( _whiskers );
-  for ( const auto &x : replacements ) {
-    assert( run_whiskers.replace( x ) );
-  }
 
   run_whiskers.reset_counts();
 
@@ -59,4 +54,17 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
   the_outcome.used_whiskers = run_whiskers;
 
   return the_outcome;
+}
+
+Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements,
+				     const bool trace, const unsigned int carefulness ) const
+{
+  PRNG run_prng( _prng );
+
+  WhiskerTree run_whiskers( _whiskers );
+  for ( const auto &x : replacements ) {
+    assert( run_whiskers.replace( x ) );
+  }
+
+  return score( run_whiskers, trace, carefulness );
 }

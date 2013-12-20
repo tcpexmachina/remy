@@ -36,6 +36,10 @@ void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int ge
 
 Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 {
+  /* back up the original whiskertree */
+  /* this is to ensure we don't regress */
+  WhiskerTree best_so_far( whiskers );
+
   /* evaluate the whiskers we have */
   whiskers.reset_generation();
   unsigned int generation = 0;
@@ -126,7 +130,16 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
     }
   }
 
-  /* carefully evaluate and return score */
-  const Evaluator eval2( whiskers, _range );
-  return eval2.score( {}, false, 10 );  
+  /* carefully evaluate what we have vs. the previous best */
+  const Evaluator eval2( {}, _range );
+  const auto new_score = eval2.score( whiskers, false, 10 );
+  const auto old_score = eval2.score( best_so_far, false, 10 );
+
+  if ( old_score.score >= new_score.score ) {
+    fprintf( stderr, "Regression, old=%f, new=%f\n", old_score.score, new_score.score );
+    whiskers = best_so_far;
+    return old_score;
+  }
+
+  return new_score;
 }
