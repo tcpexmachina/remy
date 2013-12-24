@@ -8,10 +8,10 @@ common_source = delay.hh evaluator.cc evaluator.hh                     \
 	exponential.hh link.hh link-templates.cc                       \
 	memory.cc memory.hh memoryrange.cc memoryrange.hh              \
 	network.cc network.hh packet.hh poisson.hh                     \
-	random.cc random.hh rat.cc rat.hh rat-templates.cc             \
+	random.cc random.hh rat.cc rat.hh                              \
 	receiver.cc receiver.hh sendergang.cc sendergang.hh            \
 	utility.hh whisker.cc whisker.hh whiskertree.cc whiskertree.hh \
-        configrange.hh configrange.cc
+        configrange.hh configrange.cc sender_interface.hh
 
 remy_SOURCES = $(common_source) remy.cc ratbreeder.cc ratbreeder.hh 
 

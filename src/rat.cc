@@ -50,3 +50,25 @@ double Rat::next_event_time( const double & tickno ) const
     return std::numeric_limits<double>::max();
   }
 }
+
+std::vector<Packet> Rat::send( const unsigned int id, const double & tickno )
+{
+  assert( _packets_sent >= _packets_received );
+
+  if ( _the_window == 0 ) {
+    /* initial window and intersend time */
+    const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
+    _the_window = current_whisker.window( _the_window );
+    _intersend_time = current_whisker.intersend();
+  }
+
+  std::vector<Packet>  ret;
+  if ( (_packets_sent < _packets_received + _the_window)
+       and (_last_send_time + _intersend_time <= tickno) ) {
+    ret.emplace_back( id, _flow_id, tickno );
+    _packets_sent++;
+    _memory.packet_sent( ret.at( 0 ) );
+    _last_send_time = tickno;
+  }
+  return ret;
+}

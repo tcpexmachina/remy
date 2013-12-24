@@ -4,7 +4,7 @@
 #include "configrange.hh"
 #include "evaluator.hh"
 #include "network.cc"
-#include "rat-templates.cc"
+#include "rat.hh"
 
 const unsigned int TICK_COUNT = 1000000;
 

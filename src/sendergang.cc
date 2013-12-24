@@ -89,7 +89,11 @@ void SenderGang<SenderType>::SwitchedSender::tick( NextHop & next, Receiver & re
 
   /* possibly send packets */
   if ( sending ) {
-    sender.send( id, next, tickno );
+    auto packets = sender.send( id, tickno );
+    assert (packets.size() <= 1);
+    if (packets.size() == 1) {
+      next.accept( std::move( packets.at( 0 ) ), tickno );
+    }
     utility.sending_duration( tickno - internal_tick, num_sending );
   }
 
