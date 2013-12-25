@@ -1,12 +1,14 @@
+#include <vector>
+#include "sender_interface.hh"
 #include "network.hh"
 
-#include "sendergang.cc"
+#include "sendergang-templates.cc"
 #include "link-templates.cc"
 
 template <class SenderType>
-Network<SenderType>::Network( const SenderType & example_sender, PRNG & s_prng, const NetConfig & config )
+Network<SenderType>::Network( std::vector<std::unique_ptr<SenderInterface>> && sender_list, PRNG & s_prng, const NetConfig & config )
   : _prng( s_prng ),
-    _senders( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender, _prng ),
+    _senders( config.mean_on_duration, config.mean_off_duration, std::move( sender_list ), _prng ),
     _link( config.link_ppt ),
     _delay( config.delay ),
     _rec(),

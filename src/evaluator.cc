@@ -1,3 +1,4 @@
+#include <memory>
 #include <boost/random/uniform_real_distribution.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 
@@ -50,7 +51,12 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
   Outcome the_outcome;
   for ( auto &x : _configs ) {
     /* run once */
-    Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
+    /* Create sender_list, add Reno senders if required */
+    std::vector<std::unique_ptr<SenderInterface>> sender_list;
+    for( unsigned int i = 0; i < x.num_senders; i++) {
+      sender_list.emplace_back( std::unique_ptr<SenderInterface>( new Rat( run_whiskers, trace ) ) )  ;
+    }
+    Network<Rat> network1( std::move( sender_list ), run_prng, x );
     network1.run_simulation( TICK_COUNT * carefulness );
 
     the_outcome.score += network1.senders().utility();
