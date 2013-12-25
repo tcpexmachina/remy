@@ -121,19 +121,6 @@ vector< pair< double, double > > SenderGang<SenderType>::throughputs_delays( voi
 }
 
 template <class SenderType>
-const vector< const SenderType * > SenderGang<SenderType>::senders( void ) const
-{
-  vector< const SenderType * > ret;
-  ret.reserve( _gang.size() );
-
-  for ( auto &x : _gang ) {
-    ret.emplace_back( &x.sender );
-  }
-
-  return ret;
-}
-
-template <class SenderType>
 double SenderGang<SenderType>::SwitchedSender::next_event_time( const double & tickno ) const
 {
   assert( next_switch_tick >= tickno );
