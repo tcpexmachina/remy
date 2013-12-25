@@ -21,18 +21,24 @@ SenderGang<SenderType>::SenderGang( const double mean_on_duration,
 }
 
 template <class SenderType>
-template <class NextHop>
-void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const double & tickno )
+unsigned int SenderGang<SenderType>::switch_senders( unsigned int old_num_sending, const double & tickno )
 {
   /* let senders switch */
   for ( auto &x : _gang ) {
-    x.switcher( tickno, _start_distribution, _stop_distribution, _num_sending );
+    x.switcher( tickno, _start_distribution, _stop_distribution, old_num_sending );
   }
 
   /* recount number sending */
-  _num_sending = accumulate( _gang.begin(), _gang.end(),
-			     0, []( const unsigned int a, const SwitchedSender & b )
-			     { return a + b.sending; } );
+  return accumulate( _gang.begin(), _gang.end(),
+		     0, []( const unsigned int a, const SwitchedSender & b )
+		     { return a + b.sending; } );
+}
+
+template <class SenderType>
+template <class NextHop>
+void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const double & tickno )
+{
+  _num_sending = switch_senders( _num_sending, tickno );
 
   /* run senders */
   for ( auto &x : _gang ) {

@@ -57,6 +57,8 @@ public:
 	      const SenderType & exemplar,
 	      PRNG & s_prng );
 
+  unsigned int switch_senders( unsigned int old_num_sending, const double & tickno );
+
   template <class NextHop>
   void tick( NextHop & next, Receiver & rec, const double & tickno );
 
