@@ -1,8 +1,10 @@
 #ifndef NETWORK_HH
 #define NETWORK_HH
 
+#include <memory>
 #include <string>
 
+#include "sender_interface.hh"
 #include "sendergang.hh"
 #include "link.hh"
 #include "delay.hh"
@@ -45,7 +47,7 @@ class Network
 {
 private:
   PRNG & _prng;
-  SenderGang<SenderType> _senders;
+  SenderGang _senders;
   Link _link;
   Delay _delay;
   Receiver _rec;
@@ -55,11 +57,13 @@ private:
   void tick( void );
 
 public:
-  Network( const SenderType & example_sender, PRNG & s_prng, const NetConfig & config );
+  Network(  std::vector<std::unique_ptr<SenderInterface>> && sender_list,
+            PRNG & s_prng,
+            const NetConfig & config );
 
   void run_simulation( const double & duration );
 
-  const SenderGang<SenderType> & senders( void ) const { return _senders; }
+  const SenderGang & senders( void ) const { return _senders; }
 };
 
 #endif
