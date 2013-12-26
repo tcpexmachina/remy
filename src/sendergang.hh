@@ -101,6 +101,11 @@ public:
   void switch_senders( const unsigned int num_sending, const double & tickno );
 
   template <class NextHop>
+  void run_senders( NextHop & next, Receiver & rec,
+		    const unsigned int num_sending,
+		    const double & tickno );
+
+  template <class NextHop>
   void tick( NextHop & next, Receiver & rec, const double & tickno );
 
   double utility( void ) const;

@@ -46,6 +46,14 @@ void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const double 
 
   num_sending = count_active_senders();
 
+  run_senders( next, rec, num_sending, tickno );
+}
+
+template <class SenderType>
+template <class NextHop>
+void SenderGang<SenderType>::run_senders( NextHop & next, Receiver & rec,
+					  const unsigned int num_sending,
+					  const double & tickno ) {
   /* run senders */
   for ( auto &x : _gang ) {
     x.tick( next, rec, tickno, num_sending, _start_distribution );
