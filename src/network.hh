@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "sendergang.hh"
+#include "sendergangofgangs.hh"
 #include "link.hh"
 #include "delay.hh"
 #include "receiver.hh"
