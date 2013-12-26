@@ -53,7 +53,40 @@ public:
 	      const double mean_off_duration,
 	      const unsigned int num_senders,
 	      const SenderType & exemplar,
-	      PRNG & s_prng );
+	      PRNG & s_prng,
+	      const unsigned int id_range_begin = 0 );
+
+  unsigned int count_active_senders( void ) const;
+  unsigned int count_senders( void ) const { return _gang.size(); }
+  unsigned int id_of_first_sender( void ) const { return _gang.at( 0 ).id; }
+
+  void switch_senders( const unsigned int num_sending, const double & tickno );
+
+  template <class NextHop>
+  void run_senders( NextHop & next, Receiver & rec,
+		    const unsigned int num_sending,
+		    const double & tickno );
+
+  template <class NextHop>
+  void tick( NextHop & next, Receiver & rec, const double & tickno );
+
+  double utility( void ) const;
+
+  std::vector< std::pair< double, double > > throughputs_delays( void ) const;
+
+  double next_event_time( const double & tickno ) const;
+};
+
+template <class Sender1, class Sender2>
+class SenderGangofGangs
+{
+private:
+  SenderGang<Sender1> gang1_;
+  SenderGang<Sender2> gang2_;
+
+public:
+  SenderGangofGangs( SenderGang<Sender1> && gang1,
+		     SenderGang<Sender2> && gang2 );
 
   unsigned int count_active_senders( void ) const;
 
@@ -68,6 +101,7 @@ public:
   void tick( NextHop & next, Receiver & rec, const double & tickno );
 
   double utility( void ) const;
+
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
 
   double next_event_time( const double & tickno ) const;
