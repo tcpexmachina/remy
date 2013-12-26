@@ -89,8 +89,6 @@ private:
 
   Exponential _start_distribution, _stop_distribution;
 
-  unsigned int _num_sending;
-
 public:
   SenderGang( const double mean_on_duration,
 	      const double mean_off_duration,
@@ -98,7 +96,9 @@ public:
 	      const SenderType & exemplar,
 	      PRNG & s_prng );
 
-  unsigned int switch_senders( unsigned int old_num_sending, const double & tickno );
+  unsigned int count_active_senders( void ) const;
+
+  void switch_senders( const unsigned int num_sending, const double & tickno );
 
   template <class NextHop>
   void tick( NextHop & next, Receiver & rec, const double & tickno );
