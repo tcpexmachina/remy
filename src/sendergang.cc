@@ -10,8 +10,7 @@ SenderGang<SenderType>::SenderGang( const double mean_on_duration,
 				    PRNG & prng )
   : _gang(),
     _start_distribution( 1.0 / mean_off_duration, prng ),
-    _stop_distribution( 1.0 / mean_on_duration, prng ),
-    _num_sending( 0 )
+    _stop_distribution( 1.0 / mean_on_duration, prng )
 {
   for ( unsigned int i = 0; i < num_senders; i++ ) {
     _gang.emplace_back( i,
@@ -21,14 +20,17 @@ SenderGang<SenderType>::SenderGang( const double mean_on_duration,
 }
 
 template <class SenderType>
-unsigned int SenderGang<SenderType>::switch_senders( unsigned int old_num_sending, const double & tickno )
+void SenderGang<SenderType>::switch_senders( const unsigned int num_sending, const double & tickno )
 {
   /* let senders switch */
   for ( auto &x : _gang ) {
-    x.switcher( tickno, _start_distribution, _stop_distribution, old_num_sending );
+    x.switcher( tickno, _start_distribution, _stop_distribution, num_sending );
   }
+}
 
-  /* recount number sending */
+template <class SenderType>
+unsigned int SenderGang<SenderType>::count_active_senders( void ) const
+{
   return accumulate( _gang.begin(), _gang.end(),
 		     0, []( const unsigned int a, const SwitchedSender & b )
 		     { return a + b.sending; } );
@@ -38,11 +40,15 @@ template <class SenderType>
 template <class NextHop>
 void SenderGang<SenderType>::tick( NextHop & next, Receiver & rec, const double & tickno )
 {
-  _num_sending = switch_senders( _num_sending, tickno );
+  unsigned int num_sending = count_active_senders();
+
+  switch_senders( num_sending, tickno );
+
+  num_sending = count_active_senders();
 
   /* run senders */
   for ( auto &x : _gang ) {
-    x.tick( next, rec, tickno, _num_sending );
+    x.tick( next, rec, tickno, num_sending );
   }
 }
 
