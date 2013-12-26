@@ -6,7 +6,8 @@
 template <class SenderType>
 Network<SenderType>::Network( const SenderType & example_sender, PRNG & s_prng, const NetConfig & config )
   : _prng( s_prng ),
-    _senders( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender, _prng ),
+    _senders( SenderGang<SenderType>( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender, _prng ),
+	      SenderGang<SenderType>( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender, _prng, config.num_senders ) ),
     _link( config.link_ppt ),
     _delay( config.delay ),
     _rec(),

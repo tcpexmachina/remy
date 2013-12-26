@@ -45,7 +45,7 @@ class Network
 {
 private:
   PRNG & _prng;
-  SenderGang<SenderType> _senders;
+  SenderGangofGangs<SenderType,SenderType> _senders;
   Link _link;
   Delay _delay;
   Receiver _rec;
@@ -59,7 +59,7 @@ public:
 
   void run_simulation( const double & duration );
 
-  const SenderGang<SenderType> & senders( void ) const { return _senders; }
+  const SenderGangofGangs<SenderType,SenderType> & senders( void ) const { return _senders; }
 };
 
 #endif
