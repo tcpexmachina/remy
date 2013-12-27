@@ -1,6 +1,6 @@
 #include "network.hh"
 
-#include "sendergang.cc"
+#include "sendergangofgangs.cc"
 #include "link-templates.cc"
 
 template <class SenderType>
