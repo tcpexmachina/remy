@@ -34,6 +34,7 @@ void Network<SenderType>::run_simulation( const double & duration )
 		   min( _delay.next_event_time( _tickno ),
 			_rec.next_event_time( _tickno ) ) );
 
+    if ( _tickno > duration ) break;
     assert( _tickno < std::numeric_limits<double>::max() );
 
     tick();
