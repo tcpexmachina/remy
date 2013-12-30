@@ -11,6 +11,7 @@ common_source = delay.hh evaluator.cc evaluator.hh                     \
 	random.cc random.hh rat.cc rat.hh rat-templates.cc             \
 	receiver.cc receiver.hh sendergang.cc sendergang.hh            \
 	utility.hh whisker.cc whisker.hh whiskertree.cc whiskertree.hh \
+	aimd-templates.cc aimd.cc aimd.hh                              \
         configrange.hh configrange.cc
 
 remy_SOURCES = $(common_source) remy.cc ratbreeder.cc ratbreeder.hh 
