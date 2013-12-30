@@ -87,12 +87,12 @@ int main( int argc, char *argv[] )
   for ( auto &run : outcome.throughputs_delays ) {
     printf( "===\nconfig: %s\n", run.first.str().c_str() );
     for ( auto &x : run.second ) {
-      printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
-      norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
+      printf( "sender: [tp=%f mbps , del=%f ms]\n", x.first * 10, x.second );
+      norm_score += log( x.first * 10000 * 1000 ) - log( x.second );
     }
   }
 
-  printf( "normalized_score = %f\n", norm_score );
+  printf( "sender: normalized_score = %f\n", norm_score );
 
   printf( "Whiskers: %s\n", outcome.used_whiskers.str().c_str() );
 
