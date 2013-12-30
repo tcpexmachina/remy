@@ -1,4 +1,5 @@
 #include <limits>
+#include <algorithm>
 
 #include "aimd.hh"
 
@@ -10,26 +11,45 @@ Aimd::Aimd()
      _the_window( INITIAL_WINDOW ),
      _flow_id( 0 ),
      _largest_ack( -1 ),
-     _slow_start( true )
+     _slow_start( true ),
+     _last_loss( -1 ),
+     _rtt_at_loss( -1 )
 {
 }
 
-void Aimd::packets_received( const vector< Packet > & packets ) {
+void Aimd::packets_received( const vector< Packet > & packets, const double & tickno ) {
   bool loss_detected = false;
   for ( auto & packet : packets ) {
-    assert( packet.seq_num > _largest_ack );
     loss_detected = ( not loss_detected ) ?
                     ( packet.seq_num > _largest_ack + 1 ): /* At least lost one packet */
                     ( true ); /* Bypass seq_num check if you saw a loss already */
     _largest_ack = max( _largest_ack, packet.seq_num );
+
+    _packets_received++;
+    if ( packet.flow_id != _flow_id ) {
+      /* This was from the previous flow, ignore it for congestion control */
+      continue;
+    }
+
     /* If in slow_start, exit slow start on detecting loss, else don't bother */
     _slow_start  = ( _slow_start ) ? ( loss_detected  ? false : _slow_start )
                                    : _slow_start;
+    if ( loss_detected ) {
+      if ( tickno > _last_loss + _rtt_at_loss ) {
+        /* The DCCP approximation, reduce cwnd at most once per RTT */
+        _the_window = _the_window / 2.0;
+        _last_loss = tickno;
+        _rtt_at_loss = packet.tick_received - packet.tick_sent;
+      }
+    } else {
+      if ( _slow_start ) {
+        _the_window += 1.0;
+      } else {
+        _the_window += 1.0 / _the_window;
+      }
+    }
+    _the_window = max( INITIAL_WINDOW, _the_window );
   }
-  _packets_received += packets.size();
-  _the_window = loss_detected ? ( _the_window / 2.0 ) :
-                                ( _slow_start ? ( _the_window + 1.0 )
-                                              : ( _the_window + 1.0 / _the_window ) );
 }
 
 void Aimd::reset( const double & )

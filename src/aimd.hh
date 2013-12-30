@@ -23,10 +23,14 @@ private:
   /* Are we in Slow Start? */
   bool _slow_start;
 
+  /* Track multiple losses within a window, DCCP style (RFC 4341 Page 6) */
+  double _last_loss;
+  double _rtt_at_loss;
+
 public:
   Aimd();
 
-  void packets_received( const std::vector< Packet > & packets );
+  void packets_received( const std::vector< Packet > & packets, const double & tickno );
   void reset( const double & tickno ); /* start new flow */
 
   template <class NextHop>
