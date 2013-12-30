@@ -27,7 +27,8 @@ private:
   std::vector< NetConfig > _configs;
 
 public:
-  Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range );
+  //  Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range );
+  Evaluator( const WhiskerTree & s_whiskers, std::vector<NetConfig> & configs );
   Outcome score( const std::vector< Whisker > & replacements, const bool trace = false, const unsigned int carefulness = 1 ) const;
 };
 

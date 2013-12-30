@@ -41,28 +41,49 @@ int main( int argc, char *argv[] )
     }
   }
 
-  ConfigRange configuration_range;
-  configuration_range.link_packets_per_ms = make_pair( 1.0, 2.0 ); /* 10 Mbps to 20 Mbps */
-  configuration_range.rtt_ms = make_pair( 100, 200 ); /* ms */
-  configuration_range.max_senders = 16;
-  configuration_range.mean_on_duration = 5000;
-  configuration_range.mean_off_duration = 5000;
-  //  configuration_range.lo_only = true;
-  RatBreeder breeder( configuration_range );
+  //////// Initialize configurations to optimize for ////////
+
+  ConfigRange range;
+  range.link_packets_per_ms = make_pair( 1.0, 2.0 ); /* 10 Mbps to 20 Mbps */
+  range.rtt_ms = make_pair( 100, 200 ); /* ms */
+  range.max_senders = 2;
+  range.mean_on_duration = 5000;
+  range.mean_off_duration = 5000;
+  //  range.lo_only = true;
+
+  std::vector<NetConfig> configs;
+
+  /* first load "anchors": the extreme points of the configuration range */
+  configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+
+  configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+
+  /* now add some randomly generated configurations from the range*/
+  for ( int i = 0; i < 12; i++ ) {
+    configs.push_back( NetConfig( range )); // each will be initialized differently at evaluation time
+  }
+
+  RatBreeder breeder( configs );
+
+
+
+  //////// Run the optimizer ////////
 
   unsigned int run = 0;
 
   printf( "#######################\n" );
   printf( "Optimizing for link packets_per_ms in [%f, %f]\n",
-	  configuration_range.link_packets_per_ms.first,
-	  configuration_range.link_packets_per_ms.second );
+	  range.link_packets_per_ms.first,
+	  range.link_packets_per_ms.second );
   printf( "Optimizing for rtt_ms in [%f, %f]\n",
-	  configuration_range.rtt_ms.first,
-	  configuration_range.rtt_ms.second );
+	  range.rtt_ms.first,
+	  range.rtt_ms.second );
   printf( "Optimizing for num_senders = 1-%d\n",
-	  configuration_range.max_senders );
+	  range.max_senders );
   printf( "Optimizing for mean_on_duration = %f, mean_off_duration = %f\n",
-	  configuration_range.mean_on_duration, configuration_range.mean_off_duration );
+	  range.mean_on_duration, range.mean_off_duration );
 
   printf( "Initial rules (use if=FILENAME to read from disk): %s\n", whiskers.str().c_str() );
   printf( "#######################\n" );
@@ -97,7 +118,7 @@ int main( int argc, char *argv[] )
       }
 
       auto remycc = whiskers.DNA();
-      remycc.mutable_config()->CopyFrom( configuration_range.DNA() );
+      remycc.mutable_config()->CopyFrom( range.DNA() );
       remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
 
       if ( not remycc.SerializeToFileDescriptor( fd ) ) {

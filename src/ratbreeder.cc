@@ -11,7 +11,7 @@ using namespace std;
 
 void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int generation )
 {
-  const Evaluator eval( whiskers, _range );
+  const Evaluator eval( whiskers, _configs );
   auto outcome( eval.score( {}, true ) );
 
   while ( 1 ) {
@@ -41,7 +41,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   unsigned int generation = 0;
 
   while ( 1 ) {
-    const Evaluator eval( whiskers, _range );
+    const Evaluator eval( whiskers, _configs );
     unordered_map< Whisker, double, boost::hash< Whisker > > evalcache;
 
     auto outcome( eval.score( {} ) );
@@ -143,6 +143,6 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   }
 
   /* carefully evaluate and return score */
-  const Evaluator eval2( whiskers, _range );
+  const Evaluator eval2( whiskers, _configs );
   return eval2.score( {}, false, 10 );  
 }
