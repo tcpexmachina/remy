@@ -38,6 +38,7 @@ void Rat::reset( const double & )
   _the_window = 0;
   _intersend_time = 0;
   _flow_id++;
+  _largest_ack = _packets_sent - 1; /* Assume everything's been delivered */
   assert( _flow_id != 0 );
 }
 
