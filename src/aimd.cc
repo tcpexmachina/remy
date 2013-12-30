@@ -57,6 +57,9 @@ void Aimd::reset( const double & )
   _the_window = INITIAL_WINDOW;
   _flow_id++;
   _slow_start = true;
+  /* Give up on everything sent so far that hasn't been acked,
+     Fixes the problem of tail losses */
+  _largest_ack = _packets_sent - 1;
   assert( _flow_id != 0 );
 }
 
