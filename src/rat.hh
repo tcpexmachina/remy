@@ -14,16 +14,17 @@ private:
   const WhiskerTree & _whiskers;
   Memory _memory;
 
-  unsigned int _packets_sent, _packets_received;
+  int _packets_sent, _packets_received;
 
   bool _track;
 
   double _last_send_time;
 
-  unsigned int _the_window;
+  int _the_window;
   double _intersend_time;
 
   unsigned int _flow_id;
+  int _largest_ack;
 
 public:
   Rat( WhiskerTree & s_whiskers, const bool s_track=false );
