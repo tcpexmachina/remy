@@ -9,7 +9,7 @@ class RatBreeder
 private:
   ConfigRange _range;
 
-  void apply_best_split( WhiskerTree & whiskers, const unsigned int generation );
+  void apply_best_split( WhiskerTree & whiskers, const unsigned int generation ) const;
 
 public:
   RatBreeder( const ConfigRange & s_range ) : _range( s_range ) {}
