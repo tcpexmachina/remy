@@ -12,7 +12,7 @@ private:
   void apply_best_split( WhiskerTree & whiskers, const unsigned int generation );
 
 public:
-  RatBreeder( ConfigRange & s_range ) : _range( s_range ) {}
+  RatBreeder( const ConfigRange & s_range ) : _range( s_range ) {}
 
   Evaluator::Outcome improve( WhiskerTree & whiskers );
 };
