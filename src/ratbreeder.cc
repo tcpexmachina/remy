@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int generation )
+void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int generation ) const
 {
   const Evaluator eval( whiskers, _range );
   auto outcome( eval.score( {}, true ) );
