@@ -47,20 +47,9 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   while ( 1 ) {
     const Evaluator eval( whiskers, _range );
     unordered_map< Whisker, double, boost::hash< Whisker > > evalcache;
+    /* memoizes evaluations coming from the evaluator */
 
     auto outcome( eval.score( {} ) );
-
-    //    printf( "gen %d, score = %.12f\n", generation, outcome.score );
-
-    /*
-    for ( auto &run : outcome.throughputs_delays ) {
-      for ( auto &x : run ) {
-	printf( "sender: [tp=%f, del=%f]\n", x.first, x.second );
-      }
-    }
-    */
-
-    //    printf( "Whiskers at generation %u: %s\n\n", generation, outcome.used_whiskers.str().c_str() );
 
     /* is there a whisker at this generation that we can improve? */
     auto my_whisker( outcome.used_whiskers.most_used( generation ) );
@@ -92,8 +81,6 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       auto replacements( differential_whisker.next_generation() );
       double best_score = -INT_MAX;
       const Whisker *best_whisker = nullptr;
-
-      //      printf( "Evaluating %lu replacements for %s.\n", replacements.size(), differential_whisker.str().c_str() );
 
       vector< pair< Whisker &, future< double > > > scores;
       vector< pair< Whisker &, double > > memoized_scores;
