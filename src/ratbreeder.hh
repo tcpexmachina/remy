@@ -1,8 +1,24 @@
 #ifndef RATBREEDER_HH
 #define RATBREEDER_HH
 
+#include <unordered_map>
+#include <boost/functional/hash.hpp>
+
 #include "configrange.hh"
 #include "evaluator.hh"
+
+class WhiskerImprover
+{
+private:
+  const Evaluator eval_;
+  std::unordered_map< Whisker, double, boost::hash< Whisker > > eval_cache_ {};
+
+  double score_to_beat_;
+
+public:
+  WhiskerImprover( const Evaluator & evaluator, const double score_to_beat );
+  bool improve( Whisker & whisker_to_improve );
+};
 
 class RatBreeder
 {
