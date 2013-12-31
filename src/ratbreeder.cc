@@ -2,8 +2,7 @@
 #include <vector>
 #include <cassert>
 #include <future>
-#include <unordered_map>
-#include <boost/functional/hash.hpp>
+#include <limits>
 
 #include "ratbreeder.hh"
 
@@ -38,111 +37,103 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 {
   /* back up the original whiskertree */
   /* this is to ensure we don't regress */
-  WhiskerTree best_so_far( whiskers );
+  WhiskerTree input_whiskertree( whiskers );
 
   /* evaluate the whiskers we have */
   whiskers.reset_generation();
   unsigned int generation = 0;
 
-  while ( 1 ) {
+  while ( generation < 5 ) {
     const Evaluator eval( whiskers, _range );
-    unordered_map< Whisker, double, boost::hash< Whisker > > evalcache;
-    /* memoizes evaluations coming from the evaluator */
 
     auto outcome( eval.score( {} ) );
 
     /* is there a whisker at this generation that we can improve? */
-    auto my_whisker( outcome.used_whiskers.most_used( generation ) );
+    auto most_used_whisker_ptr = outcome.used_whiskers.most_used( generation );
 
     /* if not, increase generation and promote all whiskers */
-    if ( !my_whisker ) {
+    if ( !most_used_whisker_ptr ) {
       generation++;
-      //      printf( "Advancing to generation %d\n", generation );
       whiskers.promote( generation );
-
-      if ( (generation % 4) == 0 ) {
-	//	printf( "Splitting most popular whisker.\n" );
-	//	printf( "Whiskers before split at generation %u: %s\n\n", generation, whiskers.str().c_str() );
-	apply_best_split( whiskers, generation );
-	//	printf( "Whiskers after split at generation %u: %s\n\n", generation, whiskers.str().c_str() );
-	generation++;
-	whiskers.promote( generation );
-	break;
-      }
 
       continue;
     }
 
-    Whisker differential_whisker( *my_whisker );
-    unsigned int diffgen = my_whisker->generation();
+    WhiskerImprover improver( eval, outcome.score );
 
-    /* otherwise, get all nexgen alternatives for that whisker and replace each in turn */
-    while ( 1 ) {
-      auto replacements( differential_whisker.next_generation() );
-      double best_score = -INT_MAX;
-      const Whisker *best_whisker = nullptr;
+    Whisker whisker_to_improve = *most_used_whisker_ptr;
 
-      vector< pair< Whisker &, future< double > > > scores;
-      vector< pair< Whisker &, double > > memoized_scores;
+    while ( improver.improve( whisker_to_improve ) ) {}
 
-      /* find best case (using same randseed) */
-      for ( auto &test_replacement : replacements ) {
-	//	printf( "Evaluating %s... ", test_replacement.str().c_str() );
-	if ( evalcache.find( test_replacement ) == evalcache.end() ) {
-	  scores.emplace_back( test_replacement, async( launch::async, [] (const Evaluator &e, const Whisker &r) { return e.score( { r } ).score; }, eval, test_replacement ) );
-	} else {
-	  memoized_scores.emplace_back( test_replacement, evalcache.at( test_replacement ) );
-	}
-      }
+    whisker_to_improve.demote( generation + 1 );
 
-      for ( auto &x : memoized_scores ) {
-	const double score( x.second );
-	//	printf( "score = %f\n", score );
-	if ( score > best_score ) {
-	  best_whisker = &x.first;
-	  best_score = score;
-	}
-      }
-
-      for ( auto &x : scores ) {
-	const double score( x.second.get() );
-	evalcache.insert( make_pair( x.first, score ) );
-	//	printf( "score = %f\n", score );
-	if ( score > best_score ) {
-	  best_whisker = &x.first;
-	  best_score = score;
-	}
-      }
-
-      assert( best_whisker );
-
-      /* replace with best nexgen choice and repeat */
-      if ( best_score > outcome.score ) {
-	//	printf( "Replacing with whisker that scored %.12f => %.12f (+%.12f)\n", outcome.score, best_score,
-	//		best_score - outcome.score );
-	//	printf( "=> %s\n", best_whisker->str().c_str() );
-	assert( whiskers.replace( *best_whisker ) );
-	differential_whisker = *best_whisker;
-	differential_whisker.demote( diffgen );
-	outcome.score = best_score;
-      } else {
-	assert( whiskers.replace( *best_whisker ) );
-	//	printf( "Done with search.\n" );
-	break;
-      }
-    }
+    const auto result = whiskers.replace( whisker_to_improve );
+    assert( result );
   }
+
+  /* Split most used whisker */
+  apply_best_split( whiskers, generation );
 
   /* carefully evaluate what we have vs. the previous best */
   const Evaluator eval2( {}, _range );
   const auto new_score = eval2.score( whiskers, false, 10 );
-  const auto old_score = eval2.score( best_so_far, false, 10 );
+  const auto old_score = eval2.score( input_whiskertree, false, 10 );
 
   if ( old_score.score >= new_score.score ) {
     fprintf( stderr, "Regression, old=%f, new=%f\n", old_score.score, new_score.score );
-    whiskers = best_so_far;
+    whiskers = input_whiskertree;
     return old_score;
   }
 
   return new_score;
+}
+
+WhiskerImprover::WhiskerImprover( const Evaluator & s_evaluator, const double score_to_beat )
+  : eval_( s_evaluator ),
+    score_to_beat_( score_to_beat )
+{}
+
+bool WhiskerImprover::improve( Whisker & whisker_to_improve )
+{
+  auto replacements( whisker_to_improve.next_generation() );
+
+  bool found_an_improvement = false;
+  
+  vector< pair< const Whisker &, future< pair< bool, double > > > > scores;
+
+  /* find best replacement */
+  for ( const auto & test_replacement : replacements ) {
+    if ( eval_cache_.find( test_replacement ) == eval_cache_.end() ) {
+      /* need to fire off a new thread to evaluate */
+      scores.emplace_back( test_replacement,
+			   async( launch::async, [] ( const Evaluator & e, const Whisker & r ) {
+			       return make_pair( true, e.score( { r } ).score ); }, eval_, test_replacement ) );
+    } else {
+      /* we already know the score */
+      scores.emplace_back( test_replacement,
+			   async( launch::deferred, [] ( const double value ) {
+			       return make_pair( false, value ); }, eval_cache_.at( test_replacement ) ) );
+    }
+  }
+
+  /* find the best one */
+  for ( auto & x : scores ) {
+    const Whisker & replacement( x.first );
+    const auto outcome( x.second.get() );
+    const bool was_new_evaluation( outcome.first );
+    const double score( outcome.second );
+
+    /* should we cache this result? */
+    if ( was_new_evaluation ) {
+      eval_cache_.insert( make_pair( replacement, score ) );
+    }
+
+    if ( score > score_to_beat_ ) {
+      score_to_beat_ = score;
+      whisker_to_improve = replacement;
+      found_an_improvement = true;
+    }
+  }
+
+  return found_an_improvement;
 }
