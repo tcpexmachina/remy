@@ -16,7 +16,6 @@ private:
     double internal_tick;
 
   protected:
-    unsigned int id;
     double next_switch_tick;
     SenderType sender;
 
@@ -37,16 +36,17 @@ private:
     double next_event_time( const double & tickno ) const;
     Utility utility;
     bool sending;
+    unsigned int id;
 
     SwitchedSender( const unsigned int s_id,
 		    const double & start_tick,
 		    const SenderType & s_sender )
       : internal_tick( 0 ),
-	id( s_id ),
 	next_switch_tick( start_tick ),
 	sender( s_sender ),
 	utility(),
-	sending( false )
+	sending( false ),
+	id( s_id )
     {}
   };
 
