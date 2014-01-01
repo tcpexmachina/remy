@@ -201,6 +201,10 @@ template <class SenderType>
 double SenderGang<SenderType>::utility( void ) const
 {
   double total_utility = 0.0;
+
+  /* If gang is empty, return zero */
+  if ( _gang.empty() ) return 0.0;
+
   for ( auto &x : _gang ) {
     total_utility += x.utility.utility();
   }
