@@ -21,6 +21,14 @@ SenderGang<SenderType>::SenderGang( const double mean_on_duration,
 }
 
 template <class SenderType>
+SenderGang<SenderType>::SenderGang()
+  : _gang(),
+    _start_distribution( 1.0, global_PRNG() ),
+    _stop_distribution( 1.0, global_PRNG() )
+{
+}
+
+template <class SenderType>
 void SenderGang<SenderType>::switch_senders( const unsigned int num_sending, const double & tickno )
 {
   /* let senders switch */

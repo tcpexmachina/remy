@@ -40,12 +40,12 @@ public:
   }
 };
 
-template <class SenderType>
+template <class SenderType1, class SenderType2>
 class Network
 {
 private:
   PRNG & _prng;
-  SenderGangofGangs<SenderType,SenderType> _senders;
+  SenderGangofGangs<SenderType1, SenderType2> _senders;
   Link _link;
   Delay _delay;
   Receiver _rec;
@@ -55,11 +55,13 @@ private:
   void tick( void );
 
 public:
-  Network( const SenderType & example_sender, PRNG & s_prng, const NetConfig & config );
+  Network( const SenderType1 & example_sender1, const SenderType2 & example_sender2, PRNG & s_prng, const NetConfig & config );
+
+  Network( const SenderType1 & example_sender1, PRNG & s_prng, const NetConfig & config );
 
   void run_simulation( const double & duration );
 
-  const SenderGangofGangs<SenderType,SenderType> & senders( void ) const { return _senders; }
+  const SenderGangofGangs<SenderType1,SenderType2> & senders( void ) const { return _senders; }
 };
 
 #endif

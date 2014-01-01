@@ -97,6 +97,9 @@ public:
 	      PRNG & s_prng,
 	      const unsigned int id_range_begin = 0 );
 
+  /* Create empty SenderGang */
+  SenderGang();
+
   unsigned int count_active_senders( void ) const;
   unsigned int count_senders( void ) const { return _gang.size(); }
   unsigned int id_of_first_sender( void ) const { return _gang.at( 0 ).id; }
