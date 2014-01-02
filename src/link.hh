@@ -24,9 +24,9 @@ public:
     if ( _pending_packet.empty() ) {
       _pending_packet.accept( std::move( p ), tickno );
     } else {
-     if ( _buffer.size() < _limit ) {
+      if ( _buffer.size() < _limit ) {
         _buffer.push( std::move( p ) );
-     }
+      }
     }
   }
 
