@@ -30,7 +30,7 @@ private:
 
     void accumulate_sending_time_until( const double & tickno, const unsigned int num_sending );
 
-    void receive_feedback( Receiver & rec, const double & tickno );
+    void receive_feedback( Receiver & rec );
 
   public:
     double next_event_time( const double & tickno ) const;

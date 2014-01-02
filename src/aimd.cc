@@ -17,7 +17,7 @@ Aimd::Aimd()
 {
 }
 
-void Aimd::packets_received( const vector< Packet > & packets, const double & tickno ) {
+void Aimd::packets_received( const vector< Packet > & packets ) {
   bool loss_detected = false;
   for ( auto & packet : packets ) {
     loss_detected = ( not loss_detected ) ?
@@ -35,10 +35,10 @@ void Aimd::packets_received( const vector< Packet > & packets, const double & ti
     _slow_start  = ( _slow_start ) ? ( loss_detected  ? false : _slow_start )
                                    : _slow_start;
     if ( loss_detected ) {
-      if ( tickno > _last_loss + _rtt_at_loss ) {
+      if ( packet.tick_received > _last_loss + _rtt_at_loss ) {
         /* The DCCP approximation, reduce cwnd at most once per RTT */
         _the_window = _the_window / 2.0;
-        _last_loss = tickno;
+        _last_loss = packet.tick_received;
         _rtt_at_loss = packet.tick_received - packet.tick_sent;
       }
     } else {

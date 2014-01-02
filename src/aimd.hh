@@ -30,7 +30,7 @@ private:
 public:
   Aimd();
 
-  void packets_received( const std::vector< Packet > & packets, const double & tickno );
+  void packets_received( const std::vector< Packet > & packets );
   void reset( const double & tickno ); /* start new flow */
 
   template <class NextHop>

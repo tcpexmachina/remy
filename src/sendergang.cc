@@ -146,13 +146,13 @@ void SenderGang<SenderType>::SwitchedSender::accumulate_sending_time_until( cons
 }
 
 template <class SenderType>
-void SenderGang<SenderType>::SwitchedSender::receive_feedback( Receiver & rec, const double & tickno )
+void SenderGang<SenderType>::SwitchedSender::receive_feedback( Receiver & rec )
 {
   if ( rec.readable( id ) ) {
     const std::vector< Packet > & packets = rec.packets_for( id );
 
     utility.packets_received( packets );
-    sender.packets_received( packets, tickno );
+    sender.packets_received( packets );
 
     rec.clear( id );
   }
@@ -165,7 +165,7 @@ void SenderGang<SenderType>::TimeSwitchedSender::tick( NextHop & next, Receiver 
 						       const unsigned int num_sending,
 						       Exponential & start_distribution __attribute((unused)) )
 {
-  SwitchedSender::receive_feedback( rec, tickno );
+  SwitchedSender::receive_feedback( rec );
 
   /* possibly send packets */
   if ( SwitchedSender::sending ) {
