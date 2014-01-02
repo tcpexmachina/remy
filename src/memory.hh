@@ -60,7 +60,7 @@ public:
   bool operator==( const Memory & other ) const { return (_rec_send_ewma == other._rec_send_ewma) && (_rec_rec_ewma == _rec_rec_ewma) && (_rtt_ratio == other._rtt_ratio) && (_slow_rec_rec_ewma == other._slow_rec_rec_ewma); }
 
   RemyBuffers::Memory DNA( void ) const;
-  Memory( const RemyBuffers::Memory & dna );
+  Memory( const bool is_lower_limit, const RemyBuffers::Memory & dna );
 
   friend size_t hash_value( const Memory & mem );
 };

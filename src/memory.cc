@@ -60,11 +60,15 @@ RemyBuffers::Memory Memory::DNA( void ) const
   return ret;
 }
 
-Memory::Memory( const RemyBuffers::Memory & dna )
-  : _rec_send_ewma( dna.rec_send_ewma() ),
-    _rec_rec_ewma( dna.rec_rec_ewma() ),
-    _rtt_ratio( dna.rtt_ratio() ),
-    _slow_rec_rec_ewma( dna.slow_rec_rec_ewma() ),
+/* If fields are missing in the DNA, we want to wildcard the resulting rule to match anything */
+#define get_val_or_default( protobuf, field, limit ) \
+  ( (protobuf).has_ ## field() ? (protobuf).field() : (limit) ? 0 : 163840 )
+
+Memory::Memory( const bool is_lower_limit, const RemyBuffers::Memory & dna )
+  : _rec_send_ewma( get_val_or_default( dna, rec_send_ewma, is_lower_limit ) ),
+    _rec_rec_ewma( get_val_or_default( dna, rec_rec_ewma, is_lower_limit ) ),
+    _rtt_ratio( get_val_or_default( dna, rtt_ratio, is_lower_limit ) ),
+    _slow_rec_rec_ewma( get_val_or_default( dna, slow_rec_rec_ewma, is_lower_limit ) ),
     _last_tick_sent( 0 ),
     _last_tick_received( 0 ),
     _min_rtt( 0 )

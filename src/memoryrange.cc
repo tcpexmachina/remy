@@ -87,18 +87,11 @@ RemyBuffers::MemoryRange MemoryRange::DNA( void ) const
 }
 
 MemoryRange::MemoryRange( const RemyBuffers::MemoryRange & dna )
-  : _lower( dna.lower() ),
-    _upper( dna.upper() ),
+  : _lower( true, dna.lower() ),
+    _upper( false, dna.upper() ),
     _acc( Memory::datasize ),
     _count( 0 )
-{
-  /* If dna doesn't have slow ewma, wildcard the field */
-  if ( not dna.lower().has_slow_rec_rec_ewma() ) {
-    assert( not dna.upper().has_slow_rec_rec_ewma() );
-    _lower.mutable_field( 3 ) = 0;
-    _upper.mutable_field( 3 ) = 163840;
-  }
-}
+{}
 
 size_t hash_value( const MemoryRange & mr )
 {
