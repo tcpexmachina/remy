@@ -34,6 +34,29 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range 
   }
 }
 
+Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
+				     const bool trace, const unsigned int carefulness ) const
+{
+  PRNG run_prng( _prng );
+
+  run_whiskers.reset_counts();
+
+  /* run tests */
+  Outcome the_outcome;
+  for ( auto &x : _configs ) {
+    /* run once */
+    Network<Rat, Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
+    network1.run_simulation( TICK_COUNT * carefulness );
+
+    the_outcome.score += network1.senders().utility();
+    the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
+  }
+
+  the_outcome.used_whiskers = run_whiskers;
+
+  return the_outcome;
+}
+
 Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements,
 				     const bool trace, const unsigned int carefulness ) const
 {
@@ -44,20 +67,5 @@ Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements
     assert( run_whiskers.replace( x ) );
   }
 
-  run_whiskers.reset_counts();
-
-  /* run tests */
-  Outcome the_outcome;
-  for ( auto &x : _configs ) {
-    /* run once */
-    Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
-    network1.run_simulation( TICK_COUNT * carefulness );
-
-    the_outcome.score += network1.senders().utility();
-    the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
-  }
-
-  the_outcome.used_whiskers = run_whiskers;
-
-  return the_outcome;
+  return score( run_whiskers, trace, carefulness );
 }

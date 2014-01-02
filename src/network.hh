@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "sendergang.hh"
+#include "sendergangofgangs.hh"
 #include "link.hh"
 #include "delay.hh"
 #include "receiver.hh"
@@ -25,11 +25,11 @@ public:
       delay( 150 )
   {}
 
-  NetConfig set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
-  NetConfig set_delay( const double s_delay ) { delay = s_delay; return *this; }
-  NetConfig set_num_senders( const unsigned int n ) { num_senders = n; return *this; }
-  NetConfig set_on_duration( const double & duration ) { mean_on_duration = duration; return *this; }
-  NetConfig set_off_duration( const double & duration ) { mean_off_duration = duration; return *this; }
+  NetConfig & set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
+  NetConfig & set_delay( const double s_delay ) { delay = s_delay; return *this; }
+  NetConfig & set_num_senders( const unsigned int n ) { num_senders = n; return *this; }
+  NetConfig & set_on_duration( const double & duration ) { mean_on_duration = duration; return *this; }
+  NetConfig & set_off_duration( const double & duration ) { mean_off_duration = duration; return *this; }
 
   std::string str( void ) const
   {
@@ -40,12 +40,12 @@ public:
   }
 };
 
-template <class SenderType>
+template <class SenderType1, class SenderType2>
 class Network
 {
 private:
   PRNG & _prng;
-  SenderGang<SenderType> _senders;
+  SenderGangofGangs<SenderType1, SenderType2> _senders;
   Link _link;
   Delay _delay;
   Receiver _rec;
@@ -55,11 +55,13 @@ private:
   void tick( void );
 
 public:
-  Network( const SenderType & example_sender, PRNG & s_prng, const NetConfig & config );
+  Network( const SenderType1 & example_sender1, const SenderType2 & example_sender2, PRNG & s_prng, const NetConfig & config );
+
+  Network( const SenderType1 & example_sender1, PRNG & s_prng, const NetConfig & config );
 
   void run_simulation( const double & duration );
 
-  const SenderGang<SenderType> & senders( void ) const { return _senders; }
+  const SenderGangofGangs<SenderType1,SenderType2> & senders( void ) const { return _senders; }
 };
 
 #endif
