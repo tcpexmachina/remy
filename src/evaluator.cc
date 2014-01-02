@@ -1,3 +1,5 @@
+#include <utility>
+
 #include <boost/random/uniform_real_distribution.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 
@@ -8,9 +10,20 @@
 
 const unsigned int TICK_COUNT = 1000000;
 
-Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range )
+ZigZag& operator!(ZigZag& z)
+{
+  switch (z)
+  {
+    case ZigZag::ZIG: return z=ZigZag::ZAG;
+    case ZigZag::ZAG: return z=ZigZag::ZIG;
+    default: throw "";
+  }
+}
+
+Evaluator::Evaluator( const WhiskerTree & s_whiskers1, const WhiskerTree & s_whiskers2, const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
-    _whiskers( s_whiskers ),
+    _whiskers1( s_whiskers1 ),
+    _whiskers2( s_whiskers2 ),
     _configs()
 {
   /* first load "anchors" */
@@ -34,38 +47,40 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range 
   }
 }
 
-Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
+Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers1, WhiskerTree & run_whiskers2,
 				     const bool trace, const unsigned int carefulness ) const
 {
   PRNG run_prng( _prng );
 
-  run_whiskers.reset_counts();
+  run_whiskers1.reset_counts();
+  run_whiskers2.reset_counts();
 
   /* run tests */
   Outcome the_outcome;
   for ( auto &x : _configs ) {
     /* run once */
-    Network<Rat, Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
+    Network<Rat, Rat> network1( Rat( run_whiskers1, trace ), Rat( run_whiskers2, trace ), run_prng, x );
     network1.run_simulation( TICK_COUNT * carefulness );
 
     the_outcome.score += network1.senders().utility();
     the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
   }
 
-  the_outcome.used_whiskers = run_whiskers;
+  the_outcome.used_whiskers = make_pair( run_whiskers1, run_whiskers2 );
 
   return the_outcome;
 }
 
-Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements,
+Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements, ZigZag tree_id,
 				     const bool trace, const unsigned int carefulness ) const
 {
   PRNG run_prng( _prng );
 
-  WhiskerTree run_whiskers( _whiskers );
+  WhiskerTree run_whiskers1( _whiskers1 );
+  WhiskerTree run_whiskers2( _whiskers2 );
   for ( const auto &x : replacements ) {
-    assert( run_whiskers.replace( x ) );
+    assert( ( tree_id == ZigZag::ZIG ? run_whiskers1 : run_whiskers2 ).replace( x ) );
   }
 
-  return score( run_whiskers, trace, carefulness );
+  return score( run_whiskers1, run_whiskers2, trace, carefulness );
 }

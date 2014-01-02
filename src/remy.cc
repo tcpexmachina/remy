@@ -10,9 +10,37 @@
 
 using namespace std;
 
+void dump_to_file( string filename, const ConfigRange& configuration_range, const WhiskerTree & whiskers )
+{
+      char of[ 128 ];
+      snprintf( of, 128, "%s", filename.c_str() );
+      fprintf( stderr, "Writing to \"%s\"... ", of );
+      int fd = open( of, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR );
+      if ( fd < 0 ) {
+	perror( "open" );
+	exit( 1 );
+      }
+
+      auto remycc = whiskers.DNA();
+      remycc.mutable_config()->CopyFrom( configuration_range.DNA() );
+      remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
+
+      if ( not remycc.SerializeToFileDescriptor( fd ) ) {
+	fprintf( stderr, "Could not serialize RemyCC.\n" );
+	exit( 1 );
+      }
+
+      if ( close( fd ) < 0 ) {
+	perror( "close" );
+	exit( 1 );
+      }
+
+      fprintf( stderr, "done.\n" );
+}
+
 int main( int argc, char *argv[] )
 {
-  WhiskerTree whiskers;
+  WhiskerTree whiskers1, whiskers2;
   string output_filename;
 
   for ( int i = 1; i < argc; i++ ) {
@@ -30,7 +58,7 @@ int main( int argc, char *argv[] )
 	fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
 	exit( 1 );
       }
-      whiskers = WhiskerTree( tree );
+      whiskers1 = whiskers2 = WhiskerTree( tree );
 
       if ( close( fd ) < 0 ) {
 	perror( "close" );
@@ -64,7 +92,7 @@ int main( int argc, char *argv[] )
   printf( "Optimizing for mean_on_duration = %f, mean_off_duration = %f\n",
 	  configuration_range.mean_on_duration, configuration_range.mean_off_duration );
 
-  printf( "Initial rules (use if=FILENAME to read from disk): %s\n", whiskers.str().c_str() );
+  printf( "Initial rules (use if=FILENAME to read from disk): %s %s\n", whiskers1.str().c_str(), whiskers2.str().c_str() );
   printf( "#######################\n" );
 
   if ( !output_filename.empty() ) {
@@ -74,10 +102,10 @@ int main( int argc, char *argv[] )
   }
 
   while ( 1 ) {
-    auto outcome = breeder.improve( whiskers );
+    auto outcome = breeder.improve( whiskers1, whiskers2 );
     printf( "run = %u, score = %f\n", run, outcome.score );
 
-    printf( "whiskers: %s\n", whiskers.str().c_str() );
+    printf( "whiskers: %s %s\n", whiskers1.str().c_str(), whiskers2.str().c_str() );
 
     for ( auto &run : outcome.throughputs_delays ) {
       printf( "===\nconfig: %s\n", run.first.str().c_str() );
@@ -87,30 +115,8 @@ int main( int argc, char *argv[] )
     }
 
     if ( !output_filename.empty() ) {
-      char of[ 128 ];
-      snprintf( of, 128, "%s.%d", output_filename.c_str(), run );
-      fprintf( stderr, "Writing to \"%s\"... ", of );
-      int fd = open( of, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR );
-      if ( fd < 0 ) {
-	perror( "open" );
-	exit( 1 );
-      }
-
-      auto remycc = whiskers.DNA();
-      remycc.mutable_config()->CopyFrom( configuration_range.DNA() );
-      remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
-
-      if ( not remycc.SerializeToFileDescriptor( fd ) ) {
-	fprintf( stderr, "Could not serialize RemyCC.\n" );
-	exit( 1 );
-      }
-
-      if ( close( fd ) < 0 ) {
-	perror( "close" );
-	exit( 1 );
-      }
-
-      fprintf( stderr, "done.\n" );
+      dump_to_file( output_filename + "." + to_string( run ) + ".whiskertree1", configuration_range, whiskers1 );
+      dump_to_file( output_filename + "." + to_string( run ) + ".whiskertree2", configuration_range, whiskers2 );
     }
 
     fflush( NULL );

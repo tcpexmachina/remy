@@ -7,6 +7,12 @@
 #include "whiskertree.hh"
 #include "network.hh"
 
+enum class ZigZag {
+  ZIG,
+  ZAG,
+};
+ZigZag& operator!(ZigZag& z);
+
 class Evaluator
 {
 public:
@@ -15,21 +21,23 @@ public:
   public:
     double score;
     std::vector< std::pair< NetConfig, std::vector< std::pair< double, double > > > > throughputs_delays;
-    WhiskerTree used_whiskers;
+    std::pair<WhiskerTree, WhiskerTree> used_whiskers;
+    WhiskerTree & get_used_whiskers( const ZigZag & tree_id ) { return tree_id == ZigZag::ZIG ? used_whiskers.first : used_whiskers.second; }
 
     Outcome() : score( 0 ), throughputs_delays(), used_whiskers() {}
   };
 
 private:
   const PRNG _prng;
-  const WhiskerTree _whiskers;
+  const WhiskerTree _whiskers1;
+  const WhiskerTree _whiskers2;
 
   std::vector< NetConfig > _configs;
 
 public:
-  Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range );
-  Outcome score( WhiskerTree & run_whiskers, const bool trace = false, const unsigned int carefulness = 1 ) const;
-  Outcome score( const std::vector< Whisker > & replacements, const bool trace = false, const unsigned int carefulness = 1 ) const;
+  Evaluator( const WhiskerTree & s_whiskers1, const WhiskerTree & s_whiskers2, const ConfigRange & range );
+  Outcome score( WhiskerTree & run_whiskers1, WhiskerTree & run_whiskers2, const bool trace = false, const unsigned int carefulness = 1 ) const;
+  Outcome score( const std::vector< Whisker > & replacements, ZigZag tree_id, const bool trace = false, const unsigned int carefulness = 1 ) const;
 };
 
 #endif

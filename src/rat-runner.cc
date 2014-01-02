@@ -74,8 +74,8 @@ int main( int argc, char *argv[] )
   configuration_range.mean_off_duration = mean_off_duration;
   configuration_range.lo_only = true;
 
-  Evaluator eval( whiskers, configuration_range );
-  auto outcome = eval.score( {}, false, 10 );
+  Evaluator eval( whiskers, whiskers, configuration_range );
+  auto outcome = eval.score( {}, {}, false, 10 );
   printf( "score = %f\n", outcome.score );
   double norm_score = 0;
 
@@ -89,7 +89,7 @@ int main( int argc, char *argv[] )
 
   printf( "normalized_score = %f\n", norm_score );
 
-  printf( "Whiskers: %s\n", outcome.used_whiskers.str().c_str() );
+  printf( "Whiskers: %s %s\n", outcome.get_used_whiskers( ZigZag::ZIG ).str().c_str(), outcome.get_used_whiskers( ZigZag::ZAG ).str().c_str() );
 
   return 0;
 }
