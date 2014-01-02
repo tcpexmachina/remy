@@ -43,7 +43,7 @@ public:
 
   double next_event_time( const double & tickno ) const;
 
-  unsigned int packets_sent( void ) const { return _packets_sent; }
+  const int & packets_sent( void ) const { return _packets_sent; }
 };
 
 #endif
