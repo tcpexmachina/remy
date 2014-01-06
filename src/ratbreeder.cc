@@ -1,4 +1,4 @@
-#include <cstdio>
+#include <iostream>
 #include <vector>
 #include <cassert>
 #include <future>
@@ -63,7 +63,19 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
     Whisker whisker_to_improve = *most_used_whisker_ptr;
 
-    while ( improver.improve( whisker_to_improve ) ) {}
+    double score_to_beat = outcome.score;
+
+    while ( 1 ) {
+      double new_score = improver.improve( whisker_to_improve );
+      assert( new_score >= score_to_beat );
+      if ( new_score == score_to_beat ) {
+	cerr << "Ending search." << endl;
+	break;
+      } else {
+	cerr << "Score jumps from " << score_to_beat << " to " << new_score << endl;
+	score_to_beat = new_score;
+      }
+    }
 
     whisker_to_improve.demote( generation + 1 );
 
@@ -93,12 +105,10 @@ WhiskerImprover::WhiskerImprover( const Evaluator & s_evaluator, const double sc
     score_to_beat_( score_to_beat )
 {}
 
-bool WhiskerImprover::improve( Whisker & whisker_to_improve )
+double WhiskerImprover::improve( Whisker & whisker_to_improve )
 {
   auto replacements( whisker_to_improve.next_generation() );
 
-  bool found_an_improvement = false;
-  
   vector< pair< const Whisker &, future< pair< bool, double > > > > scores;
 
   /* find best replacement */
@@ -131,9 +141,8 @@ bool WhiskerImprover::improve( Whisker & whisker_to_improve )
     if ( score > score_to_beat_ ) {
       score_to_beat_ = score;
       whisker_to_improve = replacement;
-      found_an_improvement = true;
     }
   }
 
-  return found_an_improvement;
+  return score_to_beat_;
 }

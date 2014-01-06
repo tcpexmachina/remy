@@ -17,7 +17,7 @@ private:
 
 public:
   WhiskerImprover( const Evaluator & evaluator, const double score_to_beat );
-  bool improve( Whisker & whisker_to_improve );
+  double improve( Whisker & whisker_to_improve );
 };
 
 class RatBreeder
