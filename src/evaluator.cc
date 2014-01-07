@@ -5,6 +5,7 @@
 #include "evaluator.hh"
 #include "network.cc"
 #include "rat-templates.cc"
+#include "aimd-templates.cc"
 
 const unsigned int TICK_COUNT = 1000000;
 
@@ -12,24 +13,21 @@ Evaluator::Evaluator( const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _configs()
 {
-  /* first load "anchors" */
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-
-  if ( range.lo_only ) {
-    return;
-  }
-
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-
-  /* now load some random ones just for fun */
-  for ( int i = 0; i < 12; i++ ) {
-    boost::random::uniform_real_distribution<> link_speed( range.link_packets_per_ms.first, range.link_packets_per_ms.second );
-    boost::random::uniform_real_distribution<> rtt( range.rtt_ms.first, range.rtt_ms.second );
-    boost::random::uniform_int_distribution<> num_senders( 1, range.max_senders );
-
-    _configs.push_back( NetConfig().set_link_ppt( link_speed( global_PRNG() ) ).set_delay( rtt( global_PRNG() ) ).set_num_senders( num_senders( global_PRNG() ) ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  /* 0, 1, or 2 of each of the two sender classes */
+  for ( int i = 0; i <= 2; i++ ) {
+    for ( int j = 0; j <= 2; j++ ) {
+      if ( i == 0 ) {
+        /* We can only optimize whiskers, not Aimd */
+        continue;
+      } else {
+        _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
+                                       .set_delay( range.rtt_ms.first )
+                                       .set_num_senders1( i )
+                                       .set_num_senders2( j )
+                                       .set_on_duration( range.mean_on_duration )
+                                       .set_off_duration( range.mean_off_duration ) );
+      }
+    }
   }
 }
 
@@ -44,7 +42,7 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   Outcome the_outcome;
   for ( auto &x : _configs ) {
     /* run once */
-    Network<Rat, Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
+    Network<Rat, Aimd> network1( Rat( run_whiskers, trace ), Aimd(), run_prng, x );
     network1.run_simulation( TICK_COUNT * carefulness );
 
     the_outcome.score += network1.senders().utility();

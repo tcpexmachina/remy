@@ -10,8 +10,9 @@ SenderGangofGangs<Sender1,Sender2>::SenderGangofGangs( SenderGang<Sender1> && ga
   : gang1_( move( gang1 ) ), gang2_( move( gang2 ) )
 {
   /* Make sure no addresses conflict and no gap in address range */
-  assert( gang1_.id_of_first_sender() == 0 );
+  assert( gang1_.count_senders() == 0 or gang1_.id_of_first_sender() == 0 );
   assert( gang2_.count_senders() == 0 or gang2_.id_of_first_sender() == gang1_.count_senders() );
+  assert( gang1_.count_senders() != 0 or gang2_.count_senders() != 0 );
 }
 
 template <class Sender1, class Sender2>

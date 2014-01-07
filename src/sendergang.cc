@@ -8,7 +8,8 @@ SenderGang<SenderType>::SenderGang( const double mean_on_duration,
 				    const unsigned int num_senders,
 				    const SenderType & exemplar,
 				    PRNG & prng,
-				    const unsigned int id_range_begin )
+				    const unsigned int id_range_begin,
+				    const double & delta )
   : _gang(),
     _start_distribution( 1.0 / mean_off_duration, prng ),
     _stop_distribution( 1.0 / mean_on_duration, prng )
@@ -16,7 +17,8 @@ SenderGang<SenderType>::SenderGang( const double mean_on_duration,
   for ( unsigned int i = 0; i < num_senders; i++ ) {
     _gang.emplace_back( i + id_range_begin,
 			_start_distribution.sample(),
-			exemplar );
+			exemplar,
+			delta );
   }
 }
 
