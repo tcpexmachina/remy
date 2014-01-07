@@ -40,11 +40,12 @@ private:
 
     SwitchedSender( const unsigned int s_id,
 		    const double & start_tick,
-		    const SenderType & s_sender )
+		    const SenderType & s_sender,
+		    const double & delta = 1 )
       : internal_tick( 0 ),
 	next_switch_tick( start_tick ),
 	sender( s_sender ),
-	utility(),
+	utility( delta ),
 	sending( false ),
 	id( s_id )
     {}
@@ -95,7 +96,8 @@ public:
 	      const unsigned int num_senders,
 	      const SenderType & exemplar,
 	      PRNG & s_prng,
-	      const unsigned int id_range_begin = 0 );
+	      const unsigned int id_range_begin = 0,
+	      const double & delta = 1.0 );
 
   /* Create empty SenderGang */
   SenderGang();

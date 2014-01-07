@@ -70,11 +70,11 @@ int main( int argc, char *argv[] )
   }
 
   ConfigRange configuration_range;
-  configuration_range.link_packets_per_ms = make_pair( 1.0, 2.0 ); /* 10 Mbps to 20 Mbps */
-  configuration_range.rtt_ms = make_pair( 100, 200 ); /* ms */
+  configuration_range.link_packets_per_ms = make_pair( 1.0, 1.0 ); /* 10 Mbps to 20 Mbps */
+  configuration_range.rtt_ms = make_pair( 100, 100 ); /* ms */
   configuration_range.max_senders = 16;
-  configuration_range.mean_on_duration = 5000;
-  configuration_range.mean_off_duration = 5000;
+  configuration_range.mean_on_duration = 1000;
+  configuration_range.mean_off_duration = 1000;
   //  configuration_range.lo_only = true;
   RatBreeder breeder( configuration_range );
 
