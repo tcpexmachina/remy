@@ -8,9 +8,8 @@
 
 const unsigned int TICK_COUNT = 1000000;
 
-Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range )
+Evaluator::Evaluator( const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
-    _whiskers( s_whiskers ),
     _configs()
 {
   /* first load "anchors" */
@@ -55,17 +54,4 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   the_outcome.used_whiskers = run_whiskers;
 
   return the_outcome;
-}
-
-Evaluator::Outcome Evaluator::score( const std::vector< Whisker > & replacements,
-				     const bool trace, const unsigned int carefulness ) const
-{
-  PRNG run_prng( _prng );
-
-  WhiskerTree run_whiskers( _whiskers );
-  for ( const auto &x : replacements ) {
-    assert( run_whiskers.replace( x ) );
-  }
-
-  return score( run_whiskers, trace, carefulness );
 }

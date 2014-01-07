@@ -11,12 +11,15 @@ class WhiskerImprover
 {
 private:
   const Evaluator eval_;
+
+  WhiskerTree rat_;
+
   std::unordered_map< Whisker, double, boost::hash< Whisker > > eval_cache_ {};
 
   double score_to_beat_;
 
 public:
-  WhiskerImprover( const Evaluator & evaluator, const double score_to_beat );
+  WhiskerImprover( const Evaluator & evaluator, const WhiskerTree & rat, const double score_to_beat );
   double improve( Whisker & whisker_to_improve );
 };
 

@@ -10,8 +10,8 @@ using namespace std;
 
 void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int generation ) const
 {
-  const Evaluator eval( whiskers, _range );
-  auto outcome( eval.score( {}, true ) );
+  const Evaluator eval( _range );
+  auto outcome( eval.score( whiskers, true ) );
 
   while ( 1 ) {
     auto my_whisker( outcome.used_whiskers.most_used( generation ) );
@@ -44,9 +44,9 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   unsigned int generation = 0;
 
   while ( generation < 5 ) {
-    const Evaluator eval( whiskers, _range );
+    const Evaluator eval( _range );
 
-    auto outcome( eval.score( {} ) );
+    auto outcome( eval.score( whiskers ) );
 
     /* is there a whisker at this generation that we can improve? */
     auto most_used_whisker_ptr = outcome.used_whiskers.most_used( generation );
@@ -59,7 +59,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       continue;
     }
 
-    WhiskerImprover improver( eval, outcome.score );
+    WhiskerImprover improver( eval, whiskers, outcome.score );
 
     Whisker whisker_to_improve = *most_used_whisker_ptr;
 
@@ -87,7 +87,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   apply_best_split( whiskers, generation );
 
   /* carefully evaluate what we have vs. the previous best */
-  const Evaluator eval2( {}, _range );
+  const Evaluator eval2( _range );
   const auto new_score = eval2.score( whiskers, false, 10 );
   const auto old_score = eval2.score( input_whiskertree, false, 10 );
 
@@ -100,8 +100,11 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   return new_score;
 }
 
-WhiskerImprover::WhiskerImprover( const Evaluator & s_evaluator, const double score_to_beat )
+WhiskerImprover::WhiskerImprover( const Evaluator & s_evaluator,
+				  const WhiskerTree & rat,
+				  const double score_to_beat )
   : eval_( s_evaluator ),
+    rat_( rat ),
     score_to_beat_( score_to_beat )
 {}
 
@@ -116,8 +119,14 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
     if ( eval_cache_.find( test_replacement ) == eval_cache_.end() ) {
       /* need to fire off a new thread to evaluate */
       scores.emplace_back( test_replacement,
-			   async( launch::async, [] ( const Evaluator & e, const Whisker & r ) {
-			       return make_pair( true, e.score( { r } ).score ); }, eval_, test_replacement ) );
+			   async( launch::async, [] ( const Evaluator & e,
+						      const Whisker & r,
+						      const WhiskerTree & rat ) {
+				    WhiskerTree replaced_whiskertree( rat );
+				    const bool found_replacement = replaced_whiskertree.replace( r );
+				    assert( found_replacement );
+				    return make_pair( true, e.score( replaced_whiskertree ).score ); },
+				  eval_, test_replacement, rat_ ) );
     } else {
       /* we already know the score */
       scores.emplace_back( test_replacement,
