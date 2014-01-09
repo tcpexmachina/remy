@@ -1,4 +1,4 @@
-source = dna.proto
+source = dna.proto problem.proto answer.proto
 
 AM_CPPFLAGS = $(protobuf_CFLAGS)
 

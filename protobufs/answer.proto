@@ -1,0 +1,18 @@
+import "dna.proto";
+
+package AnswerBuffers;
+
+message SenderResults {
+  optional double throughput = 11;
+  optional double delay = 12;
+}
+
+message ThroughputsDelays {
+  optional RemyBuffers.NetConfig config = 21;
+  repeated SenderResults results = 22;
+}
+
+message Outcome {
+  repeated ThroughputsDelays throughputs_delays = 32;
+  optional double score = 33;
+}

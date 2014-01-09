@@ -1,11 +1,14 @@
 #ifndef EVALUATOR_HH
 #define EVALUATOR_HH
 
+#include <string>
 #include <vector>
 
 #include "random.hh"
 #include "whiskertree.hh"
 #include "network.hh"
+#include "problem.pb.h"
+#include "answer.pb.h"
 
 class Evaluator
 {
@@ -18,16 +21,33 @@ public:
     WhiskerTree used_whiskers;
 
     Outcome() : score( 0 ), throughputs_delays(), used_whiskers() {}
+
+    Outcome( const AnswerBuffers::Outcome & dna );
+
+    AnswerBuffers::Outcome DNA( void ) const;
   };
 
 private:
-  const PRNG _prng;
+  const unsigned int _prng_seed;
 
   std::vector< NetConfig > _configs;
 
 public:
   Evaluator( const ConfigRange & range );
-  Outcome score( WhiskerTree & run_whiskers, const bool trace = false, const unsigned int carefulness = 1 ) const;
+  
+  ProblemBuffers::Problem DNA( const WhiskerTree & whiskers ) const;
+
+  Outcome score( WhiskerTree & run_whiskers,
+		 const bool trace = false,
+		 const unsigned int carefulness = 1 ) const;
+
+  static Evaluator::Outcome parse_problem_and_evaluate( const ProblemBuffers::Problem & problem );
+
+  static Outcome score( WhiskerTree & run_whiskers,
+			const unsigned int prng_seed,
+			const std::vector<NetConfig> & configs,
+			const bool trace,
+			const unsigned int ticks_to_run );
 };
 
 #endif
