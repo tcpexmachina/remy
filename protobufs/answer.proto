@@ -1,0 +1,27 @@
+import "dna.proto";
+
+package AnswerBuffers;
+
+message NetConfig {
+  optional double mean_on_duration = 31;
+  optional double mean_off_duration = 32;
+  optional uint32 num_senders = 33;
+  optional double link_ppt = 34;
+  optional double delay = 35;
+}
+
+message SenderResults {
+  optional double throughput = 41;
+  optional double delay = 42;
+}
+
+message ThroughputsDelays {
+  optional NetConfig config = 51;
+  repeated SenderResults results = 52;
+}
+
+message Outcome {
+  optional RemyBuffers.WhiskerTree used_whiskers = 61;
+  repeated ThroughputsDelays throughputs_delays = 62;
+  optional double score = 63;
+}
