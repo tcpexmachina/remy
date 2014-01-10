@@ -37,10 +37,7 @@ Evaluator::Evaluator( const ConfigRange & range )
 ProblemBuffers::Problem Evaluator::serialize_problem( WhiskerTree & whiskers, const bool trace, const unsigned int carefulness ) {
   ProblemBuffers::Problem ret;
 
-  auto remycc = whiskers.DNA();
-  // remycc.mutable_config()->CopyFrom( configuration_range.DNA() ); // we don't need this for scoring
-  remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
-  ret.mutable_whiskers()->CopyFrom( remycc );
+  ret.mutable_whiskers()->CopyFrom( whiskers.DNA() );
 
   ProblemBuffers::ProblemSettings settings;
   settings.set_trace( trace );
@@ -50,7 +47,7 @@ ProblemBuffers::Problem Evaluator::serialize_problem( WhiskerTree & whiskers, co
   ret.mutable_settings()->CopyFrom( settings );
 
   for ( auto &x : _configs ) {
-    AnswerBuffers::NetConfig *config = ret.add_configs();
+    RemyBuffers::NetConfig *config = ret.add_configs();
     *config = x.DNA();
   }
 
@@ -72,11 +69,7 @@ Evaluator::Outcome Evaluator::parse_problem_and_score( ProblemBuffers::Problem p
 AnswerBuffers::Outcome Evaluator::serialize_answer( Evaluator::Outcome answer ) {
   AnswerBuffers::Outcome ret;
   
-  auto used_whiskers = answer.used_whiskers.DNA();
-  //  used_whiskers.mutable_config()->CopyFrom( configuration_range.DNA() );
-  used_whiskers.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
-
-  ret.mutable_used_whiskers()->CopyFrom( used_whiskers );
+  ret.mutable_used_whiskers()->CopyFrom( answer.used_whiskers.DNA() );
 
   for ( auto &run : answer.throughputs_delays ) {
     AnswerBuffers::ThroughputsDelays *tp_del = ret.add_throughputs_delays();

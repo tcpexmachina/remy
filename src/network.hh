@@ -26,7 +26,7 @@ public:
       delay( 150 )
   {}
 
-  NetConfig( const AnswerBuffers::NetConfig & dna )
+  NetConfig( const RemyBuffers::NetConfig & dna )
     : mean_on_duration( dna.mean_on_duration() ),
       mean_off_duration( dna.mean_off_duration() ),
       num_senders( dna.num_senders() ),
@@ -40,8 +40,8 @@ public:
   NetConfig & set_on_duration( const double & duration ) { mean_on_duration = duration; return *this; }
   NetConfig & set_off_duration( const double & duration ) { mean_off_duration = duration; return *this; }
 
-  AnswerBuffers::NetConfig DNA( void ) {
-    AnswerBuffers::NetConfig ret;
+  RemyBuffers::NetConfig DNA( void ) {
+    RemyBuffers::NetConfig ret;
     ret.set_mean_on_duration( mean_on_duration );
     ret.set_mean_off_duration( mean_off_duration );
     ret.set_num_senders( num_senders );

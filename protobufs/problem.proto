@@ -5,7 +5,7 @@ package ProblemBuffers;
 
 message Problem {
   optional ProblemSettings settings = 1;
-  repeated AnswerBuffers.NetConfig configs = 2;
+  repeated RemyBuffers.NetConfig configs = 2;
   optional RemyBuffers.WhiskerTree whiskers = 3;
 }
 

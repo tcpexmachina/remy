@@ -2,21 +2,13 @@ import "dna.proto";
 
 package AnswerBuffers;
 
-message NetConfig {
-  optional double mean_on_duration = 1;
-  optional double mean_off_duration = 2;
-  optional uint32 num_senders = 3;
-  optional double link_ppt = 4;
-  optional double delay = 5;
-}
-
 message SenderResults {
   optional double throughput = 11;
   optional double delay = 12;
 }
 
 message ThroughputsDelays {
-  optional NetConfig config = 21;
+  optional RemyBuffers.NetConfig config = 21;
   repeated SenderResults results = 22;
 }
 
