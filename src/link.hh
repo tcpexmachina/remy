@@ -20,12 +20,12 @@ public:
 	const unsigned int s_limit = std::numeric_limits<unsigned int>::max() )
     : _buffer(), _pending_packet( 1.0 / s_rate ), _limit( s_limit ) {}
 
-  void accept( Packet && p, const double & tickno ) noexcept {
+  void accept( const Packet & p, const double & tickno ) noexcept {
     if ( _pending_packet.empty() ) {
-      _pending_packet.accept( std::move( p ), tickno );
+      _pending_packet.accept( p, tickno );
     } else {
       if ( _buffer.size() < _limit ) {
-        _buffer.push( std::move( p ) );
+        _buffer.push( p );
       }
     }
   }

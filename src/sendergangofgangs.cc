@@ -5,9 +5,9 @@
 using namespace std;
 
 template <class Sender1, class Sender2>
-SenderGangofGangs<Sender1,Sender2>::SenderGangofGangs( SenderGang<Sender1> && gang1,
-						       SenderGang<Sender2> && gang2 )
-  : gang1_( move( gang1 ) ), gang2_( move( gang2 ) )
+SenderGangofGangs<Sender1,Sender2>::SenderGangofGangs( const SenderGang<Sender1> & gang1,
+						       const SenderGang<Sender2> & gang2 )
+  : gang1_( gang1 ), gang2_( gang2 )
 {
   /* Make sure no addresses conflict and no gap in address range */
   assert( gang1_.id_of_first_sender() == 0 );

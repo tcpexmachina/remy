@@ -79,7 +79,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
     whisker_to_improve.demote( generation + 1 );
 
-    const auto result = whiskers.replace( whisker_to_improve );
+    const auto result __attribute((unused)) = whiskers.replace( whisker_to_improve );
     assert( result );
   }
 
@@ -123,7 +123,7 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
 						      const Whisker & r,
 						      const WhiskerTree & rat ) {
 				    WhiskerTree replaced_whiskertree( rat );
-				    const bool found_replacement = replaced_whiskertree.replace( r );
+				    const bool found_replacement __attribute((unused)) = replaced_whiskertree.replace( r );
 				    assert( found_replacement );
 				    return make_pair( true, e.score( replaced_whiskertree ).score ); },
 				  eval_, test_replacement, rat_ ) );

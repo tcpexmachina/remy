@@ -18,10 +18,6 @@ public:
       tick_received( -1 ),
       seq_num( s_seq_num )
   {}
-
-  Packet( const Packet & other ) = delete;
-
-  Packet( Packet && other ) = default;
 };
 
 #endif

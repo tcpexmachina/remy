@@ -14,7 +14,7 @@ private:
 public:
   Receiver();
 
-  void accept( Packet && p, const double & tickno ) noexcept;
+  void accept( const Packet & p, const double & tickno ) noexcept;
   const std::vector< Packet > & packets_for( const unsigned int src ) { return _collector[ src ]; }
   void clear( const unsigned int src ) { _collector[ src ].clear(); }
   bool readable( const unsigned int src ) const noexcept

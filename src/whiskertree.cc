@@ -77,6 +77,7 @@ const Whisker * WhiskerTree::whisker( const Memory & _memory ) const
   }
 
   assert( false );
+  return nullptr;
 }
 
 const Whisker * WhiskerTree::most_used( const unsigned int max_generation ) const
@@ -151,6 +152,7 @@ bool WhiskerTree::replace( const Whisker & w )
   }
 
   assert( false );
+  return false;
 }
 
 bool WhiskerTree::replace( const Whisker & src, const WhiskerTree & dst )
@@ -173,6 +175,7 @@ bool WhiskerTree::replace( const Whisker & src, const WhiskerTree & dst )
   }
 
   assert( false );
+  return false;
 }
 
 unsigned int WhiskerTree::total_whisker_queries( void ) const
