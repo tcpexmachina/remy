@@ -7,7 +7,7 @@
 #include "network.cc"
 #include "rat-templates.cc"
 
-const unsigned int TICK_COUNT = 100000;
+const unsigned int TICK_COUNT = 1000000;
 
 Evaluator::Evaluator( const ConfigRange & range )
   : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
@@ -40,6 +40,7 @@ ProblemBuffers::Problem Evaluator::serialize_problem( WhiskerTree & whiskers, co
   auto remycc = whiskers.DNA();
   // remycc.mutable_config()->CopyFrom( configuration_range.DNA() ); // we don't need this for scoring
   remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
+  ret.mutable_whiskers()->CopyFrom( remycc );
 
   ProblemBuffers::ProblemSettings settings;
   settings.set_trace( trace );
@@ -56,23 +57,11 @@ ProblemBuffers::Problem Evaluator::serialize_problem( WhiskerTree & whiskers, co
   return ret;
 }
 
-Evaluator::Outcome Evaluator::parse_problem_and_score( string input_filename ) {
-
-  int fd = open( input_filename.c_str(), O_RDONLY );
-  if ( fd < 0 ) {
-    perror( "open" );
-    exit( 1 );
-  }
-
-  ProblemBuffers::Problem problem;
-  if ( !problem.ParseFromFileDescriptor( fd ) ) {
-    fprintf( stderr, "Could not parse %s.\n", input_filename.c_str() );
-    exit( 1 );
-  }
+Evaluator::Outcome Evaluator::parse_problem_and_score( ProblemBuffers::Problem problem ) {
   
   vector<NetConfig> configs;
   for ( const auto &x : problem.configs() ) {
-    _configs.emplace_back( NetConfig( x ) );
+    configs.emplace_back( NetConfig( x ) );
   }
 
   WhiskerTree run_whiskers = WhiskerTree( problem.whiskers() );
@@ -80,7 +69,7 @@ Evaluator::Outcome Evaluator::parse_problem_and_score( string input_filename ) {
   return Evaluator::score( run_whiskers, problem.settings().prng_seed(), configs, problem.settings().trace(), problem.settings().carefulness() );
 }
 
-AnswerBuffers::Outcome Evaluator::serialize_answer( Outcome answer ) {
+AnswerBuffers::Outcome Evaluator::serialize_answer( Evaluator::Outcome answer ) {
   AnswerBuffers::Outcome ret;
   
   auto used_whiskers = answer.used_whiskers.DNA();
@@ -96,8 +85,8 @@ AnswerBuffers::Outcome Evaluator::serialize_answer( Outcome answer ) {
 
     for ( auto &x : run.second ) {
       AnswerBuffers::SenderResults *results = tp_del->add_results();
-      results->set_throughput( x.first / run.first.link_ppt ); 
-      results->set_delay( x.second / run.first.delay );
+      results->set_throughput( x.first ); 
+      results->set_delay( x.second );
     }
   }
 
@@ -107,19 +96,7 @@ AnswerBuffers::Outcome Evaluator::serialize_answer( Outcome answer ) {
   return ret;
 }
 
-Evaluator::Outcome Evaluator::parse_answer( string input_filename ) {
-
-  int fd = open( input_filename.c_str(), O_RDONLY );
-  if ( fd < 0 ) {
-    perror( "open" );
-    exit( 1 );
-  }
-
-  AnswerBuffers::Outcome proto_outcome;
-  if ( !proto_outcome.ParseFromFileDescriptor( fd ) ) {
-    fprintf( stderr, "Could not parse %s.\n", input_filename.c_str() );
-    exit( 1 );
-  }
+Evaluator::Outcome Evaluator::parse_answer( AnswerBuffers::Outcome proto_outcome ) {
 
   Evaluator::Outcome outcome;
 
@@ -166,7 +143,7 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
 }
 
 
-static Evaluator::Outcome score( WhiskerTree & run_whiskers, const unsigned int prng_seed, vector<NetConfig> configs, const bool trace = false, const unsigned int carefulness = 1 ) {
+Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers, const unsigned int prng_seed, vector<NetConfig> configs, const bool trace, const unsigned int carefulness ) {
   PRNG run_prng( prng_seed );
 
   run_whiskers.reset_counts();
