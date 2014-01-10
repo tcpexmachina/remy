@@ -8,13 +8,12 @@ Receiver::Receiver()
 {
 }
 
-void Receiver::accept( Packet && p, const double & tickno ) noexcept
+void Receiver::accept( const Packet & p, const double & tickno ) noexcept
 {
   autosize( p.src );
 
-  p.tick_received = tickno;
-
-  _collector[ p.src ].push_back( std::move( p ) );
+  _collector[ p.src ].push_back( p );
+  _collector[ p.src ].back().tick_received = tickno;
 }
 
 void Receiver::autosize( const unsigned int index )

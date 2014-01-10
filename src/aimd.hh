@@ -36,7 +36,7 @@ public:
   template <class NextHop>
   void send( const unsigned int id, NextHop & next, const double & tickno );
 
-  Aimd & operator=( const Aimd & ) { assert( false ); }
+  Aimd & operator=( const Aimd & ) { assert( false ); return *this; }
 
   double next_event_time( const double & tickno ) const;
 };

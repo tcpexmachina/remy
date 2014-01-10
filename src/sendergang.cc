@@ -141,8 +141,10 @@ void SenderGang<SenderType>::SwitchedSender::accumulate_sending_time_until( cons
   assert( sending );
   assert( tickno >= internal_tick );
 
-  utility.sending_duration( tickno - internal_tick, num_sending );
-  internal_tick = tickno;
+  if ( tickno > internal_tick ) {
+      utility.sending_duration( tickno - internal_tick, num_sending );
+      internal_tick = tickno;
+    }
 }
 
 template <class SenderType>

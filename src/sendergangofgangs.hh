@@ -14,8 +14,8 @@ private:
   SenderGang<Sender2> gang2_;
 
 public:
-  SenderGangofGangs( SenderGang<Sender1> && gang1,
-		     SenderGang<Sender2> && gang2 );
+  SenderGangofGangs( const SenderGang<Sender1> & gang1,
+		     const SenderGang<Sender2> & gang2 );
 
   unsigned int count_active_senders( void ) const;
 
