@@ -58,7 +58,14 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers1, WhiskerTree & 
     Network<Rat, Rat> network1( Rat( run_whiskers1, trace ), Rat( run_whiskers2, trace ), run_prng, x, make_pair( 0.1, 10.0 ) );
     network1.run_simulation( TICK_COUNT * carefulness );
 
-    the_outcome.score += network1.senders().utility();
+    /* At least one has to be non zero */
+    assert( x.num_senders1 != 0 or x.num_senders2 != 0 );
+    /* If we are running exclusively, weigh it more */
+    if ( x.num_senders1 == 0 or x.num_senders2 == 0) {
+      the_outcome.score += 10 * network1.senders().utility();
+    } else {
+      the_outcome.score += network1.senders().utility();
+    }
     the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
   }
 
