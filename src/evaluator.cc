@@ -13,22 +13,38 @@ Evaluator::Evaluator( const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _configs()
 {
-  /* 0, 1, or 2 of each of the two sender classes */
-  for ( int i = 0; i <= 2; i++ ) {
-    for ( int j = 0; j <= 2; j++ ) {
-      if ( i == 0 ) {
-        /* We can only optimize whiskers, not Aimd */
-        continue;
-      } else {
-        _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
-                                       .set_delay( range.rtt_ms.first )
-                                       .set_num_senders1( i )
-                                       .set_num_senders2( j )
-                                       .set_on_duration( range.mean_on_duration )
-                                       .set_off_duration( range.mean_off_duration ) );
-      }
-    }
-  }
+    /* Rat vs AIMD, 1 second on, 1 second off */
+    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
+                                   .set_delay( range.rtt_ms.first )
+                                   .set_num_senders1( 1 )
+                                   .set_num_senders2( 1 )
+                                   .set_on_duration( 1000.0 )
+                                   .set_off_duration( 1000.0 ) );
+
+    /* Rat vs AIMD, always on */
+    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
+                                   .set_delay( range.rtt_ms.first )
+                                   .set_num_senders1( 1 )
+                                   .set_num_senders2( 1 )
+                                   .set_on_duration( 1000000000.0 )
+                                   .set_off_duration( 0.0 ) );
+
+    /* Two rats, 1 second on, 1 second off */
+    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
+                                   .set_delay( range.rtt_ms.first )
+                                   .set_num_senders1( 2 )
+                                   .set_num_senders2( 0 )
+                                   .set_on_duration( 1000.0 )
+                                   .set_off_duration( 1000.0 ) );
+
+    /* Two rats, always on */
+    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
+                                   .set_delay( range.rtt_ms.first )
+                                   .set_num_senders1( 2 )
+                                   .set_num_senders2( 0 )
+                                   .set_on_duration( 1000000000.0 )
+                                   .set_off_duration( 0.0 ) );
+
 }
 
 Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,

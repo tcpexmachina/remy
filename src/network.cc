@@ -12,7 +12,7 @@ Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
   : _prng( s_prng ),
     _senders( SenderGang<SenderType1>( config.mean_on_duration, config.mean_off_duration, config.num_senders1, example_sender1, _prng, 0, deltas.first ),
               SenderGang<SenderType2>( config.mean_on_duration, config.mean_off_duration, config.num_senders2, example_sender2, _prng, config.num_senders1, deltas.second ) ),
-    _link( config.link_ppt ),
+    _link( config.link_ppt, 2 * config.link_ppt * config.delay ),
     _delay( config.delay ),
     _rec(),
     _tickno( 0 )
