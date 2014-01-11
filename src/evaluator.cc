@@ -7,28 +7,28 @@
 #include "rat-templates.cc"
 #include "aimd-templates.cc"
 
-const unsigned int TICK_COUNT = 1000000;
+const unsigned int TICK_COUNT = 100000;
 
 Evaluator::Evaluator( const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _configs()
 {
-  /* 0, 1, or 2 of each of the two sender classes */
-  for ( int i = 0; i <= 2; i++ ) {
-    for ( int j = 0; j <= 2; j++ ) {
-      if ( i == 0 ) {
-        /* We can only optimize whiskers, not Aimd */
-        continue;
-      } else {
+//  /* 0, 1, or 2 of each of the two sender classes */
+//  for ( int i = 0; i <= 2; i++ ) {
+//    for ( int j = 0; j <= 2; j++ ) {
+//      if ( i == 0 ) {
+//        /* We can only optimize whiskers, not Aimd */
+//        continue;
+//      } else {
         _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
                                        .set_delay( range.rtt_ms.first )
-                                       .set_num_senders1( i )
-                                       .set_num_senders2( j )
+                                       .set_num_senders1( 1 )
+                                       .set_num_senders2( 1 )
                                        .set_on_duration( range.mean_on_duration )
                                        .set_off_duration( range.mean_off_duration ) );
-      }
-    }
-  }
+//      }
+//    }
+//  }
 }
 
 Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,

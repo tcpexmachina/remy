@@ -27,6 +27,8 @@ void Rat::packets_received( const vector< Packet > & packets ) {
 
   const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
 
+  printf("Rat received packet %d @ %f\n", packets.at( packets.size() - 1 ).seq_num, packets.at( packets.size() - 1 ).tick_received );
+
   _the_window = current_whisker.window( _the_window );
   _intersend_time = current_whisker.intersend();
 }

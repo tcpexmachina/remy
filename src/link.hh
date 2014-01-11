@@ -26,6 +26,7 @@ public:
     } else {
       if ( _buffer.size() < _limit ) {
         _buffer.push( std::move( p ) );
+        printf("%f: queue size %lu\n", tickno, _buffer.size());
       }
     }
   }
