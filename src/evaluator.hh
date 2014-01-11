@@ -14,7 +14,7 @@ public:
   {
   public:
     double score;
-    std::vector< std::pair< NetConfig, std::vector< std::pair< double, double > > > > throughputs_delays;
+    std::vector< std::pair< NetConfig, std::vector< std::tuple< std::string, double, double > > > > throughputs_delays;
     WhiskerTree used_whiskers;
 
     Outcome() : score( 0 ), throughputs_delays(), used_whiskers() {}

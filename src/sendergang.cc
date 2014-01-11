@@ -215,13 +215,13 @@ double SenderGang<SenderType>::utility( void ) const
 }
 
 template <class SenderType>
-vector< pair< double, double > > SenderGang<SenderType>::throughputs_delays( void ) const
+vector< tuple< string, double, double > > SenderGang<SenderType>::throughputs_delays( void ) const
 {
-  vector< pair< double, double > > ret;
+  vector< tuple< string, double, double > > ret;
   ret.reserve( _gang.size() );
 
   for ( auto &x : _gang ) {
-    ret.emplace_back( x.utility.average_throughput(), x.utility.average_delay() );
+    ret.emplace_back( x.get_sender().str() + to_string( x.utility.get_delta() ), x.utility.average_throughput(), x.utility.average_delay() );
   }
 
   return ret;

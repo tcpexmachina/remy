@@ -34,6 +34,7 @@ private:
 
   public:
     double next_event_time( const double & tickno ) const;
+    const SenderType& get_sender() const { return sender; }
     Utility utility;
     bool sending;
     unsigned int id;
@@ -118,7 +119,7 @@ public:
 
   double utility( void ) const;
 
-  std::vector< std::pair< double, double > > throughputs_delays( void ) const;
+  std::vector< std::tuple< std::string, double, double > > throughputs_delays( void ) const;
 
   double next_event_time( const double & tickno ) const;
 };

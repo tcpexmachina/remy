@@ -60,7 +60,7 @@ double SenderGangofGangs<Sender1,Sender2>::utility( void ) const
 }
 
 template <class Sender1, class Sender2>
-vector< pair< double, double > > SenderGangofGangs<Sender1,Sender2>::throughputs_delays( void ) const
+vector< tuple< string, double, double > > SenderGangofGangs<Sender1,Sender2>::throughputs_delays( void ) const
 {
   auto ret = gang1_.throughputs_delays();
   const auto gang2_tpd = gang2_.throughputs_delays();

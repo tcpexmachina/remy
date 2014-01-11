@@ -39,6 +39,8 @@ public:
   Aimd & operator=( const Aimd & ) { assert( false ); }
 
   double next_event_time( const double & tickno ) const;
+
+  std::string str() const { return "Aimd"; }
 };
 
 #endif
