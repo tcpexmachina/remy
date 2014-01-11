@@ -20,7 +20,7 @@ public:
   {
   public:
     double score;
-    std::vector< std::pair< NetConfig, std::vector< std::pair< double, double > > > > throughputs_delays;
+    std::vector< std::pair< NetConfig, std::vector< std::tuple< std::string, double, double > > > > throughputs_delays;
     std::pair<WhiskerTree, WhiskerTree> used_whiskers;
     WhiskerTree & get_used_whiskers( const ZigZag & tree_id ) { return tree_id == ZigZag::ZIG ? used_whiskers.first : used_whiskers.second; }
 

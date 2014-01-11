@@ -110,7 +110,7 @@ int main( int argc, char *argv[] )
     for ( auto &run : outcome.throughputs_delays ) {
       printf( "===\nconfig: %s\n", run.first.str().c_str() );
       for ( auto &x : run.second ) {
-	printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
+	printf( "sender:%s [tp=%f, del=%f]\n", get<0>( x ).c_str(), get<1>( x )/ run.first.link_ppt, get<2>( x ) / run.first.delay );
       }
     }
 

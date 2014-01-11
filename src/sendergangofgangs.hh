@@ -31,7 +31,7 @@ public:
 
   double utility( void ) const;
 
-  std::vector< std::pair< double, double > > throughputs_delays( void ) const;
+  std::vector< std::tuple< std::string, double, double > > throughputs_delays( void ) const;
 
   double next_event_time( const double & tickno ) const;
 };

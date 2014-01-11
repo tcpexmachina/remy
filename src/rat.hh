@@ -44,6 +44,8 @@ public:
   double next_event_time( const double & tickno ) const;
 
   const int & packets_sent( void ) const { return _packets_sent; }
+
+  std::string str() const { return "Rat";}
 };
 
 #endif
