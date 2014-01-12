@@ -26,10 +26,10 @@ void Aimd::packets_received( const vector< Packet > & packets ) {
     _largest_ack = max( _largest_ack, packet.seq_num );
 
     _packets_received++;
-    if ( packet.flow_id != _flow_id ) {
-      /* This was from the previous flow, ignore it for congestion control */
-      continue;
-    }
+//    if ( packet.flow_id != _flow_id ) {
+//      /* This was from the previous flow, ignore it for congestion control */
+//      continue;
+//    }
 
     /* If in slow_start, exit slow start on detecting loss, else don't bother */
     _slow_start  = ( _slow_start ) ? ( loss_detected  ? false : _slow_start )
@@ -54,9 +54,9 @@ void Aimd::packets_received( const vector< Packet > & packets ) {
 
 void Aimd::reset( const double & )
 {
-  _the_window = INITIAL_WINDOW;
+//  _the_window = INITIAL_WINDOW;
   _flow_id++;
-  _slow_start = true;
+//  _slow_start = true;
   /* Give up on everything sent so far that hasn't been acked,
      Fixes the problem of tail losses */
   _largest_ack = _packets_sent - 1;
