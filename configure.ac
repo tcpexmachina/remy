@@ -36,6 +36,8 @@ boost/random/uniform_real_distribution.hpp fcntl.h future cmath queue \
 cstdio string sys/stat.h sys/types.h ctime tuple unistd.h unordered_map \
 utility vector], [], [AC_MSG_ERROR([Missing header file])])
 
+AC_CHECK_LIB(tcmalloc, malloc, [], [AC_MSG_ERROR([Need tcmalloc])])
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
 AC_TYPE_SIZE_T
