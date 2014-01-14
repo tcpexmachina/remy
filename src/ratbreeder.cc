@@ -92,12 +92,17 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 	}
       }
 
+      int improved_scores = 0;
+      int worse_scores = 0;
       for ( auto &x : memoized_scores ) {
 	const double score( x.second );
 	//	printf( "score = %f\n", score );
 	if ( score > best_score ) {
 	  best_whisker = &x.first;
 	  best_score = score;
+	  improved_scores++;
+	} else {
+	  worse_scores++;
 	}
       }
 
@@ -108,6 +113,9 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 	if ( score > best_score ) {
 	  best_whisker = &x.first;
 	  best_score = score;
+	  improved_scores++;
+	} else {
+	  worse_scores++;
 	}
       }
 
@@ -115,6 +123,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
       /* replace with best nexgen choice and repeat */
       if ( best_score > outcome.score ) {
+	printf( "%u were improvements, %u did same or worse\n", improved_scores, worse_scores );
 	printf( "Replacing with whisker that scored %.12f => %.12f (+%.12f)\n", outcome.score, best_score,
 		best_score - outcome.score );
 	//	printf( "=> %s\n", best_whisker->str().c_str() );
