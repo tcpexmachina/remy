@@ -46,8 +46,8 @@ public:
 
   static const unsigned int datasize = 3;
 
-  const DataType & field( unsigned int num ) const { return num == 0 ? _rec_send_ewma : num == 1 ? _rec_rec_ewma : num == 2 ? _slow_rec_rec_ewma: _rtt_ratio ; }
-  DataType & mutable_field( unsigned int num )     { return num == 0 ? _rec_send_ewma : num == 1 ? _rec_rec_ewma : num == 2 ? _slow_rec_rec_ewma : _rtt_ratio ; }
+  const DataType & field( unsigned int num ) const { return num == 0 ? _rec_send_ewma : num == 1 ? _slow_rec_rec_ewma : num == 2 ? _rtt_ratio : _rec_rec_ewma ; }
+  DataType & mutable_field( unsigned int num )     { return num == 0 ? _rec_send_ewma : num == 1 ? _slow_rec_rec_ewma : num == 2 ? _rtt_ratio : _rec_rec_ewma ; }
 
   void packet_sent( const Packet & packet __attribute((unused)) ) {}
   void packets_received( const std::vector< Packet > & packets, const unsigned int flow_id );
