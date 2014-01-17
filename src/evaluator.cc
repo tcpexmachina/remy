@@ -13,24 +13,23 @@ Evaluator::Evaluator( const ConfigRange & range )
   : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _configs()
 {
-  /* first load "anchors" */
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  /* sample 100 link speeds */
 
-  if ( range.lo_only ) {
-    return;
-  }
+  const double steps = 100.0;
 
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  const double link_speed_dynamic_range = range.link_packets_per_ms.second / range.link_packets_per_ms.first;
 
-  /* now load some random ones just for fun */
-  for ( int i = 0; i < 12; i++ ) {
-    boost::random::uniform_real_distribution<> link_speed( range.link_packets_per_ms.first, range.link_packets_per_ms.second );
-    boost::random::uniform_real_distribution<> rtt( range.rtt_ms.first, range.rtt_ms.second );
-    boost::random::uniform_int_distribution<> num_senders( 1, range.max_senders );
+  const double multiplier = pow( link_speed_dynamic_range, 1.0 / steps );
 
-    _configs.push_back( NetConfig().set_link_ppt( link_speed( global_PRNG() ) ).set_delay( rtt( global_PRNG() ) ).set_num_senders( num_senders( global_PRNG() ) ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  double link_speed = range.link_packets_per_ms.first;
+
+  /* this approach only varies link speed, so make sure no
+uncertainty in rtt */
+  assert( range.rtt_ms.first == range.rtt_ms.second );
+
+  while ( link_speed <= (range.link_packets_per_ms.second * ( 1 + (multiplier-1) / 2 ) ) ) {
+    _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+    link_speed *= multiplier;
   }
 }
 
@@ -113,7 +112,7 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
 				     const unsigned int prng_seed,
 				     const vector<NetConfig> & configs,
 				     const bool trace,
-				     const unsigned int ticks_to_run )
+				     const unsigned int ticks_to_run __attribute__ ((unused)) )
 {
   PRNG run_prng( prng_seed );
 
@@ -122,9 +121,11 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   /* run tests */
   Evaluator::Outcome the_outcome;
   for ( auto &x : configs ) {
+    const double dynamic_tick_count = 1000000.0 / x.link_ppt;
+
     /* run once */
     Network<Rat, Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
-    network1.run_simulation( ticks_to_run );
+    network1.run_simulation( dynamic_tick_count );
     
     the_outcome.score += network1.senders_vector().at( 0 ).utility() + network1.senders_vector().at( 1 ).utility() + network1.senders_vector().at( 2 ).utility();
     std::vector< std::pair< double, double > > tpt_delays;
