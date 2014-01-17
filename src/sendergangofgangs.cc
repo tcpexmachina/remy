@@ -10,7 +10,7 @@ SenderGangofGangs<Sender1,Sender2>::SenderGangofGangs( const SenderGang<Sender1>
   : gang1_( gang1 ), gang2_( gang2 )
 {
   /* Make sure no addresses conflict and no gap in address range */
-  assert( gang1_.id_of_first_sender() == 0 );
+//  assert( gang1_.id_of_first_sender() == 0 );
   assert( gang2_.count_senders() == 0 or gang2_.id_of_first_sender() == gang1_.count_senders() );
 }
 

@@ -165,8 +165,7 @@ int main( int argc, char *argv[] )
   for ( auto &run : parsed_outcome.throughputs_delays ) {
     printf( "===\nconfig: %s\n", run.first.str().c_str() );
     for ( auto &x : run.second ) {
-      printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
-      norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
+      printf( "sender: [tp=%f, del=%f]\n", x.first, x.second );
     }
   }
 

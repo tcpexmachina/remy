@@ -1,12 +1,14 @@
 #ifndef NETWORK_HH
 #define NETWORK_HH
 
+#include <vector>
 #include <string>
 
 #include "sendergangofgangs.hh"
 #include "link.hh"
 #include "delay.hh"
 #include "receiver.hh"
+#include "router.hh"
 #include "random.hh"
 #include "answer.pb.h"
 
@@ -66,23 +68,26 @@ class Network
 {
 private:
   PRNG & _prng;
-  SenderGangofGangs<SenderType1, SenderType2> _senders;
-  Link _link;
-  Delay _delay;
+
+  std::vector< SenderGangofGangs<SenderType1, SenderType2> > _senders_vector;
+  std::vector< Link > _link_vector;
+  std::vector< Delay > _delay_vector;
+
   Receiver _rec;
+
+  Router _router;
 
   double _tickno;
 
   void tick( void );
 
 public:
-  Network( const SenderType1 & example_sender1, const SenderType2 & example_sender2, PRNG & s_prng, const NetConfig & config );
-
-  Network( const SenderType1 & example_sender1, PRNG & s_prng, const NetConfig & config );
-
+  Network( const SenderType1 & example_sender1,
+           PRNG & s_prng,
+           const NetConfig & config );
   void run_simulation( const double & duration );
 
-  const SenderGangofGangs<SenderType1,SenderType2> & senders( void ) const { return _senders; }
+  const std::vector< SenderGangofGangs<SenderType1,SenderType2> > & senders_vector( void ) const { return _senders_vector; }
 };
 
 #endif

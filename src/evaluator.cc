@@ -126,8 +126,13 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
     Network<Rat, Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
     network1.run_simulation( ticks_to_run );
     
-    the_outcome.score += network1.senders().utility();
-    the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
+    the_outcome.score += network1.senders_vector().at( 0 ).utility() + network1.senders_vector().at( 1 ).utility() + network1.senders_vector().at( 2 ).utility();
+    std::vector< std::pair< double, double > > tpt_delays;
+    for (uint32_t i = 0; i < 3; i ++ ) {
+      assert( network1.senders_vector().at( i ).throughputs_delays().size() == 1 );
+      tpt_delays.emplace_back( network1.senders_vector().at( i ).throughputs_delays().at( 0 ) );
+    }
+    the_outcome.throughputs_delays.emplace_back( x, tpt_delays );
   }
 
   the_outcome.used_whiskers = run_whiskers;
