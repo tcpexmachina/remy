@@ -28,7 +28,7 @@ uncertainty in rtt */
   assert( range.rtt_ms.first == range.rtt_ms.second );
 
   while ( link_speed <= (range.link_packets_per_ms.second * ( 1 + (multiplier-1) / 2 ) ) ) {
-    _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+    _configs.push_back( NetConfig().set_link1_ppt( link_speed ).set_link2_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
     link_speed *= multiplier;
   }
 }
@@ -121,7 +121,7 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   /* run tests */
   Evaluator::Outcome the_outcome;
   for ( auto &x : configs ) {
-    const double dynamic_tick_count = 1000000.0 / x.link_ppt;
+    const double dynamic_tick_count = 1000000.0 / std::min( x.link1_ppt, x.link2_ppt ) ; /* Use the slower link to compute tick count */
 
     /* run once */
     Network<Rat, Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
