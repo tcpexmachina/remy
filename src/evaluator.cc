@@ -27,9 +27,9 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers1, const WhiskerTree & s_whi
     _configs()
 {
   /* 0, 1, or 2 of each of the two sender classes */
-  for ( int i = 0; i <= 2; i++ ) {
-    int j = 0;
-    //    for ( int j = 0; j <= 2; j++ ) {
+  int i = 0;
+  //for ( int i = 0; i <= 2; i++ ) {
+  for ( int j = 0; j <= 2; j++ ) {
       if ( i == 0 and j == 0 ) {
         continue;
       } else {
@@ -40,8 +40,8 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers1, const WhiskerTree & s_whi
                                        .set_on_duration( range.mean_on_duration )
                                        .set_off_duration( range.mean_off_duration ) );
       }
-      //    }
   }
+  //}
 }
 
 Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers1, WhiskerTree & run_whiskers2,
