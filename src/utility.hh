@@ -52,7 +52,7 @@ public:
     const double throughput_utility = log2( average_throughput() );
     const double delay_penalty = log2( average_delay() / 100.0 );
 
-    return throughput_utility - delay_penalty;
+    return throughput_utility - 0.1 * delay_penalty;
   }
 };
 
