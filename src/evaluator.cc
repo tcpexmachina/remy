@@ -13,8 +13,20 @@ Evaluator::Evaluator( const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _configs()
 {
+  const double steps = 5.0;
+
+  const double link_speed_dynamic_range = range.link_packets_per_ms.second / range.link_packets_per_ms.first;
+
+  const double multiplier = pow( link_speed_dynamic_range, 1.0 / steps );
+
+  double link_speed = range.link_packets_per_ms.first;
+
+  /* this approach only varies link speed, so make sure no uncertainty in rtt */
+  assert( range.rtt_ms.first == range.rtt_ms.second );
+
+  while ( link_speed <= (range.link_packets_per_ms.second * ( 1 + (multiplier-1) / 2 ) ) ) {
     /* Rat vs AIMD, 1 second on, 1 second off */
-    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
+    _configs.push_back( NetConfig().set_link_ppt( link_speed )
                                    .set_delay( range.rtt_ms.first )
                                    .set_num_senders1( 1 )
                                    .set_num_senders2( 1 )
@@ -22,7 +34,7 @@ Evaluator::Evaluator( const ConfigRange & range )
                                    .set_off_duration( 1000.0 ) );
 
     /* Rat vs AIMD, always on */
-    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
+    _configs.push_back( NetConfig().set_link_ppt( link_speed )
                                    .set_delay( range.rtt_ms.first )
                                    .set_num_senders1( 1 )
                                    .set_num_senders2( 1 )
@@ -30,7 +42,7 @@ Evaluator::Evaluator( const ConfigRange & range )
                                    .set_off_duration( 0.0 ) );
 
     /* Two rats, 1 second on, 1 second off */
-    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
+    _configs.push_back( NetConfig().set_link_ppt( link_speed )
                                    .set_delay( range.rtt_ms.first )
                                    .set_num_senders1( 2 )
                                    .set_num_senders2( 0 )
@@ -38,13 +50,16 @@ Evaluator::Evaluator( const ConfigRange & range )
                                    .set_off_duration( 1000.0 ) );
 
     /* Two rats, always on */
-    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
+    _configs.push_back( NetConfig().set_link_ppt( link_speed )
                                    .set_delay( range.rtt_ms.first )
                                    .set_num_senders1( 2 )
                                    .set_num_senders2( 0 )
                                    .set_on_duration( 1000000000.0 )
                                    .set_off_duration( 0.0 ) );
 
+    /* Move on to the next */
+    link_speed *= multiplier;
+  }
 }
 
 Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,

@@ -38,8 +38,8 @@ public:
   std::string str( void ) const
   {
     char tmp[ 256 ];
-    snprintf( tmp, 256, "mean_on=%f, mean_off=%f, nsrc1=%d, nsrc2=%d, link_ppt=%f, delay=%f\n",
-	      mean_on_duration, mean_off_duration, num_senders1, num_senders2, link_ppt, delay );
+    snprintf( tmp, 256, "mean_on=%f, mean_off=%f, nsrc1=%d, nsrc2=%d, link_ppt=%f, delay=%f\n buffer=%f\n",
+	      mean_on_duration, mean_off_duration, num_senders1, num_senders2, link_ppt, delay, 2 * link_ppt * delay );
     return tmp;
   }
 };
