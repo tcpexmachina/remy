@@ -26,6 +26,8 @@ public:
     } else {
       if ( _buffer.size() < _limit ) {
         _buffer.push( std::move( p ) );
+      } else {
+	printf("Dropping\n");
       }
     }
   }

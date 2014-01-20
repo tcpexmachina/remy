@@ -7,35 +7,35 @@
 #include "rat-templates.cc"
 #include "aimd-templates.cc"
 
-const unsigned int TICK_COUNT = 1000000;
+const unsigned int TICK_COUNT = 10000;
 
 Evaluator::Evaluator( const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _configs()
 {
-    /* Rat vs AIMD, 1 second on, 1 second off */
-    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
-                                   .set_delay( range.rtt_ms.first )
-                                   .set_num_senders1( 1 )
-                                   .set_num_senders2( 1 )
-                                   .set_on_duration( 1000.0 )
-                                   .set_off_duration( 1000.0 ) );
-
-    /* Rat vs AIMD, always on */
-    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
-                                   .set_delay( range.rtt_ms.first )
-                                   .set_num_senders1( 1 )
-                                   .set_num_senders2( 1 )
-                                   .set_on_duration( 1000000000.0 )
-                                   .set_off_duration( 0.0 ) );
-
-    /* Two rats, 1 second on, 1 second off */
-    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
-                                   .set_delay( range.rtt_ms.first )
-                                   .set_num_senders1( 2 )
-                                   .set_num_senders2( 0 )
-                                   .set_on_duration( 1000.0 )
-                                   .set_off_duration( 1000.0 ) );
+//    /* Rat vs AIMD, 1 second on, 1 second off */
+//    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
+//                                   .set_delay( range.rtt_ms.first )
+//                                   .set_num_senders1( 1 )
+//                                   .set_num_senders2( 1 )
+//                                   .set_on_duration( 1000.0 )
+//                                   .set_off_duration( 1000.0 ) );
+//
+//    /* Rat vs AIMD, always on */
+//    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
+//                                   .set_delay( range.rtt_ms.first )
+//                                   .set_num_senders1( 1 )
+//                                   .set_num_senders2( 1 )
+//                                   .set_on_duration( 1000000000.0 )
+//                                   .set_off_duration( 0.0 ) );
+//
+//    /* Two rats, 1 second on, 1 second off */
+//    _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
+//                                   .set_delay( range.rtt_ms.first )
+//                                   .set_num_senders1( 2 )
+//                                   .set_num_senders2( 0 )
+//                                   .set_on_duration( 1000.0 )
+//                                   .set_off_duration( 1000.0 ) );
 
     /* Two rats, always on */
     _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first )
