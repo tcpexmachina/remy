@@ -7,7 +7,7 @@
 #include "rat-templates.cc"
 #include "aimd-templates.cc"
 
-const unsigned int TICK_COUNT = 1000000;
+const unsigned int TICK_COUNT = 100000;
 
 Evaluator::Evaluator( const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
