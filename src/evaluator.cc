@@ -25,22 +25,6 @@ Evaluator::Evaluator( const ConfigRange & range )
   assert( range.rtt_ms.first == range.rtt_ms.second );
 
   while ( link_speed <= (range.link_packets_per_ms.second * ( 1 + (multiplier-1) / 2 ) ) ) {
-    /* Rat vs AIMD, 1 second on, 1 second off */
-    _configs.push_back( NetConfig().set_link_ppt( link_speed )
-                                   .set_delay( range.rtt_ms.first )
-                                   .set_num_senders1( 1 )
-                                   .set_num_senders2( 1 )
-                                   .set_on_duration( 1000.0 )
-                                   .set_off_duration( 1000.0 ) );
-
-    /* Rat vs AIMD, always on */
-    _configs.push_back( NetConfig().set_link_ppt( link_speed )
-                                   .set_delay( range.rtt_ms.first )
-                                   .set_num_senders1( 1 )
-                                   .set_num_senders2( 1 )
-                                   .set_on_duration( 1000000000.0 )
-                                   .set_off_duration( 0.0 ) );
-
     /* Two rats, 1 second on, 1 second off */
     _configs.push_back( NetConfig().set_link_ppt( link_speed )
                                    .set_delay( range.rtt_ms.first )
