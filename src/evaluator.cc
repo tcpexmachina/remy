@@ -13,7 +13,7 @@ Evaluator::Evaluator( const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _configs()
 {
-  const double steps = 5.0;
+  const double steps = 3.0;
 
   const double link_speed_dynamic_range = range.link_packets_per_ms.second / range.link_packets_per_ms.first;
 
