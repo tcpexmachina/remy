@@ -26,7 +26,10 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range 
   assert( range.rtt_ms.first == range.rtt_ms.second );
 
   while ( link_speed <= (range.link_packets_per_ms.second * ( 1 + (multiplier-1) / 2 ) ) ) {
-    _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+    _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 1 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+    _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 4 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+    _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 7 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+    _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 10 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
     link_speed *= multiplier;
   }
 }
@@ -41,7 +44,7 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   /* run tests */
   Outcome the_outcome;
   for ( auto &x : _configs ) {
-    const double dynamic_tick_count = 1000000.0 / x.link_ppt;
+    const double dynamic_tick_count = 100000.0 / x.link_ppt;
 
     /* run once */
     Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
