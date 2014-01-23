@@ -44,7 +44,7 @@ public:
 
   void reset( void ) { _rec_send_ewma = _rec_rec_ewma = _rtt_ratio = _slow_rec_rec_ewma = _last_tick_sent = _last_tick_received = _min_rtt = 0; }
 
-  static const unsigned int datasize = 1;
+  static const unsigned int datasize = 0;
 
   const DataType & field( unsigned int num ) const { return num == 0 ? _rec_send_ewma : num == 1 ? _slow_rec_rec_ewma : num == 2 ? _rtt_ratio : _slow_rec_rec_ewma ; }
   DataType & mutable_field( unsigned int num )     { return num == 0 ? _rec_send_ewma : num == 1 ? _slow_rec_rec_ewma : num == 2 ? _rtt_ratio : _slow_rec_rec_ewma ; }

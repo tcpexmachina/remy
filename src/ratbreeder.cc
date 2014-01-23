@@ -59,7 +59,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       whiskers.promote( generation );
 
       if ( (generation % 4) == 0 ) {
-	apply_best_split( whiskers, generation );
+	//apply_best_split( whiskers, generation );
 	generation++;
 	whiskers.promote( generation );
 	break;
