@@ -10,7 +10,9 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
   vector< MemoryRange > ret { *this };
 
   /* bisect in each axis */
-  for ( unsigned int i = 0; i < Memory::datasize; i++ ) {
+  while(false) {
+    int i = 0;
+  //  for ( unsigned int i = 0; i < Memory::datasize; i++ ) {
     vector< MemoryRange > doubled;
     for ( const auto &x : ret ) {
       auto ersatz_lower( x._lower ), ersatz_upper( x._upper );
@@ -43,7 +45,9 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
 Memory MemoryRange::range_median( void ) const
 {
   Memory median_data( _lower );
-  for ( unsigned int i = 0; i < Memory::datasize; i++ ) {
+  while(false){
+    int i = 0;
+  //for ( int i = 0; i < Memory::datasize; i++ ) {
     median_data.mutable_field( i ) = (_lower.field( i ) + _upper.field( i )) / 2;
   }
   return median_data;
@@ -57,7 +61,9 @@ bool MemoryRange::contains( const Memory & query ) const
 void MemoryRange::track( const Memory & query ) const
 {
   /* log it */
-  for ( unsigned int i = 0; i < Memory::datasize; i++ ) {
+  while(false){
+    int i = 0;
+    //  for ( int i = 0; i < Memory::datasize; i++ ) {
     _acc[ i ]( query.field( i ) );
   }
 }
