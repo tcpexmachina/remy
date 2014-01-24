@@ -15,7 +15,7 @@ Evaluator::Evaluator( const ConfigRange & range )
 {
   /* sample 10 * 10 link speeds */
 
-  const double steps = 10.0;
+  const double steps = 5.0;
 
   const double link_speed_dynamic_range = range.link_packets_per_ms.second / range.link_packets_per_ms.first;
 
@@ -125,7 +125,7 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   /* run tests */
   Evaluator::Outcome the_outcome;
   for ( auto &x : configs ) {
-    const double dynamic_tick_count = 1000000.0 / std::min( x.link1_ppt, x.link2_ppt ) ; /* Use the slower link to compute tick count */
+    const double dynamic_tick_count = 500000.0 / std::min( x.link1_ppt, x.link2_ppt ) ; /* Use the slower link to compute tick count */
 
     /* run once */
     Network<Rat, Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
