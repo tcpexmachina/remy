@@ -30,16 +30,16 @@ Evaluator::Evaluator( const ConfigRange & range )
                                    .set_delay( range.rtt_ms.first )
                                    .set_num_senders1( 2 )
                                    .set_num_senders2( 0 )
-                                   .set_on_duration( 1000.0 )
-                                   .set_off_duration( 1000.0 ) );
+                                   .set_on_duration( 5000.0 )
+                                   .set_off_duration( 5000.0 ) );
 
     /* Two rats, always on */
     _configs.push_back( NetConfig().set_link_ppt( link_speed )
                                    .set_delay( range.rtt_ms.first )
                                    .set_num_senders1( 2 )
                                    .set_num_senders2( 0 )
-                                   .set_on_duration( 1000000000.0 )
-                                   .set_off_duration( 0.0 ) );
+                                   .set_on_duration( 5000.0 )
+                                   .set_off_duration( 10.0 ) );
 
     /* Move on to the next */
     link_speed *= multiplier;
