@@ -73,7 +73,7 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   Outcome the_outcome;
   for ( auto &x : _configs ) {
     /* run once */
-    Network<Rat, Aimd> network1( Rat( run_whiskers, trace ), Aimd(), run_prng, x );
+    Network<Rat, Aimd> network1( Rat( run_whiskers, trace ), Aimd(), run_prng, x, std::make_pair(0.1, 0.1) );
     network1.run_simulation( TICK_COUNT * carefulness );
 
     the_outcome.score += network1.senders().utility();
