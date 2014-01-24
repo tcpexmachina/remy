@@ -45,8 +45,8 @@ int main( int argc, char *argv[] )
   configuration_range.link_packets_per_ms = make_pair(0.9, 1.1); /* 10% around 1 Mbps (to prevent instability) */
   configuration_range.rtt_ms = make_pair( 100, 100 ); /* ms */
   configuration_range.max_senders = 2;
-  configuration_range.mean_on_duration = 1000;
-  configuration_range.mean_off_duration = 1000;
+  configuration_range.mean_on_duration = 5000;
+  configuration_range.mean_off_duration = 5000;
   //  configuration_range.lo_only = true;
   RatBreeder breeder( configuration_range );
 
