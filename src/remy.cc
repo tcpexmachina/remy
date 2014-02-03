@@ -42,7 +42,7 @@ int main( int argc, char *argv[] )
   }
 
   ConfigRange configuration_range;
-  configuration_range.link_packets_per_ms = make_pair( 0.316227766016838, 31.6227766016838 ); /* 0.32 Mbps to 32 Mbps */
+  configuration_range.link_packets_per_ms = make_pair( 1.0, 10.0 ); /* 10 Mbps to 100 Mbps */
   configuration_range.rtt_ms = make_pair( 150, 150 ); /* ms */
   configuration_range.max_senders = 2;
   configuration_range.mean_on_duration = 1000;
