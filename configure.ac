@@ -20,8 +20,15 @@ PKG_CHECK_MODULES([protobuf], [protobuf])
 
 # Add picky CXXFLAGS
 CPPFLAGS="-std=c++11 -pthread"
-PICKY_CXXFLAGS="-pedantic -Wall -Wextra -Weffc++ -Werror -fno-default-inline"
+PICKY_CXXFLAGS="-pedantic -Wall -Wextra -Weffc++ -Werror"
 AC_SUBST([PICKY_CXXFLAGS])
+
+# Checks for libraries.
+PKG_CHECK_MODULES([GL], [gl])
+PKG_CHECK_MODULES([GLFW], [glfw3])
+PKG_CHECK_MODULES([GLEW], [glew])
+PKG_CHECK_MODULES([GLU], [glu])
+PKG_CHECK_MODULES([PANGOCAIRO], [pangocairo])
 
 # Checks for header files.
 AC_LANG_PUSH(C++)
@@ -46,5 +53,5 @@ AC_LANG_POP(C++)
 
 # Checks for library functions.
 
-AC_CONFIG_FILES([Makefile protobufs/Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile protobufs/Makefile graph/Makefile src/Makefile])
 AC_OUTPUT
