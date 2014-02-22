@@ -34,6 +34,8 @@ public:
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
 
   double next_event_time( const double & tickno ) const;
+
+  std::vector< int > packets_in_flight( void ) const;
 };
 
 #endif

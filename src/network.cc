@@ -56,5 +56,15 @@ void Network<SenderType1, SenderType2>::run_simulation( const double & duration 
     assert( _tickno < std::numeric_limits<double>::max() );
 
     tick();
+
+    /*
+    const vector< int > pif = _senders.packets_in_flight();
+
+    cout << "packets in flight:";
+    for ( const auto & x : pif ) {
+      cout << " " << x;
+    }
+    cout << endl;
+    */
   }
 }

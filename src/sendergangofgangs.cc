@@ -74,3 +74,14 @@ double SenderGangofGangs<Sender1,Sender2>::next_event_time( const double & tickn
 {
   return min( gang1_.next_event_time( tickno ), gang2_.next_event_time( tickno ) );
 }
+
+template <class Sender1, class Sender2>
+vector< int > SenderGangofGangs<Sender1,Sender2>::packets_in_flight( void ) const
+{
+  auto ret = gang1_.packets_in_flight();
+  const auto gang2_pif = gang2_.packets_in_flight();
+
+  ret.insert( ret.end(), gang2_pif.begin(), gang2_pif.end() );
+
+  return ret;
+}
