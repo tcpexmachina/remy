@@ -15,8 +15,6 @@ using namespace std;
 
 int main( int argc, char *argv[] )
 {
-  Graph graph( 1024, 600, "Ratatouille" );
-
   WhiskerTree whiskers;
   unsigned int num_senders = 2;
   double link_ppt = 1.0;
@@ -76,6 +74,8 @@ int main( int argc, char *argv[] )
   PRNG prng( 50 );
   Network<Rat, Rat> network( Rat( whiskers, false ), prng, configuration );
 
+  Graph graph( 1024, 600, "Ratatouille", 0, link_ppt * delay * 1.2 );
+
   float t = 0.0;
   int current_pif = -1;
 
@@ -91,7 +91,7 @@ int main( int argc, char *argv[] )
 
     graph.set_window( t, 5 );
 
-    if ( graph.blocking_draw( t, 5 ) ) {
+    if ( graph.blocking_draw( t, 5, 0, link_ppt * delay * 1.2 ) ) {
       return EXIT_SUCCESS;
     }
 

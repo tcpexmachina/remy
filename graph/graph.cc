@@ -12,7 +12,8 @@
 
 using namespace std;
 
-Graph::Graph( const unsigned int initial_width, const unsigned int initial_height, const string & title )
+Graph::Graph( const unsigned int initial_width, const unsigned int initial_height, const string & title,
+	      const float min_y, const float max_y )
   : display_( initial_width, initial_height, title ),
     cairo_( display_.window().size() ),
     pango_( cairo_ ),
@@ -23,10 +24,8 @@ Graph::Graph( const unsigned int initial_width, const unsigned int initial_heigh
     data_points_(),
     x_label_( cairo_, pango_, label_font_, "time (s)" ),
     y_label_( cairo_, pango_, label_font_, "packets in flight" ),
-    bottom_adjustment_( 1.0 ),
-    top_adjustment_( 1.0 ),
-    bottom_( 0 ),
-    top_( 1 ),
+    bottom_( min_y ),
+    top_( max_y ),
     horizontal_fadeout_( cairo_pattern_create_linear( 0, 0, 190, 0 ) )
 {
   cairo_pattern_add_color_stop_rgba( horizontal_fadeout_, 0.0, 1, 1, 1, 1 );
@@ -51,7 +50,7 @@ static int to_int( const float x )
   return static_cast<int>( lrintf( x ) );
 }
 
-bool Graph::blocking_draw( const float t, const float logical_width )
+bool Graph::blocking_draw( const float t, const float logical_width, const float min_y, const float max_y )
 {
   /* get the current window size */
   const auto window_size = display_.window().size();
@@ -103,46 +102,9 @@ bool Graph::blocking_draw( const float t, const float logical_width )
   cairo_set_source_rgba( cairo_, 0, 0, 0.4, 1 );
   cairo_fill( cairo_ );
 
-  /* autoscale vertically */
-  if ( not data_points_.empty() ) {
-    /* adjust bottom and top */
-    float data_max = accumulate( data_points_.begin(), data_points_.end(), numeric_limits<float>::min(),
-				 [] ( const float x, const pair<float, float> & y ) {
-				   return max( x, y.second ); } );
-    float data_min = accumulate( data_points_.begin(), data_points_.end(), numeric_limits<float>::max(),
-				 [] ( const float x, const pair<float, float> & y ) {
-				   return min( x, y.second ); } );
-
-    /* stop adjusting if data are good enough */
-    if ( project_height( data_max ) > 0.833 ) {
-      top_adjustment_ *= 0.95;
-    }
-
-    if ( project_height( data_min ) < 0.167 ) {
-      bottom_adjustment_ *= 0.95;
-    }
-
-    /* expand weakly if data stays too far inside the graph */
-    if ( project_height( data_max ) < 0.667 ) {
-      top_adjustment_ = min( 0.02, top_adjustment_ + 0.02 / 15.0 );
-    }
-
-    if ( project_height( data_min ) > 0.333 ) {
-      bottom_adjustment_ = min( 0.02, bottom_adjustment_ + 0.02 / 15.0 );
-    }
-
-    /* adjust strongly if data goes outside the graph */
-    if ( project_height( data_max ) > 1.0 ) {
-      top_adjustment_ = min( 0.05, top_adjustment_ + 0.05 / 15.0 );
-    }
-
-    if ( project_height( data_min ) < 0.0 ) {
-      bottom_adjustment_ = min( 0.05, bottom_adjustment_ + 0.05 / 15.0 );
-    }
-
-    top_ = top_ * (1 - top_adjustment_) + (data_max + 0.15 * (data_max - data_min)) * top_adjustment_;
-    bottom_ = bottom_ * (1 - bottom_adjustment_) + (data_min - 0.15 * (data_max - data_min)) * bottom_adjustment_;
-  }
+  /* set scale (with smoothing) */
+  top_ = top_ * .95 + max_y * 0.05;
+  bottom_ = bottom_ * 0.95 + min_y * 0.05;
 
   /* draw the y-axis labels */
 
