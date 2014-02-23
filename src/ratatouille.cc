@@ -74,19 +74,17 @@ int main( int argc, char *argv[] )
   PRNG prng( 50 );
   Network<Rat, Rat> network( Rat( whiskers, false ), prng, configuration );
 
-  Graph graph( 1024, 600, "Ratatouille", 0, link_ppt * delay * 1.2 );
+  Graph graph( num_senders, 1024, 600, "Ratatouille", 0, link_ppt * delay * 1.2 );
 
   float t = 0.0;
-  int current_pif = -1;
 
   while ( 1 ) {
     network.run_simulation_until( t * 1000.0 );
 
     const vector< int > packets_in_flight = network.senders().packets_in_flight();
 
-    if ( packets_in_flight.front() != current_pif ) {
-      graph.add_data_point( t, packets_in_flight.front() );
-      current_pif = packets_in_flight.front();
+    for ( unsigned int i = 0; i < packets_in_flight.size(); i++ ) {
+      graph.add_data_point( i, t, packets_in_flight[ i ] );
     }
 
     graph.set_window( t, 5 );

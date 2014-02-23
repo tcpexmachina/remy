@@ -12,7 +12,8 @@
 
 using namespace std;
 
-Graph::Graph( const unsigned int initial_width, const unsigned int initial_height, const string & title,
+Graph::Graph( const unsigned int num_lines,
+	      const unsigned int initial_width, const unsigned int initial_height, const string & title,
 	      const float min_y, const float max_y )
   : display_( initial_width, initial_height, title ),
     cairo_( display_.window().size() ),
@@ -21,7 +22,7 @@ Graph::Graph( const unsigned int initial_width, const unsigned int initial_heigh
     label_font_( "ACaslon Regular, Normal 20" ),
     x_tick_labels_(),
     y_tick_labels_(),
-    data_points_(),
+    data_points_( num_lines ),
     x_label_( cairo_, pango_, label_font_, "time (s)" ),
     y_label_( cairo_, pango_, label_font_, "packets in flight" ),
     bottom_( min_y ),
@@ -35,9 +36,11 @@ Graph::Graph( const unsigned int initial_width, const unsigned int initial_heigh
 
 void Graph::set_window( const float t, const float logical_width )
 {
-  while ( (data_points_.size() >= 2) and (data_points_.front().first < t - logical_width - 1)
-	  and (data_points_.at( 1 ).first < t - logical_width - 1) ) {
-    data_points_.pop_front();
+  for ( auto & line : data_points_ ) {
+    while ( (line.size() >= 2) and (line.front().first < t - logical_width - 1)
+	    and (line.at( 1 ).first < t - logical_width - 1) ) {
+      line.pop_front();
+    }
   }
 
   while ( (not x_tick_labels_.empty()) and (x_tick_labels_.front().first < t - logical_width - 1) ) {
@@ -214,15 +217,18 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
   display_.draw( cairo_.image() );
 
   /* draw the data points, including an extension off the right edge */
-  if ( not data_points_.empty() ) {
-    data_points_.emplace_back( t + 20, data_points_.back().second );
-    display_.draw( 1.0, 0.38, 0.0, 0.75, 5.0, 220, data_points_,
-		   [&] ( const pair<float, float> & x ) {
-		     return make_pair( window_size.first - (t - x.first) * window_size.first / logical_width,
-				       chart_height( x.second, window_size.second ) );
-		   } );
-    data_points_.pop_back();
-  }  
+  for ( unsigned int i = 0; i < data_points_.size(); i++ ) {
+    auto & line = data_points_[ i ];
+    if ( not line.empty() ) {
+      line.emplace_back( t + 20, line.back().second );
+      display_.draw( 1.0, 0.38, i / double( data_points_.size() - 1 ), 0.75, 5.0, 220, line,
+		     [&] ( const pair<float, float> & x ) {
+		       return make_pair( window_size.first - (t - x.first) * window_size.first / logical_width,
+					 chart_height( x.second, window_size.second ) );
+		     } );
+      line.pop_back();
+    }
+  }
 
   /* swap buffers to reveal what has been drawn */
   display_.swap();

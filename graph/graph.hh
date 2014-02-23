@@ -22,7 +22,7 @@ class Graph
 
   std::deque<std::pair<int, Pango::Text>> x_tick_labels_;
   std::vector<YLabel> y_tick_labels_;
-  std::deque<std::pair<float, float>> data_points_;
+  std::vector<std::deque<std::pair<float, float>>> data_points_;
 
   Pango::Text x_label_;
   Pango::Text y_label_;
@@ -38,11 +38,21 @@ class Graph
   Cairo::Pattern horizontal_fadeout_;
 
 public:
-  Graph( const unsigned int initial_width, const unsigned int initial_height, const std::string & title,
+  Graph( const unsigned int num_lines,
+	 const unsigned int initial_width, const unsigned int initial_height, const std::string & title,
 	 const float min_y, const float max_y );
 
   void set_window( const float t, const float logical_width );
-  void add_data_point( const float t, const float y ) { data_points_.emplace_back( t, y ); }
+  void add_data_point( const unsigned int num, const float t, const float y ) {
+    if ( not data_points_[ num ].empty() ) {
+      if ( y == data_points_[ num ].back().second ) {
+	return;
+      }
+    }
+
+    data_points_[ num ].emplace_back( t, y );
+  }
+
   bool blocking_draw( const float t, const float logical_width, const float min_y, const float max_y );
 };
 
