@@ -56,15 +56,28 @@ void Network<SenderType1, SenderType2>::run_simulation( const double & duration 
     assert( _tickno < std::numeric_limits<double>::max() );
 
     tick();
+  }
+}
 
-    /*
-    const vector< int > pif = _senders.packets_in_flight();
+template <class SenderType1, class SenderType2>
+void Network<SenderType1, SenderType2>::run_simulation_until( const double tick_limit )
+{
+  if ( _tickno >= tick_limit ) {
+    return;
+  }
 
-    cout << "packets in flight:";
-    for ( const auto & x : pif ) {
-      cout << " " << x;
-    }
-    cout << endl;
-    */
+  while ( true ) {
+    /* find element with soonest event */
+    double next_tickno = min( min( _senders.next_event_time( _tickno ),
+				   _link.next_event_time( _tickno ) ),
+			      min( _delay.next_event_time( _tickno ),
+				   _rec.next_event_time( _tickno ) ) );
+
+    if ( next_tickno > tick_limit ) break;
+    assert( next_tickno < std::numeric_limits<double>::max() );
+
+    _tickno = next_tickno;
+
+    tick();
   }
 }
