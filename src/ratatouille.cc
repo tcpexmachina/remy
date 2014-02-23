@@ -76,6 +76,9 @@ int main( int argc, char *argv[] )
 
   Graph graph( num_senders, 1024, 600, "Ratatouille", 0, link_ppt * delay * 1.2 );
 
+  graph.set_color( 0, 1, 0.38, 0, 0.75 );
+  graph.set_color( 1, 0, 0, 1, 0.75 );
+
   float t = 0.0;
 
   while ( 1 ) {
@@ -87,9 +90,9 @@ int main( int argc, char *argv[] )
       graph.add_data_point( i, t, packets_in_flight[ i ] );
     }
 
-    graph.set_window( t, 5 );
+    graph.set_window( t, 10 );
 
-    if ( graph.blocking_draw( t, 5, 0, link_ppt * delay * 1.2 ) ) {
+    if ( graph.blocking_draw( t, 10, 0, link_ppt * delay * 1.2 ) ) {
       return EXIT_SUCCESS;
     }
 

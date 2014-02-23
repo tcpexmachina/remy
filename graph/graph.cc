@@ -22,6 +22,7 @@ Graph::Graph( const unsigned int num_lines,
     label_font_( "ACaslon Regular, Normal 20" ),
     x_tick_labels_(),
     y_tick_labels_(),
+    colors_( num_lines ),
     data_points_( num_lines ),
     x_label_( cairo_, pango_, label_font_, "time (s)" ),
     y_label_( cairo_, pango_, label_font_, "packets in flight" ),
@@ -221,7 +222,9 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
     auto & line = data_points_[ i ];
     if ( not line.empty() ) {
       line.emplace_back( t + 20, line.back().second );
-      display_.draw( 1.0, 0.38, i / double( data_points_.size() - 1 ), 0.75, 5.0, 220, line,
+      display_.draw( get<0>( colors_[ i ] ), get<1>( colors_[ i ] ),
+		     get<2>( colors_[ i ] ), get<3>( colors_[ i ] ),
+		     5.0, 220, line,
 		     [&] ( const pair<float, float> & x ) {
 		       return make_pair( window_size.first - (t - x.first) * window_size.first / logical_width,
 					 chart_height( x.second, window_size.second ) );
@@ -241,4 +244,10 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
   }
 
   return false;
+}
+
+void Graph::set_color( const unsigned int num, const float red, const float green, const float blue,
+		       const float alpha )
+{
+  colors_.at( num ) = make_tuple( red, green, blue, alpha );
 }
