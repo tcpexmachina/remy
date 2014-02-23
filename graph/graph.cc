@@ -36,7 +36,8 @@ Graph::Graph( const unsigned int initial_width, const unsigned int initial_heigh
 
 void Graph::set_window( const float t, const float logical_width )
 {
-  while ( (not data_points_.size() < 2) and (data_points_.front().first < t - logical_width - 1) ) {
+  while ( (data_points_.size() >= 2) and (data_points_.front().first < t - logical_width - 1)
+	  and (data_points_.at( 1 ).first < t - logical_width - 1) ) {
     data_points_.pop_front();
   }
 
