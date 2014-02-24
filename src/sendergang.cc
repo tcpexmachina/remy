@@ -10,12 +10,13 @@ SenderGang<SenderType>::SenderGang( const double mean_on_duration,
 				    PRNG & prng,
 				    const unsigned int id_range_begin )
   : _gang(),
-    _start_distribution( 1.0 / mean_off_duration, prng ),
-    _stop_distribution( 1.0 / mean_on_duration, prng )
+    _prng( prng ),
+    _start_distribution( 1.0 / mean_off_duration ),
+    _stop_distribution( 1.0 / mean_on_duration )
 {
   for ( unsigned int i = 0; i < num_senders; i++ ) {
     _gang.emplace_back( i + id_range_begin,
-			_start_distribution.sample(),
+			_start_distribution.sample( _prng ),
 			exemplar );
   }
 }
@@ -23,8 +24,9 @@ SenderGang<SenderType>::SenderGang( const double mean_on_duration,
 template <class SenderType>
 SenderGang<SenderType>::SenderGang()
   : _gang(),
-    _start_distribution( 1.0, global_PRNG() ),
-    _stop_distribution( 1.0, global_PRNG() )
+    _prng( global_PRNG() ),
+    _start_distribution( 1.0 ),
+    _stop_distribution( 1.0 )
 {
 }
 
@@ -33,7 +35,7 @@ void SenderGang<SenderType>::switch_senders( const unsigned int num_sending, con
 {
   /* let senders switch */
   for ( auto &x : _gang ) {
-    x.switcher( tickno, _start_distribution, _stop_distribution, num_sending );
+    x.switcher( tickno, _prng, _start_distribution, _stop_distribution, num_sending );
   }
 }
 
@@ -65,12 +67,13 @@ void SenderGang<SenderType>::run_senders( NextHop & next, Receiver & rec,
 					  const double & tickno ) {
   /* run senders */
   for ( auto &x : _gang ) {
-    x.tick( next, rec, tickno, num_sending, _start_distribution );
+    x.tick( next, rec, tickno, num_sending, _prng, _start_distribution );
   }
 }
 
 template <class SenderType>
 void SenderGang<SenderType>::TimeSwitchedSender::switcher( const double & tickno,
+							   PRNG & prng,
 							   Exponential & start_distribution,
 							   Exponential & stop_distribution,
 							   const unsigned int num_sending )
@@ -83,12 +86,13 @@ void SenderGang<SenderType>::TimeSwitchedSender::switcher( const double & tickno
     SwitchedSender::sending ? SwitchedSender::switch_off( tickno, num_sending ) : SwitchedSender::switch_on( tickno );
 
     /* increment next switch time */
-    SwitchedSender::next_switch_tick += (SwitchedSender::sending ? stop_distribution : start_distribution).sample();
+    SwitchedSender::next_switch_tick += (SwitchedSender::sending ? stop_distribution : start_distribution).sample( prng );
   }
 }
 
 template <class SenderType>
 void SenderGang<SenderType>::ByteSwitchedSender::switcher( const double & tickno,
+							   PRNG & prng,
 							   Exponential & start_distribution __attribute((unused)),
 							   Exponential & stop_distribution,
 							   const unsigned int num_sending __attribute((unused)) )
@@ -106,7 +110,7 @@ void SenderGang<SenderType>::ByteSwitchedSender::switcher( const double & tickno
     SwitchedSender::next_switch_tick = numeric_limits<double>::max();
 
     /* set length of flow */
-    unsigned int new_flow_length = lrint( ceil( stop_distribution.sample() ) );
+    unsigned int new_flow_length = lrint( ceil( stop_distribution.sample( prng ) ) );
     assert( new_flow_length > 0 );
     packets_sent_cap_ += new_flow_length;
   }
@@ -165,6 +169,7 @@ template <class NextHop>
 void SenderGang<SenderType>::TimeSwitchedSender::tick( NextHop & next, Receiver & rec,
 						       const double & tickno,
 						       const unsigned int num_sending,
+						       PRNG & prng __attribute((unused)),
 						       Exponential & start_distribution __attribute((unused)) )
 {
   SwitchedSender::receive_feedback( rec );
@@ -181,6 +186,7 @@ template <class NextHop>
 void SenderGang<SenderType>::ByteSwitchedSender::tick( NextHop & next, Receiver & rec,
 						       const double & tickno,
 						       const unsigned int num_sending,
+						       PRNG & prng,
 						       Exponential & start_distribution )
 {
   SwitchedSender::receive_feedback( rec );
@@ -194,7 +200,7 @@ void SenderGang<SenderType>::ByteSwitchedSender::tick( NextHop & next, Receiver 
     /* do we need to switch ourselves off? */
     if ( SwitchedSender::sender.packets_sent() == packets_sent_cap_ ) {
       SwitchedSender::switch_off( tickno, num_sending );
-      SwitchedSender::next_switch_tick = tickno + start_distribution.sample();
+      SwitchedSender::next_switch_tick = tickno + start_distribution.sample( prng );
     }
   }
 }

@@ -1,6 +1,8 @@
 #ifndef SENDERGANG_HH
 #define SENDERGANG_HH
 
+#include <boost/random/exponential_distribution.hpp>
+
 #include <vector>
 
 #include "exponential.hh"
@@ -21,6 +23,7 @@ private:
 
     /* is abstract base class */
     virtual void switcher( const double & tickno,
+			   PRNG & prng,
 			   Exponential & start_distribution,
 			   Exponential & stop_distribution,
 			   const unsigned int num_sending ) = 0;
@@ -58,9 +61,11 @@ private:
     void tick( NextHop & next, Receiver & rec,
 	       const double & tickno,
 	       const unsigned int num_sending,
+	       PRNG & prng,
 	       Exponential & start_distribution ) override;
 
     void switcher( const double & tickno,
+		   PRNG & prng,
 		   Exponential & start_distribution,
 		   Exponential & stop_distribution,
 		   const unsigned int num_sending ) override;
@@ -77,9 +82,11 @@ private:
     void tick( NextHop & next, Receiver & rec,
 	       const double & tickno,
 	       const unsigned int num_sending,
+	       PRNG & prng,
 	       Exponential & start_distribution ) override;
 
     void switcher( const double & tickno,
+		   PRNG & prng,
 		   Exponential & start_distribution,
 		   Exponential & stop_distribution,
 		   const unsigned int num_sending ) override;
@@ -88,6 +95,8 @@ private:
   };
 
   std::vector< TimeSwitchedSender > _gang;
+
+  PRNG & _prng;
 
   Exponential _start_distribution, _stop_distribution;
 
