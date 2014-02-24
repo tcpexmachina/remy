@@ -74,10 +74,11 @@ int main( int argc, char *argv[] )
   PRNG prng( 50 );
   Network<Rat, Rat> network( Rat( whiskers, false ), prng, configuration );
 
-  Graph graph( num_senders, 1024, 600, "Ratatouille", 0, link_ppt * delay * 1.2 );
+  Graph graph( num_senders + 1, 1024, 600, "Ratatouille", 0, link_ppt * delay * 1.2 );
 
-  graph.set_color( 0, 1, 0.38, 0, 0.75 );
-  graph.set_color( 1, 0, 0, 1, 0.75 );
+  graph.set_color( 0, 1, 0, 0, 0.75 );
+  graph.set_color( 1, 1, 0.38, 0, 0.75 );
+  graph.set_color( 2, 0, 0, 1, 0.75 );
 
   float t = 0.0;
 
@@ -86,8 +87,17 @@ int main( int argc, char *argv[] )
 
     const vector< int > packets_in_flight = network.senders().packets_in_flight();
 
+    float ideal_pif_per_sender = 0;
+    const unsigned int active_senders = network.senders().count_active_senders();
+
+    if ( active_senders ) {
+      ideal_pif_per_sender = link_ppt * delay / active_senders;
+    }
+
+    graph.add_data_point( 0, t, ideal_pif_per_sender );
+
     for ( unsigned int i = 0; i < packets_in_flight.size(); i++ ) {
-      graph.add_data_point( i, t, packets_in_flight[ i ] );
+      graph.add_data_point( i + 1, t, packets_in_flight[ i ] );
     }
 
     graph.set_window( t, 10 );
