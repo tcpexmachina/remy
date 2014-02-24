@@ -98,7 +98,7 @@ int main( int argc, char *argv[] )
 
     graph.add_data_point( 0, t, ideal_pif_per_sender );
     if ( ideal_pif_per_sender > upper_limit ) {
-      upper_limit = ideal_pif_per_sender * 1.2;
+      upper_limit = ideal_pif_per_sender * 1.1;
     }
 
     upper_limit = max( upper_limit, ideal_pif_per_sender );
@@ -107,7 +107,7 @@ int main( int argc, char *argv[] )
       graph.add_data_point( i + 1, t, packets_in_flight[ i ] );
 
       if ( packets_in_flight[ i ] > upper_limit ) {
-	upper_limit = packets_in_flight[ i ] * 1.2;
+	upper_limit = packets_in_flight[ i ] * 1.1;
       }
     }
 
