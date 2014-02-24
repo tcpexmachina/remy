@@ -103,10 +103,14 @@ int main( int argc, char *argv[] )
     graph.set_window( t, 10 );
 
     if ( graph.blocking_draw( t, 10, 0, link_ppt * delay * 1.2 ) ) {
-      return EXIT_SUCCESS;
+      break;
     }
 
     t += .01;
+  }
+
+  for ( auto &x : network.senders().throughputs_delays() ) {
+    printf( "sender: [tp=%f, del=%f]\n", x.first, x.second );
   }
 
   return EXIT_SUCCESS;

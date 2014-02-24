@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "sendergang.hh"
 
 using namespace std;
@@ -65,9 +67,18 @@ template <class NextHop>
 void SenderGang<SenderType>::run_senders( NextHop & next, Receiver & rec,
 					  const unsigned int num_sending,
 					  const double & tickno ) {
-  /* run senders */
-  for ( auto &x : _gang ) {
-    x.tick( next, rec, tickno, num_sending, _prng, _start_distribution );
+  /* run senders in random order */
+  vector<unsigned int> sender_indices;
+  sender_indices.reserve( _gang.size() );
+  for ( unsigned int i = 0; i < _gang.size(); i++ ) {
+    sender_indices.emplace_back( i );
+  }
+
+  /* Fisher-Yates shuffle */
+  shuffle( sender_indices.begin(), sender_indices.end(), _prng );
+
+  for ( auto &x : sender_indices ) {
+    _gang[ x ].tick( next, rec, tickno, num_sending, _prng, _start_distribution );
   }
 }
 
