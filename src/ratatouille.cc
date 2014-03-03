@@ -11,7 +11,7 @@
 #include "rat.hh"
 #include "aimd-templates.cc"
 #include "graph.hh"
-#include "fader.hh"
+#include "fader-templates.cc"
 
 using namespace std;
 
@@ -99,7 +99,7 @@ int main( int argc, char *argv[] )
   float t = 0.0;
 
   while ( 1 ) {
-    fader.update();
+    fader.update( network );
 
     network.run_simulation_until( t * 1000.0 );
 
@@ -120,7 +120,6 @@ int main( int argc, char *argv[] )
     upper_limit = max( upper_limit, ideal_pif_per_sender );
 
     for ( unsigned int i = 0; i < packets_in_flight.size(); i++ ) {
-      cerr << " " << packets_in_flight[ i ];
       graph.add_data_point( i + 1, t, packets_in_flight[ i ] );
 
       if ( packets_in_flight[ i ] > upper_limit ) {
@@ -135,8 +134,6 @@ int main( int argc, char *argv[] )
     }
 
     t += .01;
-
-    cerr << endl;
   }
 
   for ( auto &x : network.senders().throughputs_delays() ) {

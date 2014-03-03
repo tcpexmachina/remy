@@ -65,8 +65,9 @@ void SenderGang<SenderType, SwitcherType>::tick( NextHop & next, Receiver & rec,
 template <class SenderType, class SwitcherType>
 template <class NextHop>
 void SenderGang<SenderType, SwitcherType>::run_senders( NextHop & next, Receiver & rec,
-					  const unsigned int num_sending,
-					  const double & tickno ) {
+							const unsigned int num_sending,
+							const double & tickno )
+{
   /* run senders in random order */
   vector<unsigned int> sender_indices;
   sender_indices.reserve( _gang.size() );

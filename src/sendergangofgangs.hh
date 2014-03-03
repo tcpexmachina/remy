@@ -35,6 +35,9 @@ public:
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
 
   double next_event_time( const double & tickno ) const;
+
+  Gang1Type & mutable_gang1( void ) { return gang1_; }
+  Gang2Type & mutable_gang2( void ) { return gang2_; }
 };
 
 #endif

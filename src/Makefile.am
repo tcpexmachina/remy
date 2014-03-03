@@ -23,4 +23,4 @@ scoring_example_SOURCES = $(common_source) scoring-example.cc
 
 ratatouille_LDADD = ../graph/libremygraph.a $(GL_LIBS) $(GLFW_LIBS) $(GLEW_LIBS) $(GLU_LIBS) $(PANGOCAIRO_LIBS) $(LDADD)
 
-ratatouille_SOURCES = $(common_source) ratatouille.cc fader.hh fader.cc
+ratatouille_SOURCES = $(common_source) ratatouille.cc fader.hh fader.cc fader-templates.cc

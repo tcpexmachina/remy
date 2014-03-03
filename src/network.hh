@@ -86,7 +86,11 @@ public:
 
   const SenderGangofGangs<Gang1Type, Gang2Type> & senders( void ) const { return _senders; }
 
+  SenderGangofGangs<Gang1Type, Gang2Type> & mutable_senders( void ) { return _senders; }
+
   std::vector< unsigned int > packets_in_flight( void ) const;
+
+  const double & tickno( void ) const { return _tickno; }
 };
 
 #endif

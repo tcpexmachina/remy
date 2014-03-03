@@ -73,7 +73,11 @@ void Network<Gang1Type, Gang2Type>::run_simulation_until( const double tick_limi
 			      min( _delay.next_event_time( _tickno ),
 				   _rec.next_event_time( _tickno ) ) );
 
-    if ( next_tickno > tick_limit ) break;
+    if ( next_tickno > tick_limit ) {
+      _tickno = tick_limit;
+      break;
+    }
+
     assert( next_tickno < std::numeric_limits<double>::max() );
 
     _tickno = next_tickno;

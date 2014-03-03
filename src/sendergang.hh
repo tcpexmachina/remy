@@ -25,14 +25,14 @@ protected:
 			 Exponential & stop_distribution,
 			 const unsigned int num_sending ) = 0;
 
-  void switch_on( const double & tickno );
-  void switch_off( const double & tickno, const unsigned int num_sending );
-
   void accumulate_sending_time_until( const double & tickno, const unsigned int num_sending );
 
   void receive_feedback( Receiver & rec );
 
 public:
+  void switch_on( const double & tickno );
+  void switch_off( const double & tickno, const unsigned int num_sending );
+
   double next_event_time( const double & tickno ) const;
   Utility utility;
   bool sending;
@@ -155,6 +155,8 @@ public:
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
 
   double next_event_time( const double & tickno ) const;
+
+  SwitcherType & mutable_sender( const unsigned int num ) { return _gang.at( num ); }
 };
 
 #endif

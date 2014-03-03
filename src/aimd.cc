@@ -65,7 +65,11 @@ void Aimd::reset( const double & )
   assert( _flow_id != 0 );
 }
 
-double Aimd::next_event_time( const double & tickno __attribute ((unused)) ) const
+double Aimd::next_event_time( const double & tickno ) const
 {
-  return std::numeric_limits<double>::max();
+  if ( _packets_sent < _largest_ack + 1 + _the_window ) {
+    return tickno;
+  } else {
+    return std::numeric_limits<double>::max();
+  }
 }

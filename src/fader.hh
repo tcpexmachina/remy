@@ -15,7 +15,8 @@ class Fader
 public:
   Fader( const std::string & filename );
 
-  void update( void );
+  template <class NetworkType>
+  void update( NetworkType & network );
 };
 
 #endif /* FADER_HH */
