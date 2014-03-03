@@ -79,7 +79,8 @@ int main( int argc, char *argv[] )
   NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration );
 
   PRNG prng( 50 );
-  Network<Rat, Aimd> network( Rat( whiskers, false ), Aimd(), prng, configuration );
+  Network<SenderGang<Rat, TimeSwitchedSender<Rat>>,
+	  SenderGang<Aimd, TimeSwitchedSender<Aimd>>> network( Rat( whiskers, false ), Aimd(), prng, configuration );
 
   float upper_limit = link_ppt * delay * 1.2;
 

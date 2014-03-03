@@ -4,18 +4,17 @@
 #include <vector>
 #include <utility>
 #include "receiver.hh"
-#include "sendergang.hh"
 
-template <class Sender1, class Sender2>
+template <class Gang1Type, class Gang2Type>
 class SenderGangofGangs
 {
 private:
-  SenderGang<Sender1> gang1_;
-  SenderGang<Sender2> gang2_;
+  Gang1Type gang1_;
+  Gang2Type gang2_;
 
 public:
-  SenderGangofGangs( const SenderGang<Sender1> & gang1,
-		     const SenderGang<Sender2> & gang2 );
+  SenderGangofGangs( const Gang1Type & gang1,
+		     const Gang2Type & gang2 );
 
   unsigned int count_active_senders( void ) const;
 
