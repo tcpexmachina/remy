@@ -13,7 +13,8 @@ using namespace std;
 
 Fader::Fader( const string & filename )
   : fd_( open( filename.c_str(), O_RDWR | O_NONBLOCK ) ),
-    buffer_()
+    buffer_(),
+    physical_values_( {{}} )
 {
   if ( fd_ < 0 ) {
     throw system_error( errno, system_category() );
@@ -40,6 +41,8 @@ void Fader::update( void )
     }
   }
 
+  auto new_physical_values_ = physical_values_;
+
   /* process what we have */
   while ( buffer_.size() >= 3 ) {
     /* check channel */
@@ -57,6 +60,21 @@ void Fader::update( void )
     const uint8_t value = buffer_.front();
     buffer_.pop_front();
 
-    cerr << control << " = " << value << endl;
+    if ( control >= physical_values_.size() ) {
+      throw runtime_error( "unexpected MIDI control number" );
+    }
+
+    if ( value >= 128 ) {
+      throw runtime_error( "unexpected MIDI control value" );
+    }
+
+    new_physical_values_.at( control ) = value;
   }
+
+  /* process the changes */
+  for ( unsigned int i = 0; i < physical_values_.size(); i++ ) {
+    
+  }
+
+  physical_values_ = new_physical_values_;
 }

@@ -9,6 +9,7 @@
 #include "network.cc"
 #include "sendergangofgangs.hh"
 #include "rat.hh"
+#include "aimd-templates.cc"
 #include "graph.hh"
 #include "fader.hh"
 
@@ -78,11 +79,11 @@ int main( int argc, char *argv[] )
   NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration );
 
   PRNG prng( 50 );
-  Network<Rat, Rat> network( Rat( whiskers, false ), prng, configuration );
+  Network<Rat, Aimd> network( Rat( whiskers, false ), Aimd(), prng, configuration );
 
   float upper_limit = link_ppt * delay * 1.2;
 
-  Graph graph( num_senders + 1, 1024, 600, "Ratatouille", 0, upper_limit );
+  Graph graph( 2 * num_senders + 1, 1024, 600, "Ratatouille", 0, upper_limit );
 
   graph.set_color( 0, 0, 0, 0, 1.0 );
   graph.set_color( 1, 1, 0.38, 0, 0.8 );
@@ -101,7 +102,7 @@ int main( int argc, char *argv[] )
 
     network.run_simulation_until( t * 1000.0 );
 
-    const vector< int > packets_in_flight = network.senders().packets_in_flight();
+    const vector< unsigned int > packets_in_flight = network.packets_in_flight();
 
     float ideal_pif_per_sender = 0;
     const unsigned int active_senders = network.senders().count_active_senders();
@@ -118,6 +119,7 @@ int main( int argc, char *argv[] )
     upper_limit = max( upper_limit, ideal_pif_per_sender );
 
     for ( unsigned int i = 0; i < packets_in_flight.size(); i++ ) {
+      cerr << " " << packets_in_flight[ i ];
       graph.add_data_point( i + 1, t, packets_in_flight[ i ] );
 
       if ( packets_in_flight[ i ] > upper_limit ) {
@@ -132,6 +134,8 @@ int main( int argc, char *argv[] )
     }
 
     t += .01;
+
+    cerr << endl;
   }
 
   for ( auto &x : network.senders().throughputs_delays() ) {

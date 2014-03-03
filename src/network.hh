@@ -85,6 +85,8 @@ public:
   void run_simulation_until( const double tick_limit );
 
   const SenderGangofGangs<SenderType1,SenderType2> & senders( void ) const { return _senders; }
+
+  std::vector< unsigned int > packets_in_flight( void ) const;
 };
 
 #endif

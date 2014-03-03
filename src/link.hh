@@ -1,7 +1,8 @@
 #ifndef LINK_HH
 #define LINK_HH
 
-#include <queue>
+#include <deque>
+#include <vector>
 
 #include "packet.hh"
 #include "delay.hh"
@@ -9,7 +10,7 @@
 class Link
 {
 private:
-  std::queue< Packet > _buffer;
+  std::deque< Packet > _buffer;
 
   Delay _pending_packet;
 
@@ -25,7 +26,7 @@ public:
       _pending_packet.accept( p, tickno );
     } else {
       if ( _buffer.size() < _limit ) {
-        _buffer.push( p );
+        _buffer.push_back( p );
       }
     }
   }
@@ -34,6 +35,19 @@ public:
   void tick( NextHop & next, const double & tickno );
 
   double next_event_time( const double & tickno ) const { return _pending_packet.next_event_time( tickno ); }
+
+  std::vector<unsigned int> packets_in_flight( const unsigned int num_senders ) const
+  {
+    std::vector<unsigned int> ret( num_senders );
+    for ( const auto & x : _buffer ) {
+      ret.at( x.src )++;
+    }
+    std::vector<unsigned int> propagating = _pending_packet.packets_in_flight( num_senders );
+    for ( unsigned int i = 0; i < num_senders; i++ ) {
+      ret.at( i ) += propagating.at( i );
+    }
+    return ret;
+  }
 };
 
 #endif

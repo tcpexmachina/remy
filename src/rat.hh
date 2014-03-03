@@ -44,8 +44,6 @@ public:
   double next_event_time( const double & tickno ) const;
 
   const int & packets_sent( void ) const { return _packets_sent; }
-
-  int packets_in_flight( void ) const { return _packets_sent - _packets_received; }
 };
 
 #endif

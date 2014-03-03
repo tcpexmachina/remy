@@ -1,7 +1,7 @@
 #ifndef DELAY_HH
 #define DELAY_HH
 
-#include <queue>
+#include <deque>
 #include <tuple>
 #include <cassert>
 #include <limits>
@@ -12,7 +12,7 @@
 class Delay
 {
 private:
-  std::queue< std::tuple< double, Packet > > _queue;
+  std::deque< std::tuple< double, Packet > > _queue;
   const double _delay;
 
 public:
@@ -20,7 +20,7 @@ public:
  
   void accept( const Packet & p, const double & tickno ) noexcept
   {
-    _queue.emplace( tickno + _delay, p );
+    _queue.emplace_back( tickno + _delay, p );
   }
 
   template <class NextHop>
@@ -29,7 +29,7 @@ public:
     while ( (!_queue.empty()) && (std::get< 0 >( _queue.front() ) <= tickno) ) {
       assert( std::get< 0 >( _queue.front() ) == tickno );
       next.accept( std::get< 1 >( _queue.front() ), tickno );
-      _queue.pop();
+      _queue.pop_front();
     }
   }
 
@@ -48,6 +48,15 @@ public:
   }
 
   bool empty( void ) const { return _queue.empty(); }
+
+  std::vector<unsigned int> packets_in_flight( const unsigned int num_senders ) const
+  {
+    std::vector<unsigned int> ret( num_senders );
+    for ( const auto & x : _queue ) {
+      ret.at( std::get<1>( x ).src )++;
+    }
+    return ret;
+  }
 };
 
 #endif

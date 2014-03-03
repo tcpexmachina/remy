@@ -15,7 +15,6 @@ private:
   /* _the_window is the congestion window */
   double _the_window;
   unsigned int _flow_id;
-  static constexpr double INITIAL_WINDOW = 1.0; /* INITIAL WINDOW OF 1 */
 
   /* Largest ACK so far */
   int _largest_ack;

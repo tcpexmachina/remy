@@ -45,13 +45,13 @@ public:
 
   void set_window( const float t, const float logical_width );
   void add_data_point( const unsigned int num, const float t, const float y ) {
-    if ( not data_points_[ num ].empty() ) {
-      if ( y == data_points_[ num ].back().second ) {
+    if ( not data_points_.at( num ).empty() ) {
+      if ( y == data_points_.at( num ).back().second ) {
 	return;
       }
     }
 
-    data_points_[ num ].emplace_back( t, y );
+    data_points_.at( num ).emplace_back( t, y );
   }
 
   void set_color( const unsigned int num, const float red, const float green, const float blue,

@@ -81,3 +81,17 @@ void Network<SenderType1, SenderType2>::run_simulation_until( const double tick_
     tick();
   }
 }
+
+template <class SenderType1, class SenderType2>
+vector<unsigned int> Network<SenderType1, SenderType2>::packets_in_flight( void ) const
+{
+  unsigned int num_senders = _senders.count_senders();
+  vector<unsigned int> ret = _link.packets_in_flight( num_senders );
+  const vector<unsigned int> delayed = _delay.packets_in_flight( num_senders );
+
+  for ( unsigned int i = 0; i < num_senders; i++ ) {
+    ret.at( i ) += delayed.at( i );
+  }
+
+  return ret;
+}

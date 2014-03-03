@@ -19,6 +19,8 @@ public:
 
   unsigned int count_active_senders( void ) const;
 
+  unsigned int count_senders( void ) const { return gang1_.count_senders() + gang2_.count_senders(); }
+
   void switch_senders( const unsigned int num_sending, const double & tickno );
 
   template <class NextHop>
@@ -34,8 +36,6 @@ public:
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
 
   double next_event_time( const double & tickno ) const;
-
-  std::vector< int > packets_in_flight( void ) const;
 };
 
 #endif

@@ -51,8 +51,6 @@ private:
 	sending( false ),
 	id( s_id )
     {}
-
-    int packets_in_flight( void ) const { return sender.packets_in_flight(); }
   };
 
   class TimeSwitchedSender : public SwitchedSender {
@@ -130,8 +128,6 @@ public:
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
 
   double next_event_time( const double & tickno ) const;
-
-  std::vector< int > packets_in_flight( void ) const;
 };
 
 #endif

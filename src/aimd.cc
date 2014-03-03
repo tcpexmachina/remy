@@ -5,6 +5,8 @@
 
 using namespace std;
 
+static constexpr double INITIAL_WINDOW = 1.0; /* INITIAL WINDOW OF 1 */
+
 Aimd::Aimd()
   :  _packets_sent( 0 ),
      _packets_received( 0 ),
