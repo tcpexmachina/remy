@@ -19,10 +19,8 @@ int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
   unsigned int num_senders = 2;
-  double link_ppt = 1.0;
-  double delay = 100.0;
-  double mean_on_duration = 5000.0;
-  double mean_off_duration = 5000.0;
+  double link_ppt;
+  double delay = 150.0;
   string fader_filename;
 
   for ( int i = 1; i < argc; i++ ) {
@@ -56,21 +54,6 @@ int main( int argc, char *argv[] )
       if ( tree.has_optimizer() ) {
 	printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
       }
-    } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
-      num_senders = atoi( arg.substr( 5 ).c_str() );
-      fprintf( stderr, "Setting num_senders to %d\n", num_senders );
-    } else if ( arg.substr( 0, 5 ) == "link=" ) {
-      link_ppt = atof( arg.substr( 5 ).c_str() );
-      fprintf( stderr, "Setting link packets per ms to %f\n", link_ppt );
-    } else if ( arg.substr( 0, 4 ) == "rtt=" ) {
-      delay = atof( arg.substr( 4 ).c_str() );
-      fprintf( stderr, "Setting delay to %f ms\n", delay );
-    } else if ( arg.substr( 0, 3 ) == "on=" ) {
-      mean_on_duration = atof( arg.substr( 3 ).c_str() );
-      fprintf( stderr, "Setting mean_on_duration to %f ms\n", mean_on_duration );
-    } else if ( arg.substr( 0, 4 ) == "off=" ) {
-      mean_off_duration = atof( arg.substr( 4 ).c_str() );
-      fprintf( stderr, "Setting mean_off_duration to %f ms\n", mean_off_duration );
     }
   }
 
@@ -78,7 +61,7 @@ int main( int argc, char *argv[] )
 
   link_ppt = fader.link_rate();
 
-  NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration );
+  NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders );
 
   PRNG prng( 50 );
   Network<SenderGang<Rat, ExternalSwitchedSender<Rat>>,
@@ -86,7 +69,7 @@ int main( int argc, char *argv[] )
 
   float upper_limit = link_ppt * delay * 1.2;
 
-  Graph graph( 2 * num_senders + 1, 1024, 600, "Ratatouille", 0, upper_limit );
+  Graph graph( 2 * num_senders + 2, 1024, 600, "Ratatouille", 0, upper_limit );
 
   graph.set_color( 0, 0, 0, 0, 1.0 );
   graph.set_color( 1, 1, 0.38, 0, 0.8 );
@@ -104,6 +87,7 @@ int main( int argc, char *argv[] )
     fader.update( network );
 
     network.mutable_link().set_rate( fader.link_rate() );
+    network.mutable_link().set_limit( fader.buffer_size() );
 
     link_ppt = network.mutable_link().rate();
 
@@ -127,7 +111,7 @@ int main( int argc, char *argv[] )
       upper_limit = ideal_pif_per_sender * 1.1;
     }
 
-    upper_limit = max( upper_limit, ideal_pif_per_sender );
+    graph.add_data_point( packets_in_flight.size() + 1, t, fader.buffer_size() + link_ppt * delay );
 
     for ( unsigned int i = 0; i < packets_in_flight.size(); i++ ) {
       graph.add_data_point( i + 1, t, packets_in_flight[ i ] );
