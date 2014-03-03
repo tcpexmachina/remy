@@ -76,6 +76,8 @@ int main( int argc, char *argv[] )
 
   Fader fader( fader_filename );
 
+  link_ppt = fader.link_rate();
+
   NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration );
 
   PRNG prng( 50 );
@@ -100,6 +102,8 @@ int main( int argc, char *argv[] )
 
   while ( 1 ) {
     fader.update( network );
+
+    network.mutable_link().set_rate( fader.link_rate() );
 
     link_ppt = network.mutable_link().rate();
 
@@ -134,8 +138,6 @@ int main( int argc, char *argv[] )
     }
 
     graph.set_window( t, fader.horizontal_size() * 1.5 );
-
-    cerr << "horizontal_size: " << fader.horizontal_size() << endl;
 
     if ( graph.blocking_draw( t, fader.horizontal_size(), 0, upper_limit ) ) {
       break;

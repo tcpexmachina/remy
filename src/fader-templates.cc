@@ -59,7 +59,7 @@ void Fader::update( NetworkType & network )
 
   auto output_physical_values = new_physical_values;
 
-  /* process the changes */
+  /* process the changes to the senders */
   for ( unsigned int i = 0; i < physical_values_.size(); i++ ) {
     if ( physical_values_.at( i ) != new_physical_values.at( i ) ) {
       if ( i >= 65 and i <= 80 ) { /* switch a sender */
@@ -87,31 +87,16 @@ void Fader::update( NetworkType & network )
 	  }
 	}
       }
-
-      /* switch link speed */
-      if ( i == 81 ) {
-	const double new_speed = 0.316227766016838 * pow( 100.0, new_physical_values.at( i ) / 127.0 );
-	network.mutable_link().set_rate( new_speed );
-      } else if ( i == 88 ) { /* time increment */
-	time_increment_ = (pow( 1.05, new_physical_values.at( i ) ) - 1) / 500;
-      } else if ( i == 87 ) { /* horizontal extent */
-	horizontal_size_ = pow( 1.05, new_physical_values.at( i ) / 2.0 );
-      } else if ( i == 89 ) {
-	autoscale_ = new_physical_values.at( i );
-      }
     }
   }
+
+  /* process the rest of the changes */
+  physical_values_ = new_physical_values;
+
+  compute_internal_state();
+
+  rationalize( output_physical_values );
 
   /* write the output physical values */
-  for ( unsigned int i = 0; i < physical_values_.size(); i++ ) {
-    if ( output_physical_values.at( i ) != new_physical_values.at( i ) ) {
-      array< uint8_t, 3 > write_buffer = { 176, uint8_t( i ), output_physical_values.at( i ) };
-      ssize_t bytes_written = write( fd_, &write_buffer, write_buffer.size() );      
-      if ( bytes_written != 3 ) {
-	throw runtime_error( "could not write to MIDI device" );
-      }
-    }
-  }
-
-  physical_values_ = output_physical_values;
+  write( output_physical_values );
 }
