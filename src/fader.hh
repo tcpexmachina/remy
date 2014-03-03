@@ -12,15 +12,16 @@ class Fader
 
   std::array< uint8_t, 94 > physical_values_;
 
-  double link_rate_ = 3.16;
-  double time_increment_ = 0.01;
-  double horizontal_size_ = 10;
-  double buffer_size_ = 5000;
+  double link_rate_ = 0;
+  double time_increment_ = 0;
+  double horizontal_size_ = 0;
+  double buffer_size_ = 0;
   bool autoscale_ = false;
 
   void compute_internal_state( void );
   void rationalize( decltype(physical_values_) & output ) const;
   void write( const decltype(physical_values_) & output );
+  void initialize( void );
 
 public:
   Fader( const std::string & filename );

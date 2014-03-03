@@ -29,6 +29,8 @@ Fader::Fader( const string & filename )
     x = 0;
   }
 
+  initialize();
+
   rationalize( output );
   write( output );
 }
@@ -54,7 +56,7 @@ void Fader::compute_internal_state( void )
   time_increment_ = (pow( 1.05, physical_values_.at( 88 ) ) - 1) / 100;
   horizontal_size_ = pow( 1.07, physical_values_.at( 87 ) / 2.0 );
   autoscale_ = physical_values_.at( 89 );
-  buffer_size_ = (pow( 1.03, physical_values_.at( 83 ) ) - 1) * 450;
+  buffer_size_ = (pow( 1.03, physical_values_.at( 83 ) ) - 1) * 500;
 }
 
 void Fader::rationalize( decltype(physical_values_) & output ) const
@@ -81,7 +83,7 @@ void Fader::rationalize( decltype(physical_values_) & output ) const
   }
 
   for ( uint8_t i = 0; i < 127; i++ ) {
-    if ( buffer_size_ <= (pow( 1.03, i ) - 1) * 450 ) {
+    if ( buffer_size_ <= (pow( 1.03, i ) - 1) * 500 ) {
       output.at( 83 ) = i;
       break;
     }
@@ -90,4 +92,16 @@ void Fader::rationalize( decltype(physical_values_) & output ) const
   for ( uint8_t i = 0; i < 127; i++ ) {
     output.at( 89 ) = autoscale_ ? 127 : 0;
   }
+}
+
+void Fader::initialize( void )
+{
+  link_rate_ = 3.16;
+  time_increment_ = 0.01;
+  horizontal_size_ = 10;
+  buffer_size_ = link_rate_ * 150 * 10;
+  autoscale_ = false;
+
+  rationalize( physical_values_ );
+  compute_internal_state();
 }

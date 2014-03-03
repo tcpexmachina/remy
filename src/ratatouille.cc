@@ -108,7 +108,7 @@ int main( int argc, char *argv[] )
 
     const vector< unsigned int > packets_in_flight = network.packets_in_flight();
 
-    float ideal_pif_per_sender = 0;
+    float ideal_pif_per_sender = link_ppt * delay;
     const unsigned int active_senders = network.senders().count_active_senders();
 
     if ( active_senders ) {
