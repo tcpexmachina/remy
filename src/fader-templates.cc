@@ -92,10 +92,12 @@ void Fader::update( NetworkType & network )
       if ( i == 81 ) {
 	const double new_speed = 0.316227766016838 * pow( 100.0, new_physical_values.at( i ) / 127.0 );
 	network.mutable_link().set_rate( new_speed );
-      } else if ( i == 88 ) {
+      } else if ( i == 88 ) { /* time increment */
 	time_increment_ = (pow( 1.05, new_physical_values.at( i ) ) - 1) / 500;
-      } else if ( i == 87 ) {
+      } else if ( i == 87 ) { /* horizontal extent */
 	horizontal_size_ = pow( 1.05, new_physical_values.at( i ) / 2.0 );
+      } else if ( i == 89 ) {
+	autoscale_ = new_physical_values.at( i );
       }
     }
   }

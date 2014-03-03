@@ -103,6 +103,10 @@ int main( int argc, char *argv[] )
 
     link_ppt = network.mutable_link().rate();
 
+    if ( fader.autoscale() ) {
+      upper_limit = link_ppt * delay * 1.2;
+    }
+
     network.run_simulation_until( t * 1000.0 );
 
     const vector< unsigned int > packets_in_flight = network.packets_in_flight();

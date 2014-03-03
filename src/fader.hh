@@ -14,6 +14,7 @@ class Fader
 
   double time_increment_ = 0.01;
   double horizontal_size_ = 10;
+  bool autoscale_ = false;
 
 public:
   Fader( const std::string & filename );
@@ -23,6 +24,7 @@ public:
 
   double time_increment( void ) const { return time_increment_; }
   double horizontal_size( void ) const { return horizontal_size_; }
+  bool autoscale( void ) const { return autoscale_; }
 };
 
 #endif /* FADER_HH */
