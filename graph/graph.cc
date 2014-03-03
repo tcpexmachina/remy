@@ -26,6 +26,8 @@ Graph::Graph( const unsigned int num_lines,
     data_points_( num_lines ),
     x_label_( cairo_, pango_, label_font_, "time (s)" ),
     y_label_( cairo_, pango_, label_font_, "packets in flight" ),
+    info_string_(),
+    info_( cairo_, pango_, label_font_, "" ),
     bottom_( min_y ),
     top_( max_y ),
     horizontal_fadeout_( cairo_pattern_create_linear( 0, 0, 190, 0 ) )
@@ -33,6 +35,14 @@ Graph::Graph( const unsigned int num_lines,
   cairo_pattern_add_color_stop_rgba( horizontal_fadeout_, 0.0, 1, 1, 1, 1 );
   cairo_pattern_add_color_stop_rgba( horizontal_fadeout_, 0.67, 1, 1, 1, 1 );
   cairo_pattern_add_color_stop_rgba( horizontal_fadeout_, 1.0, 1, 1, 1, 0 );
+}
+
+void Graph::set_info( const string & info )
+{
+  if ( info != info_string_ ) {
+    info_string_ = info;
+    info_ = Pango::Text( cairo_, pango_, label_font_, info );
+  }
 }
 
 void Graph::set_window( const float t, const float logical_width )
@@ -56,6 +66,10 @@ static int to_int( const float x )
 
 bool Graph::blocking_draw( const float t, const float logical_width, const float min_y, const float max_y )
 {
+  /* set scale (with smoothing) */
+  top_ = top_ * .95 + max_y * 0.05;
+  bottom_ = bottom_ * 0.95 + min_y * 0.05;
+
   /* get the current window size */
   const auto window_size = display_.window().size();
 
@@ -96,8 +110,8 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
     /* draw vertical grid line */
     cairo_identity_matrix( cairo_ );
     cairo_set_line_width( cairo_, 2 );
-    cairo_move_to( cairo_, x_position, window_size.second * 0.25 / 10.0 );
-    cairo_line_to( cairo_, x_position, window_size.second * 8.5 / 10.0 );
+    cairo_move_to( cairo_, x_position, chart_height( bottom_, window_size.second ) );
+    cairo_line_to( cairo_, x_position, chart_height( top_, window_size.second ) );
     cairo_set_source_rgba( cairo_, 0, 0, 0.4, 0.25 );
     cairo_stroke( cairo_ );
   }
@@ -107,10 +121,6 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
   cairo_set_source_rgba( cairo_, 0, 0, 0.4, 1 );
   cairo_fill( cairo_ );
 
-  /* set scale (with smoothing) */
-  top_ = top_ * .95 + max_y * 0.05;
-  bottom_ = bottom_ * 0.95 + min_y * 0.05;
-
   /* draw the y-axis labels */
 
   /* draw a box to hide other labels */
@@ -118,6 +128,11 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
   cairo_identity_matrix( cairo_ );
   cairo_rectangle( cairo_, 0, 0, 190, window_size.second );
   cairo_set_source( cairo_, horizontal_fadeout_ );
+  cairo_fill( cairo_ );
+
+  /* draw the info */
+  info_.draw_centered_at( cairo_, window_size.first / 2, 20 );
+  cairo_set_source_rgba( cairo_, 0, 0, 0.4, 1 );
   cairo_fill( cairo_ );
 
   /* draw the y-axis label */

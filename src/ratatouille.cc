@@ -91,6 +91,15 @@ int main( int argc, char *argv[] )
 
     link_ppt = network.mutable_link().rate();
 
+    char buf[ 256 ];
+    snprintf( buf, 256, "link: %.1f Mbps, delay: %.0f ms, buffer: %.1f BDP, active = %d RemyCC & %d TCP",
+	      link_ppt * 10, delay,
+	      fader.buffer_size() / (link_ppt * delay),
+	      network.mutable_senders().mutable_gang1().count_active_senders(),
+	      network.mutable_senders().mutable_gang2().count_active_senders() );
+
+    graph.set_info( buf );
+
     if ( fader.autoscale() ) {
       upper_limit = link_ppt * delay * 1.2;
     }

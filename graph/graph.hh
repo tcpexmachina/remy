@@ -28,12 +28,15 @@ class Graph
   Pango::Text x_label_;
   Pango::Text y_label_;
 
+  std::string info_string_;
+  Pango::Text info_;
+
   float bottom_, top_;
 
   float project_height( const float x ) const { return ( x - bottom_ ) / ( top_ - bottom_ ); }
   float chart_height( const float x, const unsigned int window_height ) const
   {
-    return window_height * (.825*(1-project_height( x ))+.025);
+    return (window_height - 40) * (.825*(1-project_height( x ))+.025) + (.825 * 40);
   }
 
   Cairo::Pattern horizontal_fadeout_;
@@ -58,6 +61,8 @@ public:
 		  const float alpha );
 
   bool blocking_draw( const float t, const float logical_width, const float min_y, const float max_y );
+
+  void set_info( const std::string & info );
 };
 
 #endif /* GRAPH_HH */
