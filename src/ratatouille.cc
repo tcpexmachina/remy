@@ -101,6 +101,8 @@ int main( int argc, char *argv[] )
   while ( 1 ) {
     fader.update( network );
 
+    link_ppt = network.mutable_link().rate();
+
     network.run_simulation_until( t * 1000.0 );
 
     const vector< unsigned int > packets_in_flight = network.packets_in_flight();
@@ -127,13 +129,15 @@ int main( int argc, char *argv[] )
       }
     }
 
-    graph.set_window( t, 10 );
+    graph.set_window( t, fader.horizontal_size() * 1.5 );
 
-    if ( graph.blocking_draw( t, 10, 0, upper_limit ) ) {
+    cerr << "horizontal_size: " << fader.horizontal_size() << endl;
+
+    if ( graph.blocking_draw( t, fader.horizontal_size(), 0, upper_limit ) ) {
       break;
     }
 
-    t += .01;
+    t += fader.time_increment();
   }
 
   for ( auto &x : network.senders().throughputs_delays() ) {

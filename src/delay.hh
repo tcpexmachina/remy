@@ -13,7 +13,7 @@ class Delay
 {
 private:
   std::deque< std::tuple< double, Packet > > _queue;
-  const double _delay;
+  double _delay;
 
 public:
   Delay( const double s_delay ) : _queue(), _delay( s_delay ) {}
@@ -57,6 +57,9 @@ public:
     }
     return ret;
   }
+
+  void set_delay( const double delay ) { _delay = delay; }
+  const double & delay( void ) const { return _delay; }
 };
 
 #endif

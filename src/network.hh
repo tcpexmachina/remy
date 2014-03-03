@@ -91,6 +91,8 @@ public:
   std::vector< unsigned int > packets_in_flight( void ) const;
 
   const double & tickno( void ) const { return _tickno; }
+
+  Link & mutable_link( void ) { return _link; }
 };
 
 #endif

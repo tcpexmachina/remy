@@ -2,6 +2,7 @@
 
 #include <system_error>
 #include <iostream>
+#include <cmath>
 
 #include "fader.hh"
 
@@ -85,6 +86,16 @@ void Fader::update( NetworkType & network )
 	    output_physical_values.at( i ) = 0;
 	  }
 	}
+      }
+
+      /* switch link speed */
+      if ( i == 81 ) {
+	const double new_speed = 0.316227766016838 * pow( 100.0, new_physical_values.at( i ) / 127.0 );
+	network.mutable_link().set_rate( new_speed );
+      } else if ( i == 88 ) {
+	time_increment_ = (pow( 1.05, new_physical_values.at( i ) ) - 1) / 500;
+      } else if ( i == 87 ) {
+	horizontal_size_ = pow( 1.05, new_physical_values.at( i ) / 2.0 );
       }
     }
   }
