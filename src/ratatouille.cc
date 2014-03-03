@@ -78,9 +78,15 @@ int main( int argc, char *argv[] )
 
   Graph graph( num_senders + 1, 1024, 600, "Ratatouille", 0, upper_limit );
 
-  graph.set_color( 0, 1, 0, 0, 0.75 );
-  graph.set_color( 1, 1, 0.38, 0, 0.75 );
-  graph.set_color( 2, 0, 0, 1, 0.75 );
+  graph.set_color( 0, 0, 0, 0, 1.0 );
+  graph.set_color( 1, 1, 0.38, 0, 0.8 );
+  graph.set_color( 2, 1, 0, 0, 0.8 );
+  graph.set_color( 3, 0, 1, 0, 0.8 );
+  graph.set_color( 4, 1, 1, 0, 0.8 );
+  graph.set_color( 5, 0, 0.5, 0.5, 0.8 );
+  graph.set_color( 6, 0.5, 0.5, 0.5, 0.8 );
+  graph.set_color( 7, 0.2, 0.2, 0.5, 0.8 );
+  graph.set_color( 8, 0.2, 0.5, 0.2, 0.8 );
 
   float t = 0.0;
 
