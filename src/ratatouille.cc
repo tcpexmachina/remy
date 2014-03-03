@@ -10,6 +10,7 @@
 #include "sendergangofgangs.hh"
 #include "rat.hh"
 #include "graph.hh"
+#include "fader.hh"
 
 using namespace std;
 
@@ -21,10 +22,13 @@ int main( int argc, char *argv[] )
   double delay = 100.0;
   double mean_on_duration = 5000.0;
   double mean_off_duration = 5000.0;
+  string fader_filename;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
-    if ( arg.substr( 0, 3 ) == "if=" ) {
+    if ( arg.substr( 0, 6 ) == "fader=" ) {
+      fader_filename = arg.substr( 6 );
+    } else if ( arg.substr( 0, 3 ) == "if=" ) {
       string filename( arg.substr( 3 ) );
       int fd = open( filename.c_str(), O_RDONLY );
       if ( fd < 0 ) {
@@ -69,6 +73,8 @@ int main( int argc, char *argv[] )
     }
   }
 
+  Fader fader( fader_filename );
+
   NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration );
 
   PRNG prng( 50 );
@@ -91,6 +97,8 @@ int main( int argc, char *argv[] )
   float t = 0.0;
 
   while ( 1 ) {
+    fader.update();
+
     network.run_simulation_until( t * 1000.0 );
 
     const vector< int > packets_in_flight = network.senders().packets_in_flight();
