@@ -101,11 +101,14 @@ public:
 	     PRNG & prng,
 	     Exponential & start_distribution ) override;
 
-  void switcher( const double & tickno,
-		 PRNG & prng,
-		 Exponential & start_distribution,
-		 Exponential & stop_distribution,
-		 const unsigned int num_sending ) override {} /* don't switch */
+  void switcher( const double &,
+		 PRNG &,
+		 Exponential &,
+		 Exponential &,
+		 const unsigned int ) override
+  {
+    SwitchedSender<SenderType>::next_switch_tick = std::numeric_limits<double>::max();
+  } /* don't switch */
 
   using SwitchedSender<SenderType>::SwitchedSender;    
 };

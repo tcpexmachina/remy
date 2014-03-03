@@ -194,6 +194,23 @@ void TimeSwitchedSender<SenderType>::tick( NextHop & next, Receiver & rec,
 
 template <class SenderType>
 template <class NextHop>
+void ExternalSwitchedSender<SenderType>::tick( NextHop & next, Receiver & rec,
+					       const double & tickno,
+					       const unsigned int num_sending,
+					       PRNG & prng __attribute((unused)),
+					       Exponential & start_distribution __attribute((unused)) )
+{
+  SwitchedSender<SenderType>::receive_feedback( rec );
+
+  /* possibly send packets */
+  if ( SwitchedSender<SenderType>::sending ) {
+    SwitchedSender<SenderType>::sender.send( SwitchedSender<SenderType>::id, next, tickno );
+    SwitchedSender<SenderType>::accumulate_sending_time_until( tickno, num_sending );
+  }
+}
+
+template <class SenderType>
+template <class NextHop>
 void ByteSwitchedSender<SenderType>::tick( NextHop & next, Receiver & rec,
 					   const double & tickno,
 					   const unsigned int num_sending,
