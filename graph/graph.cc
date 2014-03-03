@@ -250,7 +250,7 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
 
       display_.draw( get<0>( colors_[ i ] ), get<1>( colors_[ i ] ),
 		     get<2>( colors_[ i ] ), get<3>( colors_[ i ] ),
-		     5.0, 220, line,
+		     ( i == int( data_points_.size() - 1 ) ) ? 10.0 : 5.0, 220, line,
 		     [&] ( const pair<float, float> & x ) {
 		       return make_pair( window_size.first - (t - x.first) * window_size.first / logical_width,
 					 chart_height( x.second, window_size.second ) );
