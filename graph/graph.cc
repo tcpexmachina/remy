@@ -77,7 +77,7 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
     ss.imbue( locale( "" ) );
     ss << fixed << next_label;
 
-    x_tick_labels_.emplace_back( next_label, Pango::Text( cairo_, pango_, tick_font_, ss.str() ) );
+    x_tick_labels_.emplace_back( next_label, Pango::Text( cairo_, pango_, (logical_width > 12 or next_label > 999) ? label_font_ : tick_font_, ss.str() ) );
   }
 
   /* draw the labels and vertical grid */
