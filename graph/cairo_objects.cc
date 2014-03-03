@@ -103,7 +103,7 @@ Pango::Text::Text( Cairo & cairo, Pango & pango, const Font & font, const string
 	      logical.height / double( PANGO_SCALE ) };
 }
 
-void Pango::Text::draw_centered_at( Cairo & cairo, const double x, const double y ) const
+void Pango::Text::draw_centered_at( Cairo & cairo, const double x, const double y, const double max_width ) const
 {
   cairo_identity_matrix( cairo );
   cairo_new_path( cairo );
@@ -112,8 +112,17 @@ void Pango::Text::draw_centered_at( Cairo & cairo, const double x, const double 
   double center_x = x - my_extent.x - my_extent.width / 2;
   double center_y = y - my_extent.y - my_extent.height / 2;
 
+  if ( my_extent.width > max_width ) {
+    const double scale_factor = max_width / my_extent.width;
+    cairo_scale( cairo, scale_factor, scale_factor );
+    center_x = x - my_extent.x - my_extent.width * scale_factor / 2;
+    center_y = y - my_extent.y - my_extent.height * scale_factor / 2;
+  }
+
   cairo_device_to_user( cairo, &center_x, &center_y );
+
   cairo_translate( cairo, center_x, center_y );
+
   cairo_append_path( cairo, path_.get() );
 }
 

@@ -25,7 +25,7 @@ public:
     if ( _pending_packet.empty() ) {
       _pending_packet.accept( p, tickno );
     } else {
-      if ( _buffer.size() < _limit ) {
+      if ( _limit and _buffer.size() < _limit ) {
         _buffer.push_back( p );
       }
     }
@@ -51,7 +51,13 @@ public:
 
   void set_rate( const double rate ) { _pending_packet.set_delay( 1.0 / rate ); }
   double rate( void ) const { return 1.0 / _pending_packet.delay(); }
-  void set_limit( const unsigned int limit ) { _limit = limit; }
+  void set_limit( const unsigned int limit )
+  {
+    _limit = limit;
+    while ( _buffer.size() > _limit ) {
+      _buffer.pop_back();
+    }
+  }
 };
 
 #endif

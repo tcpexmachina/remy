@@ -51,10 +51,10 @@ void Fader::write( const decltype(physical_values_) & output )
 void Fader::compute_internal_state( void )
 {
   link_rate_ = 0.316227766016838 * pow( 100.0, physical_values_.at( 81 ) / 127.0 );
-  time_increment_ = (pow( 1.05, physical_values_.at( 88 ) ) - 1) / 500;
-  horizontal_size_ = pow( 1.05, physical_values_.at( 87 ) / 2.0 );
+  time_increment_ = (pow( 1.05, physical_values_.at( 88 ) ) - 1) / 100;
+  horizontal_size_ = pow( 1.07, physical_values_.at( 87 ) / 2.0 );
   autoscale_ = physical_values_.at( 89 );
-  buffer_size_ = pow( 1.03, physical_values_.at( 83 ) ) * 450;
+  buffer_size_ = (pow( 1.03, physical_values_.at( 83 ) ) - 1) * 450;
 }
 
 void Fader::rationalize( decltype(physical_values_) & output ) const
@@ -67,21 +67,21 @@ void Fader::rationalize( decltype(physical_values_) & output ) const
   }
 
   for ( uint8_t i = 0; i < 127; i++ ) {
-    if ( time_increment_ <= (pow( 1.05, i ) - 1) / 500 ) {
+    if ( time_increment_ <= (pow( 1.05, i ) - 1) / 100 ) {
       output.at( 88 ) = i;
       break;
     }
   }
 
   for ( uint8_t i = 0; i < 127; i++ ) {
-    if ( horizontal_size_ <= pow( 1.05, i / 2.0 ) ) {
+    if ( horizontal_size_ <= pow( 1.07, i / 2.0 ) ) {
       output.at( 87 ) = i;
       break;
     }
   }
 
   for ( uint8_t i = 0; i < 127; i++ ) {
-    if ( buffer_size_ <= pow( 1.03, i ) * 450 ) {
+    if ( buffer_size_ <= (pow( 1.03, i ) - 1) * 450 ) {
       output.at( 83 ) = i;
       break;
     }
