@@ -95,7 +95,13 @@ void Fader::update( NetworkType & network )
 
   if ( physical_values_.at( 90 ) ) {
     initialize();
+
+    output_physical_values = physical_values_;
     output_physical_values.at( 90 ) = false;
+
+    for ( auto & x : physical_values_ ) {
+      x = 255;
+    }
   } else {
     compute_internal_state();
   }
