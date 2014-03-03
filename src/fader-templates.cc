@@ -26,7 +26,7 @@ void Fader::update( NetworkType & network )
     }
   }
 
-  auto new_physical_values_ = physical_values_;
+  auto new_physical_values = physical_values_;
 
   /* process what we have */
   while ( buffer_.size() >= 3 ) {
@@ -53,37 +53,52 @@ void Fader::update( NetworkType & network )
       throw runtime_error( "unexpected MIDI control value" );
     }
 
-    new_physical_values_.at( control ) = value;
+    new_physical_values.at( control ) = value;
   }
+
+  auto output_physical_values = new_physical_values;
 
   /* process the changes */
   for ( unsigned int i = 0; i < physical_values_.size(); i++ ) {
-    if ( physical_values_.at( i ) != new_physical_values_.at( i ) ) {
+    if ( physical_values_.at( i ) != new_physical_values.at( i ) ) {
       if ( i >= 65 and i <= 80 ) { /* switch a sender */
 	if ( i <= 72 ) {
 	  const unsigned int sender_num = i - 65;
 	  if ( sender_num < network.mutable_senders().mutable_gang1().count_senders() ) {
-	    if ( new_physical_values_.at( i ) ) {
-	      cerr << "turning " << sender_num << " on" << endl;
+	    if ( new_physical_values.at( i ) ) {
 	      network.mutable_senders().mutable_gang1().mutable_sender( sender_num ).switch_on( network.tickno() );
 	    } else {
-	      cerr << "turning " << sender_num << " off" << endl;
 	      network.mutable_senders().mutable_gang1().mutable_sender( sender_num ).switch_off( network.tickno(), 1 );
 	    }
+	  } else {
+	    output_physical_values.at( i ) = 0;
 	  }
 	} else {
 	  const unsigned int sender_num = i - 73;
 	  if ( sender_num < network.mutable_senders().mutable_gang2().count_senders() ) {
-	    if ( new_physical_values_.at( i ) ) {
+	    if ( new_physical_values.at( i ) ) {
 	      network.mutable_senders().mutable_gang2().mutable_sender( sender_num ).switch_on( network.tickno() );
 	    } else {
 	      network.mutable_senders().mutable_gang2().mutable_sender( sender_num ).switch_off( network.tickno(), 1 );
 	    }
+	  } else {
+	    output_physical_values.at( i ) = 0;
 	  }
 	}
       }
     }
   }
 
-  physical_values_ = new_physical_values_;
+  /* write the output physical values */
+  for ( unsigned int i = 0; i < physical_values_.size(); i++ ) {
+    if ( output_physical_values.at( i ) != new_physical_values.at( i ) ) {
+      array< uint8_t, 3 > write_buffer = { 176, uint8_t( i ), output_physical_values.at( i ) };
+      ssize_t bytes_written = write( fd_, &write_buffer, write_buffer.size() );      
+      if ( bytes_written != 3 ) {
+	throw runtime_error( "could not write to MIDI device" );
+      }
+    }
+  }
+
+  physical_values_ = output_physical_values;
 }
