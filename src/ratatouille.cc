@@ -104,6 +104,10 @@ int main( int argc, char *argv[] )
       upper_limit = link_ppt * delay * 1.2;
     }
 
+    if ( fader.autoscale_all() ) {
+      upper_limit = (fader.buffer_size() + link_ppt * delay) * 1.05;
+    }
+
     network.run_simulation_until( t * 1000.0 );
 
     const vector< unsigned int > packets_in_flight = network.packets_in_flight();

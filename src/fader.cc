@@ -52,6 +52,7 @@ void Fader::compute_internal_state( void )
   time_increment_ = (pow( 1.05, physical_values_.at( 88 ) ) - 1) / 100;
   horizontal_size_ = pow( 1.07, physical_values_.at( 87 ) / 1.5 );
   autoscale_ = physical_values_.at( 89 );
+  autoscale_all_ = physical_values_.at( 91 );
   buffer_size_ = (pow( 1.03, physical_values_.at( 83 ) ) - 1) * 500;
 }
 
@@ -85,9 +86,9 @@ void Fader::rationalize( decltype(physical_values_) & output ) const
     }
   }
 
-  for ( uint8_t i = 0; i < 128; i++ ) {
-    output.at( 89 ) = autoscale_ ? 127 : 0;
-  }
+  output.at( 89 ) = autoscale_ ? 127 : 0;
+
+  output.at( 91 ) = autoscale_all_ ? 127 : 0;
 }
 
 void Fader::initialize( void )
@@ -97,6 +98,7 @@ void Fader::initialize( void )
   horizontal_size_ = 10;
   buffer_size_ = link_rate_ * 150 * 10;
   autoscale_ = false;
+  autoscale_all_ = false;
 
   rationalize( physical_values_ );
   compute_internal_state();

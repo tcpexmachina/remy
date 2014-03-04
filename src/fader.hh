@@ -17,6 +17,7 @@ class Fader
   double horizontal_size_ = 0;
   double buffer_size_ = 0;
   bool autoscale_ = false;
+  bool autoscale_all_ = false;
 
   void compute_internal_state( void );
   void rationalize( decltype(physical_values_) & output ) const;
@@ -34,6 +35,7 @@ public:
   double horizontal_size( void ) const { return horizontal_size_; }
   unsigned int buffer_size( void ) const { return static_cast<unsigned int>( buffer_size_ ); }
   bool autoscale( void ) const { return autoscale_; }
+  bool autoscale_all( void ) const { return autoscale_all_; }
 };
 
 #endif /* FADER_HH */
