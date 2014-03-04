@@ -4,7 +4,6 @@
 #include <unistd.h>
 
 #include <system_error>
-#include <iostream>
 #include <cmath>
 
 #include "fader.hh"
@@ -36,8 +35,6 @@ void Fader::write( const decltype(physical_values_) & output )
   for ( unsigned int i = 0; i < physical_values_.size(); i++ ) {
     if ( output.at( i ) != physical_values_.at( i ) ) {
       array< uint8_t, 3 > write_buffer = { 176, uint8_t( i ), output.at( i ) };
-
-      cerr << "writing " << i << " = " << int( output.at( i ) ) << endl;
 
       ssize_t bytes_written = ::write( fd_, &write_buffer, write_buffer.size() );      
       if ( bytes_written != 3 ) {

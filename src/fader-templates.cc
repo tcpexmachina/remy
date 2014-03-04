@@ -1,7 +1,6 @@
 #include <unistd.h>
 
 #include <system_error>
-#include <iostream>
 #include <cmath>
 
 #include "fader.hh"
