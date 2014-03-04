@@ -41,7 +41,7 @@ void Graph::set_info( const string & info )
 {
   if ( info != info_string_ ) {
     info_string_ = info;
-    info_ = Pango::Text( cairo_, pango_, label_font_, info );
+    info_ = Pango::Text( cairo_, pango_, tick_font_, info );
   }
 }
 
@@ -131,7 +131,7 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
   cairo_fill( cairo_ );
 
   /* draw the info */
-  info_.draw_centered_at( cairo_, window_size.first / 2, 20 );
+  info_.draw_centered_at( cairo_, window_size.first / 2, 20, window_size.first - 40 );
   cairo_set_source_rgba( cairo_, 0.4, 0, 0, 1 );
   cairo_fill( cairo_ );
 
