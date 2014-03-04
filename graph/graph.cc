@@ -234,11 +234,12 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
   display_.draw( cairo_.image() );
 
   /* draw the data points, including an extension off the right edge */
-  for ( int i = data_points_.size() - 1; i >= 0; i-- ) {
+  for ( unsigned int i = 0; i < data_points_.size(); i++ ) {
     auto & line = data_points_[ i ];
     if ( not line.empty() ) {
       line.emplace_back( t + 20, line.back().second );
 
+#if 0
       if ( i == 0 ) { /* draw white background */
 	display_.draw( 1, 1, 1, 1,
 		       7.0, 220, line,
@@ -247,10 +248,11 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
 					   chart_height( x.second, window_size.second ) );
 		       } );
       }
+#endif
 
       display_.draw( get<0>( colors_[ i ] ), get<1>( colors_[ i ] ),
 		     get<2>( colors_[ i ] ), get<3>( colors_[ i ] ),
-		     ( i == int( data_points_.size() - 1 ) ) ? 10.0 : 5.0, 220, line,
+		     ( i == 0 or i == data_points_.size() - 1 ) ? 10.0 : 5.0, 220, line,
 		     [&] ( const pair<float, float> & x ) {
 		       return make_pair( window_size.first - (t - x.first) * window_size.first / logical_width,
 					 chart_height( x.second, window_size.second ) );
