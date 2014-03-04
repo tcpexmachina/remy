@@ -108,16 +108,11 @@ int main( int argc, char *argv[] )
 
     const vector< unsigned int > packets_in_flight = network.packets_in_flight();
 
-    float ideal_pif_per_sender = link_ppt * delay;
-    const unsigned int active_senders = network.senders().count_active_senders();
+    float ideal_pif = link_ppt * delay;
 
-    if ( active_senders ) {
-      ideal_pif_per_sender = link_ppt * delay / active_senders;
-    }
-
-    graph.add_data_point( 0, t, ideal_pif_per_sender );
-    if ( ideal_pif_per_sender > upper_limit ) {
-      upper_limit = ideal_pif_per_sender * 1.1;
+    graph.add_data_point( 0, t, ideal_pif );
+    if ( ideal_pif > upper_limit ) {
+      upper_limit = ideal_pif * 1.1;
     }
 
     graph.add_data_point( packets_in_flight.size() + 1, t, fader.buffer_size() + link_ppt * delay );
