@@ -11,27 +11,22 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range 
     _whiskers( s_whiskers ),
     _configs()
 {
-  /* sample 100 link speeds */
-
-  const double steps = 100.0;
-
-  const double link_speed_dynamic_range = range.link_packets_per_ms.second / range.link_packets_per_ms.first;
-
-  const double multiplier = pow( link_speed_dynamic_range, 1.0 / steps );
-
-  double link_speed = range.link_packets_per_ms.first;
+  double link_speed = pow(10, 1.5)*0.1;
 
   /* this approach only varies link speed, so make sure no
      uncertainty in rtt */
   assert( range.rtt_ms.first == range.rtt_ms.second );
 
-  while ( link_speed <= (range.link_packets_per_ms.second * ( 1 + (multiplier-1) / 2 ) ) ) {
-    _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 1 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-    _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 4 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-    _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 7 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-    _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 10 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-    link_speed *= multiplier;
-  }
+  _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 1 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 3 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 5 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 7 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 9 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 11 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 13 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 15 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 17 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( 19 ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
 }
 
 Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
