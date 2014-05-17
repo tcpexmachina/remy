@@ -33,7 +33,7 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   /* run tests */
   Outcome the_outcome;
   for ( auto &x : _configs ) {
-    const double dynamic_tick_count = 500000.0 / x.link_ppt;
+    const double dynamic_tick_count = 1000000.0 / x.link_ppt;
 
     /* run once */
     Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
