@@ -17,7 +17,7 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range 
   assert( range.rtt_ms.first == range.rtt_ms.second );
   assert( range.link_packets_per_ms.first == range.link_packets_per_ms.second );
 
-  for ( uint32_t i = 1; i <= 100 ; i++ ) {
+  for ( uint32_t i = 1; i <= 100 ; i = i + 2 ) {
     _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( i ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
   }
 }
@@ -32,7 +32,7 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   /* run tests */
   Outcome the_outcome;
   for ( auto &x : _configs ) {
-    const double dynamic_tick_count = 100000.0 * x.num_senders;
+    const double dynamic_tick_count = 10000.0 * x.num_senders;
 
     /* run once */
     Network<Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
