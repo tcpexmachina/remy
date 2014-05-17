@@ -13,9 +13,9 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range 
 {
   const double link_speed = (pow(10, 1.5)) * 0.1;
 
-  const double rtt_increment = 30.0;
-  double rtt = 10.0;
-  const double rtt_max = 280.0;
+  const double rtt_increment = 2.0;
+  double rtt = 140.0;
+  const double rtt_max = 160.0;
 
   while ( rtt <= rtt_max ) {
     _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( rtt ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
