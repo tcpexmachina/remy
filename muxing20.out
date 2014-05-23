@@ -1,0 +1,678 @@
+Script started on Sun 18 May 2014 11:41:26 AM EDT
+anirudh@hermes7:/data/lsp/owenhsin/anirudh$ cd /data/lsp/owenhsin/anirudh/camera-ready/muxing20
+anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ cd /data/lsp/owenhsin/anirudh/camera-ready/muxing20ls[Kcd /data/lsp/owenhsin/anirudh/camera-ready/muxing20[K./src/remy [K[K[K[K[K[K[K[K[K[K[Kls muxing20.dna.0 [K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K./src/remy of=muxing20-take2.dna if=muxing20.
+muxing20.dna.0  muxing20.out    
+anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ ./src/remy of=muxing20-take2.dna if=muxing20.dna.0 [K[H[Janirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ ./src/remy of=muxing20-take2.dna if=muxing20.dna.0
+#######################
+Optimizing for link packets_per_ms in [1.500000, 1.500000]
+Optimizing for rtt_ms in [150.000000, 150.000000]
+Optimizing for num_senders = 1-2
+Optimizing for mean_on_duration = 1000.000000, mean_off_duration = 1000.000000
+Initial rules (use if=FILENAME to read from disk): [{(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)]
+#######################
+Writing to "muxing20-take2.dna.N".
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2063460.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -8.501056142272 => -8.030459337528 (+0.470596804744)
+Evaluating 432 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2063460.0000 => (win=13 + 0.870000 * win, intersend=1.572900).
+Replacing with whisker that scored -8.030459337528 => -7.593079127557 (+0.437380209971)
+Evaluating 432 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2063460.0000 => (win=9 + 0.910000 * win, intersend=1.679500).
+Replacing with whisker that scored -7.593079127557 => -7.481082499116 (+0.111996628441)
+Evaluating 468 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2063460.0000 => (win=5 + 0.950000 * win, intersend=2.106100).
+Replacing with whisker that scored -7.481082499116 => -6.958717087533 (+0.522365411583)
+Evaluating 360 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2063460.0000 => (win=4 + 0.990000 * win, intersend=1.679400).
+Replacing with whisker that scored -6.958717087533 => -6.647432444224 (+0.311284643309)
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2063460.0000 => (win=3 + 0.990000 * win, intersend=1.252700).
+Replacing with whisker that scored -6.647432444224 => -6.488420375402 (+0.159012068822)
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2063460.0000 => (win=3 + 0.990000 * win, intersend=1.359300).
+Replacing with whisker that scored -6.488420375402 => -6.472025472175 (+0.016394903227)
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2063460.0000 => (win=3 + 0.990000 * win, intersend=1.332600).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1101500.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -6.388438990542 => -5.858332423517 (+0.530106567025)
+Evaluating 546 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1101500.0000 => (win=10 + 0.550000 * win, intersend=10.106200).
+Replacing with whisker that scored -5.858332423517 => -5.815191544357 (+0.043140879159)
+Evaluating 546 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1101500.0000 => (win=6 + 0.390000 * win, intersend=8.399500).
+Replacing with whisker that scored -5.815191544357 => -5.777509908245 (+0.037681636112)
+Evaluating 455 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1101500.0000 => (win=2 + 0.230000 * win, intersend=8.399500).
+Replacing with whisker that scored -5.777509908245 => -5.763493620817 (+0.014016287428)
+Evaluating 420 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1101500.0000 => (win=1 + 0.240000 * win, intersend=6.692800).
+Replacing with whisker that scored -5.763493620817 => -5.747523836897 (+0.015969783920)
+Evaluating 336 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1101500.0000 => (win=0 + 0.400000 * win, intersend=4.986100).
+Replacing with whisker that scored -5.747523836897 => -5.742331867372 (+0.005191969525)
+Evaluating 336 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1101500.0000 => (win=0 + 0.400000 * win, intersend=5.012700).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=1022567.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.857614394205 => -5.796067660613 (+0.061546733592)
+Evaluating 432 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=1022567.0000 => (win=10 + 0.870000 * win, intersend=2.852900).
+Replacing with whisker that scored -5.796067660613 => -5.787929833834 (+0.008137826779)
+Evaluating 468 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=1022567.0000 => (win=9 + 0.870000 * win, intersend=2.426200).
+Replacing with whisker that scored -5.787929833834 => -5.783157854585 (+0.004771979249)
+Evaluating 468 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=1022567.0000 => (win=13 + 0.880000 * win, intersend=2.432800).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=928857.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.732088416580 => -5.648246046994 (+0.083842369586)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=928857.0000 => (win=15 + 0.720000 * win, intersend=1.572900).
+Replacing with whisker that scored -5.648246046994 => -5.643969746309 (+0.004276300685)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=928857.0000 => (win=15 + 0.710000 * win, intersend=1.146200).
+Replacing with whisker that scored -5.643969746309 => -5.641460175410 (+0.002509570899)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=928857.0000 => (win=19 + 0.670000 * win, intersend=1.152800).
+^Z
+[1]+  Stopped                 ./src/remy of=muxing20-take2.dna if=muxing20.dna.0
+anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ fg
+./src/remy of=muxing20-take2.dna if=muxing20.dna.0
+Replacing with whisker that scored -5.641460175410 => -5.639633591578 (+0.001826583833)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=928857.0000 => (win=15 + 0.710000 * win, intersend=1.126100).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=945786.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.748228085337 => -5.684577952042 (+0.063650133295)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=945786.0000 => (win=13 + 0.720000 * win, intersend=4.986200).
+Replacing with whisker that scored -5.684577952042 => -5.662683853247 (+0.021894098796)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=945786.0000 => (win=13 + 0.730000 * win, intersend=4.559500).
+Replacing with whisker that scored -5.662683853247 => -5.650401158314 (+0.012282694933)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=945786.0000 => (win=13 + 0.730000 * win, intersend=4.132800).
+Replacing with whisker that scored -5.650401158314 => -5.647447256284 (+0.002953902030)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=945786.0000 => (win=14 + 0.689900 * win, intersend=4.026100).
+Replacing with whisker that scored -5.647447256284 => -5.641440027228 (+0.006007229056)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=945786.0000 => (win=14 + 0.689900 * win, intersend=4.132700).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=614736.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.632265996524 => -5.623484474403 (+0.008781522121)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=614736.0000 => (win=14 + 0.710000 * win, intersend=3.272900).
+Replacing with whisker that scored -5.623484474403 => -5.618657418348 (+0.004827056055)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=614736.0000 => (win=14 + 0.710000 * win, intersend=3.279500).
+Replacing with whisker that scored -5.618657418348 => -5.612425218544 (+0.006232199804)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=614736.0000 => (win=14 + 0.750000 * win, intersend=2.852800).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=432117.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.738934359874 => -5.669656115772 (+0.069278244102)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=432117.0000 => (win=14 + 0.550000 * win, intersend=3.706200).
+Replacing with whisker that scored -5.669656115772 => -5.664816246331 (+0.004839869441)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=432117.0000 => (win=18 + 0.510000 * win, intersend=3.599500).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=410341.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.517853843928 => -5.492320484663 (+0.025533359265)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=410341.0000 => (win=14 + 0.710000 * win, intersend=3.706200).
+Replacing with whisker that scored -5.492320484663 => -5.490720620933 (+0.001599863730)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=410341.0000 => (win=14 + 0.700000 * win, intersend=3.699500).
+Replacing with whisker that scored -5.490720620933 => -5.487906406184 (+0.002814214749)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=410341.0000 => (win=18 + 0.540000 * win, intersend=3.806100).
+Replacing with whisker that scored -5.487906406184 => -5.486380875687 (+0.001525530496)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=410341.0000 => (win=19 + 0.500000 * win, intersend=3.806100).
+Replacing with whisker that scored -5.486380875687 => -5.484335486424 (+0.002045389263)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=410341.0000 => (win=20 + 0.490000 * win, intersend=3.912700).
+Replacing with whisker that scored -5.484335486424 => -5.482204778108 (+0.002130708316)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=410341.0000 => (win=21 + 0.490000 * win, intersend=3.886000).
+Replacing with whisker that scored -5.482204778108 => -5.475791397594 (+0.006413380513)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=410341.0000 => (win=21 + 0.530000 * win, intersend=3.879300).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=248676.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.527791133987 => -5.507232517241 (+0.020558616747)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=248676.0000 => (win=15 + 0.550000 * win, intersend=3.252900).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=185657.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.558988116657 => -5.541440578224 (+0.017547538433)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=185657.0000 => (win=10 + 0.750000 * win, intersend=3.286200).
+Replacing with whisker that scored -5.541440578224 => -5.541129585607 (+0.000310992617)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=185657.0000 => (win=10 + 0.740000 * win, intersend=3.312800).
+Replacing with whisker that scored -5.541129585607 => -5.537332624158 (+0.003796961449)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=185657.0000 => (win=10 + 0.750000 * win, intersend=3.286100).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=130743.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=87600.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.467005616263 => -5.436969924371 (+0.030035691892)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=87600.0000 => (win=13 + 0.670000 * win, intersend=3.286200).
+Replacing with whisker that scored -5.436969924371 => -5.436049318649 (+0.000920605722)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=87600.0000 => (win=17 + 0.630000 * win, intersend=3.286200).
+Replacing with whisker that scored -5.436049318649 => -5.431256604352 (+0.004792714297)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=87600.0000 => (win=18 + 0.590000 * win, intersend=1.579500).
+Replacing with whisker that scored -5.431256604352 => -5.424984808504 (+0.006271795848)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=87600.0000 => (win=17 + 0.630000 * win, intersend=1.586100).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=86986.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.487590185861 => -5.450547164626 (+0.037043021235)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=86986.0000 => (win=13 + 0.710000 * win, intersend=1.572900).
+Replacing with whisker that scored -5.450547164626 => -5.449786716856 (+0.000760447770)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=86986.0000 => (win=14 + 0.670000 * win, intersend=1.566200).
+Replacing with whisker that scored -5.449786716856 => -5.447331646625 (+0.002455070231)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=86986.0000 => (win=15 + 0.710000 * win, intersend=1.566200).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=35462.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.572992488446 => -5.552168992935 (+0.020823495511)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=35462.0000 => (win=18 + 0.700000 * win, intersend=3.272900).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=16842.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.644682144728 => -5.624583639666 (+0.020098505062)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=16842.0000 => (win=13 + 0.550000 * win, intersend=3.386200).
+Replacing with whisker that scored -5.624583639666 => -5.617302668488 (+0.007280971177)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=16842.0000 => (win=12 + 0.390000 * win, intersend=3.492800).
+Replacing with whisker that scored -5.617302668488 => -5.613822601103 (+0.003480067385)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=16842.0000 => (win=8 + 0.390000 * win, intersend=3.386100).
+Replacing with whisker that scored -5.613822601103 => -5.612164223481 (+0.001658377622)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=16842.0000 => (win=9 + 0.230000 * win, intersend=3.812700).
+Replacing with whisker that scored -5.612164223481 => -5.606379547392 (+0.005784676089)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=16842.0000 => (win=9 + 0.230000 * win, intersend=3.919300).
+Replacing with whisker that scored -5.606379547392 => -5.605983058340 (+0.000396489052)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=16842.0000 => (win=9 + 0.230000 * win, intersend=3.945900).
+Replacing with whisker that scored -5.605983058340 => -5.605983044570 (+0.000000013770)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=16842.0000 => (win=9 + 0.230000 * win, intersend=3.972500).
+Replacing with whisker that scored -5.605983044570 => -5.605983041506 (+0.000000003064)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=16842.0000 => (win=9 + 0.230000 * win, intersend=3.979100).
+Replacing with whisker that scored -5.605983041506 => -5.605983038270 (+0.000000003235)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=16842.0000 => (win=9 + 0.230000 * win, intersend=3.985700).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=6163.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.550149039348 => -5.510466655242 (+0.039682384106)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=6163.0000 => (win=18 + 0.720000 * win, intersend=3.252900).
+Replacing with whisker that scored -5.510466655242 => -5.497103049427 (+0.013363605815)
+Evaluating 420 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=6163.0000 => (win=2 + 0.710000 * win, intersend=4.959500).
+Done with search.
+Evaluating 336 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=18857516.0000 => (win=0 + 0.400000 * win, intersend=5.012700).
+Replacing with whisker that scored -5.487093119650 => -5.484004472699 (+0.003088646951)
+Evaluating 336 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=18857516.0000 => (win=0 + 0.390000 * win, intersend=5.039300).
+Replacing with whisker that scored -5.484004472699 => -5.483812204517 (+0.000192268182)
+Evaluating 336 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=18857516.0000 => (win=0 + 0.390000 * win, intersend=5.065900).
+Replacing with whisker that scored -5.483812204517 => -5.482310438690 (+0.001501765827)
+Evaluating 336 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=18857516.0000 => (win=0 + 0.390000 * win, intersend=4.959200).
+Done with search.
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=2336662.0000 => (win=3 + 0.990000 * win, intersend=1.332600).
+Replacing with whisker that scored -5.519698761874 => -5.510083383824 (+0.009615378050)
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=2336662.0000 => (win=3 + 0.990000 * win, intersend=1.339200).
+Replacing with whisker that scored -5.510083383824 => -5.502727539808 (+0.007355844016)
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=2336662.0000 => (win=3 + 0.990000 * win, intersend=1.332500).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=1173921.0000 => (win=15 + 0.710000 * win, intersend=1.126100).
+Replacing with whisker that scored -5.503617471987 => -5.418028041595 (+0.085589430391)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=1173921.0000 => (win=16 + 0.750000 * win, intersend=1.552700).
+Replacing with whisker that scored -5.418028041595 => -5.404548601716 (+0.013479439879)
+Evaluating 637 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=1173921.0000 => (win=16 + 0.790000 * win, intersend=1.979300).
+Replacing with whisker that scored -5.404548601716 => -5.400624769459 (+0.003923832257)
+Evaluating 546 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=1173921.0000 => (win=15 + 0.800000 * win, intersend=1.979300).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=762200.0000 => (win=14 + 0.689900 * win, intersend=4.132700).
+Replacing with whisker that scored -5.480260103394 => -5.464041270070 (+0.016218833324)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=762200.0000 => (win=15 + 0.729900 * win, intersend=4.559300).
+Replacing with whisker that scored -5.464041270070 => -5.456687682957 (+0.007353587113)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=762200.0000 => (win=14 + 0.689900 * win, intersend=4.452600).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=584752.0000 => (win=14 + 0.750000 * win, intersend=2.852800).
+Replacing with whisker that scored -5.378407116737 => -5.348132995372 (+0.030274121365)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=584752.0000 => (win=13 + 0.760000 * win, intersend=2.959400).
+Replacing with whisker that scored -5.348132995372 => -5.344996465831 (+0.003136529541)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=584752.0000 => (win=13 + 0.760000 * win, intersend=2.952700).
+Replacing with whisker that scored -5.344996465831 => -5.332036240129 (+0.012960225703)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=584752.0000 => (win=13 + 0.760000 * win, intersend=2.959300).
+Replacing with whisker that scored -5.332036240129 => -5.321018995741 (+0.011017244388)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=584752.0000 => (win=13 + 0.750000 * win, intersend=3.065900).
+Done with search.
+Evaluating 468 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=560584.0000 => (win=13 + 0.880000 * win, intersend=2.432800).
+Replacing with whisker that scored -5.408558911101 => -5.385132745643 (+0.023426165457)
+Evaluating 468 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=560584.0000 => (win=14 + 0.920000 * win, intersend=2.539400).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=474783.0000 => (win=18 + 0.510000 * win, intersend=3.599500).
+Replacing with whisker that scored -5.452791376740 => -5.426216438076 (+0.026574938664)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=474783.0000 => (win=14 + 0.470000 * win, intersend=4.026100).
+Replacing with whisker that scored -5.426216438076 => -5.421299181156 (+0.004917256919)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=474783.0000 => (win=15 + 0.470000 * win, intersend=4.019400).
+Replacing with whisker that scored -5.421299181156 => -5.417063251514 (+0.004235929642)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=474783.0000 => (win=14 + 0.430000 * win, intersend=4.026000).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=440723.0000 => (win=21 + 0.530000 * win, intersend=3.879300).
+Replacing with whisker that scored -5.349400508918 => -5.337590579890 (+0.011809929027)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=440723.0000 => (win=22 + 0.690000 * win, intersend=3.872600).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=259182.0000 => (win=15 + 0.550000 * win, intersend=3.252900).
+Replacing with whisker that scored -5.446607756673 => -5.411921438708 (+0.034686317965)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=259182.0000 => (win=11 + 0.710000 * win, intersend=3.679500).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=169846.0000 => (win=10 + 0.750000 * win, intersend=3.286100).
+Replacing with whisker that scored -5.418760402668 => -5.396753774685 (+0.022006627983)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=169846.0000 => (win=11 + 0.710000 * win, intersend=1.579400).
+Replacing with whisker that scored -5.396753774685 => -5.389241188717 (+0.007512585969)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=169846.0000 => (win=12 + 0.700000 * win, intersend=1.686000).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=102168.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.352406400676 => -5.336261154456 (+0.016145246220)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=102168.0000 => (win=14 + 0.750000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.336261154456 => -5.334863208814 (+0.001397945642)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=102168.0000 => (win=15 + 0.590000 * win, intersend=3.306200).
+Replacing with whisker that scored -5.334863208814 => -5.333294945376 (+0.001568263439)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=102168.0000 => (win=16 + 0.580000 * win, intersend=3.412800).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=82488.0000 => (win=15 + 0.710000 * win, intersend=1.566200).
+Terminated
+anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ ls
+aclocal.m4  autom4te.cache  config.h.in   config.log	 configure     depcomp	   Makefile	Makefile.in  muxing20.dna.0  protobufs	src
+autogen.sh  config.h	    config.h.in~  config.status  configure.ac  install-sh  Makefile.am	missing      muxing20.out    README.md	stamp-h1
+anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ htop
+(B)0[?1049h[1;61r[m[4l[?1h=[?25l[39;49m[?1000h[39;49m[m[H[J[1B  [36m1  [39m[0;1m[[0m[32m||||||||[0;1m[30m                                     14.3%[39m][m    [36m7  [39m[0;1m[[30m                                              0.0%[39m][m     [36m13 [39m[0;1m[[30m                                              0.0%[39m][m    [36m19 [39m[0;1m[[30m                                              0.0%[39m][3;3H[0m[36m2  [39m[0;1m[[0m[32m||||[31m||||[0;1m[30m                                     14.3%[39m][m    [36m8  [39m[0;1m[[30m                                              0.0%[39m][m     [36m14 [39m[0;1m[[30m                                              0.0%[39m][m    [36m20 [39m[0;1m[[30m                                              0.0%[39m][4;3H[0m[36m3  [39m[0;1m[[0m[32m||||[31m||||||||[0;1m[30m                                 21.4%[39m][m    [36m9  [39m[0;1m[[0m[32m||||[0;1m[30m                                          6.7%[39m][m     [36m15 [39m[0;1m[[30m                                              0.0%[39m][m    [36m21 [39m[0;1m[[30m                                              0.0%[39m][5;3H[0m[36m4  [39m[0;1m[[30m                                              0.0%[39m][m    [36m10 [39m[0;1m[[30m                                              0.0%[39m][m     [36m16 [39m[0;1m[[30m                                              0.0%[39m][m    [36m22 [39m[0;1m[[30m                                              0.0%[39m][6;3H[0m[36m5  [39m[0;1m[[30m                                              0.0%[39m][m    [36m11 [39m[0;1m[[30m                                              0.0%[39m][m     [36m17 [39m[0;1m[[30m                                              0.0%[39m][m    [36m23 [39m[0;1m[[30m                                              0.0%[39m][7;3H[0m[36m6  [39m[0;1m[[30m                                              0.0%[39m][m    [36m12 [39m[0;1m[[0m[31m||||[0;1m[30m                                          7.1%[39m][m     [36m18 [39m[0;1m[[30m                                              0.0%[39m][m    [36m24 [39m[0;1m[[30m                                              0.0%[39m][8;3H[0m[36mMem[39m[0;1m[[0m[32m||||[34m||[33m||||||||[0;1m[30m                                                                                   1392/48289MB[39m][m     [36mTasks: [0;1m[36m77[0m[36m, [0;1m[36m99[0m[36m thr; [0;1m[32m1[0m[36m running[9;3HSwp[39m[0;1m[[30m                                                                                                     0/4095MB[39m][m     [36mLoad average: [0;1m[30m0.06 [39m[m0.03 [0;1m0.94 [10;122H[0m[36mUptime: [0;1m[36m75 days, 18:11:55[2B[0m[30m[42m  PID USER      PRI  NI  VIRT   RES   SHR S [30m[46mCPU% [30m[42mMEM%   TIME+  Command                                                                                                                                                                         [13;1H[30m[46m10233 anirudh    20   0 24192  3080  1224 R 28.2  0.0  0:00.08 htop                                                                                                                                                                            [14;5H[39;49m[m1 [0;1m[30mroot      [39m[m 20   0 [36m23[39m[m320 [36m 7[39m[m020 [36m 1[39m[m384 S  0.0  0.0  2:09.19 /sbin/init[15;3H778 [0;1m[30mroot      [39m[m 20   0 [36m19[39m[m324 [36m 1[39m[m092   736 S  0.0  0.0  0:24.42 rpcbind[16;3H839 [0;1m[30mstatd     [39m[m 20   0 [36m21[39m[m832 [36m 1[39m[m592 [36m 1[39m[m004 S  0.0  0.0  0:00.00 rpc.statd -L[17;3H940 [0;1m[30msyslog    [39m[m 20   0 [36m 242M  5[39m[m500 [36m 1[39m[m232 S  0.0  0.0  5:04.28 rsyslogd -c5[18;3H941 [0;1m[30msyslog    [39m[m 20   0 [36m 242M  5[39m[m500 [36m 1[39m[m232 S  0.0  0.0  1:00.32 rsyslogd -c5[19;3H942 [0;1m[30msyslog    [39m[m 20   0 [36m 242M  5[39m[m500 [36m 1[39m[m232 S  0.0  0.0  0:01.15 rsyslogd -c5[20;3H936 [0;1m[30msyslog    [39m[m 20   0 [36m 242M  5[39m[m500 [36m 1[39m[m232 S  0.0  0.0  7:37.93 rsyslogd -c5[21;3H950 [0;1m[30mroot      [39m[m 20   0 [36m23[39m[m484   672   428 S  0.0  0.0  0:00.00 rpc.idmapd[22;3H969 [0;1m[30mmessagebu [39m[m 20   0 [36m31[39m[m092 [36m 2[39m[m072 [36m 1[39m[m096 S  0.0  0.0  0:24.92 dbus-daemon --system --fork[23;3H995 [0;1m[30mroot      [39m[m 20   0 [36m19[39m[m264 [36m 1[39m[m720 [36m 1[39m[m444 S  0.0  0.0  0:06.29 /usr/sbin/bluetoothd[1B 1001 [0;1m[30mavahi     [39m[m 20   0 [36m33[39m[m520 [36m 2[39m[m924 [36m 1[39m[m432 S  0.0  0.0  9:44.41 avahi-daemon: running [hermes7.local][1B 1003 [0;1m[30mavahi     [39m[m 20   0 [36m32[39m[m228   476   216 S  0.0  0.0  0:00.00 avahi-daemon: chroot helper[1B 1013 [0;1m[30mroot      [39m[m 10 [31m-10 [36m23[39m[m016   576   184 S  0.0  0.0 [0;1m[31m 1h[39m[m10:30 ovsdb-server: monitoring pid 1014 (healthy)[1B 1014 [0;1m[30mroot      [39m[m 10 [31m-10 [36m23[39m[m528 [36m 2[39m[m476 [36m 1[39m[m428 S  0.0  0.0  4:42.62 ovsdb-server /etc/openvswitch/conf.db -vconsole:emer -vsyslog:err -vfile:info --remote=punix:/var/run/openvswitch/db.sock --private-key=db:Open_vSwitch,SSL,private_key --certif[28;2H1022 [0;1m[30mroot      [39m[m 20   0 [36m28[39m[m624 [36m 1[39m[m564 [36m 1[39m[m288 S  0.0  0.0  0:00.00 /lib/systemd/systemd-logind[1B 1165 [0;1m[30m_lldpd    [39m[m 20   0 [36m26[39m[m120 [36m 1[39m[m156   908 S  0.0  0.0  0:00.00 lldpcli -s -c /etc/lldpd.conf -c /etc/lldpd.d resume[1B 1192 [0;1m[30mroot      [39m[m 10 [31m-10 [36m23[39m[m440   588   176 S  0.0  0.0 [0;1m[31m 1h[39m[m09:29 ovs-vswitchd: monitoring pid 1193 (healthy)[1B 1193 [0;1m[30mroot      [39m[m 10 [31m-10 [36m24[39m[m232 [36m 7[39m[m804 [36m 6[39m[m336 S  0.0  0.0 10:34.45 ovs-vswitchd unix:/var/run/openvswitch/db.sock -vconsole:emer -vsyslog:err -vfile:info --mlockall --no-chdir --log-file=/var/log/openvswitch/ovs-vswitchd.log --pidfile=/var/run[32;2H1194 [0;1m[30mroot      [39m[m 10 [31m-10 [36m23[39m[m444 [36m 1[39m[m172   436 S  0.0  0.0  0:00.64 ovs-vswitchd: worker process for pid 1193[1B 1284 [0;1m[30mroot      [39m[m 20   0 [36m10[39m[m244 [36m 2[39m[m932   628 S  0.0  0.0  0:00.40 dhclient -1 -v -pf /run/dhclient.eth0.pid -lf /var/lib/dhcp/dhclient.eth0.leases eth0[1B 1454 [0;1m[30mroot      [39m[m 20   0   188    36    20 S  0.0  0.0  0:32.92 runsvdir -P /etc/service log: ..................................................................................................................................................[35;2H1458 [0;1m[30mroot      [39m[m 20   0 [36m21[39m[m160   964   804 S  0.0  0.0  0:00.00 /sbin/getty -8 38400 tty4[1B 1462 [0;1m[30mroot      [39m[m 20   0 [36m21[39m[m160   968   804 S  0.0  0.0  0:00.00 /sbin/getty -8 38400 tty5[1B 1467 [0;1m[30mroot      [39m[m 20   0   168     4     0 S  0.0  0.0  0:00.23 runsv git-daemon[1B 1482 [0;1m[30mroot      [39m[m 20   0 [36m21[39m[m160   960   804 S  0.0  0.0  0:00.00 /sbin/getty -8 38400 tty2[1B 1483 [0;1m[30mroot      [39m[m 20   0 [36m21[39m[m160   968   804 S  0.0  0.0  0:00.00 /sbin/getty -8 38400 tty3[1B 1486 [0;1m[30mroot      [39m[m 20   0 [36m21[39m[m160   960   804 S  0.0  0.0  0:00.00 /sbin/getty -8 38400 tty6[1B 1491 [0;1m[30mgitlog    [39m[m 20   0   184     4     0 S  0.0  0.0  0:00.23 svlogd -tt /var/log/git-daemon[1B 1492 [0;1m[30mgitdaemon [39m[m 20   0 [36m14[39m[m032   944   788 S  0.0  0.0  0:00.01 /usr/lib/git-core/git-daemon --verbose --reuseaddr --base-path=/var/cache /var/cache/git[1B 1503 [0;1m[30mroot      [39m[m 20   0 [36m 4[39m[m376   704   536 S  0.0  0.0  0:00.00 acpid -c /etc/acpi/events -s /var/run/acpid.socket[1B 1513 [0;1m[30mroot      [39m[m 20   0 [36m25[39m[m804 [36m 1[39m[m116   832 S  0.0  0.0  0:07.58 cron[1B 1560 [0;1m[30mdnsmasq   [39m[m 20   0 [36m36[39m[m336   944   680 S  0.0  0.0 28:23.21 /usr/sbin/dnsmasq -x /var/run/dnsmasq/dnsmasq.pid -u dnsmasq -r /var/run/dnsmasq/resolv.conf -7 /etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new[1B 1878 [0;1m[30mDebian-ex [39m[m 20   0 [36m51[39m[m756 [36m 1[39m[m120   648 S  0.0  0.0  0:01.08 /usr/sbin/exim4 -bd -q30m[1B 1938 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  1:27.39 /usr/sbin/nscd[1B 1939 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:20.76 /usr/sbin/nscd[1B 1940 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:08.08 /usr/sbin/nscd[1B 1941 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:00.12 /usr/sbin/nscd[1B 1942 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:06.52 /usr/sbin/nscd[1B 1943 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:06.40 /usr/sbin/nscd[1B 1944 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:06.46 /usr/sbin/nscd[1B 1945 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:06.50 /usr/sbin/nscd[1B 1946 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:06.58 /usr/sbin/nscd[1B 1684 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:04.38 /usr/sbin/nscd[1B 1685 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:04.36 /usr/sbin/nscd[1B 1686 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:04.38 /usr/sbin/nscd[1B 6649 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:03.16 /usr/sbin/nscd[1B 6650 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.0  0.0  0:03.16 /usr/sbin/nscd[1BF1[30m[46mHelp  [39;49m[mF2[30m[46mSetup [39;49m[mF3[30m[46mSearch[39;49m[mF4[30m[46mFilter[39;49m[mF5[30m[46mTree  [39;49m[mF6[30m[46mSortBy[39;49m[mF7[30m[46mNice -[39;49m[mF8[30m[46mNice +[39;49m[mF9[30m[46mKill  [39;49m[mF10[30m[46mQuit                                                                                                                                                                [1@ [H[39;49m[m[14;60r[14;1H[3L[1;61r[2;8H[0;1m[30m       [2;52H 1.9[3;7H        [3;52H 0.0[4;7H            [4;52H 0.0[4;66H    [4;112H0.0[7;66H[0m[32m|[31m|[0;1m[30m  [7;112H3.3[8;107H1[10;146H[36m6[3B[0m[30m[46m28655[13;26H3992  3116  1368 S  2.0[6C23:34.75[1B[39;49m[m10233 anirudh    20   0 [36m24[39m[m192 [36m 3[39m[m224 [36m 1[39m[m340 [32mR [39m[m 1.3  0.0  0:00.10 htop[1B10206 anirudh    20   0 [36m19[39m[m560 [36m 6[39m[m116   696 S  1.3  0.0  0:00.48 mosh-server new -s -c 8 -l LANG=en_US.UTF-8 -l LANGUAGE=en_US[1B29105 anirudh    20   0 [36m38[39m[m104 [36m24[39m[m660   700 S  0.7  0.0  5:16.40 mosh-server new -s -c 8 -l LANG=en_US.UTF-8 -l LANGUAGE=en_US[H[16;60r[16;1HM[1;61r[2;53H[0;1m[30m0.7[7;68H[0m[31m|[10;146H[0;1m[36m8[3B[0m[30m[46m10233[13;26H4192  3244  1360 R[13;55H 0:00.13[1B[39;49m[m28655[14;26H[36m3[39m[m992 [36m 3[39m[m116 [36m 1[39m[m368 S [14;55H23:34.76[15;27H832[15;46H0.7[15;62H9[1B 1905 [0;1m[30mroot      [39m[m 20   0 [36m1151M  1[39m[m788 [36m 1[39m[m088 S  0.7  0.0 12:52.92 /usr/sbin/nscd[17;48H0[H[2;53H[0;1m[30m1.3[7;68H [9;139H5[10;146H[36m9[13;46H[0m[30m[46m1.3[13;62H5[1B[39;49m[m8[1B50[1B29105 anirudh   [16;25H[36m38[39m[m104 [36m24[39m[m660   700[16;55H 5:16.41 mosh-server new -s -c 8 -l LANG=en_US.UTF-8 -l LANGUAGE=en_US[1B 1905 [0;1m[30mroot      [17;25H[0m[36m1151M  1[39m[m788 [36m 1[39m[m088[17;55H12:52.92 /usr/sbin/nscd[K[H[2;53H[0;1m[30m0.7[7;68H[0m[31m|[10;143H[0;1m[36m2:01[13;35H[0m[30m[46m8  1364 R  2.0[13;62H8[1B[39;49m[m80[15;27H712 [36m 6[39m[m268[15;62H1[16;48H0[H[15;60r[15;1HM[1;61r[4;126H[31m|[4;174H[0;1m[30m7[6;7H[0m[32m|[31m|[6;53H[0;1m[30m2.6[7;68H [7;114H9[10;146H[36m2[3B[0m[30m[46m28655[13;26H3992  3116  1368 S  2.6[6C23:34.85[1B[39;49m[m10233[14;26H[36m4[39m[m192 [36m 3[39m[m248 [36m 1[39m[m364 [32mR [39m[m 2.0[6C 0:00.21[1B14854 [0;1m[30mcondor    [39m[m 20   0 [36m91[39m[m868 [36m 7[39m[m952 [36m 4[39m[m264 S  2.0  0.0 51:40.94 /afs/csail.mit.edu/@sys/condor/latest-install/sbin/condor_master[16;27H844[16;62H2[17;48H7[17;62H2[H[4;126H[0;1m[30m [4;174H0[6;7H  [6;53H0.0[7;112H2.6[9;149H[39m3[10;146H[36m4[13;46H[0m[30m[46m1.3[13;62H7[14;34H[39;49m[m52 [36m 1[39m[m368 [32mR [39m[m 0.7[14;62H2[1B10206 anirudh   [15;25H[36m19[39m[m844 [36m 6[39m[m268   696 S  0.7[6C 0:00.53 mosh-server new -s -c 8 -l LANG=en_US.UTF-8 -l LANGUAGE=en_US   [1B14854 [0;1m[30mcondor    [16;25H[0m[36m91[39m[m868 [36m 7[39m[m952 [36m 4[39m[m264[6C0[6C51:40.94 /afs/csail.mit.edu/@sys/condor/latest-install/sbin/condor_master[17;48H0[H[2;8H[31m|[2;53H[0;1m[30m1.3[4;7H[0m[32m|[4;55H[0;1m[30m7[7;68H[0m[31m|[7;112H[0;1m[30m3.3[10;146H[36m5[3B[0m[30m[46m10233[13;26H4192  3252[7CR  2.0[6C 0:00.25[1B[39;49m[m28655[14;26H[36m3[39m[m992 [36m 3[39m[m116[7CS  1.3[6C23:34.89[1B29105[15;25H[36m38[39m[m104 [36m24[39m[m660   700[15;56H5:16.4[1B10206 anirudh   [16;25H[36m19[39m[m844 [36m 6[39m[m268   696[16;55H 0:00.53 mosh-server new -s -c 8 -l LANG=en_US.UTF-8 -l LANGUAGE=en_US   [1B14854 [0;1m[30mcondor    [17;25H[0m[36m91[39m[m868 [36m 7[39m[m952 [36m 4[39m[m264[17;55H51:40.94 /afs/csail.mit.edu/@sys/condor/latest-install/sbin/condor_master[H[?1000l[61;1H[34h[?25h[?1049l[?1l>anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [H[Janirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ screen -r[Kls
+There is a screen on:
+	30971.pts-5.hermes7	(05/17/2014 10:51:32 AM)	(Attached)
+1 Socket in /var/run/screen/S-anirudh.
+
+anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ screen -r
+There is a screen on:
+	30971.pts-5.hermes7	(05/17/2014 10:51:31 AM)	(Attached)
+There is no screen to be resumed.
+anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ screen -r [K[K[K[K[K[K[K[K[K[K[Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ ~~~~~~~~~~~~~~~~~~~~~~~[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kscreen -ls[6Phtop[2Plsfg./src/remy of=muxing20-take2.dna if=muxing20.dna.0fg[K
+bash: fg: current: no such job
+anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ fg[Kscreen -ls[6Phtop[2Plsfg./src/remy of=muxing20-take2.dna if=muxing20.dna.0fg[Klshtopscreen -ls[Kfg[Kls
+aclocal.m4  autom4te.cache  config.h.in   config.log	 configure     depcomp	   Makefile	Makefile.in  muxing20.dna.0  protobufs	src
+autogen.sh  config.h	    config.h.in~  config.status  configure.ac  install-sh  Makefile.am	missing      muxing20.out    README.md	stamp-h1
+anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ lsfg[Kfg[K[Kscreen -r[K[K[K[K[K[Kipt -a muxing20-take2.out
+Script started, file is muxing20-take2.out
+anirudh@hermes7:/data/lsp/owenhsin/anirudh$ cd camera-ready/r[Kmuxing20/
+anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ cd camera-ready/muxing20/[K./src/remy of-m[K[K=muxing20-take2.dna o[Kif=muxing20.dna.0
+#######################
+Optimizing for link packets_per_ms in [1.500000, 1.500000]
+Optimizing for rtt_ms in [150.000000, 150.000000]
+Optimizing for num_senders = 1-2
+Optimizing for mean_on_duration = 1000.000000, mean_off_duration = 1000.000000
+Initial rules (use if=FILENAME to read from disk): [{(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)][{(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=-nan => (win=14 + 0.710000 * win, intersend=3.279600)]
+#######################
+Writing to "muxing20-take2.dna.N".
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2060116.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -8.509228585958 => -8.087027807433 (+0.422200778525)
+Evaluating 432 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2060116.0000 => (win=13 + 0.870000 * win, intersend=1.572900).
+Replacing with whisker that scored -8.087027807433 => -7.640685698864 (+0.446342108568)
+Evaluating 432 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2060116.0000 => (win=9 + 0.910000 * win, intersend=1.679500).
+Replacing with whisker that scored -7.640685698864 => -7.509015731182 (+0.131669967683)
+Evaluating 468 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2060116.0000 => (win=5 + 0.950000 * win, intersend=2.106100).
+Replacing with whisker that scored -7.509015731182 => -6.980318966960 (+0.528696764221)
+Evaluating 360 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2060116.0000 => (win=4 + 0.990000 * win, intersend=1.679400).
+Replacing with whisker that scored -6.980318966960 => -6.622195765315 (+0.358123201645)
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2060116.0000 => (win=3 + 0.990000 * win, intersend=1.252700).
+Replacing with whisker that scored -6.622195765315 => -6.503251334786 (+0.118944430529)
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2060116.0000 => (win=3 + 0.990000 * win, intersend=1.359300).
+Replacing with whisker that scored -6.503251334786 => -6.489705666132 (+0.013545668654)
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2060116.0000 => (win=3 + 0.990000 * win, intersend=1.332600).
+Replacing with whisker that scored -6.489705666132 => -6.488767143908 (+0.000938522224)
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=2060116.0000 => (win=3 + 0.990000 * win, intersend=1.339200).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1094086.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -6.463777309953 => -5.912594623499 (+0.551182686454)
+Evaluating 546 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1094086.0000 => (win=10 + 0.550000 * win, intersend=10.106200).
+Replacing with whisker that scored -5.912594623499 => -5.874261523656 (+0.038333099844)
+Evaluating 546 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1094086.0000 => (win=6 + 0.390000 * win, intersend=10.079500).
+Replacing with whisker that scored -5.874261523656 => -5.846019879046 (+0.028241644610)
+Evaluating 455 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1094086.0000 => (win=2 + 0.230000 * win, intersend=10.052800).
+Replacing with whisker that scored -5.846019879046 => -5.833812591139 (+0.012207287907)
+Evaluating 455 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1094086.0000 => (win=1 + 0.270000 * win, intersend=10.026100).
+Replacing with whisker that scored -5.833812591139 => -5.815132919423 (+0.018679671716)
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1094086.0000 => (win=0 + 0.230000 * win, intersend=10.132700).
+Replacing with whisker that scored -5.815132919423 => -5.813464630351 (+0.001668289072)
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1094086.0000 => (win=0 + 0.230000 * win, intersend=10.559300).
+Replacing with whisker that scored -5.813464630351 => -5.811910958059 (+0.001553672293)
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=1094086.0000 => (win=0 + 0.230000 * win, intersend=10.665900).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=1024769.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.814895609913 => -5.749909242903 (+0.064986367010)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=1024769.0000 => (win=30 + 0.670000 * win, intersend=2.852900).
+Replacing with whisker that scored -5.749909242903 => -5.741121721232 (+0.008787521672)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=1024769.0000 => (win=29 + 0.660000 * win, intersend=2.746200).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=911500.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.814084288827 => -5.760169460209 (+0.053914828618)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=911500.0000 => (win=14 + 0.750000 * win, intersend=1.572900).
+Replacing with whisker that scored -5.760169460209 => -5.750037156690 (+0.010132303519)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=911500.0000 => (win=15 + 0.710000 * win, intersend=1.146200).
+Replacing with whisker that scored -5.750037156690 => -5.742934679346 (+0.007102477345)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=911500.0000 => (win=15 + 0.710000 * win, intersend=1.572800).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=837064.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.857478019962 => -5.809007921376 (+0.048470098586)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=837064.0000 => (win=18 + 0.670000 * win, intersend=4.986200).
+Replacing with whisker that scored -5.809007921376 => -5.785834147012 (+0.023173774363)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=837064.0000 => (win=19 + 0.660000 * win, intersend=4.559500).
+Replacing with whisker that scored -5.785834147012 => -5.773268708823 (+0.012565438189)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=837064.0000 => (win=15 + 0.670000 * win, intersend=4.132800).
+Replacing with whisker that scored -5.773268708823 => -5.766327899188 (+0.006940809635)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=837064.0000 => (win=15 + 0.660000 * win, intersend=4.026100).
+^Z
+[1]+  Stopped                 ./src/remy of=muxing20-take2.dna if=muxing20.dna.0
+anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ fg
+./src/remy of=muxing20-take2.dna if=muxing20.dna.0
+Replacing with whisker that scored -5.766327899188 => -5.759680678401 (+0.006647220787)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=837064.0000 => (win=15 + 0.660000 * win, intersend=4.032700).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=620358.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.678729052714 => -5.662734507779 (+0.015994544935)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=620358.0000 => (win=14 + 0.710000 * win, intersend=3.272900).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=465133.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.562340142061 => -5.488765826104 (+0.073574315957)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=465133.0000 => (win=10 + 0.750000 * win, intersend=3.706200).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=405324.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.696788989388 => -5.653694845712 (+0.043094143676)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=405324.0000 => (win=10 + 0.750000 * win, intersend=3.252900).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=235746.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.555498859402 => -5.524045254870 (+0.031453604532)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=235746.0000 => (win=10 + 0.720000 * win, intersend=3.306200).
+Replacing with whisker that scored -5.524045254870 => -5.523391647491 (+0.000653607380)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=235746.0000 => (win=9 + 0.720000 * win, intersend=3.306200).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=178128.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.557158374276 => -5.534749104085 (+0.022409270192)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=178128.0000 => (win=14 + 0.700000 * win, intersend=4.986200).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=133360.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.664871412252 => -5.641958592293 (+0.022912819959)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=133360.0000 => (win=18 + 0.670000 * win, intersend=3.272900).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=106664.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.635765199181 => -5.619598061513 (+0.016167137668)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=106664.0000 => (win=15 + 0.670000 * win, intersend=1.572900).
+Replacing with whisker that scored -5.619598061513 => -5.609696592803 (+0.009901468711)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=106664.0000 => (win=14 + 0.710000 * win, intersend=1.599500).
+Replacing with whisker that scored -5.609696592803 => -5.601934738165 (+0.007761854637)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=106664.0000 => (win=15 + 0.700000 * win, intersend=1.492800).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=85849.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.564890621764 => -5.548018929398 (+0.016871692366)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=85849.0000 => (win=15 + 0.670000 * win, intersend=1.572900).
+Replacing with whisker that scored -5.548018929398 => -5.533019602178 (+0.014999327220)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=85849.0000 => (win=19 + 0.510000 * win, intersend=1.546200).
+Replacing with whisker that scored -5.533019602178 => -5.531544699141 (+0.001474903037)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=0 usage=85849.0000 => (win=19 + 0.500000 * win, intersend=1.546200).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=58841.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.556680413004 => -5.548330774155 (+0.008349638849)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=58841.0000 => (win=14 + 0.720000 * win, intersend=2.852900).
+Replacing with whisker that scored -5.548330774155 => -5.544566257857 (+0.003764516298)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=0 usage=58841.0000 => (win=14 + 0.680000 * win, intersend=2.746200).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=12594.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.543702409879 => -5.531292434071 (+0.012409975808)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=12594.0000 => (win=15 + 0.550000 * win, intersend=3.306200).
+Replacing with whisker that scored -5.531292434071 => -5.530281031504 (+0.001011402567)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=0 usage=12594.0000 => (win=15 + 0.540000 * win, intersend=3.412800).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=10782.0000 => (win=14 + 0.710000 * win, intersend=3.279600).
+Replacing with whisker that scored -5.527037388303 => -5.499431568211 (+0.027605820092)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=10782.0000 => (win=10 + 0.550000 * win, intersend=3.172900).
+Replacing with whisker that scored -5.499431568211 => -5.493817727208 (+0.005613841003)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=10782.0000 => (win=6 + 0.510000 * win, intersend=3.146200).
+Replacing with whisker that scored -5.493817727208 => -5.486481230778 (+0.007336496430)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=0 usage=10782.0000 => (win=6 + 0.520000 * win, intersend=3.252800).
+Done with search.
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=18829845.0000 => (win=0 + 0.230000 * win, intersend=10.665900).
+Replacing with whisker that scored -5.572809375005 => -5.563163813750 (+0.009645561255)
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=18829845.0000 => (win=0 + 0.220000 * win, intersend=17.492500).
+Replacing with whisker that scored -5.563163813750 => -5.560885279798 (+0.002278533953)
+Evaluating 455 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=18829845.0000 => (win=1 + 0.380000 * win, intersend=19.199100).
+Replacing with whisker that scored -5.560885279798 => -5.558998757269 (+0.001886522529)
+Evaluating 455 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=18829845.0000 => (win=1 + 0.380000 * win, intersend=19.205700).
+Replacing with whisker that scored -5.558998757269 => -5.558662648287 (+0.000336108982)
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=18829845.0000 => (win=0 + 0.420000 * win, intersend=12.379000).
+Replacing with whisker that scored -5.558662648287 => -5.552201172174 (+0.006461476114)
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=18829845.0000 => (win=0 + 0.580000 * win, intersend=12.805600).
+Done with search.
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=2322779.0000 => (win=3 + 0.990000 * win, intersend=1.339200).
+Replacing with whisker that scored -5.529077882431 => -5.521953407161 (+0.007124475269)
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=2322779.0000 => (win=3 + 0.990000 * win, intersend=1.332500).
+Replacing with whisker that scored -5.521953407161 => -5.517200545471 (+0.004752861690)
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=2322779.0000 => (win=3 + 0.990000 * win, intersend=1.339100).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=984685.0000 => (win=15 + 0.710000 * win, intersend=1.572800).
+^Z
+[1]+  Stopped                 ./src/remy of=muxing20-take2.dna if=muxing20.dna.0
+anirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [H[Janirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ [Kanirudh@hermes7:/data/lsp/owenhsin/anirudh/camera-ready/muxing20$ fg
+./src/remy of=muxing20-take2.dna if=muxing20.dna.0
+Replacing with whisker that scored -5.522017297738 => -5.386801793626 (+0.135215504113)
+Evaluating 432 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=984685.0000 => (win=11 + 0.870000 * win, intersend=1.679400).
+Replacing with whisker that scored -5.386801793626 => -5.381383617542 (+0.005418176083)
+Evaluating 468 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=984685.0000 => (win=10 + 0.870000 * win, intersend=1.786000).
+Replacing with whisker that scored -5.381383617542 => -5.374501283481 (+0.006882334061)
+Evaluating 468 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=984685.0000 => (win=9 + 0.880000 * win, intersend=1.812600).
+Replacing with whisker that scored -5.374501283481 => -5.368224195713 (+0.006277087768)
+Evaluating 546 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=984685.0000 => (win=13 + 0.840000 * win, intersend=1.805900).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=658541.0000 => (win=15 + 0.660000 * win, intersend=4.032700).
+Replacing with whisker that scored -5.392107440093 => -5.375021403798 (+0.017086036294)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=658541.0000 => (win=15 + 0.670000 * win, intersend=4.039300).
+Replacing with whisker that scored -5.375021403798 => -5.367529812076 (+0.007491591722)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=658541.0000 => (win=14 + 0.710000 * win, intersend=4.065900).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=618337.0000 => (win=14 + 0.710000 * win, intersend=3.272900).
+Replacing with whisker that scored -5.462142874179 => -5.447363663135 (+0.014779211043)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=618337.0000 => (win=13 + 0.720000 * win, intersend=3.379500).
+Replacing with whisker that scored -5.447363663135 => -5.441282045634 (+0.006081617501)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=618337.0000 => (win=12 + 0.760000 * win, intersend=3.352800).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=577666.0000 => (win=29 + 0.660000 * win, intersend=2.746200).
+Replacing with whisker that scored -5.403289233965 => -5.383240230579 (+0.020049003386)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=577666.0000 => (win=29 + 0.820000 * win, intersend=2.746200).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=515847.0000 => (win=10 + 0.750000 * win, intersend=3.706200).
+Replacing with whisker that scored -5.329697722590 => -5.265229618530 (+0.064468104060)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=515847.0000 => (win=11 + 0.590000 * win, intersend=4.132800).
+Replacing with whisker that scored -5.265229618530 => -5.254260799017 (+0.010968819513)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=515847.0000 => (win=12 + 0.580000 * win, intersend=4.239400).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=388892.0000 => (win=10 + 0.750000 * win, intersend=3.252900).
+Replacing with whisker that scored -5.375038354527 => -5.352710080730 (+0.022328273797)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=388892.0000 => (win=14 + 0.760000 * win, intersend=3.679500).
+Replacing with whisker that scored -5.352710080730 => -5.349735034941 (+0.002975045789)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=388892.0000 => (win=18 + 0.600000 * win, intersend=3.652800).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=243496.0000 => (win=9 + 0.720000 * win, intersend=3.306200).
+Replacing with whisker that scored -5.309171275959 => -5.295308944529 (+0.013862331430)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=243496.0000 => (win=8 + 0.760000 * win, intersend=3.306200).
+Replacing with whisker that scored -5.295308944529 => -5.284351518965 (+0.010957425564)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=243496.0000 => (win=8 + 0.750000 * win, intersend=3.412800).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=161895.0000 => (win=14 + 0.700000 * win, intersend=4.986200).
+Replacing with whisker that scored -5.309653979036 => -5.285946644761 (+0.023707334275)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=161895.0000 => (win=18 + 0.540000 * win, intersend=4.879500).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=113613.0000 => (win=18 + 0.670000 * win, intersend=3.272900).
+Replacing with whisker that scored -5.357232805815 => -5.316373064638 (+0.040859741176)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=113613.0000 => (win=17 + 0.710000 * win, intersend=3.699500).
+Replacing with whisker that scored -5.316373064638 => -5.312528790671 (+0.003844273968)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=113613.0000 => (win=16 + 0.870000 * win, intersend=3.692800).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=83781.0000 => (win=19 + 0.500000 * win, intersend=1.546200).
+Replacing with whisker that scored -5.346827669391 => -5.326511365336 (+0.020316304055)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=83781.0000 => (win=15 + 0.660000 * win, intersend=1.539500).
+Replacing with whisker that scored -5.326511365336 => -5.324866025418 (+0.001645339918)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=83781.0000 => (win=19 + 0.500000 * win, intersend=1.646100).
+Replacing with whisker that scored -5.324866025418 => -5.318682112308 (+0.006183913110)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=1 usage=83781.0000 => (win=20 + 0.510000 * win, intersend=1.652700).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=65851.0000 => (win=15 + 0.700000 * win, intersend=1.492800).
+Replacing with whisker that scored -5.268153457515 => -5.249692911605 (+0.018460545910)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=65851.0000 => (win=15 + 0.690000 * win, intersend=1.466100).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=33890.0000 => (win=14 + 0.680000 * win, intersend=2.746200).
+Replacing with whisker that scored -5.356584467676 => -5.325056794033 (+0.031527673643)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=33890.0000 => (win=18 + 0.840000 * win, intersend=3.172800).
+Replacing with whisker that scored -5.325056794033 => -5.316447584600 (+0.008609209433)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=33890.0000 => (win=18 + 0.830000 * win, intersend=2.746100).
+Replacing with whisker that scored -5.316447584600 => -5.312940612013 (+0.003506972587)
+Evaluating 637 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=1 usage=33890.0000 => (win=19 + 0.840000 * win, intersend=9.572700).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=17034.0000 => (win=15 + 0.540000 * win, intersend=3.412800).
+Replacing with whisker that scored -5.315086359856 => -5.295940043835 (+0.019146316021)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=1 usage=17034.0000 => (win=14 + 0.380000 * win, intersend=3.839400).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=9376.0000 => (win=6 + 0.520000 * win, intersend=3.252800).
+Replacing with whisker that scored -5.260657353599 => -5.258122595452 (+0.002534758147)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=1 usage=9376.0000 => (win=6 + 0.520000 * win, intersend=3.259400).
+Done with search.
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=19350017.0000 => (win=0 + 0.580000 * win, intersend=12.805600).
+Replacing with whisker that scored -5.352004750833 => -5.339858032592 (+0.012146718241)
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=19350017.0000 => (win=0 + 0.740000 * win, intersend=11.098900).
+Replacing with whisker that scored -5.339858032592 => -5.338519678319 (+0.001338354273)
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=19350017.0000 => (win=0 + 0.750000 * win, intersend=10.672200).
+Replacing with whisker that scored -5.338519678319 => -5.335377169453 (+0.003142508866)
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=19350017.0000 => (win=0 + 0.750000 * win, intersend=10.698800).
+Replacing with whisker that scored -5.335377169453 => -5.335058686121 (+0.000318483332)
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=19350017.0000 => (win=0 + 0.750000 * win, intersend=10.705400).
+Done with search.
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=2 usage=2557077.0000 => (win=3 + 0.990000 * win, intersend=1.339100).
+Replacing with whisker that scored -5.352994663776 => -5.340378571750 (+0.012616092026)
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=2 usage=2557077.0000 => (win=3 + 0.990000 * win, intersend=1.332400).
+Done with search.
+Evaluating 546 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=2 usage=1354269.0000 => (win=13 + 0.840000 * win, intersend=1.805900).
+Replacing with whisker that scored -5.455837346162 => -5.445828063855 (+0.010009282306)
+Evaluating 468 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=2 usage=1354269.0000 => (win=12 + 0.850000 * win, intersend=1.779200).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=2 usage=651333.0000 => (win=12 + 0.760000 * win, intersend=3.352800).
+Replacing with whisker that scored -5.417635985424 => -5.405898362572 (+0.011737622852)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=2 usage=651333.0000 => (win=12 + 0.770000 * win, intersend=3.246100).
+Replacing with whisker that scored -5.405898362572 => -5.386281832567 (+0.019616530005)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=2 usage=651333.0000 => (win=12 + 0.770000 * win, intersend=3.139400).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=636206.0000 => (win=14 + 0.710000 * win, intersend=4.065900).
+Replacing with whisker that scored -5.329880140112 => -5.315763907852 (+0.014116232260)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=636206.0000 => (win=15 + 0.750000 * win, intersend=4.059200).
+Replacing with whisker that scored -5.315763907852 => -5.315526106715 (+0.000237801137)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=636206.0000 => (win=19 + 0.750000 * win, intersend=4.165800).
+Replacing with whisker that scored -5.315526106715 => -5.314738332804 (+0.000787773911)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=636206.0000 => (win=15 + 0.740000 * win, intersend=4.159100).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=552960.0000 => (win=29 + 0.820000 * win, intersend=2.746200).
+Replacing with whisker that scored -5.313912305127 => -5.278739728753 (+0.035172576374)
+Evaluating 637 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=552960.0000 => (win=30 + 0.820000 * win, intersend=2.639500).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=2 usage=454060.0000 => (win=12 + 0.580000 * win, intersend=4.239400).
+Replacing with whisker that scored -5.312838350933 => -5.295805379240 (+0.017032971693)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=2 usage=454060.0000 => (win=11 + 0.420000 * win, intersend=4.132700).
+Replacing with whisker that scored -5.295805379240 => -5.292173597031 (+0.003631782209)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=2 usage=454060.0000 => (win=15 + 0.420000 * win, intersend=4.559300).
+Replacing with whisker that scored -5.292173597031 => -5.289128354580 (+0.003045242451)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=2 usage=454060.0000 => (win=14 + 0.420000 * win, intersend=4.552600).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=376173.0000 => (win=18 + 0.600000 * win, intersend=3.652800).
+Replacing with whisker that scored -5.350311915925 => -5.322173047283 (+0.028138868643)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=376173.0000 => (win=19 + 0.600000 * win, intersend=3.652800).
+Replacing with whisker that scored -5.322173047283 => -5.320115803387 (+0.002057243896)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=376173.0000 => (win=20 + 0.590000 * win, intersend=3.659400).
+Replacing with whisker that scored -5.320115803387 => -5.315020437743 (+0.005095365644)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=376173.0000 => (win=21 + 0.590000 * win, intersend=3.686000).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=258469.0000 => (win=8 + 0.750000 * win, intersend=3.412800).
+Replacing with whisker that scored -5.278926531821 => -5.259809827778 (+0.019116704043)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=258469.0000 => (win=7 + 0.790000 * win, intersend=3.519400).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=2 usage=166551.0000 => (win=18 + 0.540000 * win, intersend=4.879500).
+Replacing with whisker that scored -5.399114081205 => -5.377080125030 (+0.022033956175)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=2 usage=166551.0000 => (win=19 + 0.550000 * win, intersend=4.772800).
+Replacing with whisker that scored -5.377080125030 => -5.373053901037 (+0.004026223993)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=2 usage=166551.0000 => (win=18 + 0.590000 * win, intersend=4.346100).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=117650.0000 => (win=16 + 0.870000 * win, intersend=3.692800).
+Replacing with whisker that scored -5.397612992967 => -5.375999051657 (+0.021613941310)
+Evaluating 432 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=117650.0000 => (win=12 + 0.870000 * win, intersend=3.699400).
+Replacing with whisker that scored -5.375999051657 => -5.374023924824 (+0.001975126833)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=117650.0000 => (win=8 + 0.830000 * win, intersend=3.806000).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=114785.0000 => (win=20 + 0.510000 * win, intersend=1.652700).
+Replacing with whisker that scored -5.371440473543 => -5.342610154308 (+0.028830319235)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=114785.0000 => (win=24 + 0.350000 * win, intersend=1.626000).
+Replacing with whisker that scored -5.342610154308 => -5.337106395258 (+0.005503759050)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=2 usage=114785.0000 => (win=25 + 0.340000 * win, intersend=1.626000).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=2 usage=66264.0000 => (win=15 + 0.690000 * win, intersend=1.466100).
+Replacing with whisker that scored -5.274595223435 => -5.259569082208 (+0.015026141227)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=2 usage=66264.0000 => (win=19 + 0.730000 * win, intersend=1.572700).
+Replacing with whisker that scored -5.259569082208 => -5.259522614537 (+0.000046467671)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=2 usage=66264.0000 => (win=23 + 0.689900 * win, intersend=3.279300).
+Replacing with whisker that scored -5.259522614537 => -5.249801413180 (+0.009721201356)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=2 usage=66264.0000 => (win=22 + 0.679900 * win, intersend=3.279300).
+Done with search.
+Evaluating 637 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=2 usage=35295.0000 => (win=19 + 0.840000 * win, intersend=9.572700).
+Replacing with whisker that scored -5.323757590005 => -5.306638276606 (+0.017119313398)
+Evaluating 546 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=2 usage=35295.0000 => (win=19 + 0.850000 * win, intersend=9.599300).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=17187.0000 => (win=14 + 0.380000 * win, intersend=3.839400).
+Replacing with whisker that scored -5.344264166783 => -5.328272877292 (+0.015991289491)
+Evaluating 546 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=17187.0000 => (win=14 + 0.370000 * win, intersend=2.132700).
+Replacing with whisker that scored -5.328272877292 => -5.326514031670 (+0.001758845622)
+Evaluating 637 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=17187.0000 => (win=18 + 0.210000 * win, intersend=2.139300).
+Replacing with whisker that scored -5.326514031670 => -5.324117636591 (+0.002396395079)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=2 usage=17187.0000 => (win=34 + 0.200000 * win, intersend=29.445900).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=2 usage=6846.0000 => (win=6 + 0.520000 * win, intersend=3.259400).
+Replacing with whisker that scored -5.259959736968 => -5.233301354500 (+0.026658382468)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=2 usage=6846.0000 => (win=5 + 0.510000 * win, intersend=3.686000).
+Replacing with whisker that scored -5.233301354500 => -5.229738412260 (+0.003562942240)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=2 usage=6846.0000 => (win=5 + 0.510000 * win, intersend=3.712600).
+Done with search.
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=3 usage=16883320.0000 => (win=0 + 0.750000 * win, intersend=10.705400).
+Replacing with whisker that scored -5.317211208630 => -5.304713442444 (+0.012497766185)
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=3 usage=16883320.0000 => (win=0 + 0.740000 * win, intersend=10.812000).
+Replacing with whisker that scored -5.304713442444 => -5.300578794824 (+0.004134647620)
+Evaluating 364 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=3 usage=16883320.0000 => (win=0 + 0.750000 * win, intersend=10.805300).
+Done with search.
+Evaluating 300 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=3 usage=2563414.0000 => (win=3 + 0.990000 * win, intersend=1.332400).
+Replacing with whisker that scored -5.276711959008 => -5.245305083123 (+0.031406875885)
+Evaluating 360 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=3 usage=2563414.0000 => (win=4 + 0.980000 * win, intersend=1.339000).
+Done with search.
+Evaluating 468 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=3 usage=1535280.0000 => (win=12 + 0.850000 * win, intersend=1.779200).
+Replacing with whisker that scored -5.387688300796 => -5.347309806746 (+0.040378494051)
+Evaluating 432 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=2.127904>)} gen=3 usage=1535280.0000 => (win=11 + 0.860000 * win, intersend=1.672500).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=3 usage=713925.0000 => (win=12 + 0.770000 * win, intersend=3.139400).
+Replacing with whisker that scored -5.280217780764 => -5.130118700371 (+0.150099080393)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=3 usage=713925.0000 => (win=28 + 0.770000 * win, intersend=4.846000).
+Replacing with whisker that scored -5.130118700371 => -5.127376443276 (+0.002742257095)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=3 usage=713925.0000 => (win=29 + 0.730000 * win, intersend=4.819300).
+Replacing with whisker that scored -5.127376443276 => -5.108439355843 (+0.018937087433)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=2.127904>)} gen=3 usage=713925.0000 => (win=45 + 0.569900 * win, intersend=4.792600).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=3 usage=528739.0000 => (win=14 + 0.420000 * win, intersend=4.552600).
+Replacing with whisker that scored -5.204162383995 => -5.172062602759 (+0.032099781236)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=3 usage=528739.0000 => (win=18 + 0.260000 * win, intersend=4.525900).
+Replacing with whisker that scored -5.172062602759 => -5.162656131610 (+0.009406471149)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=3 usage=528739.0000 => (win=22 + 0.270000 * win, intersend=4.099200).
+Done with search.
+Evaluating 637 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=3 usage=522713.0000 => (win=30 + 0.820000 * win, intersend=2.639500).
+Replacing with whisker that scored -5.105851429118 => -5.090479541103 (+0.015371888015)
+Evaluating 637 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=3 usage=522713.0000 => (win=29 + 0.810000 * win, intersend=2.666100).
+Replacing with whisker that scored -5.090479541103 => -5.087189905813 (+0.003289635290)
+Evaluating 637 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=3 usage=522713.0000 => (win=28 + 0.650000 * win, intersend=2.659400).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=3 usage=434922.0000 => (win=15 + 0.740000 * win, intersend=4.159100).
+Replacing with whisker that scored -5.222601440742 => -5.192412527120 (+0.030188913623)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=3 usage=434922.0000 => (win=11 + 0.780000 * win, intersend=3.732400).
+Replacing with whisker that scored -5.192412527120 => -5.180797142320 (+0.011615384800)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=3 usage=434922.0000 => (win=11 + 0.820000 * win, intersend=3.739000).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=3 usage=335634.0000 => (win=21 + 0.590000 * win, intersend=3.686000).
+Replacing with whisker that scored -5.151187166842 => -5.130869820378 (+0.020317346464)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=3 usage=335634.0000 => (win=22 + 0.580000 * win, intersend=3.692600).
+Replacing with whisker that scored -5.130869820378 => -5.130095503532 (+0.000774316846)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=4.121773, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=163840.000000, rttr=1.077867, slowrewma=163840.000000>)} gen=3 usage=335634.0000 => (win=38 + 0.580000 * win, intersend=3.799200).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=3 usage=223512.0000 => (win=7 + 0.790000 * win, intersend=3.519400).
+Replacing with whisker that scored -5.139424519352 => -5.116038695418 (+0.023385823934)
+Evaluating 504 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=163840.000000>)} gen=3 usage=223512.0000 => (win=6 + 0.830000 * win, intersend=3.512700).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=3 usage=82834.0000 => (win=22 + 0.679900 * win, intersend=3.279300).
+Replacing with whisker that scored -5.112173727585 => -5.075594521545 (+0.036579206040)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=3 usage=82834.0000 => (win=38 + 0.519900 * win, intersend=3.705900).
+Replacing with whisker that scored -5.075594521545 => -5.070763975004 (+0.004830546541)
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=0.000000>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=2.127904>)} gen=3 usage=82834.0000 => (win=38 + 0.559900 * win, intersend=3.699200).
+Done with search.
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=3 usage=80944.0000 => (win=8 + 0.830000 * win, intersend=3.806000).
+Replacing with whisker that scored -5.177701154845 => -5.144355108468 (+0.033346046377)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=3 usage=80944.0000 => (win=24 + 0.870000 * win, intersend=3.699300).
+Replacing with whisker that scored -5.144355108468 => -5.144318104750 (+0.000037003718)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=3 usage=80944.0000 => (win=28 + 0.910000 * win, intersend=3.725900).
+Replacing with whisker that scored -5.144318104750 => -5.141991331971 (+0.002326772779)
+Evaluating 504 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=0.000000, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=1.077867, slowrewma=163840.000000>)} gen=3 usage=80944.0000 => (win=32 + 0.950000 * win, intersend=3.299200).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=3 usage=62722.0000 => (win=25 + 0.340000 * win, intersend=1.626000).
+Replacing with whisker that scored -5.220490285631 => -5.195364833177 (+0.025125452454)
+Evaluating 637 replacements for {(lo=<sewma=3.961271, rewma=0.000000, rttr=1.077867, slowrewma=2.127904>, hi=<sewma=163840.000000, rewma=4.121773, rttr=163840.000000, slowrewma=163840.000000>)} gen=3 usage=62722.0000 => (win=29 + 0.180000 * win, intersend=2.052600).
+Done with search.
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=3 usage=54040.0000 => (win=18 + 0.590000 * win, intersend=4.346100).
+Replacing with whisker that scored -5.157514616554 => -5.114821053058 (+0.042693563495)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=3 usage=54040.0000 => (win=17 + 0.600000 * win, intersend=3.919400).
+Replacing with whisker that scored -5.114821053058 => -5.108286404909 (+0.006534648149)
+Evaluating 588 replacements for {(lo=<sewma=0.000000, rewma=4.121773, rttr=1.077867, slowrewma=0.000000>, hi=<sewma=3.961271, rewma=163840.000000, rttr=163840.000000, slowrewma=2.127904>)} gen=3 usage=54040.0000 => (win=17 + 0.640000 * win, intersend=3.912700).
+Done with search.
+Eval
