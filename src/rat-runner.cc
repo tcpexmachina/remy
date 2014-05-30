@@ -67,12 +67,11 @@ int main( int argc, char *argv[] )
   }
 
   ConfigRange configuration_range;
-  configuration_range.link_packets_per_ms = make_pair( link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
-  configuration_range.rtt_ms = make_pair( delay, 0 ); /* ms */
+  configuration_range.link_packets_per_ms = make_pair( 1.5, 1.5 ); /* 1 Mbps to 10 Mbps */
+  configuration_range.rtt_ms = make_pair( 150, 150 ); /* ms */
   configuration_range.max_senders = num_senders;
-  configuration_range.mean_on_duration = mean_on_duration;
-  configuration_range.mean_off_duration = mean_off_duration;
-  configuration_range.lo_only = true;
+  configuration_range.mean_on_duration = 1000;
+  configuration_range.mean_off_duration = 1000;
 
   Evaluator eval( whiskers, configuration_range );
   auto outcome = eval.score( {}, false, 10 );
@@ -82,14 +81,14 @@ int main( int argc, char *argv[] )
   for ( auto &run : outcome.throughputs_delays ) {
     printf( "===\nconfig: %s\n", run.first.str().c_str() );
     for ( auto &x : run.second ) {
-      printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
+      printf( "sender: [tp=%f, del=%f], score = %f\n", x.first / run.first.link_ppt, x.second / run.first.delay, (log2( x.first / (run.first.link_ppt / run.first.num_senders) ) - log2( x.second / run.first.delay )) );
       norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
     }
   }
 
-  printf( "normalized_score = %f\n", norm_score );
+//  printf( "normalized_score = %f\n", norm_score );
 
-  printf( "Whiskers: %s\n", outcome.used_whiskers.str().c_str() );
+//  printf( "Whiskers: %s\n", outcome.used_whiskers.str().c_str() );
 
   return 0;
 }

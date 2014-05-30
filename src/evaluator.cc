@@ -17,7 +17,7 @@ Evaluator::Evaluator( const WhiskerTree & s_whiskers, const ConfigRange & range 
   assert( range.rtt_ms.first == range.rtt_ms.second );
   assert( range.link_packets_per_ms.first == range.link_packets_per_ms.second );
 
-  for ( uint32_t i = 1; i <= 100 ; i = i + 2 ) {
+  for ( uint32_t i = 1; i <= 100 ; i = i + 1 ) {
     _configs.push_back( NetConfig().set_link_ppt( link_speed ).set_delay( range.rtt_ms.first ).set_num_senders( i ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
   }
 }
