@@ -1,6 +1,7 @@
+AM_LDFLAGS  = -static
 AM_CPPFLAGS = -I../protobufs
 AM_CXXFLAGS = $(PICKY_CXXFLAGS)
-LDADD = ../protobufs/libremyprotos.a -ljemalloc -lm $(protobuf_LIBS)
+LDADD = ../protobufs/libremyprotos.a -lm $(protobuf_LIBS)
 
 bin_PROGRAMS = remy rat-runner
 
