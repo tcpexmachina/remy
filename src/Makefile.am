@@ -1,4 +1,4 @@
-AM_LDFLAGS  = -static
+AM_LDFLAGS  = -static -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
 AM_CPPFLAGS = -I../protobufs
 AM_CXXFLAGS = $(PICKY_CXXFLAGS)
 LDADD = ../protobufs/libremyprotos.a -lm $(protobuf_LIBS)
