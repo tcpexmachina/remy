@@ -10,7 +10,7 @@ using namespace std;
 
 void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int generation ) const
 {
-  const Evaluator eval( _range );
+  const Evaluator eval( _net_configs );
   auto outcome( eval.score( whiskers, true ) );
 
   while ( 1 ) {
@@ -33,6 +33,11 @@ void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int ge
   }
 }
 
+RatBreeder::RatBreeder( const vector<NetConfig> & s_net_configs )
+  : _net_configs( s_net_configs )
+{}
+
+
 Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 {
   /* back up the original whiskertree */
@@ -44,7 +49,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   unsigned int generation = 0;
 
   while ( generation < 5 ) {
-    const Evaluator eval( _range );
+    const Evaluator eval( _net_configs );
 
     auto outcome( eval.score( whiskers ) );
 
@@ -87,7 +92,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   apply_best_split( whiskers, generation );
 
   /* carefully evaluate what we have vs. the previous best */
-  const Evaluator eval2( _range );
+  const Evaluator eval2( _net_configs );
   const auto new_score = eval2.score( whiskers, false, 10 );
   const auto old_score = eval2.score( input_whiskertree, false, 10 );
 

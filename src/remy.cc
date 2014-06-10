@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include "dna.pb.h"
 #include "ratbreeder.hh"
 
 using namespace std;
@@ -13,6 +14,7 @@ using namespace std;
 int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
+  RemyBuffers::Scenarios scenarios;
   string output_filename;
 
   for ( int i = 1; i < argc; i++ ) {
@@ -38,40 +40,42 @@ int main( int argc, char *argv[] )
       }
     } else if ( arg.substr( 0, 3 ) == "of=" ) {
       output_filename = string( arg.substr( 3 ) );
+    } else if ( arg.substr( 0, 10 ) == "scenarios=" ) {
+      string scenarios_file = string( arg.substr( 10 ) );
+      int fd = open( scenarios_file.c_str(), O_RDONLY );
+      if ( fd < 0 ) {
+        perror( "scenarios_file open" );
+        exit( 1 );
+      }
+
+      if ( !scenarios.ParseFromFileDescriptor( fd ) ) {
+	fprintf( stderr, "Could not parse %s.\n", scenarios_file.c_str() );
+	exit( 1 );
+      }
+
+      if ( close( fd ) < 0 ) {
+	perror( "close" );
+	exit( 1 );
+      }
     }
   }
 
-  ConfigRange configuration_range;
-  configuration_range.link_packets_per_ms = make_pair( 1.0, 2.0 ); /* 10 Mbps to 20 Mbps */
-  configuration_range.rtt_ms = make_pair( 100, 200 ); /* ms */
-  configuration_range.max_senders = 16;
-  configuration_range.mean_on_duration = 5000;
-  configuration_range.mean_off_duration = 5000;
-  //  configuration_range.lo_only = true;
-  RatBreeder breeder( configuration_range );
+  assert( scenarios.configs_size() > 0 );
+  std::vector<NetConfig> net_configs;
+  for ( auto &x: scenarios.configs() ) {
+    net_configs.emplace_back( x );
+  }
+
+  RatBreeder breeder( net_configs );
 
   unsigned int run = 0;
 
-  printf( "#######################\n" );
-  printf( "Optimizing for link packets_per_ms in [%f, %f]\n",
-	  configuration_range.link_packets_per_ms.first,
-	  configuration_range.link_packets_per_ms.second );
-  printf( "Optimizing for rtt_ms in [%f, %f]\n",
-	  configuration_range.rtt_ms.first,
-	  configuration_range.rtt_ms.second );
-  printf( "Optimizing for num_senders = 1-%d\n",
-	  configuration_range.max_senders );
-  printf( "Optimizing for mean_on_duration = %f, mean_off_duration = %f\n",
-	  configuration_range.mean_on_duration, configuration_range.mean_off_duration );
+  cout << "######scenarios are####\n";
+  cout << scenarios.DebugString();
+  cout << "#######################\n";
 
-  printf( "Initial rules (use if=FILENAME to read from disk): %s\n", whiskers.str().c_str() );
-  printf( "#######################\n" );
-
-  if ( !output_filename.empty() ) {
-    printf( "Writing to \"%s.N\".\n", output_filename.c_str() );
-  } else {
-    printf( "Not saving output. Use the of=FILENAME argument to save the results.\n" );
-  }
+  assert ( !output_filename.empty() );
+  printf( "Writing to \"%s.N\".\n", output_filename.c_str() );
 
   while ( 1 ) {
     auto outcome = breeder.improve( whiskers );
@@ -86,36 +90,34 @@ int main( int argc, char *argv[] )
       }
     }
 
-    if ( !output_filename.empty() ) {
-      char of[ 128 ];
-      snprintf( of, 128, "%s.%d", output_filename.c_str(), run );
-      fprintf( stderr, "Writing to \"%s\"... ", of );
-      int fd = open( of, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR );
-      if ( fd < 0 ) {
-	perror( "open" );
-	exit( 1 );
-      }
-
-      auto remycc = whiskers.DNA();
-      remycc.mutable_config()->CopyFrom( configuration_range.DNA() );
-      remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
-
-      if ( not remycc.SerializeToFileDescriptor( fd ) ) {
-	fprintf( stderr, "Could not serialize RemyCC.\n" );
-	exit( 1 );
-      }
-
-      if ( close( fd ) < 0 ) {
-	perror( "close" );
-	exit( 1 );
-      }
-
-      fprintf( stderr, "done.\n" );
+    /* Write output file */
+    char of[ 128 ];
+    snprintf( of, 128, "%s.%d", output_filename.c_str(), run );
+    fprintf( stderr, "Writing to \"%s\"... ", of );
+    int fd = open( of, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR );
+    if ( fd < 0 ) {
+      perror( "open" );
+      exit( 1 );
     }
+
+    auto remycc = whiskers.DNA();
+    remycc.mutable_scenarios()->CopyFrom( scenarios );
+    remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
+
+    if ( not remycc.SerializeToFileDescriptor( fd ) ) {
+      fprintf( stderr, "Could not serialize RemyCC.\n" );
+      exit( 1 );
+    }
+
+    if ( close( fd ) < 0 ) {
+      perror( "close" );
+      exit( 1 );
+    }
+
+    fprintf( stderr, "done.\n" );
 
     fflush( NULL );
     run++;
   }
-
   return 0;
 }
