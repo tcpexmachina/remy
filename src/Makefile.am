@@ -3,7 +3,7 @@ AM_CPPFLAGS = -I../protobufs
 AM_CXXFLAGS = $(PICKY_CXXFLAGS)
 LDADD = ../protobufs/libremyprotos.a -lm $(protobuf_LIBS)
 
-bin_PROGRAMS = remy rat-runner
+bin_PROGRAMS = remy rat-runner scengen
 
 common_source = delay.hh evaluator.cc evaluator.hh                     \
 	exponential.hh link.hh link-templates.cc                       \
@@ -19,3 +19,5 @@ common_source = delay.hh evaluator.cc evaluator.hh                     \
 remy_SOURCES = $(common_source) remy.cc ratbreeder.cc ratbreeder.hh 
 
 rat_runner_SOURCES = $(common_source) rat-runner.cc
+
+scengen_SOURCES = $(common_source) scengen.cc

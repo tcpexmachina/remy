@@ -32,6 +32,7 @@ boost/accumulators/statistics/stats.hpp boost/functional/hash.hpp \
 boost/random/exponential_distribution.hpp boost/random/mersenne_twister.hpp \
 boost/random/poisson_distribution.hpp \
 boost/random/uniform_int_distribution.hpp \
+boost/algorithm/string.hpp \
 boost/random/uniform_real_distribution.hpp fcntl.h future cmath queue \
 cstdio string sys/stat.h sys/types.h ctime tuple unistd.h unordered_map \
 utility vector], [], [AC_MSG_ERROR([Missing header file])])
