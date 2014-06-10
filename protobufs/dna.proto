@@ -7,7 +7,7 @@ message WhiskerTree {
 
   optional Whisker leaf = 3;
 
-  optional ConfigRange config = 4;
+  optional Scenarios scenarios = 4;
 
   optional OptimizationSettings optimizer = 5;
 }

@@ -38,8 +38,8 @@ int main( int argc, char *argv[] )
 	exit( 1 );
       }
 
-      if ( tree.has_config() ) {
-	printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
+      if ( tree.has_scenarios() ) {
+	printf( "Prior assumptions:\n%s\n\n", tree.scenarios().DebugString().c_str() );
       }
 
       if ( tree.has_optimizer() ) {
