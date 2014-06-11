@@ -46,11 +46,11 @@ void Fader::update( NetworkType & network )
     buffer_.pop_front();
 
     if ( control >= physical_values_.size() ) {
-      throw runtime_error( "unexpected MIDI control number" );
+      throw runtime_error( "unexpected MIDI control number: " + to_string( control ) );
     }
 
     if ( value >= 128 ) {
-      throw runtime_error( "unexpected MIDI control value" );
+      throw runtime_error( "unexpected MIDI control value: " + to_string( value ) );
     }
 
     new_physical_values.at( control ) = value;

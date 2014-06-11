@@ -10,7 +10,7 @@ class Fader
   int fd_;
   std::deque< uint8_t > buffer_;
 
-  std::array< uint8_t, 94 > physical_values_;
+  std::array< uint8_t, 100 > physical_values_;
 
   double link_rate_ = 0;
   double time_increment_ = 0;
