@@ -6,10 +6,27 @@
 #include "network.cc"
 #include "rat-templates.cc"
 
-const unsigned int TICK_COUNT = 1000000;
+
+AnswerBuffers::Outcome Evaluator::Outcome::DNA( void ) const
+{
+  AnswerBuffers::Outcome ret;
+  for ( const auto & run : throughputs_delays ) {
+    AnswerBuffers::ThroughputsDelays *tp_del = ret.add_throughputs_delays();
+    tp_del->mutable_config()->CopyFrom( run.first.DNA() );
+
+    for ( const auto & x : run.second ) {
+      AnswerBuffers::SenderResults *results = tp_del->add_results();
+      results->set_throughput( x.first );
+      results->set_delay( x.second );
+    }
+  }
+  ret.set_score( score );
+  return ret;
+}
 
 Evaluator::Evaluator( const ConfigRange & range )
   : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
+    _ticks( TICK_COUNT ),
     _configs()
 {
   /* first load "anchors" */
@@ -33,6 +50,14 @@ Evaluator::Evaluator( const ConfigRange & range )
   }
 }
 
+Evaluator::Evaluator( const std::vector<NetConfig> & s_configs,
+                      const unsigned int prng_seed,
+                      const unsigned int ticks )
+  : _prng( prng_seed ), /* freeze the PRNG seed for the life of this Evaluator */
+    _ticks( ticks ),
+    _configs( s_configs )
+{}
+
 Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
 				     const bool trace, const unsigned int carefulness ) const
 {
@@ -45,7 +70,7 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   for ( auto &x : _configs ) {
     /* run once */
     Network<Rat, Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
-    network1.run_simulation( TICK_COUNT * carefulness );
+    network1.run_simulation( _ticks * carefulness );
 
     the_outcome.score += network1.senders().utility();
     the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );

@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include "problem.pb.h"
 #include "evaluator.hh"
 
 using namespace std;
@@ -13,11 +14,7 @@ using namespace std;
 int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
-  unsigned int num_senders = 2;
-  double link_ppt = 1.0;
-  double delay = 100.0;
-  double mean_on_duration = 5000.0;
-  double mean_off_duration = 5000.0;
+  std::string problem_str = "";
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -48,47 +45,43 @@ int main( int argc, char *argv[] )
       if ( tree.has_optimizer() ) {
 	printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
       }
-    } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
-      num_senders = atoi( arg.substr( 5 ).c_str() );
-      fprintf( stderr, "Setting num_senders to %d\n", num_senders );
-    } else if ( arg.substr( 0, 5 ) == "link=" ) {
-      link_ppt = atof( arg.substr( 5 ).c_str() );
-      fprintf( stderr, "Setting link packets per ms to %f\n", link_ppt );
-    } else if ( arg.substr( 0, 4 ) == "rtt=" ) {
-      delay = atof( arg.substr( 4 ).c_str() );
-      fprintf( stderr, "Setting delay to %f ms\n", delay );
-    } else if ( arg.substr( 0, 3 ) == "on=" ) {
-      mean_on_duration = atof( arg.substr( 3 ).c_str() );
-      fprintf( stderr, "Setting mean_on_duration to %f ms\n", mean_on_duration );
-    } else if ( arg.substr( 0, 4 ) == "off=" ) {
-      mean_off_duration = atof( arg.substr( 4 ).c_str() );
-      fprintf( stderr, "Setting mean_off_duration to %f ms\n", mean_off_duration );
+    } else if ( arg.substr( 0, 8 ) == "problem=" ) {
+      problem_str = arg.substr( 8 ).c_str();
+      fprintf( stderr, "Setting problem_str to %s ms\n", problem_str.c_str() );
     }
   }
 
-  ConfigRange configuration_range;
-  configuration_range.link_packets_per_ms = make_pair( link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
-  configuration_range.rtt_ms = make_pair( delay, 0 ); /* ms */
-  configuration_range.max_senders = num_senders;
-  configuration_range.mean_on_duration = mean_on_duration;
-  configuration_range.mean_off_duration = mean_off_duration;
-  configuration_range.lo_only = true;
+  assert( problem_str != "" );
 
-  Evaluator eval( configuration_range );
-  auto outcome = eval.score( whiskers, false, 10 );
-  printf( "score = %f\n", outcome.score );
-  double norm_score = 0;
-
-  for ( auto &run : outcome.throughputs_delays ) {
-    printf( "===\nconfig: %s\n", run.first.str().c_str() );
-    for ( auto &x : run.second ) {
-      printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
-      norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
-    }
+  /* Setup and run problem_instance */
+  int fd = open( problem_str.c_str(), O_RDONLY );
+  if ( fd < 0 ) {
+    perror( "open" );
+    exit( 1 );
   }
 
-  printf( "normalized_score = %f\n", norm_score );
+  ProblemBuffers::Problem problem_instance;
+  if ( !problem_instance.ParseFromFileDescriptor( fd ) ) {
+    fprintf( stderr, "Could not parse %s.\n", problem_str.c_str() );
+    exit( 1 );
+  }
 
+  /* Get whiskers */
+  WhiskerTree run_whiskers( problem_instance.whiskers() );
+  assert( problem_instance.scenarios().configs_size() > 0 );
+
+  /* Get Scenarios into vector of config */
+  std::vector<NetConfig> net_configs;
+  for ( auto &x: problem_instance.scenarios().configs() ) {
+    net_configs.emplace_back( x );
+  }
+
+  Evaluator eval( net_configs,
+                  problem_instance.settings().prng_seed(),
+                  problem_instance.settings().tick_count() );
+  auto outcome = eval.score( run_whiskers );
+  auto answer = outcome.DNA();
+  printf( "%s\n", answer.DebugString().c_str() );
   printf( "Whiskers: %s\n", outcome.used_whiskers.str().c_str() );
 
   return 0;

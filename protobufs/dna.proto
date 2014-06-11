@@ -63,3 +63,15 @@ message ConfigRange {
   optional double mean_off_duration = 81;
   optional double mean_on_duration = 82;
 }
+
+message NetConfig {
+  optional double mean_on_duration = 1;
+  optional double mean_off_duration = 2;
+  optional uint32 num_senders = 3;
+  optional double link_ppt = 4;
+  optional double delay = 5;
+}
+
+message Scenarios {
+  repeated NetConfig configs = 1;
+}

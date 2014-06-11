@@ -8,6 +8,7 @@
 #include "delay.hh"
 #include "receiver.hh"
 #include "random.hh"
+#include "dna.pb.h"
 
 class NetConfig
 {
@@ -25,11 +26,31 @@ public:
       delay( 150 )
   {}
 
+  NetConfig( const RemyBuffers::NetConfig & dna )
+    : mean_on_duration( dna.mean_on_duration() ),
+      mean_off_duration( dna.mean_off_duration() ),
+      num_senders( dna.num_senders() ),
+      link_ppt( dna.link_ppt() ),
+      delay( dna.delay() )
+  {}
+
   NetConfig & set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
   NetConfig & set_delay( const double s_delay ) { delay = s_delay; return *this; }
   NetConfig & set_num_senders( const unsigned int n ) { num_senders = n; return *this; }
   NetConfig & set_on_duration( const double & duration ) { mean_on_duration = duration; return *this; }
   NetConfig & set_off_duration( const double & duration ) { mean_off_duration = duration; return *this; }
+
+  RemyBuffers::NetConfig DNA( void ) const
+  {
+      RemyBuffers::NetConfig ret;
+      ret.set_mean_on_duration( mean_on_duration );
+      ret.set_mean_off_duration( mean_off_duration );
+      ret.set_num_senders( num_senders );
+      ret.set_delay( delay );
+      ret.set_link_ppt( link_ppt );
+
+      return ret;
+  }
 
   std::string str( void ) const
   {

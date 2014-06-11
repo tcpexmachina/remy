@@ -1,0 +1,15 @@
+import "dna.proto";
+import "answer.proto";
+
+package ProblemBuffers;
+
+message Problem {
+  optional ProblemSettings settings = 1;
+  optional RemyBuffers.Scenarios scenarios = 2;
+  optional RemyBuffers.WhiskerTree whiskers = 3;
+}
+
+message ProblemSettings {
+  optional uint32 prng_seed = 11;
+  optional uint32 tick_count = 12;
+}
