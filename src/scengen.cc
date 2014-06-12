@@ -50,6 +50,7 @@ int main( int argc, char *argv[] )
   vector<double> delays {100.0};
   vector<double> mean_on_duration {5000.0};
   vector<double> mean_off_duration {5000.0};
+  string scenario_file;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -63,6 +64,8 @@ int main( int argc, char *argv[] )
       mean_on_duration = parse_comma_separators<double>( arg.substr( 3 ).c_str() );
     } else if ( arg.substr( 0, 4 ) == "off=" ) {
       mean_off_duration = parse_comma_separators<double>( arg.substr( 4 ).c_str() );
+    } else if ( arg.substr( 0, 14 ) == "scenario_file=" ) {
+      scenario_file = arg.substr( 14 );
     }
   }
 
@@ -83,6 +86,26 @@ int main( int argc, char *argv[] )
     *( scenarios.add_configs() ) = config.DNA();
 
   cout << scenarios.DebugString();
+
+  assert( scenario_file != "" );
+  char of[ 128 ];
+  snprintf( of, 128, "%s", scenario_file.c_str() );
+  fprintf( stderr, "Writing to \"%s\"...\n", of );
+  int fd = open( of, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR );
+  if ( fd < 0 ) {
+    perror( "open" );
+    exit( 1 );
+  }
+
+  if ( not scenarios.SerializeToFileDescriptor( fd ) ) {
+    fprintf( stderr, "Could not serialize scenario.\n" );
+    exit( 1 );
+  }
+
+  if ( close( fd ) < 0 ) {
+    perror( "close" );
+    exit( 1 );
+  }
 
   return 0;
 }
