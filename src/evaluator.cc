@@ -25,7 +25,8 @@ AnswerBuffers::Outcome Evaluator::Outcome::DNA( void ) const
 }
 
 Evaluator::Evaluator( const ConfigRange & range )
-  : _prng( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
+  : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
+    _prng( _prng_seed ),
     _ticks( TICK_COUNT ),
     _configs()
 {
@@ -50,10 +51,24 @@ Evaluator::Evaluator( const ConfigRange & range )
   }
 }
 
+ProblemBuffers::Problem Evaluator::bundle_up( const WhiskerTree & run_whiskers ) const
+{
+  ProblemBuffers::Problem problem;
+  problem.mutable_settings()->set_prng_seed( _prng_seed );
+  problem.mutable_settings()->set_tick_count( _ticks );
+  for ( auto &x: _configs ) {
+    auto tmp_config = problem.mutable_scenarios()->add_configs();
+    *tmp_config = x.DNA();
+  }
+  problem.mutable_whiskers()->CopyFrom( run_whiskers.DNA() );
+  return problem;
+}
+
 Evaluator::Evaluator( const std::vector<NetConfig> & s_configs,
-                      const unsigned int prng_seed,
+                      const unsigned int s_prng_seed,
                       const unsigned int ticks )
-  : _prng( prng_seed ), /* freeze the PRNG seed for the life of this Evaluator */
+  : _prng_seed( s_prng_seed ), /* freeze the PRNG seed for the life of this Evaluator */
+    _prng( _prng_seed ),
     _ticks( ticks ),
     _configs( s_configs )
 {}

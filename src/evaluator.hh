@@ -7,6 +7,7 @@
 #include "whiskertree.hh"
 #include "network.hh"
 #include "answer.pb.h"
+#include "problem.pb.h"
 
 class Evaluator
 {
@@ -23,6 +24,8 @@ public:
   };
 
 private:
+  unsigned int _prng_seed;
+
   const PRNG _prng;
 
   unsigned int _ticks;
@@ -32,8 +35,9 @@ private:
 public:
   Evaluator( const ConfigRange & range );
   Evaluator( const std::vector<NetConfig> & s_configs,
-             const unsigned int prng_seed = global_PRNG()(),
+             const unsigned int s_prng_seed = global_PRNG()(),
              const unsigned int ticks = TICK_COUNT);
+  ProblemBuffers::Problem bundle_up( const WhiskerTree & run_whiskers ) const;
   Outcome score( WhiskerTree & run_whiskers, const bool trace = false, const unsigned int carefulness = 1 ) const;
 
   static const unsigned int TICK_COUNT = 1000000;
