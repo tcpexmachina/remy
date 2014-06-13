@@ -6,15 +6,17 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include "answer.pb.h"
 #include "problem.pb.h"
 #include "evaluator.hh"
+#include "util.hh"
 
 using namespace std;
 
 int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
-  std::string problem_str = "";
+  std::string problem_str {""}, answer_str {""};
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -48,6 +50,9 @@ int main( int argc, char *argv[] )
     } else if ( arg.substr( 0, 8 ) == "problem=" ) {
       problem_str = arg.substr( 8 ).c_str();
       fprintf( stderr, "Setting problem_str to %s ms\n", problem_str.c_str() );
+    } else if ( arg.substr( 0, 7 ) == "answer=" ) {
+      answer_str = arg.substr( 7 ).c_str();
+      fprintf( stderr, "Setting answer_str to %s ms\n", answer_str.c_str() );
     }
   }
 
@@ -83,6 +88,9 @@ int main( int argc, char *argv[] )
   auto answer = outcome.DNA();
   printf( "%s\n", answer.DebugString().c_str() );
   printf( "Whiskers: %s\n", outcome.used_whiskers.str().c_str() );
+
+  /* Write output file */
+  dump_to_file<AnswerBuffers::Outcome>( answer, answer_str );
 
   return 0;
 }

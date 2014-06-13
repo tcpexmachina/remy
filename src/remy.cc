@@ -1,13 +1,12 @@
 #include <cstdio>
 #include <vector>
 #include <string>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 
 #include "dna.pb.h"
 #include "ratbreeder.hh"
+#include "util.hh"
 
 using namespace std;
 
@@ -90,29 +89,11 @@ int main( int argc, char *argv[] )
       }
     }
 
-    /* Write output file */
-    char of[ 128 ];
-    snprintf( of, 128, "%s.%d", output_filename.c_str(), run );
-    fprintf( stderr, "Writing to \"%s\"... ", of );
-    int fd = open( of, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR );
-    if ( fd < 0 ) {
-      perror( "open" );
-      exit( 1 );
-    }
-
     auto remycc = whiskers.DNA();
     remycc.mutable_scenarios()->CopyFrom( scenarios );
     remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
 
-    if ( not remycc.SerializeToFileDescriptor( fd ) ) {
-      fprintf( stderr, "Could not serialize RemyCC.\n" );
-      exit( 1 );
-    }
-
-    if ( close( fd ) < 0 ) {
-      perror( "close" );
-      exit( 1 );
-    }
+    dump_to_file<RemyBuffers::WhiskerTree>( remycc, output_filename + "." + to_string( run ) );
 
     fprintf( stderr, "done.\n" );
 
