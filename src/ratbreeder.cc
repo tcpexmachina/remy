@@ -1,9 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
-#include <future>
 #include <limits>
 
+#include "http_transmitter.hh"
 #include "ratbreeder.hh"
 
 using namespace std;
@@ -117,44 +117,53 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
 {
   auto replacements( whisker_to_improve.next_generation() );
 
-  vector< pair< const Whisker &, future< pair< bool, double > > > > scores;
+  vector< tuple< const Whisker &, bool, string >> candidates;
 
+  HttpTransmitter http_request( "http://localhost:5000/problem" );
   /* find best replacement */
   for ( const auto & test_replacement : replacements ) {
     if ( eval_cache_.find( test_replacement ) == eval_cache_.end() ) {
-      /* need to fire off a new thread to evaluate */
-      scores.emplace_back( test_replacement,
-			   async( launch::async, [] ( const Evaluator & e,
-						      const Whisker & r,
-						      const WhiskerTree & rat ) {
-				    WhiskerTree replaced_whiskertree( rat );
-				    const bool found_replacement __attribute((unused)) = replaced_whiskertree.replace( r );
-				    assert( found_replacement );
-				    return make_pair( true, e.score( replaced_whiskertree ).score ); },
-				  eval_, test_replacement, rat_ ) );
+      /* haven't evaluated yet, POST for evaluation */
+      WhiskerTree replaced_whiskertree( rat_ );
+      const bool found_replacement = replaced_whiskertree.replace( test_replacement );
+      assert( found_replacement );
+      auto problem_pb = eval_.bundle_up( replaced_whiskertree );
+      string problem_str {};
+      assert( problem_pb.SerializeToString( &problem_str ) );
+      auto problem_id = http_request.make_post_request( problem_str );
+      assert( problem_id.size() == 32 ); /* Has to be an MD5 hash */
+      candidates.emplace_back( test_replacement,
+                               true,
+                               problem_id );
     } else {
       /* we already know the score */
-      scores.emplace_back( test_replacement,
-			   async( launch::deferred, [] ( const double value ) {
-			       return make_pair( false, value ); }, eval_cache_.at( test_replacement ) ) );
+      candidates.emplace_back( test_replacement,
+                               false,
+                               "" );
     }
   }
 
   /* find the best one */
-  for ( auto & x : scores ) {
-    const Whisker & replacement( x.first );
-    const auto outcome( x.second.get() );
-    const bool was_new_evaluation( outcome.first );
-    const double score( outcome.second );
+  for ( auto & x : candidates ) {
+    const Whisker & test_replacement( get<0>( x ) );
+    const bool was_new_evaluation( get<1>( x ) );
+    double score;
 
     /* should we cache this result? */
     if ( was_new_evaluation ) {
-      eval_cache_.insert( make_pair( replacement, score ) );
+      map<string, string> headers;
+      headers[ "problem_id" ] = get<2>( x );
+      AnswerBuffers::Outcome answer_pb;
+      assert( answer_pb.ParseFromString( http_request.make_get_request( headers ) ) );
+      score  = answer_pb.score();
+      eval_cache_.insert( make_pair( test_replacement, answer_pb.score() ) );
+    } else {
+      score  = eval_cache_.at( test_replacement );
     }
 
     if ( score > score_to_beat_ ) {
       score_to_beat_ = score;
-      whisker_to_improve = replacement;
+      whisker_to_improve = test_replacement;
     }
   }
 

@@ -3,6 +3,7 @@
 #include <string>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <curl/curl.h>
 
 #include "dna.pb.h"
 #include "ratbreeder.hh"
@@ -12,6 +13,7 @@ using namespace std;
 
 int main( int argc, char *argv[] )
 {
+  curl_global_init( CURL_GLOBAL_ALL );
   WhiskerTree whiskers;
   RemyBuffers::Scenarios scenarios;
   string output_filename;
@@ -100,5 +102,6 @@ int main( int argc, char *argv[] )
     fflush( NULL );
     run++;
   }
+  curl_global_cleanup();
   return 0;
 }
