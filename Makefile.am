@@ -1,1 +1,1 @@
-SUBDIRS = protobufs src
+SUBDIRS = protobufs src unittests
