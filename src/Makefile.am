@@ -1,7 +1,6 @@
-AM_LDFLAGS  = -static -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
 AM_CPPFLAGS = -I../protobufs
 AM_CXXFLAGS = $(PICKY_CXXFLAGS)
-LDADD = ../protobufs/libremyprotos.a -lm $(protobuf_LIBS)
+LDADD = ../protobufs/libremyprotos.a -lcurl -lm $(protobuf_LIBS)
 
 bin_PROGRAMS = remy rat-runner scengen
 
@@ -14,7 +13,8 @@ common_source = delay.hh util.hh evaluator.cc evaluator.hh             \
 	sendergangofgangs.cc sendergangofgangs.hh                      \
 	utility.hh whisker.cc whisker.hh whiskertree.cc whiskertree.hh \
 	aimd-templates.cc aimd.cc aimd.hh                              \
-        configrange.hh configrange.cc
+	configrange.hh configrange.cc                                  \
+	http_transmitter.hh http_transmitter.cc
 
 remy_SOURCES = $(common_source) remy.cc ratbreeder.cc ratbreeder.hh 
 

@@ -1,2 +1,4 @@
 1. Why do I need to track whiskers while evaluating?
 3. Can't call everything DNA, that's just not done.
+2. GETs need to be idempotent.
+4. How does this even compile without linking to libboost?
