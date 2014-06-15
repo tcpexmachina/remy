@@ -119,7 +119,9 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
 
   vector< tuple< const Whisker &, bool, string >> candidates;
 
-  HttpTransmitter http_request( "http://localhost:5000/problem" );
+  string http_server ( getenv( "PROBLEM_SERVER" ) );
+  assert( http_server != "" );
+  HttpTransmitter http_request( http_server );
   /* find best replacement */
   for ( const auto & test_replacement : replacements ) {
     if ( eval_cache_.find( test_replacement ) == eval_cache_.end() ) {
