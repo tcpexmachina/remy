@@ -55,6 +55,7 @@ string HttpTransmitter::make_get_request( const map<string, string> & headers )
   if(res_ != CURLE_OK) {
     fprintf( stderr, "curl_easy_perform() failed: %s\n",
                      curl_easy_strerror( res_ ) );
+    exit( -1 );
     return "";
   } else {
     return recvbuffer_;
@@ -88,6 +89,7 @@ string HttpTransmitter::make_post_request( const std::string & body )
   if(res_ != CURLE_OK) {
     fprintf( stderr, "curl_easy_perform() failed: %s\n",
                      curl_easy_strerror( res_ ) );
+    exit( -1 );
     return "";
   } else {
     return recvbuffer_;
