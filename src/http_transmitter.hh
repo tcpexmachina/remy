@@ -23,7 +23,8 @@ public:
   HttpTransmitter & operator=( const HttpTransmitter & other );
 
   std::string make_get_request( const std::map<std::string, std::string> & headers );
-  std::string make_post_request( const std::string & body );
+  std::string make_post_request( const std::string & body,
+                                 const std::map<std::string, std::string> & headers );
 
 };
 

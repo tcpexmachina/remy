@@ -65,7 +65,7 @@ string HttpTransmitter::make_get_request( const map<string, string> & headers )
   curl_slist_free_all(chunk);
 }
 
-string HttpTransmitter::make_post_request( const std::string & body )
+string HttpTransmitter::make_post_request( const string & body, const map<string, string> & headers )
 {
   /* Setup recvbuffer_ */
   recvbuffer_ = "";
@@ -76,6 +76,11 @@ string HttpTransmitter::make_post_request( const std::string & body )
   /* Set content type to octet stream */
   struct curl_slist *chunk = nullptr;
   chunk = curl_slist_append( chunk, ( "Content-Type:application/octet-stream" ) );
+  for ( auto &kv : headers ) {
+    auto key = kv.first;
+    auto value = kv.second;
+    chunk = curl_slist_append( chunk, ( key + ":" +  value ).c_str() );
+  }
   res_ = curl_easy_setopt( curl_, CURLOPT_HTTPHEADER, chunk );
 
   /* POST the actual data */

@@ -14,16 +14,19 @@ int main()
 {
   curl_global_init(CURL_GLOBAL_ALL);
 
+  // headers
+  map<string, string> headers;
+  headers[ "Host" ] = string( getenv( "HTTP_HOST" ) );
+
   // POST problem
-  HttpTransmitter tx( "http://localhost:5000/problem" );
+  HttpTransmitter tx( "http://localhost:80/problem" );
   std::ifstream pb_file( "test.problem", ios::binary );
   std::string str((std::istreambuf_iterator<char>(pb_file)),
                    std::istreambuf_iterator<char>());
-  string response = tx.make_post_request( str );
+  string response = tx.make_post_request( str, headers );
   printf( "POST respone was %s\n", response.c_str() );
 
   // GET answer
-  map<string, string> headers;
   headers["problem_id"] = response;
   response = tx.make_get_request( headers );
   AnswerBuffers::Outcome outcome;

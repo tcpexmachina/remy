@@ -121,6 +121,8 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
 
   string http_server ( getenv( "PROBLEM_SERVER" ) );
   assert( http_server != "" );
+  string http_host ( getenv( "HTTP_HOST" ) );
+  assert( http_host != "" );
   HttpTransmitter http_request( http_server );
   /* find best replacement */
   for ( const auto & test_replacement : replacements ) {
@@ -132,7 +134,11 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
       auto problem_pb = eval_.bundle_up( replaced_whiskertree );
       string problem_str {};
       assert( problem_pb.SerializeToString( &problem_str ) );
-      auto problem_id = http_request.make_post_request( problem_str );
+
+      /* Set up POST and block for response */
+      map<string, string> headers;
+      headers[ "Host" ] = http_host;
+      auto problem_id = http_request.make_post_request( problem_str, headers );
       assert( problem_id.size() == 32 ); /* Has to be an MD5 hash */
       candidates.emplace_back( test_replacement,
                                true,
@@ -155,6 +161,7 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
     if ( was_new_evaluation ) {
       map<string, string> headers;
       headers[ "problem_id" ] = get<2>( x );
+      headers[ "Host" ] = http_host;
       AnswerBuffers::Outcome answer_pb;
       assert( answer_pb.ParseFromString( http_request.make_get_request( headers ) ) );
       score  = answer_pb.score();
