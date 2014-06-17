@@ -27,7 +27,7 @@ int main()
   printf( "POST respone was %s\n", response.c_str() );
 
   // GET answer
-  headers["problem_id"] = response;
+  headers["problemid"] = response;
   response = tx.make_get_request( headers );
   AnswerBuffers::Outcome outcome;
   outcome.ParseFromString( response );

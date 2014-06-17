@@ -138,11 +138,11 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
       /* Set up POST and block for response */
       map<string, string> headers;
       headers[ "Host" ] = http_host;
-      auto problem_id = http_request.make_post_request( problem_str, headers );
-      assert( problem_id.size() == 32 ); /* Has to be an MD5 hash */
+      auto problemid = http_request.make_post_request( problem_str, headers );
+      assert( problemid.size() == 32 ); /* Has to be an MD5 hash */
       candidates.emplace_back( test_replacement,
                                true,
-                               problem_id );
+                               problemid );
     } else {
       /* we already know the score */
       candidates.emplace_back( test_replacement,
@@ -160,7 +160,7 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
     /* should we cache this result? */
     if ( was_new_evaluation ) {
       map<string, string> headers;
-      headers[ "problem_id" ] = get<2>( x );
+      headers[ "problemid" ] = get<2>( x );
       headers[ "Host" ] = http_host;
       AnswerBuffers::Outcome answer_pb;
       assert( answer_pb.ParseFromString( http_request.make_get_request( headers ) ) );
