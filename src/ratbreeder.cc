@@ -3,6 +3,7 @@
 #include <cassert>
 #include <limits>
 #include <unistd.h>
+#include <time.h>
 
 #include "http_transmitter.hh"
 #include "ratbreeder.hh"
@@ -52,7 +53,13 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   while ( generation < 5 ) {
     const Evaluator eval( _net_configs );
 
+    struct timespec tp_start, tp_end;
+    clock_gettime( CLOCK_MONOTONIC_RAW, &tp_start );
     auto outcome( eval.score( whiskers ) );
+    clock_gettime( CLOCK_MONOTONIC_RAW, &tp_end );
+    uint32_t sleep_time_us = ( ( tp_end.tv_sec * 1000000 + tp_end.tv_nsec / 1000 ) -
+                               ( tp_start.tv_sec * 1000000 + tp_start.tv_nsec / 1000 ));
+    printf("One evaluation on one core took about %u usec\n", sleep_time_us);
 
     /* is there a whisker at this generation that we can improve? */
     auto most_used_whisker_ptr = outcome.used_whiskers.most_used( generation );
@@ -65,7 +72,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       continue;
     }
 
-    WhiskerImprover improver( eval, whiskers, outcome.score );
+    WhiskerImprover improver( eval, whiskers, outcome.score, sleep_time_us );
 
     Whisker whisker_to_improve = *most_used_whisker_ptr;
 
@@ -108,12 +115,14 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
 WhiskerImprover::WhiskerImprover( const Evaluator & s_evaluator,
 				  const WhiskerTree & rat,
-				  const double score_to_beat )
+				  const double score_to_beat,
+				  const uint32_t s_sleep_time_us )
   : eval_( s_evaluator ),
     rat_( rat ),
     score_to_beat_( score_to_beat ),
     http_server_( getenv( "PROBLEM_SERVER" ) ),
-    http_host_( getenv( "HTTP_HOST" ) )
+    http_host_( getenv( "HTTP_HOST" ) ),
+    sleep_time_us_( s_sleep_time_us )
 {
   assert( http_server_ != "" );
   assert( http_host_ != "" );
@@ -161,8 +170,8 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
   /* Gather/Reduce: Keep asking PROBLEM_SERVER unless we get all answers */
   double score = score_to_beat_;
   while ( not candidates.empty() ) {
-    /* wait a while, like a second */
-    sleep( 1 );
+    /* wait a while, possibly for stragglers to finish */
+    usleep( 2 * sleep_time_us_ );
     vector<tuple<Whisker, bool, string>>::iterator candidate_iterator = candidates.begin();
     while ( candidate_iterator != candidates.end() ) {
       if( evaluate_if_done( *candidate_iterator, http_transmitter ) ) {

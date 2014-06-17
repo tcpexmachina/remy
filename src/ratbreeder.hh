@@ -28,8 +28,10 @@ private:
 
   std::string http_host_;
 
+  uint32_t sleep_time_us_; /* Time to sleep in us before retrieving results */
+
 public:
-  WhiskerImprover( const Evaluator & evaluator, const WhiskerTree & rat, const double score_to_beat );
+  WhiskerImprover( const Evaluator & evaluator, const WhiskerTree & rat, const double score_to_beat, const uint32_t s_sleep_time_us );
   double improve( Whisker & whisker_to_improve );
 };
 
