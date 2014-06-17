@@ -15,39 +15,11 @@ using namespace std;
 
 int main( int argc, char *argv[] )
 {
-  WhiskerTree whiskers;
   std::string problem_str {""}, answer_str {""};
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
-    if ( arg.substr( 0, 3 ) == "if=" ) {
-      string filename( arg.substr( 3 ) );
-      int fd = open( filename.c_str(), O_RDONLY );
-      if ( fd < 0 ) {
-	perror( "open" );
-	exit( 1 );
-      }
-
-      RemyBuffers::WhiskerTree tree;
-      if ( !tree.ParseFromFileDescriptor( fd ) ) {
-	fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
-	exit( 1 );
-      }
-      whiskers = WhiskerTree( tree );
-
-      if ( close( fd ) < 0 ) {
-	perror( "close" );
-	exit( 1 );
-      }
-
-      if ( tree.has_scenarios() ) {
-	printf( "Prior assumptions:\n%s\n\n", tree.scenarios().DebugString().c_str() );
-      }
-
-      if ( tree.has_optimizer() ) {
-	printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
-      }
-    } else if ( arg.substr( 0, 8 ) == "problem=" ) {
+    if ( arg.substr( 0, 8 ) == "problem=" ) {
       problem_str = arg.substr( 8 ).c_str();
       fprintf( stderr, "Setting problem_str to %s ms\n", problem_str.c_str() );
     } else if ( arg.substr( 0, 7 ) == "answer=" ) {
