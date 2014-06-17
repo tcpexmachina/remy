@@ -32,7 +32,7 @@ size_t HttpTransmitter::write_memory_callback( void *contents, size_t size, size
   return realsize;
 }
 
-string HttpTransmitter::make_get_request( const map<string, string> & headers )
+pair<string, long> HttpTransmitter::make_get_request( const map<string, string> & headers )
 {
   /* Setup recvbuffer_ */
   recvbuffer_ = "";
@@ -56,16 +56,18 @@ string HttpTransmitter::make_get_request( const map<string, string> & headers )
     fprintf( stderr, "curl_easy_perform() failed: %s\n",
                      curl_easy_strerror( res_ ) );
     exit( -1 );
-    return "";
+    return make_pair( "", -1 );
   } else {
-    return recvbuffer_;
+    long ret = 0;
+    curl_easy_getinfo( curl_, CURLINFO_RESPONSE_CODE, &ret );
+    return make_pair( recvbuffer_, ret );
   }
 
   /* Free up chunks */
   curl_slist_free_all(chunk);
 }
 
-string HttpTransmitter::make_post_request( const string & body, const map<string, string> & headers )
+pair<string, long> HttpTransmitter::make_post_request( const string & body, const map<string, string> & headers )
 {
   /* Setup recvbuffer_ */
   recvbuffer_ = "";
@@ -95,9 +97,11 @@ string HttpTransmitter::make_post_request( const string & body, const map<string
     fprintf( stderr, "curl_easy_perform() failed: %s\n",
                      curl_easy_strerror( res_ ) );
     exit( -1 );
-    return "";
+    return make_pair( "", -1 );
   } else {
-    return recvbuffer_;
+    long ret = 0;
+    curl_easy_getinfo( curl_, CURLINFO_RESPONSE_CODE, &ret );
+    return make_pair( recvbuffer_, ret );
   }
 }
 

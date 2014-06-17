@@ -1,5 +1,6 @@
 #include <map>
 #include <string>
+#include <utility>
 #include <curl/curl.h>
 #include "http_transmitter.hh"
 
@@ -9,10 +10,10 @@ int main()
 {
   curl_global_init( CURL_GLOBAL_ALL );
   HttpTransmitter tx( "http://www.google.com" );
-  string response = tx.make_get_request( map<string, string>() );
-  printf( "GET response from the server is %s\n", response.c_str() );
+  auto response = tx.make_get_request( map<string, string>() );
+  printf( "GET response from the server is %s\n", get<0>( response ).c_str() );
   response = tx.make_post_request( "loremepsum", map<string, string>() );
-  printf( "POST response from the server is %s\n", response.c_str() );
+  printf( "POST response from the server is %s\n", get<0>( response ).c_str() );
   curl_global_cleanup();
   return 0;
 }

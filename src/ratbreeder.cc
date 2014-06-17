@@ -2,6 +2,7 @@
 #include <vector>
 #include <cassert>
 #include <limits>
+#include <unistd.h>
 
 #include "http_transmitter.hh"
 #include "ratbreeder.hh"
@@ -110,21 +111,23 @@ WhiskerImprover::WhiskerImprover( const Evaluator & s_evaluator,
 				  const double score_to_beat )
   : eval_( s_evaluator ),
     rat_( rat ),
-    score_to_beat_( score_to_beat )
-{}
+    score_to_beat_( score_to_beat ),
+    http_server_( getenv( "PROBLEM_SERVER" ) ),
+    http_host_( getenv( "HTTP_HOST" ) )
+{
+  assert( http_server_ != "" );
+  assert( http_host_ != "" );
+}
 
 double WhiskerImprover::improve( Whisker & whisker_to_improve )
 {
   auto replacements( whisker_to_improve.next_generation() );
 
-  vector< tuple< const Whisker &, bool, string >> candidates;
+  vector< tuple< Whisker, bool, string >> candidates;
 
-  string http_server ( getenv( "PROBLEM_SERVER" ) );
-  assert( http_server != "" );
-  string http_host ( getenv( "HTTP_HOST" ) );
-  assert( http_host != "" );
-  HttpTransmitter http_request( http_server );
-  /* find best replacement */
+  HttpTransmitter http_transmitter( http_server_ );
+
+  /* Scatter/Map: Fire off evaluations for those that haven't been evaluated yet */
   for ( const auto & test_replacement : replacements ) {
     if ( eval_cache_.find( test_replacement ) == eval_cache_.end() ) {
       /* haven't evaluated yet, POST for evaluation */
@@ -137,9 +140,13 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
 
       /* Set up POST and block for response */
       map<string, string> headers;
-      headers[ "Host" ] = http_host;
-      auto problemid = http_request.make_post_request( problem_str, headers );
+      headers[ "Host" ] = http_host_;
+      auto http_response = http_transmitter.make_post_request( problem_str, headers );
+      string problemid = get<0>( http_response );
+      long status_code = get<1>( http_response );
       assert( problemid.size() == 32 ); /* Has to be an MD5 hash */
+      assert( status_code == 200 ); /* Has to be 200 OK */
+      //printf( "Posted problem with id %s\n", problemid.c_str() );
       candidates.emplace_back( test_replacement,
                                true,
                                problemid );
@@ -151,30 +158,68 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
     }
   }
 
-  /* find the best one */
-  for ( auto & x : candidates ) {
-    const Whisker & test_replacement( get<0>( x ) );
-    const bool was_new_evaluation( get<1>( x ) );
-    double score;
-
-    /* should we cache this result? */
-    if ( was_new_evaluation ) {
-      map<string, string> headers;
-      headers[ "problemid" ] = get<2>( x );
-      headers[ "Host" ] = http_host;
-      AnswerBuffers::Outcome answer_pb;
-      assert( answer_pb.ParseFromString( http_request.make_get_request( headers ) ) );
-      score  = answer_pb.score();
-      eval_cache_.insert( make_pair( test_replacement, answer_pb.score() ) );
-    } else {
-      score  = eval_cache_.at( test_replacement );
-    }
-
-    if ( score > score_to_beat_ ) {
-      score_to_beat_ = score;
-      whisker_to_improve = test_replacement;
+  /* Gather/Reduce: Keep asking PROBLEM_SERVER unless we get all answers */
+  double score = score_to_beat_;
+  while ( not candidates.empty() ) {
+    /* wait a while, like a second */
+    sleep( 1 );
+    vector<tuple<Whisker, bool, string>>::iterator candidate_iterator = candidates.begin();
+    while ( candidate_iterator != candidates.end() ) {
+      if( evaluate_if_done( *candidate_iterator, http_transmitter ) ) {
+        const Whisker & test_replacement( get<0>( *candidate_iterator ) );
+        score  = eval_cache_.at( test_replacement );
+        if ( score > score_to_beat_ ) {
+          score_to_beat_ = score;
+          whisker_to_improve = test_replacement;
+        }
+        candidate_iterator = candidates.erase( candidate_iterator );
+      } else {
+        candidate_iterator++;
+        continue;
+      }
     }
   }
 
   return score_to_beat_;
+}
+
+/* Do we have the answer now? */
+bool WhiskerImprover::evaluate_if_done( std::tuple< Whisker, bool, string > & candidate,
+                                        HttpTransmitter & http_transmitter )
+{
+    const Whisker & test_replacement( get<0>( candidate ) );
+    const bool was_new_evaluation( get<1>( candidate ) );
+
+    /* should we cache this result? */
+    if ( was_new_evaluation ) {
+      map<string, string> headers;
+      headers[ "problemid" ] = get<2>( candidate );
+      headers[ "Host" ] = http_host_;
+      AnswerBuffers::Outcome answer_pb;
+      auto http_response = http_transmitter.make_get_request( headers );
+      string answer_pb_str = get<0>( http_response );
+      long status_code = get<1>( http_response );
+
+      /* Either processing or done */
+      assert( status_code == 200 or status_code == 202 );
+
+      if ( status_code == 200 ) {
+        /* Make sure we received a valid protobuf */
+        assert( answer_pb.ParseFromString( answer_pb_str ) );
+        //printf( "Received answer for id %s\n", headers[ "problemid" ].c_str() );
+
+        /* Insert into eval_cache_, but check that it doesn't already exist */
+        assert( eval_cache_.find( test_replacement ) == eval_cache_.end() );
+        eval_cache_.insert( make_pair( test_replacement, answer_pb.score() ) );
+        get<1>( candidate ) = true;
+        return true;
+      } else {
+        /* No dice, try again */
+        return false;
+      }
+    } else {
+      /* test_replacement must exist in cache */
+      assert( eval_cache_.find( test_replacement ) != eval_cache_.end() );
+      return true;
+    }
 }

@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <utility>
 #include <curl/curl.h>
 
 class HttpTransmitter
@@ -22,9 +23,9 @@ public:
   HttpTransmitter( const HttpTransmitter & other );
   HttpTransmitter & operator=( const HttpTransmitter & other );
 
-  std::string make_get_request( const std::map<std::string, std::string> & headers );
-  std::string make_post_request( const std::string & body,
-                                 const std::map<std::string, std::string> & headers );
+  std::pair<std::string, long> make_get_request( const std::map<std::string, std::string> & headers );
+  std::pair<std::string, long> make_post_request( const std::string & body,
+                                                  const std::map<std::string, std::string> & headers );
 
 };
 
