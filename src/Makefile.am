@@ -15,6 +15,10 @@ common_source = delay.hh evaluator.cc evaluator.hh                     \
 	aimd-templates.cc aimd.cc aimd.hh                              \
         configrange.hh configrange.cc
 
+noinst_LIBRARIES = libremy.a
+
+libremy_a_SOURCES = $(common_source)
+
 remy_SOURCES = $(common_source) remy.cc ratbreeder.cc ratbreeder.hh 
 
 rat_runner_SOURCES = $(common_source) rat-runner.cc
