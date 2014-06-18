@@ -3,6 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([remy], [0.1], [remy@mit.edu])
+AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([src/remy.cc])
 AC_CONFIG_HEADERS([config.h])
