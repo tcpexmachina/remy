@@ -120,7 +120,7 @@ WhiskerImprover::WhiskerImprover( const Evaluator & s_evaluator,
   : eval_( s_evaluator ),
     rat_( rat ),
     score_to_beat_( score_to_beat ),
-    http_server_( getenv( "PROBLEM_SERVER" ) ),
+    http_server_( string( getenv( "PROBLEM_SERVER" ) ) + "/problem" ),
     http_host_( getenv( "HTTP_HOST" ) ),
     sleep_time_us_( s_sleep_time_us )
 {
