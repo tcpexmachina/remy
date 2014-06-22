@@ -55,7 +55,8 @@ const std::string Display::shader_source_solid_color
       }
     )";
 
-Display::CurrentContextWindow::CurrentContextWindow( const unsigned int width, const unsigned int height,
+Display::CurrentContextWindow::CurrentContextWindow( const unsigned int width, 
+const unsigned int height,
 						     const string & title )
   : window_( width, height, title )
 {
@@ -168,9 +169,13 @@ void Display::swap( void )
   current_context_window_.window_.swap_buffers();
 }
 
-void Display::draw( const float red, const float green, const float blue, const float alpha,
+void Display::draw( const float red, const float green, 
+                    const float blue, const float alpha,
 		    const float width,
 		    const float cutoff,
+                    const std::pair< unsigned int, unsigned int > 
+                    render_coords, const float render_width, 
+                    const float render_height,
 		    const deque<pair<float, float>> & vertices,
 		    const std::function<std::pair<float, float>(const std::pair<float, float> &)> & transform )
 {
@@ -222,6 +227,11 @@ void Display::draw( const float red, const float green, const float blue, const 
 
   ArrayBuffer::load( triangles, GL_STREAM_DRAW );
 
+  glEnable( GL_SCISSOR_TEST );
+
+  glScissor( render_coords.first, render_coords.second + 10, 
+             render_width, render_height - 10 );
+
   solid_color_shader_program_.use();
   glUniform4f( solid_color_shader_program_.uniform_location( "color" ),
 	       red, green, blue, alpha );
@@ -230,6 +240,8 @@ void Display::draw( const float red, const float green, const float blue, const 
 	       cutoff );
 
   glDrawArrays( GL_TRIANGLES, 0, triangles.size() );
+
+  glDisable( GL_SCISSOR_TEST );
 }
 
 void Display::clear( void )

@@ -10,7 +10,7 @@ using namespace std;
 GLFWContext::GLFWContext()
 {
   glfwSetErrorCallback( error_callback );
-
+  printf("calling init\n");
   glfwInit();
 }
 

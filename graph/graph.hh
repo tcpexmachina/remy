@@ -6,7 +6,6 @@
 
 class Graph
 {
-  Display display_;
   Cairo cairo_;
   Pango pango_;
 
@@ -31,19 +30,28 @@ class Graph
   std::string info_string_;
   Pango::Text info_;
 
-  float bottom_, top_;
+  float min_y_, max_y_;
+  float bottom_, top_; // for smoothing
 
   float project_height( const float x ) const { return ( x - bottom_ ) / ( top_ - bottom_ ); }
+
   float chart_height( const float x, const unsigned int window_height ) const
   {
     return (window_height - 40) * (.825*(1-project_height( x ))+.025) + (.825 * 40);
   }
 
+  double xtick_label_y( std::pair<unsigned int, unsigned int>
+                        window_size );
+  void draw_xtick_labels( const float t, const float logical_width,
+                          std::pair<unsigned int, unsigned int>
+                          window_size);
+
   Cairo::Pattern horizontal_fadeout_;
 
 public:
   Graph( const unsigned int num_lines,
-	 const unsigned int initial_width, const unsigned int initial_height, const std::string & title,
+	 const unsigned int initial_width, const unsigned int initial_height,
+         const std::string & xlabel, const std::string & ylabel,
 	 const float min_y, const float max_y );
 
   void set_window( const float t, const float logical_width );
@@ -57,10 +65,23 @@ public:
     data_points_.at( num ).emplace_back( t, y );
   }
 
-  void set_color( const unsigned int num, const float red, const float green, const float blue,
-		  const float alpha );
+  void set_color( const unsigned int num, const float red, const float green,
+                  const float blue, const float alpha );
 
-  bool blocking_draw( const float t, const float logical_width, const float min_y, const float max_y );
+  void set_ylimits( const float min_y, const float max_y ) {
+    min_y_ = min_y;
+    max_y_ = max_y;
+  }
+
+  cairo_surface_t * generate_graph( const float t, 
+                                    const float logical_width, 
+                                    const float width, 
+                                    const float height );
+  
+  void draw_lines( Display* display, const float t,
+                   const float logical_width, const float width,
+                   const float height, const unsigned int y_shift,
+                   const float window_height ); 
 
   void set_info( const std::string & info );
 };

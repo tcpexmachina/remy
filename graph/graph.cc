@@ -13,21 +13,25 @@
 using namespace std;
 
 Graph::Graph( const unsigned int num_lines,
-	      const unsigned int initial_width, const unsigned int initial_height, const string & title,
+	      const unsigned int initial_width, 
+              const unsigned int initial_height,
+              const string & xlabel, const string & ylabel,
 	      const float min_y, const float max_y )
-  : display_( initial_width, initial_height, title ),
-    cairo_( display_.window().size() ),
+  : cairo_( std::pair< unsigned int, unsigned int > ( initial_width,
+                                                      initial_height )),
     pango_( cairo_ ),
-    tick_font_( "ACaslon Regular, Normal 30" ),
-    label_font_( "ACaslon Regular, Normal 20" ),
+    tick_font_( "Nimbus Sans L, Normal 12" ),
+    label_font_( "Nimbus Sans L, Normal 10" ),
     x_tick_labels_(),
     y_tick_labels_(),
     colors_( num_lines ),
     data_points_( num_lines ),
-    x_label_( cairo_, pango_, label_font_, "time (s)" ),
-    y_label_( cairo_, pango_, label_font_, "packets in flight" ),
+    x_label_( cairo_, pango_, label_font_, xlabel ),
+    y_label_( cairo_, pango_, label_font_, ylabel ),
     info_string_(),
     info_( cairo_, pango_, label_font_, "" ),
+    min_y_( min_y ),
+    max_y_( max_y ),
     bottom_( min_y ),
     top_( max_y ),
     horizontal_fadeout_( cairo_pattern_create_linear( 0, 0, 190, 0 ) )
@@ -64,24 +68,16 @@ static int to_int( const float x )
   return static_cast<int>( lrintf( x ) );
 }
 
-bool Graph::blocking_draw( const float t, const float logical_width, const float min_y, const float max_y )
+double Graph::xtick_label_y( std::pair<unsigned int, unsigned int>
+                                   graph_size ) 
 {
-  /* set scale (with smoothing) */
-  top_ = top_ * .95 + max_y * 0.05;
-  bottom_ = bottom_ * 0.95 + min_y * 0.05;
+  return graph_size.second * 9.0 / 10.0;
+}
 
-  /* get the current window size */
-  const auto window_size = display_.window().size();
-
-  /* do we need to resize? */
-  if ( window_size != cairo_.image().size() ) {
-    display_.resize( window_size );
-    cairo_ = Cairo( window_size );
-  }
-
-  /* start a new image */
-  cairo_.mutable_image().clear();
-
+void Graph::draw_xtick_labels( const float t, const float logical_width,
+                               std::pair<unsigned int, unsigned int> 
+                               graph_size )
+{
   /* do we need to make a new label? */
   while ( x_tick_labels_.empty() or (x_tick_labels_.back().first < t + 1) ) { /* start when offscreen */
     const int next_label = x_tick_labels_.empty() ? to_int( t ) : x_tick_labels_.back().first + 1;
@@ -97,12 +93,13 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
   /* draw the labels and vertical grid */
   for ( const auto & x : x_tick_labels_ ) {
     /* position the text in the window */
-    const double x_position = window_size.first - (t - x.first) * window_size.first / logical_width;
+    const double x_position = graph_size.first - (t - x.first) * 
+      graph_size.first / logical_width;
 
     x.second.draw_centered_at( cairo_,
 			       x_position,
-			       window_size.second * 9.0 / 10.0,
-			       0.85 * window_size.first / logical_width );
+                               xtick_label_y( graph_size ),
+			       0.85 * graph_size.first / logical_width );
 
     cairo_set_source_rgba( cairo_, 0, 0, 0.4, 1 );
     cairo_fill( cairo_ );
@@ -110,33 +107,62 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
     /* draw vertical grid line */
     cairo_identity_matrix( cairo_ );
     cairo_set_line_width( cairo_, 2 );
-    cairo_move_to( cairo_, x_position, chart_height( bottom_, window_size.second ) );
-    cairo_line_to( cairo_, x_position, chart_height( top_, window_size.second ) );
+    cairo_move_to( cairo_, x_position, chart_height( bottom_, 
+                                                     graph_size.second ) );
+    cairo_line_to( cairo_, x_position, chart_height( top_, 
+                                                     graph_size.second ) );
     cairo_set_source_rgba( cairo_, 0, 0, 0.4, 0.25 );
     cairo_stroke( cairo_ );
   }
 
+}
+
+cairo_surface_t * Graph::generate_graph( const float t, 
+                                         const float logical_width, 
+                                         const float width, 
+                                         const float height )
+{
+  /* set scale (with smoothing) */
+  top_ = top_ * .95 + max_y_ * 0.05;
+  bottom_ = bottom_ * 0.95 + min_y_ * 0.05;
+
+  /* get the current window size */
+  auto graph_size = std::pair< unsigned int, unsigned int >( width, height );
+
+  /* do we need to resize? */
+  if ( graph_size != cairo_.image().size() ) {
+    cairo_ = Cairo( graph_size );
+  }
+
+  /* start a new image */
+  cairo_.mutable_image().clear();
+
   /* draw the x-axis label */
-  x_label_.draw_centered_at( cairo_, 35 + window_size.first / 2, window_size.second * 9.6 / 10.0 );
+  x_label_.draw_centered_at( cairo_, 35 + graph_size.first / 2, 
+                             graph_size.second * 9.6 / 10.0 );
   cairo_set_source_rgba( cairo_, 0, 0, 0.4, 1 );
   cairo_fill( cairo_ );
+
+  /* draw the updated x-tick labels */
+  draw_xtick_labels( t, logical_width, graph_size );
 
   /* draw the y-axis labels */
 
   /* draw a box to hide other labels */
   cairo_new_path( cairo_ );
   cairo_identity_matrix( cairo_ );
-  cairo_rectangle( cairo_, 0, 0, 190, window_size.second );
+  cairo_rectangle( cairo_, 0, 0, 190, graph_size.second );
   cairo_set_source( cairo_, horizontal_fadeout_ );
   cairo_fill( cairo_ );
 
   /* draw the info */
-  info_.draw_centered_at( cairo_, window_size.first / 2, 20, window_size.first - 40 );
+  info_.draw_centered_at( cairo_, graph_size.first / 2, 20, 
+                          graph_size.first - 40 );
   cairo_set_source_rgba( cairo_, 0.4, 0, 0, 1 );
   cairo_fill( cairo_ );
 
   /* draw the y-axis label */
-  y_label_.draw_centered_rotated_at( cairo_, 25, window_size.second * .4375 );
+  y_label_.draw_centered_rotated_at( cairo_, 25, graph_size.second * .4375 );
   cairo_set_source_rgba( cairo_, 0, 0, 0.4, 1 );
   cairo_fill( cairo_ );
 
@@ -193,11 +219,6 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
       it->intensity = 0.95 * it->intensity + 0.05;
     } else {
       it->intensity = 0.95 * it->intensity;
-      /*
-      if ( it->intensity < 0.05 ) {
-	y_tick_labels_.erase( it );
-      }
-      */
     }
   }
 
@@ -217,64 +238,57 @@ bool Graph::blocking_draw( const float t, const float logical_width, const float
 
   /* go through and paint all the labels */
   for ( const auto & x : y_tick_labels_ ) {
-    x.text.draw_centered_at( cairo_, 90, chart_height( x.height, window_size.second ) );
+    x.text.draw_centered_at( cairo_, 90, chart_height( x.height, graph_size.second ) );
     cairo_set_source_rgba( cairo_, 0, 0, 0.4, x.intensity );
     cairo_fill( cairo_ );
 
     /* draw horizontal grid line */
     cairo_identity_matrix( cairo_ );
     cairo_set_line_width( cairo_, 1 );
-    cairo_move_to( cairo_, 140, chart_height( x.height, window_size.second ) );
-    cairo_line_to( cairo_, window_size.first, chart_height( x.height, window_size.second ) );
+    cairo_move_to( cairo_, 140, chart_height( x.height, graph_size.second ) );
+    cairo_line_to( cairo_, graph_size.first, chart_height( x.height, graph_size.second ) );
     cairo_set_source_rgba( cairo_, 0, 0, 0.4, 0.25 * x.intensity );
     cairo_stroke( cairo_ );
   }
 
-  /* draw the cairo surface on the OpenGL display */
-  display_.draw( cairo_.image() );
+  return cairo_.surface();
+}
+
+/* TODO subgraph should just pass line information to figure for drawing */
+void Graph::draw_lines( Display* display, const float t,
+                        const float logical_width, const float width,
+                        const float height, const unsigned int y_shift,
+                        const float window_height ) 
+{
+  auto graph_size = std::pair< unsigned int, unsigned int >( width, height );
 
   /* draw the data points, including an extension off the right edge */
   for ( unsigned int i = 0; i < data_points_.size(); i++ ) {
     auto & line = data_points_[ i ];
+
     if ( not line.empty() ) {
       line.emplace_back( t + 20, line.back().second );
 
-#if 0
-      if ( i == 0 ) { /* draw white background */
-	display_.draw( 1, 1, 1, 1,
-		       7.0, 220, line,
-		       [&] ( const pair<float, float> & x ) {
-			 return make_pair( window_size.first - (t - x.first) * window_size.first / logical_width,
-					   chart_height( x.second, window_size.second ) );
-		       } );
-      }
-#endif
-
-      display_.draw( get<0>( colors_[ i ] ), get<1>( colors_[ i ] ),
-		     get<2>( colors_[ i ] ), get<3>( colors_[ i ] ),
-		     ( i == 0 or i == data_points_.size() - 1 ) ? 10.0 : 5.0, 220, line,
-		     [&] ( const pair<float, float> & x ) {
-		       return make_pair( window_size.first - (t - x.first) * window_size.first / logical_width,
-					 chart_height( x.second, window_size.second ) );
-		     } );
+      display->draw( get<0>( colors_[ i ] ), get<1>( colors_[ i ] ),
+                     get<2>( colors_[ i ] ), get<3>( colors_[ i ] ),
+                     5.0, 220, 
+                     std::pair< unsigned int, unsigned int >
+                     ( 0, window_height - ( height + y_shift )),
+                     width, height, line,
+                     [&] ( const pair<float, float> & x ) {
+                       return make_pair( graph_size.first - (t - x.first) * 
+                                         graph_size.first / logical_width,
+                                         chart_height( x.second, 
+                                                       graph_size.second )
+                                         + y_shift );
+                     } );
       line.pop_back();
     }
   }
-
-  /* swap buffers to reveal what has been drawn */
-  display_.swap();
-
-  /* should we quit? */
-  glfwPollEvents();
-
-  if ( display_.window().key_pressed( GLFW_KEY_ESCAPE ) or display_.window().should_close() ) {
-    return true;
-  }
-
-  return false;
 }
 
-void Graph::set_color( const unsigned int num, const float red, const float green, const float blue,
+void Graph::set_color( const unsigned int num, const float red, 
+                       const float green, const float blue,
 		       const float alpha )
 {
   if ( num < colors_.size() ) {

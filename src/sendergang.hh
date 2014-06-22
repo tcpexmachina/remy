@@ -48,6 +48,8 @@ public:
       sending( false ),
       id( s_id )
   {}
+
+  SenderType & mutable_sender() { return sender; }
 };
 
 template <class SenderType>

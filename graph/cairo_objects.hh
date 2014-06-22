@@ -21,6 +21,7 @@ class Cairo
     Surface( Image & image );
 
     void check_error( void );
+
   } surface_;
 
   struct Context
@@ -44,6 +45,8 @@ public:
 
   Image & mutable_image( void ) { return image_; }
   const Image & image( void ) const { return image_; }
+
+  cairo_surface_t * surface( void ) const { return surface_.surface.get(); }
 
   template <bool device_coordinates>
   struct Extent

@@ -8,6 +8,7 @@ using namespace std;
 Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
   :  _whiskers( s_whiskers ),
      _memory(),
+     _using_whisker( _whiskers.use_whisker( _memory, _track ) ),
      _packets_sent( 0 ),
      _packets_received( 0 ),
      _track( s_track ),
@@ -27,6 +28,10 @@ void Rat::packets_received( const vector< Packet > & packets ) {
 
   const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
 
+  if( ! ( current_whisker == _using_whisker ) ) {
+    _using_whisker = current_whisker;
+  }
+  
   _the_window = current_whisker.window( _the_window );
   _intersend_time = current_whisker.intersend();
 }

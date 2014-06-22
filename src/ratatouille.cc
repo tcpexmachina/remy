@@ -10,7 +10,7 @@
 #include "sendergangofgangs.hh"
 #include "rat.hh"
 #include "aimd-templates.cc"
-#include "graph.hh"
+#include "figure.hh"
 #include "fader-templates.cc"
 
 using namespace std;
@@ -54,6 +54,8 @@ int main( int argc, char *argv[] )
       if ( tree.has_optimizer() ) {
 	printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
       }
+
+      printf( "Whiskertree: %s\n", whiskers.str().c_str());
     }
   }
 
@@ -69,17 +71,54 @@ int main( int argc, char *argv[] )
 
   float upper_limit = link_ppt * delay * 1.2;
 
-  Graph graph( 2 * num_senders + 2, 1024, 600, "Ratatouille", 0, upper_limit );
+  // packets in flight graph //
+  Figure fig( 1024, 768, "Ratatouille" );
+  unsigned int sg_id = fig.add_subgraph( 2 * num_senders + 4, 
+                                         "time (s)", "packets in flight", 
+                                         0, upper_limit );
+  unsigned int rtt_id = fig.add_subgraph( num_senders+1, "time (s)", "rttr", 
+                                          0, 2 );
+  unsigned int rewma_id = fig.add_subgraph( num_senders+1, "time (s)", "rewma",
+                                            0, 2 );
+  unsigned int sewma_id = fig.add_subgraph( num_senders+1, "time (s)", "sewma",
+                                            0, 2 );
+  unsigned int slow_id = fig.add_subgraph( num_senders+1, "time (s)", "slow_rewma", 
+                                           0, 2 );
 
-  graph.set_color( 0, 0, 0, 0, 1.0 );
-  graph.set_color( 1, 1, 0.38, 0, 0.8 );
-  graph.set_color( 2, 0, 0.2, 1, 0.8 );
-  graph.set_color( 3, 1, 0, 0, 0.8 );
-  graph.set_color( 4, 0.5, 0, 0.5, 0.8 );
-  graph.set_color( 5, 0, 0.5, 0.5, 0.8 );
-  graph.set_color( 6, 0.5, 0.5, 0.5, 0.8 );
-  graph.set_color( 7, 0.2, 0.2, 0.5, 0.8 );
-  graph.set_color( 8, 0.2, 0.5, 0.2, 0.8 );
+  fig.set_line_color( sg_id, 0, 0, 0, 0, 1.0 );
+  fig.set_line_color( sg_id, 1, 1, 0.38, 0, 0.8 );
+  fig.set_line_color( sg_id, 2, 0, 0.2, 1, 0.8 );
+  fig.set_line_color( sg_id, 3, 1, 0, 0, 0.8 );
+  fig.set_line_color( sg_id, 4, 0.5, 0, 0.5, 0.8 );
+  fig.set_line_color( sg_id, 5, 0, 0.5, 0.5, 0.8 );
+  fig.set_line_color( sg_id, 6, 0.5, 0.5, 0.5, 0.8 );
+  fig.set_line_color( sg_id, 7, 0.2, 0.2, 0.5, 0.8 );
+  fig.set_line_color( sg_id, 8, 0.2, 0.5, 0.2, 0.8 );
+  fig.set_line_color( sg_id, 9, 0.5, 0.2, 0.5, 0.8 );
+
+  fig.set_line_color( rewma_id, 0, 0, 0, 0, 1.0 );
+  fig.set_line_color( rewma_id, 1, 1, 0.38, 0, 0.8 );
+  fig.set_line_color( rewma_id, 2, 0, 0.2, 1, 0.8 );
+  fig.set_line_color( rewma_id, 3, 1, 0, 0, 0.8 );
+  fig.set_line_color( rewma_id, 4, 0.5, 0, 0.5, 0.8 );
+
+  fig.set_line_color( rtt_id, 0, 0, 0, 0, 1.0 );
+  fig.set_line_color( rtt_id, 1, 1, 0.38, 0, 0.8 );
+  fig.set_line_color( rtt_id, 2, 0, 0.2, 1, 0.8 );
+  fig.set_line_color( rtt_id, 3, 1, 0, 0, 0.8 );
+  fig.set_line_color( rtt_id, 4, 0.5, 0, 0.5, 0.8 );
+
+  fig.set_line_color( sewma_id, 0, 0, 0, 0, 1.0 );
+  fig.set_line_color( sewma_id, 1, 1, 0.38, 0, 0.8 );
+  fig.set_line_color( sewma_id, 2, 0, 0.2, 1, 0.8 );
+  fig.set_line_color( sewma_id, 3, 1, 0, 0, 0.8 );
+  fig.set_line_color( sewma_id, 4, 0.5, 0, 0.5, 0.8 );
+
+  fig.set_line_color( slow_id, 0, 0, 0, 0, 1.0 );
+  fig.set_line_color( slow_id, 1, 1, 0.38, 0, 0.8 );
+  fig.set_line_color( slow_id, 2, 0, 0.2, 1, 0.8 );
+  fig.set_line_color( slow_id, 3, 1, 0, 0, 0.8 );
+  fig.set_line_color( slow_id, 4, 0.5, 0, 0.5, 0.8 );
 
   float t = 0.0;
 
@@ -98,7 +137,7 @@ int main( int argc, char *argv[] )
 	      network.mutable_senders().mutable_gang1().count_active_senders(),
 	      network.mutable_senders().mutable_gang2().count_active_senders() );
 
-    graph.set_info( buf );
+    //graph.set_info( buf );
 
     if ( fader.autoscale() ) {
       upper_limit = link_ppt * delay * 1.2;
@@ -114,24 +153,51 @@ int main( int argc, char *argv[] )
 
     float ideal_pif = link_ppt * delay;
 
-    graph.add_data_point( 0, t, ideal_pif );
+    fig.add_data_point( sg_id, 0, t, ideal_pif );
     if ( ideal_pif > upper_limit ) {
       upper_limit = ideal_pif * 1.1;
     }
 
-    graph.add_data_point( packets_in_flight.size() + 1, t, fader.buffer_size() + link_ppt * delay );
+    fig.add_data_point( sg_id, packets_in_flight.size() + 1, t, fader.buffer_size() + link_ppt * delay );
+
+    // total number of packets in flight
+    fig.add_data_point( sg_id, packets_in_flight.size() + 2, t, 
+                        std::accumulate(packets_in_flight.begin(),
+                                        packets_in_flight.end(),
+                                        0) );
+    
+    // current ewmas for sender 1
+    for( unsigned int i = 0; i < network.mutable_senders().mutable_gang1().count_active_senders(); i++ ) {
+      fig.add_data_point( rewma_id, i+1, t,
+                          network.mutable_senders().mutable_gang1().
+                          mutable_sender( i ).mutable_sender().
+                          current_memory().field( 1 ) );
+      fig.add_data_point( sewma_id, i+1, t,
+                          network.mutable_senders().mutable_gang1().
+                          mutable_sender( i ).mutable_sender().
+                          current_memory().field( 0 ) );
+      fig.add_data_point( rtt_id, i+1, t,
+                          network.mutable_senders().mutable_gang1().
+                          mutable_sender( i ).mutable_sender().
+                          current_memory().field( 2 ) );
+      fig.add_data_point( slow_id, i+1, t,
+                          network.mutable_senders().mutable_gang1().
+                          mutable_sender( i ).mutable_sender().
+                          current_memory().field( 3 ) );
+    }
 
     for ( unsigned int i = 0; i < packets_in_flight.size(); i++ ) {
-      graph.add_data_point( i + 1, t, packets_in_flight[ i ] );
+      fig.add_data_point( sg_id, i + 1, t, packets_in_flight[ i ] );
 
       if ( packets_in_flight[ i ] > upper_limit ) {
 	upper_limit = packets_in_flight[ i ] * 1.1;
       }
     }
 
-    graph.set_window( t, fader.horizontal_size() * 1.5 );
+    fig.set_subgraph_window( sg_id, t, fader.horizontal_size() * 1.5 );
+    fig.set_subgraph_ylimits( sg_id, 0, upper_limit );
 
-    if ( graph.blocking_draw( t, fader.horizontal_size(), 0, upper_limit ) ) {
+    if ( fig.blocking_draw( t, fader.horizontal_size() )) {
       break;
     }
 
