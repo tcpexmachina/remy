@@ -24,6 +24,9 @@ public:
     : _lower( s_lower ), _upper( s_upper ), _acc( Memory::datasize ), _count( 0 )
   {}
 
+  const Memory & upper( void ) const { return _upper; }
+  const Memory & lower( void ) const { return _lower; }
+
   std::vector< MemoryRange > bisect( void ) const;
   Memory range_median( void ) const;
 

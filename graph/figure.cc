@@ -168,7 +168,6 @@ bool Figure::blocking_draw( const float t, const float logical_width )
     /* draw onto figure image */
     cairo_set_source_surface( cairo_, surface, 0, height * i );
     cairo_paint( cairo_ );
-    
   }
 
   display_.draw( cairo_.image() );

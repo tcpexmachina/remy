@@ -28,8 +28,6 @@ private:
   unsigned int _flow_id;
   int _largest_ack;
 
-  //  unsigned int _my_id;
-
 public:
   Rat( WhiskerTree & s_whiskers, const bool s_track=false );
 
@@ -51,8 +49,6 @@ public:
   const Memory & current_memory( void ) const { return _memory; }
   const int & current_window( void ) const { return _the_window; }
   const double & current_intersend( void ) const { return _intersend_time; }
-
-  //  void set_id( unsigned int new_id ) { _my_id = new_id; }
 };
 
 #endif

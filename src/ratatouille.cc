@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <algorithm>
 
 #include "whiskertree.hh"
 #include "network.cc"
@@ -76,14 +77,21 @@ int main( int argc, char *argv[] )
   unsigned int sg_id = fig.add_subgraph( 2 * num_senders + 4, 
                                          "time (s)", "packets in flight", 
                                          0, upper_limit );
-  unsigned int rtt_id = fig.add_subgraph( num_senders+1, "time (s)", "rttr", 
+  unsigned int rtt_id = fig.add_subgraph( 3*(num_senders+1), 
+                                          "time (s)", "rttr", 
                                           0, 2 );
-  unsigned int rewma_id = fig.add_subgraph( num_senders+1, "time (s)", "rewma",
+  unsigned int rewma_id = fig.add_subgraph( 3*(num_senders+1), 
+                                            "time (s)", "rewma",
                                             0, 2 );
-  unsigned int sewma_id = fig.add_subgraph( num_senders+1, "time (s)", "sewma",
+  unsigned int sewma_id = fig.add_subgraph( 3*(num_senders+1), 
+                                            "time (s)", "sewma",
                                             0, 2 );
-  unsigned int slow_id = fig.add_subgraph( num_senders+1, "time (s)", "slow_rewma", 
+  unsigned int slow_id = fig.add_subgraph( 3*(num_senders+1), 
+                                           "time (s)", "slow_rewma", 
                                            0, 2 );
+
+  std::vector< unsigned int > subfig_ids = { sewma_id, rewma_id,
+                                             rtt_id, slow_id };
 
   fig.set_line_color( sg_id, 0, 0, 0, 0, 1.0 );
   fig.set_line_color( sg_id, 1, 1, 0.38, 0, 0.8 );
@@ -96,31 +104,25 @@ int main( int argc, char *argv[] )
   fig.set_line_color( sg_id, 8, 0.2, 0.5, 0.2, 0.8 );
   fig.set_line_color( sg_id, 9, 0.5, 0.2, 0.5, 0.8 );
 
-  fig.set_line_color( rewma_id, 0, 0, 0, 0, 1.0 );
-  fig.set_line_color( rewma_id, 1, 1, 0.38, 0, 0.8 );
-  fig.set_line_color( rewma_id, 2, 0, 0.2, 1, 0.8 );
-  fig.set_line_color( rewma_id, 3, 1, 0, 0, 0.8 );
-  fig.set_line_color( rewma_id, 4, 0.5, 0, 0.5, 0.8 );
-
-  fig.set_line_color( rtt_id, 0, 0, 0, 0, 1.0 );
-  fig.set_line_color( rtt_id, 1, 1, 0.38, 0, 0.8 );
-  fig.set_line_color( rtt_id, 2, 0, 0.2, 1, 0.8 );
-  fig.set_line_color( rtt_id, 3, 1, 0, 0, 0.8 );
-  fig.set_line_color( rtt_id, 4, 0.5, 0, 0.5, 0.8 );
-
-  fig.set_line_color( sewma_id, 0, 0, 0, 0, 1.0 );
-  fig.set_line_color( sewma_id, 1, 1, 0.38, 0, 0.8 );
-  fig.set_line_color( sewma_id, 2, 0, 0.2, 1, 0.8 );
-  fig.set_line_color( sewma_id, 3, 1, 0, 0, 0.8 );
-  fig.set_line_color( sewma_id, 4, 0.5, 0, 0.5, 0.8 );
-
-  fig.set_line_color( slow_id, 0, 0, 0, 0, 1.0 );
-  fig.set_line_color( slow_id, 1, 1, 0.38, 0, 0.8 );
-  fig.set_line_color( slow_id, 2, 0, 0.2, 1, 0.8 );
-  fig.set_line_color( slow_id, 3, 1, 0, 0, 0.8 );
-  fig.set_line_color( slow_id, 4, 0.5, 0, 0.5, 0.8 );
+  for( const unsigned int x : subfig_ids ) {
+    fig.set_line_color( x, 0, 0, 0, 0, 1.0 );
+    fig.set_line_color( x, 1, 1, 0.38, 0, 0.8 );
+    fig.set_line_color( x, 2, 1, 0.38, 0, 0.3 );
+    fig.set_line_color( x, 3, 1, 0.38, 0, 0.3 );
+    fig.set_line_color( x, 4, 0, 0.2, 1, 0.8 );
+    fig.set_line_color( x, 5, 0, 0.2, 1, 0.3 );
+    fig.set_line_color( x, 6, 0, 0.2, 1, 0.3 );
+    fig.set_line_color( x, 7, 1, 0, 0, 0.8 );
+    fig.set_line_color( x, 8, 1, 0, 0, 0.3 );
+    fig.set_line_color( x, 9, 1, 0, 0, 0.3 );
+  }
 
   float t = 0.0;
+
+  std::vector< std::pair< double, double > > subfig_limits;
+  for( unsigned int i = 0; i < subfig_ids.size(); i++ ) {
+    subfig_limits.emplace_back( std::pair< double, double >( 0, 0 ) );
+  }
 
   while ( 1 ) {
     fader.update( network );
@@ -165,25 +167,37 @@ int main( int argc, char *argv[] )
                         std::accumulate(packets_in_flight.begin(),
                                         packets_in_flight.end(),
                                         0) );
-    
-    // current ewmas for sender 1
+
+    std::vector< std::pair< double, double > > new_subfig_limits( subfig_limits.size() );
+    for( unsigned int i = 0; i < subfig_ids.size(); i++ ) {
+      new_subfig_limits.emplace_back( std::pair< double, double >( 0, 0 ) );
+    }
+    // current ewmas
     for( unsigned int i = 0; i < network.mutable_senders().mutable_gang1().count_active_senders(); i++ ) {
-      fig.add_data_point( rewma_id, i+1, t,
-                          network.mutable_senders().mutable_gang1().
-                          mutable_sender( i ).mutable_sender().
-                          current_memory().field( 1 ) );
-      fig.add_data_point( sewma_id, i+1, t,
-                          network.mutable_senders().mutable_gang1().
-                          mutable_sender( i ).mutable_sender().
-                          current_memory().field( 0 ) );
-      fig.add_data_point( rtt_id, i+1, t,
-                          network.mutable_senders().mutable_gang1().
-                          mutable_sender( i ).mutable_sender().
-                          current_memory().field( 2 ) );
-      fig.add_data_point( slow_id, i+1, t,
-                          network.mutable_senders().mutable_gang1().
-                          mutable_sender( i ).mutable_sender().
-                          current_memory().field( 3 ) );
+      const Memory & sender_memory = network.mutable_senders().
+        mutable_gang1().mutable_sender( i ).mutable_sender().current_memory();
+      const MemoryRange & sender_domain( whiskers.
+                                         use_whisker( sender_memory,
+                                                      false ).domain() );
+      for( unsigned int j = 0; j < subfig_ids.size(); j++ ) {
+        fig.add_data_point( subfig_ids.at( j ), 
+                            (3*i)+1, t, sender_memory.field( j ) );
+
+        // limit "shadows"
+        fig.add_data_point( subfig_ids.at( j ), (3*i)+2, t, 
+                            sender_domain.upper().field( j ) );
+        new_subfig_limits.at( j ).second = 
+          max( min( sender_memory.field( j ) + 2, 
+                    double(sender_domain.upper().field( j )) ),
+               new_subfig_limits.at( j ).second )*0.8;
+        fig.add_data_point( subfig_ids.at( j ), (3*i)+3, t, 
+                            sender_domain.lower().field( j ) );
+      }
+    }
+
+    for( unsigned int i = 0; i < subfig_limits.size(); i++ ) {
+      subfig_limits.at( i ).second = new_subfig_limits.at( i ).second +
+        (subfig_limits.at( i ).second)*0.2;
     }
 
     for ( unsigned int i = 0; i < packets_in_flight.size(); i++ ) {
@@ -196,6 +210,15 @@ int main( int argc, char *argv[] )
 
     fig.set_subgraph_window( sg_id, t, fader.horizontal_size() * 1.5 );
     fig.set_subgraph_ylimits( sg_id, 0, upper_limit );
+
+    if( network.mutable_senders().mutable_gang1().count_active_senders() > 0 ) {
+    for ( unsigned int i = 0; i < subfig_limits.size(); i++ ) 
+      {
+        fig.set_subgraph_ylimits( subfig_ids.at ( i ), 
+                                  subfig_limits.at( i ).first, 
+                                  subfig_limits.at( i ).second );
+      }  
+    }
 
     if ( fig.blocking_draw( t, fader.horizontal_size() )) {
       break;
