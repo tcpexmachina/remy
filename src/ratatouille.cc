@@ -137,7 +137,7 @@ int main( int argc, char *argv[] )
 	      network.mutable_senders().mutable_gang1().count_active_senders(),
 	      network.mutable_senders().mutable_gang2().count_active_senders() );
 
-    //graph.set_info( buf );
+    fig.set_subgraph_info( sg_id, buf );
 
     if ( fader.autoscale() ) {
       upper_limit = link_ppt * delay * 1.2;

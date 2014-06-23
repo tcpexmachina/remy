@@ -47,6 +47,9 @@ public:
                              const float min_y, 
                              const float max_y );
 
+  void set_subgraph_info( const unsigned int subgraph_id,
+                          const std::string & info );
+
   void set_subgraph_window( const unsigned int subgraph_id,
                             const float t,
                             const float logical_width );

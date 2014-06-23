@@ -84,6 +84,24 @@ void Figure::set_line_color( const unsigned int subgraph_id,
   }
 }
 
+void Figure::set_subgraph_info( const unsigned int subgraph_id,
+                                const string & info ) {
+  bool found_subgraph = false;
+
+  for( auto & s : subgraphs_ ) {
+    if( s.first == subgraph_id ) {
+      found_subgraph = true;
+      ( s.second )->set_info( info );
+      
+      break;
+    }
+  }
+  
+  if( !found_subgraph ) {
+    throw runtime_error( "invalid subgraph ID provided" );
+  }
+}
+
 void Figure::set_subgraph_ylimits( const unsigned int subgraph_id,
                                    const float min_y, 
                                    const float max_y )
