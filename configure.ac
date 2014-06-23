@@ -1,7 +1,6 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
 AC_INIT([remy], [0.1], [remy@mit.edu])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([src/remy.cc])
@@ -38,7 +37,6 @@ cstdio string sys/stat.h sys/types.h ctime tuple unistd.h unordered_map \
 utility vector], [], [AC_MSG_ERROR([Missing header file])])
 
 # Checks for typedefs, structures, and compiler characteristics.
-AC_CHECK_HEADER_STDBOOL
 AC_TYPE_SIZE_T
 AC_TYPE_UINT64_T
 AC_LANG_POP(C++)
