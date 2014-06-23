@@ -214,6 +214,7 @@ bool WhiskerImprover::evaluate_if_done( std::tuple< Whisker, bool, string > & ca
 
       if ( status_code == 200 ) {
         /* Make sure we received a valid protobuf */
+        assert( answer_pb_str != "" );
         assert( answer_pb.ParseFromString( answer_pb_str ) );
         //printf( "Received answer for id %s\n", headers[ "problemid" ].c_str() );
 
