@@ -78,7 +78,7 @@ void SenderGang<SenderType>::TimeSwitchedSender::switcher( const double & tickno
 {
   /* should it switch? */
   while ( SwitchedSender::next_switch_tick <= tickno ) {
-    assert( SwitchedSender::next_switch_tick == tickno );
+    //assert( SwitchedSender::next_switch_tick == tickno );
 
     /* switch */
     SwitchedSender::sending ? SwitchedSender::switch_off( tickno, num_sending ) : SwitchedSender::switch_on( tickno );
@@ -231,7 +231,7 @@ vector< pair< double, double > > SenderGang<SenderType>::throughputs_delays( voi
 template <class SenderType>
 double SenderGang<SenderType>::SwitchedSender::next_event_time( const double & tickno ) const
 {
-  assert( next_switch_tick >= tickno );
+  //assert( next_switch_tick >= tickno ); /* Can't have this work in real time */
 
   return min( next_switch_tick, sending ? sender.next_event_time( tickno ) : std::numeric_limits<double>::max() );
 }
@@ -242,7 +242,7 @@ double SenderGang<SenderType>::next_event_time( const double & tickno ) const
   double ret = std::numeric_limits<double>::max();
   for ( const auto & x : _gang ) {
     const double the_next_event = x.next_event_time( tickno );
-    assert( the_next_event >= tickno );
+//    assert( the_next_event >= tickno );
     if ( the_next_event < ret ) {
       ret = the_next_event;
     }
