@@ -5,13 +5,13 @@
 
 using namespace std;
 
-Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
+Rat::Rat( WhiskerTree & s_whiskers, const uint64_t current_time, const bool s_track )
   :  _whiskers( s_whiskers ),
      _memory(),
      _packets_sent( 0 ),
      _packets_received( 0 ),
      _track( s_track ),
-     _last_send_time( 0 ),
+     _last_send_time( current_time ),
      _the_window( 0 ),
      _intersend_time( 0 ),
      _flow_id( 0 ),

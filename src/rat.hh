@@ -28,7 +28,7 @@ private:
   int _largest_ack;
 
 public:
-  Rat( WhiskerTree & s_whiskers, const bool s_track=false );
+  Rat( WhiskerTree & s_whiskers, const uint64_t current_time = 0, const bool s_track=false );
 
   void packets_received( const std::vector< Packet > & packets );
   void reset( const double & tickno ); /* start new flow */

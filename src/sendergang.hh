@@ -95,6 +95,7 @@ public:
 	      const unsigned int num_senders,
 	      const SenderType & exemplar,
 	      PRNG & s_prng,
+	      const uint64_t & current_time = 0,
 	      const unsigned int id_range_begin = 0 );
 
   /* Create empty SenderGang */
