@@ -83,7 +83,7 @@ void SenderGang<SenderType>::TimeSwitchedSender::switcher( const double & tickno
     SwitchedSender::sending ? SwitchedSender::switch_off( tickno, num_sending ) : SwitchedSender::switch_on( tickno );
 
     /* increment next switch time */
-    SwitchedSender::next_switch_tick += (SwitchedSender::sending ? stop_distribution : start_distribution).sample();
+    SwitchedSender::next_switch_tick += static_cast< uint64_t >( (SwitchedSender::sending ? stop_distribution : start_distribution ).sample() );
   }
 }
 
@@ -194,7 +194,7 @@ void SenderGang<SenderType>::ByteSwitchedSender::tick( NextHop & next, Receiver 
     /* do we need to switch ourselves off? */
     if ( SwitchedSender::sender.packets_sent() == packets_sent_cap_ ) {
       SwitchedSender::switch_off( tickno, num_sending );
-      SwitchedSender::next_switch_tick = tickno + start_distribution.sample();
+      SwitchedSender::next_switch_tick = tickno + static_cast< uint64_t >( start_distribution.sample() );
     }
   }
 }
