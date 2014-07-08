@@ -16,7 +16,9 @@ Graph::Graph( const unsigned int num_lines,
 	      const unsigned int initial_width, 
               const unsigned int initial_height,
               const string & xlabel, const string & ylabel,
-	      const float min_y, const float max_y )
+	      const float min_y, const float max_y,
+
+              const float data_memory )
   : cairo_( std::pair< unsigned int, unsigned int > ( initial_width,
                                                       initial_height )),
     pango_( cairo_ ),
@@ -34,7 +36,8 @@ Graph::Graph( const unsigned int num_lines,
     max_y_( max_y ),
     bottom_( min_y ),
     top_( max_y ),
-    horizontal_fadeout_( cairo_pattern_create_linear( 0, 0, 190, 0 ) )
+    horizontal_fadeout_( cairo_pattern_create_linear( 0, 0, 190, 0 ) ),
+    data_memory_size_( data_memory )
 {
   cairo_pattern_add_color_stop_rgba( horizontal_fadeout_, 0.0, 1, 1, 1, 1 );
   cairo_pattern_add_color_stop_rgba( horizontal_fadeout_, 0.67, 1, 1, 1, 1 );
@@ -49,7 +52,7 @@ void Graph::set_info( const string & info )
   }
 }
 
-void Graph::set_window( const float t, const float logical_width )
+/* void Graph::set_window( const float t, const float logical_width )
 {
   for ( auto & line : data_points_ ) {
     while ( (line.size() >= 2) and (line.front().first < t - logical_width - 1)
@@ -61,7 +64,7 @@ void Graph::set_window( const float t, const float logical_width )
   while ( (not x_tick_labels_.empty()) and (x_tick_labels_.front().first < t - logical_width - 1) ) {
     x_tick_labels_.pop_front();
   }
-}
+  } */
 
 static int to_int( const float x )
 {
@@ -74,32 +77,37 @@ double Graph::xtick_label_y( std::pair<unsigned int, unsigned int>
   return graph_size.second * 9.0 / 10.0;
 }
 
-void Graph::draw_xtick_labels( const float t, const float logical_width,
-                               std::pair<unsigned int, unsigned int> 
-                               graph_size )
+void Graph::draw_xtick_labels( std::pair< float, float > xrange, 
+                               const float tick_interval,
+                               std::pair<unsigned int, unsigned int> graph_size )
 {
-  /* do we need to make a new label? */
-  while ( x_tick_labels_.empty() or (x_tick_labels_.back().first < t + 1) ) { /* start when offscreen */
-    const int next_label = x_tick_labels_.empty() ? to_int( t ) : x_tick_labels_.back().first + 1;
+  assert( xrange.second >= xrange.first );
 
-    /* add commas as appropriate */
+  std::deque<std::pair<float, Pango::Text>> new_xtick_labels;
+
+  for( float i = floorf( xrange.first/10 )*10; i < xrange.second; i+= tick_interval ) {
+    const float next_label = floorf(i * 10)/10;
+    
     stringstream ss;
     ss.imbue( locale( "" ) );
+    ss.precision( 2 );
     ss << fixed << next_label;
-
-    x_tick_labels_.emplace_back( next_label, Pango::Text( cairo_, pango_, tick_font_, ss.str() ) );
+    
+    new_xtick_labels.emplace_back( next_label, Pango::Text( cairo_, pango_, tick_font_, ss.str() ) );
   }
 
   /* draw the labels and vertical grid */
-  for ( const auto & x : x_tick_labels_ ) {
+  for ( const auto & x : new_xtick_labels ) {
     /* position the text in the window */
-    const double x_position = graph_size.first - (t - x.first) * 
-      graph_size.first / logical_width;
+    double x_position = ( (x.first - xrange.first) / abs( xrange.second - xrange.first )) * graph_size.first;
+    if( abs( xrange.second - xrange.first ) < std::numeric_limits< float >::epsilon() ) {
+      x_position = xrange.first;
+    }
 
     x.second.draw_centered_at( cairo_,
 			       x_position,
                                xtick_label_y( graph_size ),
-			       0.85 * graph_size.first / logical_width );
+			       0.85 * graph_size.first );
 
     cairo_set_source_rgba( cairo_, 0, 0, 0.4, 1 );
     cairo_fill( cairo_ );
@@ -114,13 +122,11 @@ void Graph::draw_xtick_labels( const float t, const float logical_width,
     cairo_set_source_rgba( cairo_, 0, 0, 0.4, 0.25 );
     cairo_stroke( cairo_ );
   }
-
 }
 
-cairo_surface_t * Graph::generate_graph( const float t, 
-                                         const float logical_width, 
-                                         const float width, 
-                                         const float height )
+cairo_surface_t * Graph::generate_graph( const float width, 
+                                         const float height,
+                                         const std::pair< float, float > xrange )
 {
   /* set scale (with smoothing) */
   top_ = top_ * .95 + max_y_ * 0.05;
@@ -144,7 +150,7 @@ cairo_surface_t * Graph::generate_graph( const float t,
   cairo_fill( cairo_ );
 
   /* draw the updated x-tick labels */
-  draw_xtick_labels( t, logical_width, graph_size );
+  draw_xtick_labels( xrange, 0.5, graph_size );
 
   /* draw the y-axis labels */
 
@@ -255,10 +261,10 @@ cairo_surface_t * Graph::generate_graph( const float t,
 }
 
 /* TODO subgraph should just pass line information to figure for drawing */
-void Graph::draw_lines( Display* display, const float t,
-                        const float logical_width, const float width,
+void Graph::draw_lines( Display* display, const float width,
                         const float height, const unsigned int y_shift,
-                        const float window_height ) 
+                        const float window_height,
+                        std::pair< float, float > xrange ) 
 {
   auto graph_size = std::pair< unsigned int, unsigned int >( width, height );
 
@@ -267,17 +273,20 @@ void Graph::draw_lines( Display* display, const float t,
     auto & line = data_points_[ i ];
 
     if ( not line.empty() ) {
-      line.emplace_back( t + 20, line.back().second );
+      float t = line.back().first;
+
+      line.emplace_back( t + 0.001, line.back().second );
 
       display->draw( get<0>( colors_[ i ] ), get<1>( colors_[ i ] ),
                      get<2>( colors_[ i ] ), get<3>( colors_[ i ] ),
-                     5.0, 220, 
+                     3.0, 220, 
                      std::pair< unsigned int, unsigned int >
                      ( 0, window_height - ( height + y_shift )),
                      width, height, line,
                      [&] ( const pair<float, float> & x ) {
-                       return make_pair( graph_size.first - (t - x.first) * 
-                                         graph_size.first / logical_width,
+                       return make_pair( (x.first - xrange.first) 
+                                         / abs( xrange.second - xrange.first ) * 
+                                         graph_size.first, // TODO
                                          chart_height( x.second, 
                                                        graph_size.second )
                                          + y_shift );

@@ -42,27 +42,32 @@ class Graph
 
   double xtick_label_y( std::pair<unsigned int, unsigned int>
                         window_size );
-  void draw_xtick_labels( const float t, const float logical_width,
-                          std::pair<unsigned int, unsigned int>
-                          window_size);
+  void draw_xtick_labels( std::pair< float, float > xrange, 
+                          const float tick_interval,
+                          std::pair<unsigned int, unsigned int> graph_size );
 
   Cairo::Pattern horizontal_fadeout_;
+
+  unsigned int data_memory_size_; // number of data points to keep, -1 to never forget
 
 public:
   Graph( const unsigned int num_lines,
 	 const unsigned int initial_width, const unsigned int initial_height,
          const std::string & xlabel, const std::string & ylabel,
-	 const float min_y, const float max_y );
+	 const float min_y, const float max_y, const float data_memory );
 
-  void set_window( const float t, const float logical_width );
+  /*  void set_window( const float t, const float logical_width ); */
   void add_data_point( const unsigned int num, const float t, const float y ) {
-    if ( not data_points_.at( num ).empty() ) {
-      if ( y == data_points_.at( num ).back().second ) {
-	return;
+    data_points_.at( num ).emplace_back( t, y );
+
+    if( data_memory_size_ > 0 ) {
+      // forget old data
+      for ( auto & line : data_points_ ) {
+        while ( line.size() > data_memory_size_ ) {
+          line.pop_front();
+        }
       }
     }
-
-    data_points_.at( num ).emplace_back( t, y );
   }
 
   void set_color( const unsigned int num, const float red, const float green,
@@ -73,15 +78,13 @@ public:
     max_y_ = max_y;
   }
 
-  cairo_surface_t * generate_graph( const float t, 
-                                    const float logical_width, 
-                                    const float width, 
-                                    const float height );
+  cairo_surface_t * generate_graph( const float width, const float height,
+                                    const std::pair<float, float> xrange );
   
-  void draw_lines( Display* display, const float t,
-                   const float logical_width, const float width,
+  void draw_lines( Display* display, const float width,
                    const float height, const unsigned int y_shift,
-                   const float window_height ); 
+                   const float window_height,
+                   std::pair< float, float> xrange ); 
 
   void set_info( const std::string & info );
 };

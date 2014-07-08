@@ -16,8 +16,15 @@ class Figure
   std::pair< unsigned int, unsigned int > size_;
   
   unsigned int next_graph_id_;
-  std::vector< std::pair< unsigned int,
-                          std::unique_ptr< Graph > > > subgraphs_;
+
+  struct Subgraph {
+    unsigned int id;
+    std::unique_ptr< Graph > graph;
+    std::pair< float, float > xrange;
+  };
+
+
+  std::vector< Subgraph > subgraphs_;
 
   unsigned int subgraph_height( unsigned int n_graphs ) { return display_.window().size().second / n_graphs; }
 
@@ -29,7 +36,8 @@ public:
   const unsigned int & add_subgraph( const unsigned int num_lines,
                                      const std::string & xlabel,
                                      const std::string & ylabel,
-                                     const float min_y, const float max_y );
+                                     const float min_y, const float max_y,
+                                     const float data_memory );
 
   void remove_subgraph( const unsigned int subgraph_id );
   void refit_subgraphs( void );
@@ -50,11 +58,10 @@ public:
   void set_subgraph_info( const unsigned int subgraph_id,
                           const std::string & info );
 
-  void set_subgraph_window( const unsigned int subgraph_id,
-                            const float t,
-                            const float logical_width );
+  void set_subgraph_xrange( const unsigned int subgraph_id,
+                            const std::pair< float, float > xrange );
 
-  bool blocking_draw( const float t, const float logical_width );
+  bool blocking_draw( void );
 };
 
 #endif /* FIGURE_HH */

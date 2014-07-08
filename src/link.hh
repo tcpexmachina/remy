@@ -49,6 +49,8 @@ public:
     return ret;
   }
 
+  unsigned int buffer_size( void ) const { return _buffer.size(); }
+
   void set_rate( const double rate ) { _pending_packet.set_delay( 1.0 / rate ); }
   double rate( void ) const { return 1.0 / _pending_packet.delay(); }
   void set_limit( const unsigned int limit )

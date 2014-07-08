@@ -20,23 +20,26 @@ const unsigned int & Figure::add_subgraph( const unsigned int num_lines,
                                            const string & xlabel,
                                            const string & ylabel,
                                            const float min_y, 
-                                           const float max_y )
+                                           const float max_y,
+                                           const float data_memory )
 {
   auto graph_id = next_graph_id_;
   
   // instantiate a new graph with a unique id and add it to subgraphs.
-  subgraphs_.emplace_back( std::pair< unsigned int, std::unique_ptr< Graph > >
-                           ( graph_id, std::unique_ptr< Graph >( new Graph( num_lines, display_.window().size().first, subgraph_height( subgraphs_.size() + 1 ), xlabel, ylabel, min_y, max_y ))));
+  subgraphs_.emplace_back( Subgraph { 
+      graph_id, 
+        std::unique_ptr< Graph >( new Graph( num_lines, display_.window().size().first, subgraph_height( subgraphs_.size() + 1 ), xlabel, ylabel, min_y, max_y, data_memory )),
+        std::pair< float, float >( 0, 0 ) } );
 
   next_graph_id_++;
-  return subgraphs_.back().first;
+  return subgraphs_.back().id;
 }
 
 /* this one is silent if subgraph not found */
 void Figure::remove_subgraph( const unsigned int subgraph_id ) {
   auto it = subgraphs_.begin();
   while( it < subgraphs_.end() ) {
-    if( it->first == subgraph_id ) {
+    if( it->id == subgraph_id ) {
       subgraphs_.erase( it );
       break;
     }
@@ -49,10 +52,10 @@ void Figure::add_data_point( const unsigned int subgraph_id,
   bool found_subgraph = false;
 
   for( const auto & s : subgraphs_ ) {
-    if( s.first == subgraph_id ) {
+    if( s.id == subgraph_id ) {
       found_subgraph = true;
 
-      ( s.second )->add_data_point( line_idx, t, y );
+      ( s.graph )->add_data_point( line_idx, t, y );
 
       break;
     }
@@ -71,9 +74,9 @@ void Figure::set_line_color( const unsigned int subgraph_id,
   bool found_subgraph = false;
 
   for( auto & s : subgraphs_ ) {
-    if( s.first == subgraph_id ) {
+    if( s.id == subgraph_id ) {
       found_subgraph = true;
-      ( s.second )->set_color( line_idx, red, green, blue, alpha );
+      ( s.graph )->set_color( line_idx, red, green, blue, alpha );
       
       break;
     }
@@ -89,9 +92,9 @@ void Figure::set_subgraph_info( const unsigned int subgraph_id,
   bool found_subgraph = false;
 
   for( auto & s : subgraphs_ ) {
-    if( s.first == subgraph_id ) {
+    if( s.id == subgraph_id ) {
       found_subgraph = true;
-      ( s.second )->set_info( info );
+      ( s.graph )->set_info( info );
       
       break;
     }
@@ -109,9 +112,9 @@ void Figure::set_subgraph_ylimits( const unsigned int subgraph_id,
   bool found_subgraph = false;
 
   for( auto & s : subgraphs_ ) {
-    if( s.first == subgraph_id ) {
+    if( s.id == subgraph_id ) {
       found_subgraph = true;
-      ( s.second )->set_ylimits( min_y, max_y );
+      ( s.graph )->set_ylimits( min_y, max_y );
       
       break;
     }
@@ -122,16 +125,14 @@ void Figure::set_subgraph_ylimits( const unsigned int subgraph_id,
   }
 }
 
-void Figure::set_subgraph_window( const unsigned int subgraph_id,
-                                  const float t, 
-                                  const float logical_width )
-{
+void Figure::set_subgraph_xrange( const unsigned int subgraph_id,
+                                  const std::pair< float, float > xrange ) {
   bool found_subgraph = false;
 
   for( auto & s : subgraphs_ ) {
-    if( s.first == subgraph_id ) {
+    if( s.id == subgraph_id ) {
       found_subgraph = true;
-      ( s.second )->set_window( t, logical_width );
+      s.xrange = xrange;
 
       break;
     }
@@ -142,9 +143,8 @@ void Figure::set_subgraph_window( const unsigned int subgraph_id,
   }
 }
 
-
 /*  construct each subgraph, then draw the figure. */
-bool Figure::blocking_draw( const float t, const float logical_width )
+bool Figure::blocking_draw( void )
 {
   /* get the current window size */
   const auto window_size = display_.window().size();
@@ -162,8 +162,8 @@ bool Figure::blocking_draw( const float t, const float logical_width )
   auto height = subgraph_height( subgraphs_.size() );
   for( unsigned int i = 0; i < subgraphs_.size(); i++ ) {
     auto & s = subgraphs_.at( i );
-    cairo_surface_t * surface = ( s.second )->
-      generate_graph( t, logical_width, window_size.first, height );
+    cairo_surface_t * surface = ( s.graph )->
+      generate_graph( window_size.first, height, s.xrange );
 
     /* draw onto figure image */
     cairo_set_source_surface( cairo_, surface, 0, height * i );
@@ -175,8 +175,9 @@ bool Figure::blocking_draw( const float t, const float logical_width )
   for( unsigned int i = 0; i < subgraphs_.size(); i++ ) {
     auto & s = subgraphs_.at( i );
     /* draw the lines */
-    ( s.second )->draw_lines( &display_, t, logical_width, window_size.first,
-                              height, height * i, window_size.second );
+    ( s.graph )->draw_lines( &display_, window_size.first,
+                             height, height * i, window_size.second,
+                             s.xrange);
   }
 
   /* swap buffers to reveal what has been drawn */

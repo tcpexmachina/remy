@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <algorithm>
+#include <cmath>
 
 #include "whiskertree.hh"
 #include "network.cc"
@@ -76,22 +77,15 @@ int main( int argc, char *argv[] )
   Figure fig( 1024, 768, "Ratatouille" );
   unsigned int sg_id = fig.add_subgraph( 2 * num_senders + 4, 
                                          "time (s)", "packets in flight", 
-                                         0, upper_limit, -1.0 );
-  unsigned int rtt_id = fig.add_subgraph( 3*(num_senders+1), 
-                                          "time (s)", "rttr", 
-                                          0, 2, -1.0 );
-  unsigned int rewma_id = fig.add_subgraph( 3*(num_senders+1), 
-                                            "time (s)", "rewma",
-                                            0, 2, -1.0  );
-  unsigned int sewma_id = fig.add_subgraph( 3*(num_senders+1), 
-                                            "time (s)", "sewma",
-                                            0, 2, -1.0 );
-  unsigned int slow_id = fig.add_subgraph( 3*(num_senders+1), 
-                                           "time (s)", "slow_rewma", 
-                                           0, 2, -1.0 );
+                                         0, upper_limit, 1000.0 );
+  unsigned int sewma_rewma_id = fig.add_subgraph( 3*(num_senders+1), 
+                                                "sewma", "rewma", 
+                                                0, 2, 2.0 );
+  unsigned int slow_rttr_id = fig.add_subgraph( 3*(num_senders+1), 
+                                                "slow_rewma", "rttr", 
+                                                0, 2, 10.0 );
 
-  std::vector< unsigned int > subfig_ids = { sewma_id, rewma_id,
-                                             rtt_id, slow_id };
+  std::vector< unsigned int > subfig_ids = { sewma_rewma_id, slow_rttr_id };
 
   fig.set_line_color( sg_id, 0, 0, 0, 0, 1.0 );
   fig.set_line_color( sg_id, 1, 1, 0.38, 0, 0.8 );
@@ -107,14 +101,14 @@ int main( int argc, char *argv[] )
   for( const unsigned int x : subfig_ids ) {
     fig.set_line_color( x, 0, 0, 0, 0, 1.0 );
     fig.set_line_color( x, 1, 1, 0.38, 0, 0.8 );
-    fig.set_line_color( x, 2, 1, 0.38, 0, 0.3 );
-    fig.set_line_color( x, 3, 1, 0.38, 0, 0.3 );
-    fig.set_line_color( x, 4, 0, 0.2, 1, 0.8 );
-    fig.set_line_color( x, 5, 0, 0.2, 1, 0.3 );
-    fig.set_line_color( x, 6, 0, 0.2, 1, 0.3 );
-    fig.set_line_color( x, 7, 1, 0, 0, 0.8 );
-    fig.set_line_color( x, 8, 1, 0, 0, 0.3 );
-    fig.set_line_color( x, 9, 1, 0, 0, 0.3 );
+    fig.set_line_color( x, 2, 0, 0.2, 1, 0.8 );
+    fig.set_line_color( x, 3, 1, 0, 0, 0.8 );
+    fig.set_line_color( x, 4, 0.5, 0, 0.5, 0.8 );
+    fig.set_line_color( x, 5, 0, 0.5, 0.5, 0.8 );
+    fig.set_line_color( x, 6, 0.5, 0.5, 0.5, 0.8 );
+    fig.set_line_color( x, 7, 0.2, 0.2, 0.5, 0.8 );
+    fig.set_line_color( x, 8, 0.2, 0.5, 0.2, 0.8 );
+    fig.set_line_color( x, 9, 0.5, 0.2, 0.5, 0.8 );
   }
 
   float t = 0.0;
@@ -162,11 +156,9 @@ int main( int argc, char *argv[] )
 
     fig.add_data_point( sg_id, packets_in_flight.size() + 1, t, fader.buffer_size() + link_ppt * delay );
 
-    // total number of packets in flight
+    // current queue size
     fig.add_data_point( sg_id, packets_in_flight.size() + 2, t, 
-                        std::accumulate(packets_in_flight.begin(),
-                                        packets_in_flight.end(),
-                                        0) );
+                        network.mutable_link().buffer_size() );
 
     std::vector< std::pair< double, double > > new_subfig_limits( subfig_limits.size() );
     for( unsigned int i = 0; i < subfig_ids.size(); i++ ) {
@@ -180,20 +172,24 @@ int main( int argc, char *argv[] )
       const MemoryRange & sender_domain( whiskers.
                                          use_whisker( sender_memory,
                                                       false ).domain() );
-      for( unsigned int j = 0; j < subfig_ids.size(); j++ ) {
-        fig.add_data_point( subfig_ids.at( j ), 
-                            (3*i)+1, t, sender_memory.field( j ) );
+      
+      fig.add_data_point( sewma_rewma_id, i+1,
+                          sender_memory.field( 1 ), 
+                          sender_memory.field( 0 ) );
+      new_subfig_limits.at( 0 ).second = 
+        max( min( sender_memory.field( 0 ) + 2, 
+                  double(sender_domain.upper().field( 0 )) ),
+             new_subfig_limits.at( 0 ).second )*0.8;
+      fig.set_subgraph_xrange( sewma_rewma_id, std::pair<float, float>( 0.0, 1.5 ));
 
-        // limit "shadows"
-        fig.add_data_point( subfig_ids.at( j ), (3*i)+2, t, 
-                            sender_domain.upper().field( j ) );
-        new_subfig_limits.at( j ).second = 
-          max( min( sender_memory.field( j ) + 2, 
-                    double(sender_domain.upper().field( j )) ),
-               new_subfig_limits.at( j ).second )*0.8;
-        fig.add_data_point( subfig_ids.at( j ), (3*i)+3, t, 
-                            sender_domain.lower().field( j ) );
-      }
+      fig.add_data_point( slow_rttr_id, i+1,
+                          sender_memory.field( 3 ), 
+                          sender_memory.field( 2 ) );
+      new_subfig_limits.at( 1 ).second = 
+        max( min( sender_memory.field( 2 ) + 2, 
+                  double(sender_domain.upper().field( 2 )) ),
+             new_subfig_limits.at( 2 ).second )*0.8;
+      fig.set_subgraph_xrange( slow_rttr_id, std::pair<float, float>( 0.0, 1.0 ));
     }
 
     for( unsigned int i = 0; i < subfig_limits.size(); i++ ) {
@@ -209,7 +205,6 @@ int main( int argc, char *argv[] )
       }
     }
 
-    fig.set_subgraph_window( sg_id, t, fader.horizontal_size() * 1.5 );
     fig.set_subgraph_ylimits( sg_id, 0, upper_limit );
 
     if( network.mutable_senders().mutable_gang1().count_active_senders() > 0 ) {
@@ -221,7 +216,9 @@ int main( int argc, char *argv[] )
       }  
     }
 
-    if ( fig.blocking_draw( t, fader.horizontal_size() )) {
+    fig.set_subgraph_xrange( sg_id, std::pair<float, float>( (float)max( 0.0, (double)t-10 ), t ));
+
+    if ( fig.blocking_draw()) {
       break;
     }
 
