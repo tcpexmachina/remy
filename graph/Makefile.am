@@ -1,11 +1,11 @@
 AM_CPPFLAGS = $(GL_CFLAGS) $(GLFW_CFLAGS) $(GLEW_CFLAGS) $(GLU_CFLAGS) $(PANGOCAIRO_CFLAGS)
 AM_CXXFLAGS = $(PICKY_CXXFLAGS) $(NODEBUG_CXXFLAGS)
 LDADD = $(GL_LIBS) $(GLFW_LIBS) $(GLEW_LIBS) $(GLU_LIBS) $(PANGOCAIRO_LIBS)
-bin_PROGRAMS = glfun
+#bin_PROGRAMS = glfun
 
 noinst_LIBRARIES = libremygraph.a
 
-glfun_SOURCES = main.cc \
+#glfun_SOURCES = main.cc \
 	gl_objects.hh gl_objects.cc \
 	display.hh display.cc \
 	image.hh image.cc \
