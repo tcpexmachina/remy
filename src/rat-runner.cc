@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <vector>
 #include <string>
+#include <fstream>
+#include <sstream>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -18,6 +20,8 @@ int main( int argc, char *argv[] )
   double delay = 100.0;
   double mean_on_duration = 5000.0;
   double mean_off_duration = 5000.0;
+
+  std::queue< double > trace;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -63,6 +67,21 @@ int main( int argc, char *argv[] )
     } else if ( arg.substr( 0, 4 ) == "off=" ) {
       mean_off_duration = atof( arg.substr( 4 ).c_str() );
       fprintf( stderr, "Setting mean_off_duration to %f ms\n", mean_off_duration );
+    } else if ( arg.substr( 0, 6 ) == "trace=" ) {
+      string trace_filename( arg.substr( 6 ) );
+      
+      std::ifstream trace_file( trace_filename );
+      std::string line;
+      
+      while( std::getline( trace_file, line ) ) {
+        std::istringstream iss( line );
+        double timestamp;
+        if( !( iss >> timestamp ) ) {
+          break;
+        }
+
+        trace.push( timestamp );
+      }
     }
   }
 
@@ -73,6 +92,9 @@ int main( int argc, char *argv[] )
   configuration_range.mean_on_duration = mean_on_duration;
   configuration_range.mean_off_duration = mean_off_duration;
   configuration_range.lo_only = true;
+  if( not trace.empty() ) {
+    configuration_range.trace = trace;
+  }
 
   Evaluator eval( configuration_range );
   auto outcome = eval.score( whiskers, false, 10 );

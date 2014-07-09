@@ -14,15 +14,15 @@ Evaluator::Evaluator( const ConfigRange & range )
     _configs()
 {
   /* first load "anchors" */
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_trace( range.trace ) );
 
   if ( range.lo_only ) {
     return;
   }
 
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_trace( range.trace ) );
+  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_trace( range.trace ) );
+  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_trace( range.trace ) );
 
   /* now load some random ones just for fun */
   for ( int i = 0; i < 12; i++ ) {
@@ -30,7 +30,7 @@ Evaluator::Evaluator( const ConfigRange & range )
     boost::random::uniform_real_distribution<> rtt( range.rtt_ms.first, range.rtt_ms.second );
     boost::random::uniform_int_distribution<> num_senders( 1, range.max_senders );
 
-    _configs.push_back( NetConfig().set_link_ppt( link_speed( global_PRNG() ) ).set_delay( rtt( global_PRNG() ) ).set_num_senders( num_senders( global_PRNG() ) ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+    _configs.push_back( NetConfig().set_link_ppt( link_speed( global_PRNG() ) ).set_delay( rtt( global_PRNG() ) ).set_num_senders( num_senders( global_PRNG() ) ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_trace( range.trace ) );
   }
 }
 
@@ -123,11 +123,18 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   Evaluator::Outcome the_outcome;
   for ( auto &x : configs ) {
     /* run once */
-    Network<Rat, Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
-    network1.run_simulation( ticks_to_run );
+    if( not x.trace.empty() ) {
+      Network<Rat, Rat, TraceLink> network1( Rat( run_whiskers, trace ), run_prng, x );
+      network1.run_simulation( x.trace.back() ); // run simulation until end of trace
+      the_outcome.score += network1.senders().utility();
+      the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
+    } else {
+      Network<Rat, Rat, IsochronousLink> network1( Rat( run_whiskers, trace ), run_prng, x );
+      network1.run_simulation( ticks_to_run );
+      the_outcome.score += network1.senders().utility();
+      the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
+    }
     
-    the_outcome.score += network1.senders().utility();
-    the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
   }
 
   the_outcome.used_whiskers = run_whiskers;

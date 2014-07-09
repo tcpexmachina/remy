@@ -1,6 +1,7 @@
 #ifndef CONFIG_RANGE_HH
 #define CONFIG_RANGE_HH
 
+#include <queue>
 #include "dna.pb.h"
 
 class ConfigRange
@@ -13,6 +14,7 @@ public:
   double mean_on_duration { 1000 };
   double mean_off_duration { 1000 };
   bool lo_only { false };
+  std::queue< double > trace {};
 
   RemyBuffers::ConfigRange DNA( void ) const;
 };

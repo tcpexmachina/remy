@@ -17,13 +17,15 @@ public:
   unsigned int num_senders;
   double link_ppt;
   double delay;
+  std::queue< double > trace;
 
   NetConfig( void )
     : mean_on_duration( 5000.0 ),
       mean_off_duration( 5000.0 ),
       num_senders( 8 ),
       link_ppt( 1.0 ),
-      delay( 150 )
+      delay( 150 ),
+      trace()
   {}
 
   NetConfig( const RemyBuffers::NetConfig & dna )
@@ -31,7 +33,8 @@ public:
       mean_off_duration( dna.mean_off_duration() ),
       num_senders( dna.num_senders() ),
       link_ppt( dna.link_ppt() ),
-      delay( dna.delay() )
+      delay( dna.delay() ),
+      trace()
   {}
   
   NetConfig & set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
@@ -39,6 +42,7 @@ public:
   NetConfig & set_num_senders( const unsigned int n ) { num_senders = n; return *this; }
   NetConfig & set_on_duration( const double & duration ) { mean_on_duration = duration; return *this; }
   NetConfig & set_off_duration( const double & duration ) { mean_off_duration = duration; return *this; }
+  NetConfig & set_trace( const std::queue< double > & s_trace ) { trace = s_trace; return *this; }
 
   RemyBuffers::NetConfig DNA( void ) const
   {
@@ -61,28 +65,66 @@ public:
   }
 };
 
-template <class SenderType1, class SenderType2>
-class Network
+/* network base class */
+template <class SenderType1, class SenderType2, class LinkType>
+class NetworkBase
 {
-private:
+protected:
   PRNG & _prng;
   SenderGangofGangs<SenderType1, SenderType2> _senders;
-  Link _link;
+  LinkType _link;
   Delay _delay;
   Receiver _rec;
-
   double _tickno;
 
   void tick( void );
 
 public:
-  Network( const SenderType1 & example_sender1, const SenderType2 & example_sender2, PRNG & s_prng, const NetConfig & config );
-
-  Network( const SenderType1 & example_sender1, PRNG & s_prng, const NetConfig & config );
+  NetworkBase( const SenderType1 & example_sender1, 
+               const SenderType2 & example_sender2, PRNG & s_prng, 
+               const NetConfig & config, const LinkType & link );
+  NetworkBase( const SenderType1 & example_sender1, PRNG & s_prng, 
+               const NetConfig & config, const LinkType & link );
+  virtual ~NetworkBase() {}
 
   void run_simulation( const double & duration );
 
   const SenderGangofGangs<SenderType1,SenderType2> & senders( void ) const { return _senders; }
 };
 
+/* network template */
+template <class SenderType1, class SenderType2, class LinkType>
+class Network : public NetworkBase<SenderType1, SenderType2, LinkType>
+{
+public:
+  Network( const SenderType1 & example_sender1, 
+           const SenderType2 & example_sender2, PRNG & s_prng, 
+           const NetConfig & config );
+  Network( const SenderType1 & example_sender1, 
+           PRNG & s_prng, const NetConfig & config );
+};
+
+/* specialize for isochronous link */
+template <class SenderType1, class SenderType2>
+class Network<SenderType1, SenderType2, IsochronousLink> : public NetworkBase<SenderType1, SenderType2, IsochronousLink>
+{
+public:
+  Network( const SenderType1 & example_sender1, 
+           const SenderType2 & example_sender2, PRNG & s_prng, 
+           const NetConfig & config );
+  Network( const SenderType1 & example_sender1, PRNG & s_prng, 
+           const NetConfig & config );
+};
+
+/* specialize for trace link */
+template <class SenderType1, class SenderType2>
+class Network<SenderType1, SenderType2, TraceLink> : public NetworkBase<SenderType1, SenderType2, TraceLink>
+{
+public:
+  Network( const SenderType1 & example_sender1, 
+           const SenderType2 & example_sender2, PRNG & s_prng, 
+           const NetConfig & config );
+  Network( const SenderType1 & example_sender1, PRNG & s_prng, 
+           const NetConfig & config );
+};
 #endif

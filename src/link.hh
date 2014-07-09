@@ -8,32 +8,55 @@
 
 class Link
 {
-private:
-  std::queue< Packet > _buffer;
-
-  Delay _pending_packet;
-
-  unsigned int _limit;
+protected:
+  unsigned int limit_;
+  std::queue< std::pair< double, Packet > > buffer_;
 
 public:
-  Link( const double s_rate,
-	const unsigned int s_limit = std::numeric_limits<unsigned int>::max() )
-    : _buffer(), _pending_packet( 1.0 / s_rate ), _limit( s_limit ) {}
+  Link( const unsigned int s_limit = std::numeric_limits<unsigned int>::max() ) 
+    : limit_( s_limit ), buffer_() {}
 
-  void accept( const Packet & p, const double & tickno ) noexcept {
-    if ( _pending_packet.empty() ) {
-      _pending_packet.accept( p, tickno );
+  double next_event_time( const double & tickno ) const {
+    if( buffer_.empty() ) {
+      return std::numeric_limits<double>::max();
     } else {
-      if ( _buffer.size() < _limit ) {
-        _buffer.push( p );
+      if( tickno > buffer_.front().first ) {
+        fprintf( stderr, "Error, tickno = %f but packet should have been released at time %f\n",
+		 tickno, buffer_.front().first );
+	assert( false );
       }
+
+      return buffer_.front().first;
     }
   }
-
+  
+  /* is abstract base class */
+  virtual void accept( const Packet & p, const double & tickno ) noexcept = 0;
+  
   template <class NextHop>
   void tick( NextHop & next, const double & tickno );
+};
 
-  double next_event_time( const double & tickno ) const { return _pending_packet.next_event_time( tickno ); }
+class IsochronousLink : public Link {
+private:
+  double rate_;
+
+public:
+  IsochronousLink( const double rate ) 
+  : Link(), rate_( rate ) {}
+
+  void accept( const Packet & p, const double & tickno ) noexcept override;
+};
+
+class TraceLink : public Link {
+private:
+  std::queue<double> trace_;
+
+public:
+  TraceLink( const std::queue< double > trace ) 
+    : Link(), trace_( trace ) {}
+
+  void accept( const Packet & p, const double & tickno ) noexcept override;
 };
 
 #endif
