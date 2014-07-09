@@ -77,13 +77,13 @@ int main( int argc, char *argv[] )
   Figure fig( 1024, 768, "Ratatouille" );
   unsigned int sg_id = fig.add_subgraph( 2 * num_senders + 4, 
                                          "time (s)", "packets in flight", 
-                                         0, upper_limit, 1000.0 );
+                                         0, upper_limit );
   unsigned int sewma_rewma_id = fig.add_subgraph( 3*(num_senders+1), 
                                                 "sewma", "rewma", 
-                                                0, 2, 2.0 );
+                                                0, 2 );
   unsigned int slow_rttr_id = fig.add_subgraph( 3*(num_senders+1), 
                                                 "slow_rewma", "rttr", 
-                                                0, 2, 10.0 );
+                                                0, 2 );
 
   std::vector< unsigned int > subfig_ids = { sewma_rewma_id, slow_rttr_id };
 
@@ -98,14 +98,27 @@ int main( int argc, char *argv[] )
   fig.set_line_color( sg_id, 8, 0.2, 0.5, 0.2, 0.8 );
   fig.set_line_color( sg_id, 9, 0.5, 0.2, 0.5, 0.8 );
 
+  for( unsigned int i = 0; i < 10; i++ ) {
+    fig.set_line_memory( sg_id, i, -1.0 );
+  }
+
   for( const unsigned int x : subfig_ids ) {
-    fig.set_line_color( x, 0, 0, 0, 0, 1.0 );
-    fig.set_line_color( x, 1, 1, 0.38, 0, 0.8 );
-    fig.set_line_color( x, 2, 0, 0.2, 1, 0.8 );
-    fig.set_line_color( x, 3, 1, 0, 0, 0.8 );
-    fig.set_line_color( x, 4, 0.5, 0, 0.5, 0.8 );
-    fig.set_line_color( x, 5, 0, 0.5, 0.5, 0.8 );
-    fig.set_line_color( x, 6, 0.5, 0.5, 0.5, 0.8 );
+    // forget quickly for moving dot
+    fig.set_line_color( x, 1, 1, 0.38, 0, 0.95 );
+    fig.set_line_memory( x, 1, 5.0 );
+    fig.set_line_color( x, 2, 0, 0.2, 1, 0.95 );
+    fig.set_line_memory( x, 2, 5.0 );
+    fig.set_line_color( x, 3, 1, 0, 0, 0.95 );
+    fig.set_line_memory( x, 3, 5.0 );
+
+    // remember longer for trail/shadow
+    fig.set_line_color( x, 4, 1, 0.38, 0, 0.25 );
+    fig.set_line_memory( x, 4, 250.0 );
+    fig.set_line_color( x, 5, 0, 0.2, 1, 0.25 );
+    fig.set_line_memory( x, 5, 250.0 );
+    fig.set_line_color( x, 6, 1, 0, 0, 0.25 );
+    fig.set_line_memory( x, 6, 250.0 );
+
     fig.set_line_color( x, 7, 0.2, 0.2, 0.5, 0.8 );
     fig.set_line_color( x, 8, 0.2, 0.5, 0.2, 0.8 );
     fig.set_line_color( x, 9, 0.5, 0.2, 0.5, 0.8 );
@@ -176,20 +189,26 @@ int main( int argc, char *argv[] )
       fig.add_data_point( sewma_rewma_id, i+1,
                           sender_memory.field( 1 ), 
                           sender_memory.field( 0 ) );
+      fig.add_data_point( sewma_rewma_id, i+4,
+                          sender_memory.field( 1 ), 
+                          sender_memory.field( 0 ) );
       new_subfig_limits.at( 0 ).second = 
         max( min( sender_memory.field( 0 ) + 2, 
                   double(sender_domain.upper().field( 0 )) ),
              new_subfig_limits.at( 0 ).second )*0.8;
-      fig.set_subgraph_xrange( sewma_rewma_id, std::pair<float, float>( 0.0, 1.5 ));
+      fig.set_subgraph_xrange( sewma_rewma_id, std::pair<float, float>( 0.0, 2.0 ));
 
       fig.add_data_point( slow_rttr_id, i+1,
+                          sender_memory.field( 3 ), 
+                          sender_memory.field( 2 ) );
+      fig.add_data_point( slow_rttr_id, i+4,
                           sender_memory.field( 3 ), 
                           sender_memory.field( 2 ) );
       new_subfig_limits.at( 1 ).second = 
         max( min( sender_memory.field( 2 ) + 2, 
                   double(sender_domain.upper().field( 2 )) ),
              new_subfig_limits.at( 2 ).second )*0.8;
-      fig.set_subgraph_xrange( slow_rttr_id, std::pair<float, float>( 0.0, 1.0 ));
+      fig.set_subgraph_xrange( slow_rttr_id, std::pair<float, float>( 0.0, 2.0 ));
     }
 
     for( unsigned int i = 0; i < subfig_limits.size(); i++ ) {
@@ -210,9 +229,10 @@ int main( int argc, char *argv[] )
     if( network.mutable_senders().mutable_gang1().count_active_senders() > 0 ) {
     for ( unsigned int i = 0; i < subfig_limits.size(); i++ ) 
       {
-        fig.set_subgraph_ylimits( subfig_ids.at ( i ), 
+        /*        fig.set_subgraph_ylimits( subfig_ids.at ( i ), 
                                   subfig_limits.at( i ).first, 
-                                  subfig_limits.at( i ).second );
+                                  subfig_limits.at( i ).second ); */
+        fig.set_subgraph_ylimits( subfig_ids.at( i ), 0.0, 2.0 );
       }  
     }
 

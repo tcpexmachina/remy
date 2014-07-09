@@ -109,7 +109,7 @@ class Mixer:
         
         self.update_gui(new_state)
 
-        self.tk_root.after(100, self.poll_from_remy)
+        self.tk_root.after(500, self.poll_from_remy)
 
     def update_gui(self, new_state):
         print new_state

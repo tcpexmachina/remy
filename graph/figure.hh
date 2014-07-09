@@ -36,8 +36,7 @@ public:
   const unsigned int & add_subgraph( const unsigned int num_lines,
                                      const std::string & xlabel,
                                      const std::string & ylabel,
-                                     const float min_y, const float max_y,
-                                     const float data_memory );
+                                     const float min_y, const float max_y );
 
   void remove_subgraph( const unsigned int subgraph_id );
   void refit_subgraphs( void );
@@ -45,6 +44,10 @@ public:
   void add_data_point( const unsigned int subgraph_id,
                        const unsigned int line_idx,
                        const float t, const float y );
+
+  void set_line_memory( const unsigned int subgraph_id,
+                        const unsigned int line_idx,
+                        const float line_memory );
 
   void set_line_color( const unsigned int subgraph_id, 
                       const unsigned int line_idx,

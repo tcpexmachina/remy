@@ -20,15 +20,14 @@ const unsigned int & Figure::add_subgraph( const unsigned int num_lines,
                                            const string & xlabel,
                                            const string & ylabel,
                                            const float min_y, 
-                                           const float max_y,
-                                           const float data_memory )
+                                           const float max_y )
 {
   auto graph_id = next_graph_id_;
   
   // instantiate a new graph with a unique id and add it to subgraphs.
   subgraphs_.emplace_back( Subgraph { 
       graph_id, 
-        std::unique_ptr< Graph >( new Graph( num_lines, display_.window().size().first, subgraph_height( subgraphs_.size() + 1 ), xlabel, ylabel, min_y, max_y, data_memory )),
+        std::unique_ptr< Graph >( new Graph( num_lines, display_.window().size().first, subgraph_height( subgraphs_.size() + 1 ), xlabel, ylabel, min_y, max_y )),
         std::pair< float, float >( 0, 0 ) } );
 
   next_graph_id_++;
@@ -66,10 +65,31 @@ void Figure::add_data_point( const unsigned int subgraph_id,
   }
 }
 
+void Figure::set_line_memory( const unsigned int subgraph_id,
+                              const unsigned int line_idx,
+                              const float line_memory ) 
+{
+  bool found_subgraph = false;
+
+  for( auto & s : subgraphs_ ) {
+    if( s.id == subgraph_id ) {
+      found_subgraph = true;
+      ( s.graph )->set_memory( line_idx, line_memory );
+      
+      break;
+    }
+  }
+  
+  if( !found_subgraph ) {
+    throw runtime_error( "invalid subgraph ID provided" );
+  }
+}
+
 void Figure::set_line_color( const unsigned int subgraph_id,
-                       const unsigned int line_idx,
-                       const float red, const float green, const float blue,
-                       const float alpha )
+                             const unsigned int line_idx,
+                             const float red, const float green, 
+                             const float blue,
+                             const float alpha )
 {
   bool found_subgraph = false;
 

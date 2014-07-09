@@ -16,18 +16,15 @@ Graph::Graph( const unsigned int num_lines,
 	      const unsigned int initial_width, 
               const unsigned int initial_height,
               const string & xlabel, const string & ylabel,
-	      const float min_y, const float max_y,
-
-              const float data_memory )
+	      const float min_y, const float max_y )
   : cairo_( std::pair< unsigned int, unsigned int > ( initial_width,
                                                       initial_height )),
     pango_( cairo_ ),
     tick_font_( "Nimbus Sans L, Normal 12" ),
     label_font_( "Nimbus Sans L, Normal 10" ),
+    lines_( num_lines ),
     x_tick_labels_(),
     y_tick_labels_(),
-    colors_( num_lines ),
-    data_points_( num_lines ),
     x_label_( cairo_, pango_, label_font_, xlabel ),
     y_label_( cairo_, pango_, label_font_, ylabel ),
     info_string_(),
@@ -36,8 +33,7 @@ Graph::Graph( const unsigned int num_lines,
     max_y_( max_y ),
     bottom_( min_y ),
     top_( max_y ),
-    horizontal_fadeout_( cairo_pattern_create_linear( 0, 0, 190, 0 ) ),
-    data_memory_size_( data_memory )
+    horizontal_fadeout_( cairo_pattern_create_linear( 0, 0, 190, 0 ) )
 {
   cairo_pattern_add_color_stop_rgba( horizontal_fadeout_, 0.0, 1, 1, 1, 1 );
   cairo_pattern_add_color_stop_rgba( horizontal_fadeout_, 0.67, 1, 1, 1, 1 );
@@ -51,20 +47,6 @@ void Graph::set_info( const string & info )
     info_ = Pango::Text( cairo_, pango_, tick_font_, info );
   }
 }
-
-/* void Graph::set_window( const float t, const float logical_width )
-{
-  for ( auto & line : data_points_ ) {
-    while ( (line.size() >= 2) and (line.front().first < t - logical_width - 1)
-	    and (line.at( 1 ).first < t - logical_width - 1) ) {
-      line.pop_front();
-    }
-  }
-
-  while ( (not x_tick_labels_.empty()) and (x_tick_labels_.front().first < t - logical_width - 1) ) {
-    x_tick_labels_.pop_front();
-  }
-  } */
 
 static int to_int( const float x )
 {
@@ -269,29 +251,36 @@ void Graph::draw_lines( Display* display, const float width,
   auto graph_size = std::pair< unsigned int, unsigned int >( width, height );
 
   /* draw the data points, including an extension off the right edge */
-  for ( unsigned int i = 0; i < data_points_.size(); i++ ) {
-    auto & line = data_points_[ i ];
+  for ( auto & line : lines_ ) {
+    auto & points = line.data_points;
 
-    if ( not line.empty() ) {
-      float t = line.back().first;
+    if ( not points.empty() ) {
+      float t = points.back().x;
 
-      line.emplace_back( t + 0.001, line.back().second );
+      points.emplace_back( Point( t + 0.001, points.back().y ) );
 
-      display->draw( get<0>( colors_[ i ] ), get<1>( colors_[ i ] ),
-                     get<2>( colors_[ i ] ), get<3>( colors_[ i ] ),
+      // a bit of overhead to maintain the point abstraction
+      // without the display needing to know about it
+      std::deque< std::pair< float, float > > xy_pairs;
+      for( auto & point : line.data_points ) {
+        xy_pairs.emplace_back( point.x, point.y );
+      }
+      
+      display->draw( line.color.r, line.color.g,
+                     line.color.b, line.color.a,
                      3.0, 220, 
                      std::pair< unsigned int, unsigned int >
                      ( 0, window_height - ( height + y_shift )),
-                     width, height, line,
+                     width, height, xy_pairs,
                      [&] ( const pair<float, float> & x ) {
                        return make_pair( (x.first - xrange.first) 
                                          / abs( xrange.second - xrange.first ) * 
-                                         graph_size.first, // TODO
+                                         graph_size.first,
                                          chart_height( x.second, 
                                                        graph_size.second )
                                          + y_shift );
                      } );
-      line.pop_back();
+      points.pop_back();
     }
   }
 }
@@ -300,7 +289,15 @@ void Graph::set_color( const unsigned int num, const float red,
                        const float green, const float blue,
 		       const float alpha )
 {
-  if ( num < colors_.size() ) {
-    colors_.at( num ) = make_tuple( red, green, blue, alpha );
+  if ( num < lines_.size() ) {
+    lines_.at( num ).color = Color( red, green, blue, alpha );
+  }
+}
+
+void Graph::set_memory( const unsigned int num,
+                        const float line_memory ) 
+{
+  if ( num < lines_.size() ) {
+    lines_.at( num ).data_memory = line_memory;
   }
 }
