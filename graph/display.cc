@@ -1,5 +1,6 @@
 #define GLEW_STATIC
 
+#include <cmath>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -169,6 +170,39 @@ void Display::swap( void )
   current_context_window_.window_.swap_buffers();
 }
 
+/* add extra vertices to smooth the line */
+const deque<pair<float, float> > interpolate( std::pair<float, float> start,
+                                              std::pair<float, float> end ) {
+  const float incr = 0.005;
+  std::deque< pair< float, float > > interpolated;
+
+  if( abs( start.first - end.first ) < incr or abs( start.second - end.second ) < incr ) {
+    // close enough to a straight line
+    interpolated.emplace_back( start );
+    interpolated.emplace_back( end );
+    return interpolated;
+  }
+
+  float i = start.first;
+  float j = start.second;
+  if( start.first < end.first ) {
+    while( i < end.first && j < end.second ) {
+      interpolated.emplace_back( i, j );
+      i += incr;
+      j += incr;
+    }
+  } else {
+    while( i > end.first && j > end.second ) {
+      interpolated.emplace_back( i, j );
+      i -= incr;
+      j -= incr;
+    }
+  }
+  interpolated.emplace_back( end );
+
+  return interpolated;
+}
+
 void Display::draw( const float red, const float green, 
                     const float blue, const float alpha,
 		    const float width,
@@ -183,11 +217,20 @@ void Display::draw( const float red, const float green,
   solid_color_array_object_.bind();
   solid_color_shader_program_.use();
 
+  deque< pair< float, float > > new_vertices;
+  for( auto it = vertices.begin(); it < vertices.end() - 1; it++ ) {
+    auto start = *it;
+    auto end = *(it + 1);
+    auto & interpolated = interpolate( start, end );
+    new_vertices.insert( new_vertices.end(), interpolated.begin(),
+                         interpolated.end() );
+  }
+
   const float halfwidth = width / 2;
 
-  vector<pair<float, float>> triangles;
+  vector< pair< float, float> > triangles;
 
-  for ( auto it = vertices.begin(); it < vertices.end() - 1; it++ ) {
+  for ( auto it = new_vertices.begin(); it < new_vertices.end() - 1; it++ ) {
     auto start = transform( *it );
     const auto end = transform( *(it + 1) );
 
@@ -212,8 +255,8 @@ void Display::draw( const float red, const float green,
     triangles.emplace_back( end.first + adjwidth, end.second - adjwidth );
   }
 
-  if ( not vertices.empty() ) {
-    const auto last = transform( vertices.back() );
+  if ( not new_vertices.empty() ) {
+    const auto last = transform( new_vertices.back() );
 
     /* fill in last square */
     triangles.emplace_back( last.first - halfwidth, last.second - halfwidth );
