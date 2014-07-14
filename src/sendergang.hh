@@ -17,6 +17,7 @@ private:
 
   protected:
     double next_switch_tick;
+    SenderType sender;
 
     /* is abstract base class */
     virtual void switcher( const double & tickno,
@@ -32,7 +33,6 @@ private:
     void receive_feedback( Receiver & rec );
 
   public:
-    SenderType sender;
     double next_event_time( const double & tickno ) const;
     Utility utility;
     bool sending;
@@ -104,8 +104,7 @@ public:
   unsigned int count_active_senders( void ) const;
   unsigned int count_senders( void ) const { return _gang.size(); }
   unsigned int id_of_first_sender( void ) const { return _gang.at( 0 ).id; }
-  bool is_sending( const unsigned int id ) const { return _gang.at( id ).sending; }
-  SenderType & get_rat( const unsigned id ) { return _gang.at( id ).sender; }
+
   void switch_senders( const unsigned int num_sending, const double & tickno );
 
   template <class NextHop>
