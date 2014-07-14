@@ -37,11 +37,6 @@ public:
   void send( const unsigned int id, NextHop & next, const double & tickno,
 	     const unsigned int packets_sent_cap = std::numeric_limits<unsigned int>::max() );
 
-  std::vector< Packet > send( const unsigned int id,
-			      const double & tickno,
-			      const int packets_sent_cap = std::numeric_limits<int>::max() );
-
-
   const WhiskerTree & whiskers( void ) const { return _whiskers; }
 
   Rat & operator=( const Rat & ) { assert( false ); return *this; }
