@@ -7,7 +7,8 @@
 #include "network.cc"
 #include "rat-templates.cc"
 
-const unsigned int TICK_COUNT = 1000000;
+//const unsigned int TICK_COUNT = 1000000;
+const unsigned int TICK_COUNT = 60000; // carefulness 10 => 10 simulated minutes
 
 Evaluator::Evaluator( const ConfigRange & range )
   : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
