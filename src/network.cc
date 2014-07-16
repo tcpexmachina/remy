@@ -1,7 +1,7 @@
 #include "network.hh"
 
 #include "sendergangofgangs.cc"
-#include "link-templates.cc"
+#include "link-queue-templates.cc"
 
 template <class SenderType1, class SenderType2>
 Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,

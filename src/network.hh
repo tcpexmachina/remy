@@ -4,7 +4,7 @@
 #include <string>
 
 #include "sendergangofgangs.hh"
-#include "link.hh"
+#include "link-queue.hh"
 #include "delay.hh"
 #include "receiver.hh"
 #include "random.hh"
@@ -67,7 +67,7 @@ class Network
 private:
   PRNG & _prng;
   SenderGangofGangs<SenderType1, SenderType2> _senders;
-  Link _link;
+  LinkQueue _link;
   Delay _delay;
   Receiver _rec;
 
