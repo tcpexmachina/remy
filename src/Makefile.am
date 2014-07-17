@@ -5,8 +5,8 @@ LDADD = ../protobufs/libremyprotos.a -ljemalloc -lm $(protobuf_LIBS)
 bin_PROGRAMS = remy rat-runner scoring-example
 
 common_source = delay.hh evaluator.cc evaluator.hh                     \
-	exponential.hh link-queue.hh link-queue.cc \
-	link-queue-templates.cc           \
+	exponential.hh queue.hh queue.cc queue-templates.cc \
+	jitter.hh jitter-templates.cc \
 	memory.cc memory.hh memoryrange.cc memoryrange.hh              \
 	network.cc network.hh packet.hh poisson.hh                     \
 	random.cc random.hh rat.cc rat.hh rat-templates.cc             \

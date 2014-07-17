@@ -4,7 +4,7 @@
 #include <string>
 
 #include "sendergangofgangs.hh"
-#include "link-queue.hh"
+#include "queue.hh"
 #include "delay.hh"
 #include "receiver.hh"
 #include "random.hh"
