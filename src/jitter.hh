@@ -16,9 +16,9 @@ private:
   double _push_to_next_time;
 
 public:
-  Jitter( const double mean_jitter )
+  Jitter( const double mean_jitter, PRNG & prng )
     : _buffer(),
-      _scheduler( 1.0/mean_jitter, global_PRNG() ),
+      _scheduler( 1.0/mean_jitter, prng ),
       _push_to_next_time( _scheduler.sample() )
   {
   }

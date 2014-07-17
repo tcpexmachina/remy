@@ -9,6 +9,6 @@ void Jitter::tick( NextHop & next, const double & tickno )
       _buffer.pop();
     }
 
-    _push_to_next_time = _scheduler.sample();
+    _push_to_next_time = _scheduler.sample() + tickno;
   }
 }
