@@ -41,6 +41,7 @@ public:
     Queue( void );
 
     double next_event_time( const double & tickno ) const;
+    double next_scheduled_time( void ) const;
 
     void accept( const Packet & p, const double & tickno );
 
