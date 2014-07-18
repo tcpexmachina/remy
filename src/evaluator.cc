@@ -6,8 +6,9 @@
 #include "evaluator.hh"
 #include "network.cc"
 #include "rat-templates.cc"
+#include "gusteau-templates.cc"
 
-const unsigned int TICK_COUNT = 60000;
+const unsigned int TICK_COUNT = 100000;
 
 Evaluator::Evaluator( const ConfigRange & range )
   : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
@@ -112,7 +113,7 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
 Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
 				     const unsigned int prng_seed,
 				     const vector<NetConfig> & configs,
-				     const bool trace,
+				     const bool trace __attribute((unused)),
 				     const unsigned int ticks_to_run )
 {
   PRNG run_prng( prng_seed );
@@ -123,7 +124,8 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   Evaluator::Outcome the_outcome;
   for ( auto &x : configs ) {
     /* run once */
-    Network<Rat, Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
+    Network<Gusteau, Gusteau> network1( Gusteau(), run_prng, x );
+    //Network<Rat, Rat> network1( Rat( run_whiskers, trace), run_prng, x );
     network1.run_simulation( ticks_to_run );
     
     the_outcome.score += network1.senders().utility();

@@ -37,7 +37,7 @@ void Queue::accept( const Packet & p, const double & tickno )
     const double now = tickno;
 
     /* pop wasted PDOs */
-    while ( next_event_time( tickno ) <= now
+    while ( ( next_scheduled_time() <= now )
             and (packet_queue_.empty() or packet_queue_.front().arrival_time > next_event_time( tickno )) ) {
         use_a_delivery_opportunity();
     }
@@ -50,6 +50,11 @@ double Queue::next_event_time( const double & tickno __attribute ((unused)) ) co
     if( packet_queue_.empty() ) {
         return std::numeric_limits<double>::max();
     }
+    return schedule_.at( next_delivery_ ) + base_timestamp_;
+}
+
+double Queue::next_scheduled_time( void ) const
+{
     return schedule_.at( next_delivery_ ) + base_timestamp_;
 }
 
