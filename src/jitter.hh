@@ -30,7 +30,13 @@ public:
   template <class NextHop>
   void tick( NextHop & next, const double & tickno );
 
-  double next_event_time( const double & tickno __attribute((unused)) ) const { return _push_to_next_time; }
+  double next_event_time( const double & tickno __attribute((unused)) ) const { 
+    if( _buffer.empty() ) {
+      return std::numeric_limits<double>::max();
+    } else {
+      return _push_to_next_time; 
+    }
+  }
 };
 
 #endif
