@@ -47,6 +47,9 @@ void Queue::accept( const Packet & p, const double & tickno )
 
 double Queue::next_event_time( const double & tickno __attribute ((unused)) ) const
 {
+    if( packet_queue_.empty() ) {
+        return std::numeric_limits<double>::max();
+    }
     return schedule_.at( next_delivery_ ) + base_timestamp_;
 }
 
