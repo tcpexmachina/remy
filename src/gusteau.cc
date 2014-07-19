@@ -31,7 +31,8 @@ void Gusteau::packets_received( const vector< Packet > & packets ) {
   _largest_ack = max( packets.at( packets.size() - 1 ).seq_num, _largest_ack );
   _memory.packets_received( packets, _flow_id );
 
-  /* Approximate the degree of multiplexing. */
+  /* Approximate the degree of multiplexing. 
+     (RemyCCs probably do not do this.) */
   if( _memory.field( 0 ) > 0 ) {
     double receive_ratio = _memory.field( 1 ) / _memory.field ( 0 );
     _max_receive_ratio = max( receive_ratio, _max_receive_ratio );
