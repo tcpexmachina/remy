@@ -22,7 +22,9 @@ Gusteau::Gusteau( void )
 
 /* helper function */
 double calculate_caution( const double & max_receive_ratio ) {
-  return pow( max_receive_ratio / 1.5, 2.5 ) * max_receive_ratio;
+  double c = pow( max_receive_ratio, 3 ) / 10 + .1;
+  //printf("ratio is %f caution is %f\n", max_receive_ratio, c);
+  return c;
 }
 
 void Gusteau::packets_received( const vector< Packet > & packets ) {
@@ -31,10 +33,6 @@ void Gusteau::packets_received( const vector< Packet > & packets ) {
   /* Assumption: There is no reordering */
   _largest_ack = max( packets.at( packets.size() - 1 ).seq_num, _largest_ack );
   _memory.packets_received( packets, _flow_id );
-
-  if( _largest_ack - _flow_start > 60 ) {
-    _the_window = 100000;
-  }
 
   /* Approximate the degree of multiplexing. 
      (RemyCCs probably do not do this.) */
@@ -46,19 +44,23 @@ void Gusteau::packets_received( const vector< Packet > & packets ) {
     assert( _max_receive_ratio >= 1.0 );
   }
 
+  if( _largest_ack - _flow_start > 30 and _max_receive_ratio < 5 ) {
+    _the_window = 100000;
+  }
+
   /* RTT ratio threshold */
   if( _memory.field( 2 ) <= 1.1  and _memory.field( 2 ) >= 1.0 ) {
     /* Queue is small-- send faster! 
        Ramp up cautiously if number of senders is high, and quickly otherwise. 
        Increase rate more cautiously as we approach smaller sewma values
        so as not to flood the queue. */
-    double caution = calculate_caution( _max_receive_ratio );
-    _intersend_time = _memory.field( 1 ) / ( _memory.field( 1 )/caution + 1 );
-    
+    //double caution = calculate_caution( _max_receive_ratio );
+    _intersend_time = _memory.field( 1 ) / ( _memory.field( 1 )*9 + 1 );
+
     //printf("memory: %s\n\t intersend: %f window: %d\n", _memory.str().c_str(), _intersend_time, _the_window);
   } else if( _memory.field( 2 ) > 1.1 ) {
     /* Queue is too large; back off more quickly if number of senders is high. */
-    _intersend_time = _memory.field( 1 ) * receive_ratio;
+    _intersend_time =  _memory.field( 1 ) * _max_receive_ratio;
     //printf("memory: %s\n\t intersend: %f window: %d\n", _memory.str().c_str(), _intersend_time, _the_window);
   }
 }
