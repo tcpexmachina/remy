@@ -22,9 +22,7 @@ Gusteau::Gusteau( void )
 
 /* helper function */
 double calculate_caution( const double & max_receive_ratio ) {
-  double c = pow( max_receive_ratio, 3 ) / 10 + .1;
-  //printf("ratio is %f caution is %f\n", max_receive_ratio, c);
-  return c;
+  return pow( max_receive_ratio, 3 ) / 10 + .1;
 }
 
 void Gusteau::packets_received( const vector< Packet > & packets ) {
@@ -54,14 +52,12 @@ void Gusteau::packets_received( const vector< Packet > & packets ) {
        Ramp up cautiously if number of senders is high, and quickly otherwise. 
        Increase rate more cautiously as we approach smaller sewma values
        so as not to flood the queue. */
-    //double caution = calculate_caution( _max_receive_ratio );
-    _intersend_time = _memory.field( 1 ) / ( _memory.field( 1 )*9 + 1 );
+    double caution = calculate_caution( _max_receive_ratio );
+    _intersend_time = _memory.field( 1 ) / ( _memory.field( 1 )/caution + 1 );
 
-    //printf("memory: %s\n\t intersend: %f window: %d\n", _memory.str().c_str(), _intersend_time, _the_window);
   } else if( _memory.field( 2 ) > 1.1 ) {
     /* Queue is too large; back off more quickly if number of senders is high. */
     _intersend_time =  _memory.field( 1 ) * _max_receive_ratio;
-    //printf("memory: %s\n\t intersend: %f window: %d\n", _memory.str().c_str(), _intersend_time, _the_window);
   }
 }
 
