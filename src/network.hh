@@ -5,6 +5,7 @@
 
 #include "sendergangofgangs.hh"
 #include "jitter.hh"
+#include "link.hh"
 #include "queue.hh"
 #include "delay.hh"
 #include "receiver.hh"
@@ -69,7 +70,7 @@ private:
   PRNG & _prng;
   SenderGangofGangs<SenderType1, SenderType2> _senders;
   Jitter _jitter;
-  LinkQueue _link;
+  Link _link;
   Delay _delay;
   Receiver _rec;
 

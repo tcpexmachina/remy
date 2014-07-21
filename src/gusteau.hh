@@ -24,6 +24,7 @@ private:
 
   unsigned int _flow_id;
   int _largest_ack;
+  int _flow_start;
 
 public:
   Gusteau( void );

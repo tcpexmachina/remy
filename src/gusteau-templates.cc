@@ -13,8 +13,8 @@ void Gusteau::send( const unsigned int id, NextHop & next, const double & tickno
 
   if ( _the_window == 0 ) {
     /* initial window and intersend time */
-    _the_window = 100000;
-    _intersend_time = 10.0;
+    _the_window = 30;
+    _intersend_time = 10;
   }
 
   if ( (_packets_sent < _largest_ack + 1 + _the_window)

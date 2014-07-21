@@ -42,11 +42,11 @@ int main( int argc, char *argv[] )
       }
 
       if ( tree.has_config() ) {
-	printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
+	//printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
       }
 
       if ( tree.has_optimizer() ) {
-	printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
+	//printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
       }
     } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
       num_senders = atoi( arg.substr( 5 ).c_str() );
@@ -76,20 +76,21 @@ int main( int argc, char *argv[] )
 
   Evaluator eval( configuration_range );
   auto outcome = eval.score( whiskers, false, 10 );
-  printf( "score = %f\n", outcome.score );
-  double norm_score = 0;
+  //printf( "score = %f\n", outcome.score );
 
   for ( auto &run : outcome.throughputs_delays ) {
     printf( "===\nconfig: %s\n", run.first.str().c_str() );
+    double avg_tp = 0;
+    double avg_delay = 0;
     for ( auto &x : run.second ) {
       printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
-      norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
+      avg_tp += x.first / run.first.link_ppt;
+      avg_delay += x.second / run.first.delay;
     }
+    avg_tp /= run.second.size();
+    avg_delay /= run.second.size();
+    printf( "link_ppt %f, score %f\n", link_ppt, log2( avg_tp ) - log2( avg_delay ) );
   }
-
-  printf( "normalized_score = %f\n", norm_score );
-
-  printf( "Whiskers: %s\n", outcome.used_whiskers.str().c_str() );
-
+  
   return 0;
 }

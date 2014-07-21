@@ -2,6 +2,7 @@
 
 #include "sendergangofgangs.cc"
 #include "queue-templates.cc"
+#include "link-templates.cc"
 #include "jitter-templates.cc"
 
 template <class SenderType1, class SenderType2>
