@@ -32,7 +32,7 @@ void Gusteau::packets_received( const vector< Packet > & packets ) {
   _largest_ack = max( packets.at( packets.size() - 1 ).seq_num, _largest_ack );
   _memory.packets_received( packets, _flow_id );
 
-  /* Approximate the degree of multiplexing. 
+  /* Approximate the degree of multiplexing (or the link rate?). 
      (RemyCCs probably do not do this.) */
   double receive_ratio = 1.0;
   if( _memory.field( 0 ) > 0 ) {
@@ -42,22 +42,25 @@ void Gusteau::packets_received( const vector< Packet > & packets ) {
     assert( _max_receive_ratio >= 1.0 );
   }
 
-  if( _largest_ack - _flow_start > 30 and _max_receive_ratio < 5 ) {
-    _the_window = 100000;
-  }
-
   /* RTT ratio threshold */
   if( _memory.field( 2 ) <= 1.1  and _memory.field( 2 ) >= 1.0 ) {
+
+    /* Gradually allow more sending */
+    if( _largest_ack - _flow_start > 30 and _max_receive_ratio < 1.5 ) {
+      _the_window += 10;
+    }
+
     /* Queue is small-- send faster! 
-       Ramp up cautiously if number of senders is high, and quickly otherwise. 
        Increase rate more cautiously as we approach smaller sewma values
        so as not to flood the queue. */
     double caution = calculate_caution( _max_receive_ratio );
     _intersend_time = _memory.field( 1 ) / ( _memory.field( 1 )/caution + 1 );
 
   } else if( _memory.field( 2 ) > 1.1 ) {
-    /* Queue is too large; back off more quickly if number of senders is high. */
+
+    /* Queue is too large; back off */
     _intersend_time =  _memory.field( 1 ) * _max_receive_ratio;
+
   }
 }
 
