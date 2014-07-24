@@ -21,8 +21,8 @@ Gusteau::Gusteau( void )
 }
 
 /* helper function */
-double calculate_caution( const double & max_receive_ratio ) {
-  return pow( max_receive_ratio, 3 ) / 10 + .1;
+double calculate_caution( const double & metric ) {
+  return pow( metric, 2 ) / 5 + .1;
 }
 
 void Gusteau::packets_received( const vector< Packet > & packets ) {
@@ -46,15 +46,15 @@ void Gusteau::packets_received( const vector< Packet > & packets ) {
   if( _memory.field( 2 ) <= 1.1  and _memory.field( 2 ) >= 1.0 ) {
 
     /* Gradually allow more sending */
-    if( _largest_ack - _flow_start > 30 and _max_receive_ratio < 1.5 ) {
-      _the_window += 10;
+    if( _largest_ack - _flow_start > 30 ) {
+      _the_window += 5;
     }
 
     /* Queue is small-- send faster! 
        Increase rate more cautiously as we approach smaller sewma values
        so as not to flood the queue. */
     double caution = calculate_caution( _max_receive_ratio );
-    _intersend_time = _memory.field( 1 ) / ( _memory.field( 1 )/caution + 1 );
+    _intersend_time = _memory.field( 0 ) / ( _memory.field( 0 )/caution + 1 );
 
   } else if( _memory.field( 2 ) > 1.1 ) {
 

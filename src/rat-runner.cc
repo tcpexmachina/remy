@@ -89,7 +89,7 @@ int main( int argc, char *argv[] )
     }
     avg_tp /= run.second.size();
     avg_delay /= run.second.size();
-    printf( "link_ppt %f, score %f\n", link_ppt, log2( avg_tp ) - log2( avg_delay ) );
+    printf( "link_ppt %f, score %f\n", link_ppt, log( avg_tp ) - log( avg_delay ) );
   }
   
   return 0;
