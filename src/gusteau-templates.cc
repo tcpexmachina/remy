@@ -13,7 +13,7 @@ void Gusteau::send( const unsigned int id, NextHop & next, const double & tickno
 
   if ( _the_window == 0 ) {
     /* initial window and intersend time */
-    _the_window = 80;
+    _the_window = 15;
     _intersend_time = .5;
   }
 

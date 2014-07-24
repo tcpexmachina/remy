@@ -25,6 +25,7 @@ public:
       _pending_packet.accept( p, tickno );
     } else {
       if ( _buffer.size() < _limit ) {
+        //printf("queue length %lu\n", _buffer.size());
         _buffer.push( p );
       }
     }

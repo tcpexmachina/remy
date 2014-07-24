@@ -29,7 +29,7 @@ void Rat::packets_received( const vector< Packet > & packets ) {
 
   _the_window = current_whisker.window( _the_window );
   _intersend_time = current_whisker.intersend();
-  //printf("memory: %s\n\t intersend: %f window: %d\n", _memory.str().c_str(), _intersend_time, _the_window);
+  printf("memory: %s\n\t intersend: %f window: %d\n", _memory.str().c_str(), _intersend_time, _the_window);
 }
 
 void Rat::reset( const double & )
