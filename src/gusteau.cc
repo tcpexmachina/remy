@@ -22,7 +22,11 @@ Gusteau::Gusteau( void )
 
 /* helper function */
 double calculate_caution( const double & metric ) {
-  return pow( metric, 2 ) / 5 + .1;
+  if( metric > 1.5 ) {
+    return pow( metric, 2 ) / 5 + .1;
+  } else {
+    return pow( metric, 2 ) / 50 + .1;
+  }
 }
 
 void Gusteau::packets_received( const vector< Packet > & packets ) {
