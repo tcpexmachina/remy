@@ -54,8 +54,8 @@ void Gusteau::packets_received( const vector< Packet > & packets ) {
     _intersend_time = _memory.field( 0 ) / ( _memory.field( 0 )/caution + 1 );
   } else if( _memory.field( 2 ) > 1.01 ) {
     /* Queue is too large; back off */
-    double caution = calculate_caution( _max_receive_ratio );
-    _intersend_time =  _memory.field( 1 ) * max( 1.1, caution / _max_receive_ratio );
+    //double caution = calculate_caution( _max_receive_ratio );
+    _intersend_time =  _memory.field( 1 ) * max( 1.1, 1.1 / _max_receive_ratio );
   }
 }
 
