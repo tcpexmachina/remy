@@ -43,10 +43,9 @@ void Gusteau::packets_received( const vector< Packet > & packets ) {
   }
 
   /* RTT ratio threshold */
-  if( _memory.field( 2 ) <= 1.1  and _memory.field( 2 ) >= 1.0 ) {
-
+  if( _memory.field( 2 ) <= 1.005  and _memory.field( 2 ) >= 1.0 ) {
     /* Gradually allow more sending */
-    if( _largest_ack - _flow_start > 30 ) {
+    if( _largest_ack - _flow_start > 20 ) {
       _the_window += 5;
     }
 
@@ -56,7 +55,7 @@ void Gusteau::packets_received( const vector< Packet > & packets ) {
     double caution = calculate_caution( _max_receive_ratio );
     _intersend_time = _memory.field( 0 ) / ( _memory.field( 0 )/caution + 1 );
 
-  } else if( _memory.field( 2 ) > 1.1 ) {
+  } else if( _memory.field( 2 ) > 1.005 ) {
 
     /* Queue is too large; back off */
     _intersend_time =  _memory.field( 1 ) * _max_receive_ratio;
