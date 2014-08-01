@@ -16,7 +16,7 @@ void Queue::tick( NextHop & next, const double & tickno )
     
     /* burn a delivery opportunity */
     unsigned int bytes_left_in_this_delivery = PACKET_SIZE;
-    use_a_delivery_opportunity();
+    use_a_delivery_opportunity( schedule_.front() );
     
     while ( (bytes_left_in_this_delivery > 0)
             and (not packet_queue_.empty())

@@ -20,14 +20,14 @@ void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int ge
     WhiskerTree bisected_whisker( *my_whisker, true );
 
     if ( bisected_whisker.num_children() == 1 ) {
-      //      printf( "Got unbisectable whisker! %s\n", my_whisker->str().c_str() );
+      printf( "Got unbisectable whisker! %s\n", my_whisker->str().c_str() );
       auto mutable_whisker( *my_whisker );
       mutable_whisker.promote( generation + 1 );
       assert( outcome.used_whiskers.replace( mutable_whisker ) );
       continue;
     }
-
-    //    printf( "Bisecting === %s === into === %s ===\n", my_whisker->str().c_str(), bisected_whisker.str().c_str() );
+    
+    printf( "Bisecting === %s === into === %s ===\n", my_whisker->str().c_str(), bisected_whisker.str().c_str() );
     assert( whiskers.replace( *my_whisker, bisected_whisker ) );
     break;
   }

@@ -70,7 +70,7 @@ private:
   PRNG & _prng;
   SenderGangofGangs<SenderType1, SenderType2> _senders;
   Jitter _jitter;
-  Link _link;
+  LinkQueue _link;
   Delay _delay;
   Receiver _rec;
 

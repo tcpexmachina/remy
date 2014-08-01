@@ -26,7 +26,7 @@ protected:
     };
 
     unsigned int next_delivery_;
-    std::vector< double > schedule_;
+    std::queue< double > schedule_;
     double base_timestamp_;
 
     std::queue< QueuedPacket > packet_queue_;
@@ -35,7 +35,7 @@ protected:
 
     /* Needs to be overloaded in case schedule is built 
        dynamically, e.g. in PoissonQueue. */
-    virtual void use_a_delivery_opportunity( void ) = 0;
+    virtual void use_a_delivery_opportunity( const double now ) = 0;
 
 public:
     Queue( void );
@@ -53,7 +53,8 @@ public:
 class LinkQueue : public Queue
 {
 private:
-    void use_a_delivery_opportunity( void );
+    const double rate_;
+    void use_a_delivery_opportunity( const double now );
 
 public:
     LinkQueue( const double & link_packets_per_ms );
