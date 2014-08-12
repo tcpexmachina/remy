@@ -13,7 +13,7 @@ Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
      _track( s_track ),
      _last_send_time( 0 ),
      _the_window( 0 ),
-     _intersend_time( 0 ),
+     _intersend_time( 1.0 ),
      _flow_id( 0 ),
      _largest_ack( -1 )
 {
@@ -36,7 +36,7 @@ void Rat::reset( const double & )
   _memory.reset();
   _last_send_time = 0;
   _the_window = 0;
-  _intersend_time = 0;
+  _intersend_time = 1.0;
   _flow_id++;
   _largest_ack = _packets_sent - 1; /* Assume everything's been delivered */
   assert( _flow_id != 0 );
@@ -45,11 +45,12 @@ void Rat::reset( const double & )
 double Rat::next_event_time( const double & tickno ) const
 {
   if ( _packets_sent < _largest_ack + 1 + _the_window ) {
-    if ( _last_send_time + _intersend_time <= tickno ) {
+    return tickno;
+    /*if ( _last_send_time + _intersend_time <= tickno ) {
       return tickno;
     } else {
       return _last_send_time + _intersend_time;
-    }
+      }*/
   } else {
     /* window is currently closed */
     return std::numeric_limits<double>::max();
