@@ -7,6 +7,7 @@ public:
   unsigned int src;
   unsigned int flow_id;
   double tick_sent, tick_received;
+  double time_at_receiver;
   int seq_num;
 
   Packet( const unsigned int & s_src,
@@ -16,6 +17,7 @@ public:
     : src( s_src ),
       flow_id( s_flow_id ), tick_sent( s_tick_sent ),
       tick_received( -1 ),
+      time_at_receiver( -1 ),
       seq_num( s_seq_num )
   {}
 };
