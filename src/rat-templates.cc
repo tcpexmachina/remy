@@ -18,7 +18,7 @@ void Rat::send( const unsigned int id, NextHop & next, const double & tickno,
     _intersend_time = current_whisker.intersend();
   }
 
-  while ( (_packets_sent < _largest_ack + 1 + _the_window)
+  if ( (_packets_sent < _largest_ack + 1 + _the_window)
     and (_last_send_time + _intersend_time <= tickno) ) {
 
     /* Have we reached the end of the flow for now? */
