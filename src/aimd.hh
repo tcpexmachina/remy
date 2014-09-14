@@ -10,14 +10,14 @@
 class Aimd
 {
 private:
-  int _packets_sent, _packets_received;
+  unsigned int _packets_sent, _packets_received;
 
   /* _the_window is the congestion window */
   double _the_window;
   unsigned int _flow_id;
 
   /* Largest ACK so far */
-  int _largest_ack;
+  unsigned int _largest_ack;
 
   /* Are we in Slow Start? */
   bool _slow_start;

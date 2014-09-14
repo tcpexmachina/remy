@@ -7,7 +7,7 @@ public:
   unsigned int src;
   unsigned int flow_id;
   double tick_sent, tick_received;
-  int seq_num;
+  unsigned int seq_num;
 
   Packet( const unsigned int & s_src,
 	  const unsigned int & s_flow_id,

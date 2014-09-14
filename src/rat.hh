@@ -15,7 +15,7 @@ private:
   const WhiskerTree & _whiskers;
   Memory _memory;
 
-  int _packets_sent, _packets_received;
+  unsigned int _packets_sent, _packets_received;
 
   bool _track;
 
@@ -25,7 +25,7 @@ private:
   double _intersend_time;
 
   unsigned int _flow_id;
-  int _largest_ack;
+  unsigned int _largest_ack;
 
 public:
   Rat( WhiskerTree & s_whiskers, const bool s_track=false );
@@ -43,7 +43,7 @@ public:
 
   double next_event_time( const double & tickno ) const;
 
-  const int & packets_sent( void ) const { return _packets_sent; }
+  const unsigned int & packets_sent( void ) const { return _packets_sent; }
 };
 
 #endif

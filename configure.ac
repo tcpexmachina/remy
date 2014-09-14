@@ -6,6 +6,7 @@ AC_INIT([remy], [0.1], [remy@mit.edu])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([src/remy.cc])
 AC_CONFIG_HEADERS([config.h])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -20,7 +21,7 @@ PKG_CHECK_MODULES([protobuf], [protobuf])
 
 # Add picky CXXFLAGS
 CPPFLAGS="-std=c++11 -pthread"
-PICKY_CXXFLAGS="-pedantic -Wall -Wextra -Weffc++ -Werror"
+PICKY_CXXFLAGS="-pedantic -Wall -Wextra -Werror"
 AC_SUBST([PICKY_CXXFLAGS])
 
 # Checks for libraries.
