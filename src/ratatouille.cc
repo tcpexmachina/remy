@@ -25,9 +25,7 @@ int main( int argc, char *argv[] )
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
-    if ( arg.substr( 0, 6 ) == "fader=" ) {
-      fader_filename = arg.substr( 6 );
-    } else if ( arg.substr( 0, 3 ) == "if=" ) {
+    if ( arg.substr( 0, 3 ) == "if=" ) {
       string filename( arg.substr( 3 ) );
       int fd = open( filename.c_str(), O_RDONLY );
       if ( fd < 0 ) {
@@ -57,7 +55,7 @@ int main( int argc, char *argv[] )
     }
   }
 
-  Fader fader( fader_filename );
+  GTKFader fader;
 
   link_ppt = fader.link_rate();
 

@@ -5,27 +5,17 @@
 #include <deque>
 #include <array>
 
-class Fader
+class GTKFader
 {
-  int fd_;
-  std::deque< uint8_t > buffer_;
-
-  std::array< uint8_t, 100 > physical_values_;
-
-  double link_rate_ = 0;
-  double time_increment_ = 0;
-  double horizontal_size_ = 0;
-  double buffer_size_ = 0;
+  double link_rate_ = 3.22013;
+  double time_increment_ = 0.0107893;
+  double horizontal_size_ = 10.4385;
+  double buffer_size_ = 4820;
   bool autoscale_ = false;
   bool autoscale_all_ = false;
 
-  void compute_internal_state( void );
-  void rationalize( decltype(physical_values_) & output ) const;
-  void write( const decltype(physical_values_) & output );
-  void initialize( void );
-
 public:
-  Fader( const std::string & filename );
+  GTKFader();
 
   template <class NetworkType>
   void update( NetworkType & network );
