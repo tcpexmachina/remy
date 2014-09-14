@@ -29,6 +29,7 @@ PKG_CHECK_MODULES([GLFW], [glfw3])
 PKG_CHECK_MODULES([GLEW], [glew])
 PKG_CHECK_MODULES([GLU], [glu])
 PKG_CHECK_MODULES([PANGOCAIRO], [pangocairo])
+PKG_CHECK_MODULES([GTKMM], [gtkmm-3.0])
 
 # Checks for header files.
 AC_LANG_PUSH(C++)
