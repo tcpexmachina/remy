@@ -12,15 +12,22 @@
 #include "aimd-templates.cc"
 #include "graph.hh"
 #include "fader-templates.cc"
+#include "bb100.hh"
 
 using namespace std;
 
 int main( int argc, char *argv[] )
 {
-  WhiskerTree whiskers;
   const unsigned int num_senders = 2;
   const double delay = 150.0;
-  string fader_filename;
+
+  RemyBuffers::WhiskerTree default_tree;
+  if ( not default_tree.ParseFromArray( bigbertha_100x_dna_5, bigbertha_100x_dna_5_len ) ) {
+    fprintf( stderr, "Could not parse default RemyCC DNA" );
+    exit( 1 );
+  }
+
+  WhiskerTree whiskers( default_tree );
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
