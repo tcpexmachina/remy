@@ -139,7 +139,7 @@ public:
   SenderGang();
 
   unsigned int count_active_senders( void ) const;
-  unsigned int count_senders( void ) const { return _gang.size(); }
+  size_t count_senders( void ) const { return _gang.size(); }
   unsigned int id_of_first_sender( void ) const { return _gang.at( 0 ).id; }
 
   void switch_senders( const unsigned int num_sending, const double & tickno );
@@ -159,6 +159,7 @@ public:
   double next_event_time( const double & tickno ) const;
 
   SwitcherType & mutable_sender( const unsigned int num ) { return _gang.at( num ); }
+  const SwitcherType & sender( const unsigned int num ) const { return _gang.at( num ); }
 };
 
 #endif

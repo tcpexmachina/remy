@@ -9,7 +9,21 @@ using namespace std;
 using namespace Glib;
 using namespace Gtk;
 
+class LabeledToggle
+{
+  CheckButton control_ {};
 
+public:
+  LabeledToggle( Container & parent, mutex & the_mutex, const string & text, std::atomic<bool> & variable )
+    : control_( text )
+  {
+    control_.signal_toggled().connect_notify( [&] () {
+	unique_lock<mutex> ul( the_mutex );
+	variable = control_.get_active();
+      } );
+    parent.add( control_ );
+  };
+};
 
 class LabeledScale
 {
@@ -38,8 +52,15 @@ public:
   }
 };
 
-GTKFader::GTKFader()
+GTKFader::GTKFader( const unsigned int & num_senders )
+  : remy_( new atomic<bool>[ num_senders ] ),
+    aimd_( new atomic<bool>[ num_senders ] )
 {
+  for ( unsigned int i = 0; i < num_senders; i++ ) {
+    remy_.get()[ i ] = false;
+    aimd_.get()[ i ] = false;
+  }
+
   thread newthread( [&] () {
       RefPtr<Application> app = Application::create();
 
@@ -49,14 +70,27 @@ GTKFader::GTKFader()
       VBox stack;
       window.add( stack );
 
+      /* AIMD and RemyCC controls */
+      HBox senders;
+      stack.pack_start( senders, PACK_SHRINK );
+
+      deque<LabeledToggle> sender_controls;
+      for ( unsigned int i = 0; i < num_senders; i++ ) {
+	sender_controls.emplace_back( senders, mutex_, "AIMD", aimd_.get()[ i ] );
+      }
+
+      for ( unsigned int i = 0; i < num_senders; i++ ) {
+	sender_controls.emplace_back( senders, mutex_, "RemyCC", remy_.get()[ i ] );
+      }
+
       /* numerical sliders */
       HBox numeric;
       stack.pack_start( numeric );
 
-      LabeledScale speed( numeric, "<b>Speed</b> (%)", 0, 1000, 1, 60 * 100, time_increment_ );
       LabeledScale link_rate( numeric, "<b>Link rate</b> (Mbps)", 0.3, 300.1, 0.1, 10, link_rate_ );
+      LabeledScale buffer( numeric, "<b>Buffer cap</b> (pkts)", 0, 20000, 1, 1, buffer_size_ );
+      LabeledScale speed( numeric, "<b>Speed</b> (%)", 0, 5000, 1, 60 * 100, time_increment_ );
       LabeledScale width( numeric, "<b>Width</b> (s)", 1, 100, 0.1, 1, horizontal_size_ );
-      LabeledScale buffer( numeric, "<b>Buffer size</b> (pkts)", 0, 20000, 1, 1, buffer_size_ );
 
       /* scaling buttons */
       HBox buttons;
@@ -66,11 +100,11 @@ GTKFader::GTKFader()
       buttons.pack_start( spacer1 );
       buttons.pack_end( spacer2 );
 
-      Button autoscaler( "Scale to senders" );
+      Button autoscaler( "Scale to packets in flight" );
       autoscaler.signal_clicked().connect_notify( [&] () { autoscale_ = true; } );
       buttons.pack_start( autoscaler, PACK_SHRINK, 10 );
 
-      Button superautoscaler( "Scale to buffer" );
+      Button superautoscaler( "Scale to full buffer + BDP" );
       superautoscaler.signal_clicked().connect_notify( [&] () { autoscale_all_ = true; } );
       buttons.pack_start( superautoscaler, PACK_SHRINK, 10 );
 

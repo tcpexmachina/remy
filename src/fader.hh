@@ -1,23 +1,27 @@
 #ifndef FADER_HH
 #define FADER_HH
 
-#include <string>
-#include <deque>
-#include <array>
+#include <memory>
 #include <atomic>
+#include <mutex>
 
 class GTKFader
 {
-  std::atomic<double> link_rate_ { 1.01 };
-  std::atomic<double> time_increment_ { 1.0 / 60.0 };
+  std::atomic<double> link_rate_ { 1 };
+  std::atomic<double> time_increment_ { 0.65 / 60.0 }; /* a little slower than real time by default */
   std::atomic<double> horizontal_size_ { 10 };
-  std::atomic<double> buffer_size_ { 4820 };
+  std::atomic<double> buffer_size_ { 1000 };
   std::atomic<bool> autoscale_ { false };
   std::atomic<bool> autoscale_all_ { false };
   std::atomic<bool> quit_ { false };
 
+  std::unique_ptr<std::atomic<bool>[]> remy_;
+  std::unique_ptr<std::atomic<bool>[]> aimd_;
+
+  std::mutex mutex_ {};
+
 public:
-  GTKFader();
+  GTKFader( const unsigned int & num_senders );
 
   template <class NetworkType>
   void update( NetworkType & network );

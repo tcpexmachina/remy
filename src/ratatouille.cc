@@ -18,7 +18,7 @@ using namespace std;
 int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
-  unsigned int num_senders = 2;
+  const unsigned int num_senders = 2;
   const double delay = 150.0;
   string fader_filename;
 
@@ -54,9 +54,9 @@ int main( int argc, char *argv[] )
     }
   }
 
-  Graph graph( 2 * num_senders + 2, 1024, 600, "Ratatouille", 0, 1 );
+  Graph graph( 2 * num_senders + 2, 950, 600, "Ratatouille", 0, 1 );
 
-  GTKFader fader;
+  GTKFader fader( num_senders );
 
   NetConfig configuration = NetConfig().set_link_ppt( fader.link_rate() ).set_delay( delay ).set_num_senders( num_senders );
 

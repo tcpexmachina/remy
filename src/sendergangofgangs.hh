@@ -36,6 +36,9 @@ public:
 
   double next_event_time( const double & tickno ) const;
 
+  const Gang1Type & gang1( void ) const { return gang1_; }
+  const Gang2Type & gang2( void ) const { return gang2_; }
+
   Gang1Type & mutable_gang1( void ) { return gang1_; }
   Gang2Type & mutable_gang2( void ) { return gang2_; }
 };
