@@ -91,9 +91,9 @@ int main( int argc, char *argv[] )
     double link_ppt = network.mutable_link().rate();
 
     char buf[ 256 ];
-    snprintf( buf, 256, "link: %.1f Mbps, delay: %.0f ms, buffer: %.0f kB, active = %d RemyCC & %d AIMD",
+    snprintf( buf, 256, "link: %.1f Mbps, delay: %.0f ms, buffer: %.0f pkts, active = %d RemyCC & %d AIMD",
 	      link_ppt * 10, delay,
-	      fader.buffer_size() * 1500.0 / 1000.0,
+	      fader.buffer_size(),
 	      network.mutable_senders().mutable_gang1().count_active_senders(),
 	      network.mutable_senders().mutable_gang2().count_active_senders() );
 
