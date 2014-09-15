@@ -25,7 +25,7 @@ private:
   double _intersend_time;
 
   unsigned int _flow_id;
-  unsigned int _largest_ack;
+  int _largest_ack;
 
 public:
   Rat( WhiskerTree & s_whiskers, const bool s_track=false );

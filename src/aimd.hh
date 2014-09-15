@@ -17,7 +17,7 @@ private:
   unsigned int _flow_id;
 
   /* Largest ACK so far */
-  unsigned int _largest_ack;
+  int _largest_ack;
 
   /* Are we in Slow Start? */
   bool _slow_start;

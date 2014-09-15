@@ -10,8 +10,8 @@ using namespace std;
 template <class NextHop>
 void Aimd::send( const unsigned int id, NextHop & next, const double & tickno )
 {
-  assert( _packets_sent >= _largest_ack + 1 );
-  while ( _packets_sent < _largest_ack + 1 + _the_window ) {
+  assert( int(_packets_sent) >= _largest_ack + 1 );
+  while ( int(_packets_sent) < _largest_ack + 1 + _the_window ) {
     Packet p( id, _flow_id, tickno, _packets_sent );
     _packets_sent++;
     next.accept( p, tickno );
