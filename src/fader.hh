@@ -4,10 +4,11 @@
 #include <string>
 #include <deque>
 #include <array>
+#include <atomic>
 
 class GTKFader
 {
-  double link_rate_ = 3.22013;
+  std::atomic<double> link_rate_ { 1.01 };
   double time_increment_ = 0.0107893;
   double horizontal_size_ = 10.4385;
   double buffer_size_ = 4820;

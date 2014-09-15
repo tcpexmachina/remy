@@ -116,7 +116,7 @@ Display::Display( const unsigned int width, const unsigned int height,
   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
   /* hide cursor */
-  current_context_window_.window_.hide_cursor( true );
+  //  current_context_window_.window_.hide_cursor( true );
 
   glCheck( "at end of Display constructor" );
 }

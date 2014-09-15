@@ -19,8 +19,7 @@ int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
   unsigned int num_senders = 2;
-  double link_ppt;
-  double delay = 150.0;
+  const double delay = 150.0;
   string fader_filename;
 
   for ( int i = 1; i < argc; i++ ) {
@@ -55,19 +54,15 @@ int main( int argc, char *argv[] )
     }
   }
 
+  Graph graph( 2 * num_senders + 2, 1024, 600, "Ratatouille", 0, 1 );
+
   GTKFader fader;
 
-  link_ppt = fader.link_rate();
-
-  NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders );
+  NetConfig configuration = NetConfig().set_link_ppt( fader.link_rate() ).set_delay( delay ).set_num_senders( num_senders );
 
   PRNG prng( 50 );
   Network<SenderGang<Rat, ExternalSwitchedSender<Rat>>,
 	  SenderGang<Aimd, ExternalSwitchedSender<Aimd>>> network( Rat( whiskers, false ), Aimd(), prng, configuration );
-
-  float upper_limit = link_ppt * delay * 1.2;
-
-  Graph graph( 2 * num_senders + 2, 1024, 600, "Ratatouille", 0, upper_limit );
 
   graph.set_color( 0, 0, 0, 0, 1.0 );
   graph.set_color( 1, 1, 0.38, 0, 0.8 );
@@ -81,13 +76,15 @@ int main( int argc, char *argv[] )
 
   float t = 0.0;
 
+  float upper_limit = fader.link_rate() * delay * 1.2;
+
   while ( 1 ) {
     fader.update( network );
 
     network.mutable_link().set_rate( fader.link_rate() );
     network.mutable_link().set_limit( fader.buffer_size() );
 
-    link_ppt = network.mutable_link().rate();
+    double link_ppt = network.mutable_link().rate();
 
     char buf[ 256 ];
     snprintf( buf, 256, "link: %.1f Mbps, delay: %.0f ms, buffer: %.0f kB, active = %d RemyCC & %d AIMD",
