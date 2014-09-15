@@ -1,0 +1,5 @@
+ratatouille (0.1-1) trusty; urgency=low
+
+  * First packaging.
+
+ -- Keith Winstein <keithw@mit.edu>  Mon, 15 Sep 2014 02:35:00 -0500
