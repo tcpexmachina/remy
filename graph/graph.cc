@@ -18,8 +18,8 @@ Graph::Graph( const unsigned int num_lines,
   : display_( initial_width, initial_height, title ),
     cairo_( display_.window().size() ),
     pango_( cairo_ ),
-    tick_font_( "ACaslon Regular, Normal 30" ),
-    label_font_( "ACaslon Regular, Normal 20" ),
+    tick_font_( "Open Sans Condensed Bold 30" ),
+    label_font_( "Open Sans Condensed Bold 20" ),
     x_tick_labels_(),
     y_tick_labels_(),
     colors_( num_lines ),
@@ -41,7 +41,7 @@ void Graph::set_info( const string & info )
 {
   if ( info != info_string_ ) {
     info_string_ = info;
-    info_ = Pango::Text( cairo_, pango_, tick_font_, info );
+    info_ = Pango::Text( cairo_, pango_, label_font_, info );
   }
 }
 
