@@ -1,6 +1,6 @@
 AM_CPPFLAGS = -I../protobufs -I../graph $(GL_CFLAGS) $(GLFW_CFLAGS) $(GLEW_CFLAGS) $(GLU_CFLAGS) $(PANGOCAIRO_CFLAGS) $(GTKMM_CFLAGS)
 AM_CXXFLAGS = $(PICKY_CXXFLAGS)
-LDADD = ../protobufs/libremyprotos.a -ljemalloc -lm $(protobuf_LIBS)
+LDADD = ../protobufs/libremyprotos.a -lm $(protobuf_LIBS)
 
 bin_PROGRAMS = remy rat-runner scoring-example ratatouille
 
