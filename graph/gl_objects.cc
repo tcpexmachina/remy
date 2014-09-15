@@ -29,9 +29,11 @@ Window::Window( const unsigned int width, const unsigned int height, const strin
 {
   glfwDefaultWindowHints();
 
+  /*
   glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
   glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 1 );
   glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE );
+  */ // not supported using software renderer on VMware Fusion (hardware even worse)
   glfwWindowHint( GLFW_SAMPLES, 4 );
   glfwWindowHint( GLFW_RESIZABLE, GL_TRUE );
   //  glfwWindowHint( GLFW_ALPHA_BITS, 0 );

@@ -8,7 +8,7 @@
 using namespace std;
 
 const std::string Display::shader_source_scale_from_pixel_coordinates
-= R"( #version 140
+= R"( #version 130
 
       uniform uvec2 window_size;
       in vec2 position;
@@ -23,7 +23,7 @@ const std::string Display::shader_source_scale_from_pixel_coordinates
     )";
 
 const std::string Display::shader_source_passthrough_texture
-= R"( #version 140
+= R"( #version 130
 
       uniform sampler2DRect tex;
 
@@ -37,7 +37,7 @@ const std::string Display::shader_source_passthrough_texture
     )";
 
 const std::string Display::shader_source_solid_color
-= R"( #version 140
+= R"( #version 130
 
       uniform vec4 color;
       uniform float cutoff;
