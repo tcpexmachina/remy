@@ -9,11 +9,12 @@
 class GTKFader
 {
   std::atomic<double> link_rate_ { 1.01 };
-  double time_increment_ = 0.0107893;
-  double horizontal_size_ = 10.4385;
-  double buffer_size_ = 4820;
-  bool autoscale_ = false;
-  bool autoscale_all_ = false;
+  std::atomic<double> time_increment_ { 0.0107893 };
+  std::atomic<double> horizontal_size_ { 10.4385 };
+  std::atomic<double> buffer_size_ { 4820 };
+  std::atomic<bool> autoscale_ { false };
+  std::atomic<bool> autoscale_all_ { false };
+  std::atomic<bool> quit_ { false };
 
 public:
   GTKFader();
@@ -27,6 +28,7 @@ public:
   unsigned int buffer_size( void ) const { return static_cast<unsigned int>( buffer_size_ ); }
   bool autoscale( void ) const { return autoscale_; }
   bool autoscale_all( void ) const { return autoscale_all_; }
+  bool quit( void ) const { return quit_; }
 };
 
 #endif /* FADER_HH */

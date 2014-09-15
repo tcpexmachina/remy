@@ -78,7 +78,11 @@ int main( int argc, char *argv[] )
 
   float upper_limit = fader.link_rate() * delay * 1.2;
 
-  while ( 1 ) {
+  while ( true ) {
+    if ( fader.quit() ) {
+      break;
+    }
+
     fader.update( network );
 
     network.mutable_link().set_rate( fader.link_rate() );
@@ -131,10 +135,6 @@ int main( int argc, char *argv[] )
     }
 
     t += fader.time_increment();
-  }
-
-  for ( auto &x : network.senders().throughputs_delays() ) {
-    printf( "sender: [tp=%f, del=%f]\n", x.first, x.second );
   }
 
   return EXIT_SUCCESS;
