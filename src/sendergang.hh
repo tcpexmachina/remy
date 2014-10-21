@@ -16,7 +16,6 @@ private:
     double internal_tick;
 
   protected:
-    double next_switch_tick;
     SenderType sender;
 
     /* is abstract base class */
@@ -24,9 +23,6 @@ private:
 			   Exponential & start_distribution,
 			   Exponential & stop_distribution,
 			   const unsigned int num_sending ) = 0;
-
-    void switch_on( const double & tickno );
-    void switch_off( const double & tickno, const unsigned int num_sending );
 
     void accumulate_sending_time_until( const double & tickno, const unsigned int num_sending );
 
@@ -37,17 +33,21 @@ private:
     Utility utility;
     bool sending;
     unsigned int id;
+    double next_switch_tick;
 
     SwitchedSender( const unsigned int s_id,
 		    const double & start_tick,
 		    const SenderType & s_sender )
       : internal_tick( 0 ),
-	next_switch_tick( start_tick ),
 	sender( s_sender ),
 	utility(),
 	sending( false ),
-	id( s_id )
+	id( s_id ),
+	next_switch_tick( start_tick )
     {}
+
+    void switch_on( const double & tickno );
+    void switch_off( const double & tickno, const unsigned int num_sending );
   };
 
   class TimeSwitchedSender : public SwitchedSender {
@@ -89,12 +89,20 @@ private:
 
   Exponential _start_distribution, _stop_distribution;
 
+  unsigned int _max_id;
+  unsigned int _scenario_duration;
+
 public:
   SenderGang( const double mean_on_duration,
-	      const double mean_off_duration,
+              const double mean_off_duration,
 	      const unsigned int num_senders,
 	      const SenderType & exemplar,
 	      PRNG & s_prng,
+	      const unsigned int id_range_begin = 0 );
+  
+  SenderGang( const unsigned int scenario_duration,
+	      const unsigned int num_senders,
+	      const SenderType & exemplar,
 	      const unsigned int id_range_begin = 0 );
 
   /* Create empty SenderGang */
@@ -103,6 +111,7 @@ public:
   unsigned int count_active_senders( void ) const;
   unsigned int count_senders( void ) const { return _gang.size(); }
   unsigned int id_of_first_sender( void ) const { return _gang.at( 0 ).id; }
+  unsigned int max_sender_id( void ) const { return _max_id; }
 
   void switch_senders( const unsigned int num_sending, const double & tickno );
 

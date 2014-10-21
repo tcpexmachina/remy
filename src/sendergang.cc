@@ -1,5 +1,7 @@
 #include "sendergang.hh"
 
+#include <limits>
+
 using namespace std;
 
 template <class SenderType>
@@ -11,20 +13,49 @@ SenderGang<SenderType>::SenderGang( const double mean_on_duration,
 				    const unsigned int id_range_begin )
   : _gang(),
     _start_distribution( 1.0 / mean_off_duration, prng ),
-    _stop_distribution( 1.0 / mean_on_duration, prng )
+    _stop_distribution( 1.0 / mean_on_duration, prng ),
+    _max_id( 0 ),
+    _scenario_duration( 0 ) 
 {
   for ( unsigned int i = 0; i < num_senders; i++ ) {
     _gang.emplace_back( i + id_range_begin,
 			_start_distribution.sample(),
 			exemplar );
   }
+  _max_id = _gang.back().id;
+}
+
+template <class SenderType>
+SenderGang<SenderType>::SenderGang( const unsigned int scenario_duration, 
+                                    const unsigned int num_senders,
+				    const SenderType & exemplar,
+				    const unsigned int id_range_begin )
+  : _gang(),
+    _start_distribution( 1.0, global_PRNG() ),
+    _stop_distribution( 1.0, global_PRNG() ),
+    _max_id( 0 ),
+    _scenario_duration( scenario_duration ) 
+{
+  for ( unsigned int i = 0; i < num_senders - 1; i++ ) {
+    /* "on" scenarios dictate when each sender should start */
+    _gang.emplace_back( i + id_range_begin,
+			0,
+			exemplar );
+  }
+  _gang.emplace_back( num_senders + id_range_begin - 1,
+                      scenario_duration / 2,
+                      exemplar );
+
+  _max_id = _gang.back().id;
 }
 
 template <class SenderType>
 SenderGang<SenderType>::SenderGang()
   : _gang(),
     _start_distribution( 1.0, global_PRNG() ),
-    _stop_distribution( 1.0, global_PRNG() )
+    _stop_distribution( 1.0, global_PRNG() ),
+    _max_id( 0 ),
+    _scenario_duration( 0 )
 {
 }
 
@@ -33,7 +64,22 @@ void SenderGang<SenderType>::switch_senders( const unsigned int num_sending, con
 {
   /* let senders switch */
   for ( auto &x : _gang ) {
-    x.switcher( tickno, _start_distribution, _stop_distribution, num_sending );
+    if ( (not x.sending) and ((x.id != _max_id) or _gang.size() < 2) ) {
+      /* turn on all senders but one */
+      x.switch_on( tickno );
+      x.next_switch_tick = std::numeric_limits<double>::max();
+    } else if( x.id == _max_id ) {
+      /* scenario is either half off -> half on,
+         or half on -> half off */
+      if( ((tickno >= _scenario_duration/2) and (tickno < (3*_scenario_duration/2))) and not x.sending ) {
+        x.switch_on( tickno );
+        x.next_switch_tick = 3*_scenario_duration/2;
+      } else if ( x.sending and ( tickno >= x.next_switch_tick ) ) {
+        x.switch_off( tickno, num_sending );
+        x.next_switch_tick = std::numeric_limits<double>::max();
+      }
+    }
+    //x.switcher( tickno, _start_distribution, _stop_distribution, num_sending );
   }
 }
 
