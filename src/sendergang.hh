@@ -48,6 +48,7 @@ private:
 	sending( false ),
 	id( s_id )
     {}
+    virtual ~SwitchedSender() {};
   };
 
   class TimeSwitchedSender : public SwitchedSender {
