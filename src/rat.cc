@@ -14,7 +14,7 @@ Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
      _track( s_track ),
      _last_send_time( 0 ),
      _the_window( 0 ),
-     _intersend_time( 0.1 ),
+     _intersend_time( 0 ),
      _flow_id( 0 ),
      _largest_ack( -1 )
 {
@@ -39,7 +39,7 @@ void Rat::reset( const double & )
   _memory.reset();
   _last_send_time = 0;
   _the_window = 0;
-  _intersend_time = 0.1;
+  _intersend_time = 0;
   _flow_id++;
   _largest_ack = _packets_sent - 1; /* Assume everything's been delivered */
   assert( _flow_id != 0 );
