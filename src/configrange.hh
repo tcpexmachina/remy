@@ -13,7 +13,8 @@ public:
   double mean_on_duration { 1000 };
   double mean_off_duration { 1000 };
   bool lo_only { false };
-  std::vector<double> trace {};
+  std::vector<double> up_trace {};
+  std::vector<double> down_trace {};
 
   RemyBuffers::ConfigRange DNA( void ) const;
 };

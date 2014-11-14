@@ -19,7 +19,8 @@ public:
   unsigned int num_senders;
   double link_ppt;
   double delay;
-  std::vector<double> trace;
+  std::vector<double> up_trace;
+  std::vector<double> down_trace;
 
   NetConfig( void )
     : mean_on_duration( 5000.0 ),
@@ -27,7 +28,8 @@ public:
       num_senders( 8 ),
       link_ppt( 1.0 ),
       delay( 150 ),
-      trace()
+      up_trace(),
+      down_trace()
   {}
 
   NetConfig( const RemyBuffers::NetConfig & dna )
@@ -36,7 +38,8 @@ public:
       num_senders( dna.num_senders() ),
       link_ppt( dna.link_ppt() ),
       delay( dna.delay() ),
-      trace()
+      up_trace(),
+      down_trace()
   {}
   
   NetConfig & set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
@@ -44,7 +47,8 @@ public:
   NetConfig & set_num_senders( const unsigned int n ) { num_senders = n; return *this; }
   NetConfig & set_on_duration( const double & duration ) { mean_on_duration = duration; return *this; }
   NetConfig & set_off_duration( const double & duration ) { mean_off_duration = duration; return *this; }
-  NetConfig & set_trace( const std::vector< double > & s_trace ) { trace = s_trace; return *this; }
+  NetConfig & set_up_trace( const std::vector< double > & trace ) { up_trace = trace; return *this; }
+  NetConfig & set_down_trace( const std::vector< double > & trace ) { down_trace = trace; return *this; }
 
   RemyBuffers::NetConfig DNA( void ) const
   {

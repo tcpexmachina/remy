@@ -14,7 +14,8 @@ int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
   string output_filename;
-  std::vector<double> trace;
+  std::vector<double> uplink_trace;
+  std::vector<double> downlink_trace;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -39,8 +40,8 @@ int main( int argc, char *argv[] )
       }
     } else if ( arg.substr( 0, 3 ) == "of=" ) {
       output_filename = string( arg.substr( 3 ) );
-    } else if ( arg.substr( 0, 6 ) == "trace=" ) {
-      string trace_filename( arg.substr( 6 ) );
+    } else if ( arg.substr( 0, 3 ) == "up=" ) {
+      string trace_filename( arg.substr( 3 ) );
       
       std::ifstream trace_file( trace_filename );
       std::string line;
@@ -52,7 +53,22 @@ int main( int argc, char *argv[] )
           break;
         }
 
-        trace.push_back( timestamp );
+        uplink_trace.push_back( timestamp );
+      }
+    } else if ( arg.substr( 0, 5 ) == "down=" ) {
+      string trace_filename( arg.substr( 5 ) );
+      
+      std::ifstream trace_file( trace_filename );
+      std::string line;
+      
+      while( std::getline( trace_file, line ) ) {
+        std::istringstream iss( line );
+        double timestamp;
+        if( !( iss >> timestamp ) ) {
+          break;
+        }
+
+        downlink_trace.push_back( timestamp );
       }
     }
   }
@@ -63,10 +79,14 @@ int main( int argc, char *argv[] )
   configuration_range.max_senders = 2;
   configuration_range.mean_on_duration = 1000;
   configuration_range.mean_off_duration = 1000;
-  if( not trace.empty() ) {
-    configuration_range.trace = trace;
+  if( not uplink_trace.empty() ) {
+    configuration_range.up_trace = uplink_trace;
   }
-  //  configuration_range.lo_only = true;
+  if( not downlink_trace.empty() ) {
+    configuration_range.down_trace = downlink_trace;
+  }
+  configuration_range.lo_only = true;
+
   RatBreeder breeder( configuration_range );
 
   unsigned int run = 0;

@@ -14,15 +14,15 @@ Evaluator::Evaluator( const ConfigRange & range )
     _configs()
 {
   /* first load "anchors" */
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_trace( range.trace ) );
+  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_up_trace( range.up_trace ).set_down_trace( range.down_trace ) );
 
   if ( range.lo_only ) {
     return;
   }
 
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_trace( range.trace ) );
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_trace( range.trace ) );
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_trace( range.trace ) );
+  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_up_trace( range.up_trace ).set_down_trace( range.down_trace ) );
+  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_up_trace( range.up_trace ).set_down_trace( range.down_trace ) );
+  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_up_trace( range.up_trace ).set_down_trace( range.down_trace ) );
 
   /* now load some random ones just for fun */
   for ( int i = 0; i < 12; i++ ) {
@@ -30,7 +30,7 @@ Evaluator::Evaluator( const ConfigRange & range )
     boost::random::uniform_real_distribution<> rtt( range.rtt_ms.first, range.rtt_ms.second );
     boost::random::uniform_int_distribution<> num_senders( 1, range.max_senders );
 
-    _configs.push_back( NetConfig().set_link_ppt( link_speed( global_PRNG() ) ).set_delay( rtt( global_PRNG() ) ).set_num_senders( num_senders( global_PRNG() ) ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_trace( range.trace ) );
+    _configs.push_back( NetConfig().set_link_ppt( link_speed( global_PRNG() ) ).set_delay( rtt( global_PRNG() ) ).set_num_senders( num_senders( global_PRNG() ) ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ).set_up_trace( range.up_trace ).set_down_trace( range.down_trace ) );
   }
 }
 
