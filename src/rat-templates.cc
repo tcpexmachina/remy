@@ -7,7 +7,7 @@ using namespace std;
 
 template <class NextHop>
 void Rat::send( const unsigned int id, NextHop & next, const double & tickno,
-		const unsigned int packets_sent_cap )
+		const int packets_sent_cap )
 {
   assert( _packets_sent >= _largest_ack + 1 );
 

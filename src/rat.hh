@@ -35,7 +35,7 @@ public:
 
   template <class NextHop>
   void send( const unsigned int id, NextHop & next, const double & tickno,
-	     const unsigned int packets_sent_cap = std::numeric_limits<unsigned int>::max() );
+	     const int packets_sent_cap = std::numeric_limits<int>::max() );
 
   const WhiskerTree & whiskers( void ) const { return _whiskers; }
 
