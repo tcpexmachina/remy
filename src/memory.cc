@@ -18,6 +18,7 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
     }
 
     const double rtt = x.tick_received - x.tick_sent;
+    //printf("Got ack with RTT %f\n", rtt);
     if ( _last_tick_sent == 0 || _last_tick_received == 0 ) {
       _last_tick_sent = x.tick_sent;
       _last_tick_received = x.tick_received;
@@ -25,6 +26,7 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
     } else {
       _rec_send_ewma = (1 - alpha) * _rec_send_ewma + alpha * (x.tick_sent - _last_tick_sent);
       _rec_rec_ewma = (1 - alpha) * _rec_rec_ewma + alpha * (x.tick_received - _last_tick_received);
+      //printf("rewma diff is %f\n", x.tick_received - _last_tick_received);
       _slow_rec_rec_ewma = (1 - slow_alpha) * _slow_rec_rec_ewma + slow_alpha * (x.tick_received - _last_tick_received);
 
       _last_tick_sent = x.tick_sent;

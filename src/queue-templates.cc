@@ -1,11 +1,12 @@
 #include <cassert>
+#include <cmath>
 
 #include "queue.hh"
 
 template <class NextHop>
 void Queue::tick( NextHop & next, const double & tickno )
 {
-  double now = tickno;
+  unsigned int now = tickno;
 
   if ( not packet_queue_.empty() ) {
     assert( packet_queue_.front().arrival_time <= next_event_time( tickno ) );

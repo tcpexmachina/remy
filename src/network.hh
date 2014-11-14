@@ -10,6 +10,7 @@
 #include "receiver.hh"
 #include "random.hh"
 #include "answer.pb.h"
+#include "link.hh"
 
 class NetConfig
 {
@@ -18,13 +19,15 @@ public:
   unsigned int num_senders;
   double link_ppt;
   double delay;
+  std::vector<double> trace;
 
   NetConfig( void )
     : mean_on_duration( 5000.0 ),
       mean_off_duration( 5000.0 ),
       num_senders( 8 ),
       link_ppt( 1.0 ),
-      delay( 150 )
+      delay( 150 ),
+      trace()
   {}
 
   NetConfig( const RemyBuffers::NetConfig & dna )
@@ -32,7 +35,8 @@ public:
       mean_off_duration( dna.mean_off_duration() ),
       num_senders( dna.num_senders() ),
       link_ppt( dna.link_ppt() ),
-      delay( dna.delay() )
+      delay( dna.delay() ),
+      trace()
   {}
   
   NetConfig & set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
@@ -40,6 +44,7 @@ public:
   NetConfig & set_num_senders( const unsigned int n ) { num_senders = n; return *this; }
   NetConfig & set_on_duration( const double & duration ) { mean_on_duration = duration; return *this; }
   NetConfig & set_off_duration( const double & duration ) { mean_off_duration = duration; return *this; }
+  NetConfig & set_trace( const std::vector< double > & s_trace ) { trace = s_trace; return *this; }
 
   RemyBuffers::NetConfig DNA( void ) const
   {
@@ -69,8 +74,10 @@ private:
   PRNG & _prng;
   SenderGangofGangs<SenderType1, SenderType2> _senders;
   Jitter _jitter;
-  LinkQueue _link;
-  Delay _delay;
+  LinkQueue _uplink;
+  LinkQueue _downlink;
+  Delay _uplink_delay;
+  Delay _downlink_delay;
   Receiver _rec;
 
   double _tickno;

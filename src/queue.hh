@@ -27,7 +27,7 @@ protected:
 
     unsigned int next_delivery_;
     std::vector< double > schedule_;
-    double base_timestamp_;
+    unsigned int base_timestamp_;
 
     std::queue< QueuedPacket > packet_queue_;
 
@@ -57,6 +57,9 @@ private:
 
 public:
     LinkQueue( const double & link_packets_per_ms );
+    LinkQueue( const std::vector< double > trace ) {
+        schedule_ = trace;
+    };
 };
 
 #endif /* QUEUE_HH */

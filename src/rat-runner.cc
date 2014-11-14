@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <vector>
 #include <string>
+#include <sstream>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -18,6 +19,7 @@ int main( int argc, char *argv[] )
   double delay = 100.0;
   double mean_on_duration = 5000.0;
   double mean_off_duration = 5000.0;
+  std::vector<double> trace;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -42,11 +44,11 @@ int main( int argc, char *argv[] )
       }
 
       if ( tree.has_config() ) {
-	printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
+	//printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
       }
 
       if ( tree.has_optimizer() ) {
-	printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
+	//printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
       }
     } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
       num_senders = atoi( arg.substr( 5 ).c_str() );
@@ -63,6 +65,21 @@ int main( int argc, char *argv[] )
     } else if ( arg.substr( 0, 4 ) == "off=" ) {
       mean_off_duration = atof( arg.substr( 4 ).c_str() );
       fprintf( stderr, "Setting mean_off_duration to %f ms\n", mean_off_duration );
+    } else if ( arg.substr( 0, 6 ) == "trace=" ) {
+      string trace_filename( arg.substr( 6 ) );
+      
+      std::ifstream trace_file( trace_filename );
+      std::string line;
+      
+      while( std::getline( trace_file, line ) ) {
+        std::istringstream iss( line );
+        double timestamp;
+        if( !( iss >> timestamp ) ) {
+          break;
+        }
+
+        trace.push_back( timestamp );
+      }
     }
   }
 
@@ -73,21 +90,41 @@ int main( int argc, char *argv[] )
   configuration_range.mean_on_duration = mean_on_duration;
   configuration_range.mean_off_duration = mean_off_duration;
   configuration_range.lo_only = true;
+  if( not trace.empty() ) {
+    configuration_range.trace = trace;
+  }
 
   Evaluator eval( configuration_range );
   auto outcome = eval.score( whiskers, false, 10 );
-  printf( "score = %f\n", outcome.score );
-  double norm_score = 0;
+  //printf( "score = %f\n", outcome.score );
+  //double norm_score = 0;
 
   for ( auto &run : outcome.throughputs_delays ) {
+    //printf( "===\nconfig: %s\n", run.first.str().c_str() );
+        
+    double avg_tp = 0;
+    double avg_delay = 0;
+    for ( auto &x : run.second ) {
+      //printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );                                                                  
+      avg_tp += x.first;
+      avg_delay += x.second;
+    }
+    //double mbps = (link_ppt*12);
+    avg_tp = ( 12*avg_tp );
+    avg_tp /= run.second.size();
+    avg_delay /= run.second.size();
+    printf( "%f %f %f\n", link_ppt * 12, avg_tp, avg_delay );
+  }
+
+  /*for ( auto &run : outcome.throughputs_delays ) {
     printf( "===\nconfig: %s\n", run.first.str().c_str() );
     for ( auto &x : run.second ) {
       printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
-      norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
+      norm_score += log( x.first / run.first.link_ppt ) - log( x.second / run.first.delay );
     }
   }
 
-  printf( "normalized_score = %f\n", norm_score );
+  printf( "normalized_score = %f\n", norm_score );*/
 
   printf( "Whiskers: %s\n", outcome.used_whiskers.str().c_str() );
 

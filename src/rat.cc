@@ -1,3 +1,4 @@
+
 #include <algorithm>
 #include <limits>
 
@@ -13,7 +14,7 @@ Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
      _track( s_track ),
      _last_send_time( 0 ),
      _the_window( 0 ),
-     _intersend_time( 1.0 ),
+     _intersend_time( 0.1 ),
      _flow_id( 0 ),
      _largest_ack( -1 )
 {
@@ -24,11 +25,13 @@ void Rat::packets_received( const vector< Packet > & packets ) {
   /* Assumption: There is no reordering */
   _largest_ack = max( packets.at( packets.size() - 1 ).seq_num, _largest_ack );
   _memory.packets_received( packets, _flow_id );
+  //printf("memory is %s\n", _memory.str().c_str());
 
   const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
 
   _the_window = current_whisker.window( _the_window );
   _intersend_time = current_whisker.intersend();
+  //printf("Current window is %d, intersend is %f\n", _the_window, _intersend_time);
 }
 
 void Rat::reset( const double & )
@@ -36,7 +39,7 @@ void Rat::reset( const double & )
   _memory.reset();
   _last_send_time = 0;
   _the_window = 0;
-  _intersend_time = 1.0;
+  _intersend_time = 0.1;
   _flow_id++;
   _largest_ack = _packets_sent - 1; /* Assume everything's been delivered */
   assert( _flow_id != 0 );
@@ -45,12 +48,11 @@ void Rat::reset( const double & )
 double Rat::next_event_time( const double & tickno ) const
 {
   if ( _packets_sent < _largest_ack + 1 + _the_window ) {
-    return tickno;
-    /*if ( _last_send_time + _intersend_time <= tickno ) {
+    if ( _last_send_time + _intersend_time <= tickno ) {
       return tickno;
     } else {
       return _last_send_time + _intersend_time;
-      }*/
+    }
   } else {
     /* window is currently closed */
     return std::numeric_limits<double>::max();

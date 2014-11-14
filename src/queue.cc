@@ -1,7 +1,9 @@
 /* -*-mode:c++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 
+#include <cstdio>
 #include <limits>
 #include <cassert>
+#include <cmath>
 
 #include "packet.hh"
 #include "queue.hh"
@@ -29,12 +31,20 @@ LinkQueue::LinkQueue( const double & link_packets_per_ms )
     : Queue()
 {
     const double ms = 1.0/link_packets_per_ms;
-    schedule_.emplace_back( ms );
+    if( ms < 1 ) {
+        double counter = 0;
+        while( counter < 1 ) {
+            schedule_.emplace_back( 1 );
+            counter += ms;
+        }
+    } else {
+        schedule_.emplace_back( ms );
+    }
 }
 
 void Queue::accept( const Packet & p, const double & tickno )
 {
-    const double now = tickno;
+    const unsigned int now = tickno;
 
     /* pop wasted PDOs */
     while ( next_scheduled_time() <= now

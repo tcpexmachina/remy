@@ -14,6 +14,7 @@ int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
   string output_filename;
+  std::vector<double> trace;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -38,15 +39,33 @@ int main( int argc, char *argv[] )
       }
     } else if ( arg.substr( 0, 3 ) == "of=" ) {
       output_filename = string( arg.substr( 3 ) );
+    } else if ( arg.substr( 0, 6 ) == "trace=" ) {
+      string trace_filename( arg.substr( 6 ) );
+      
+      std::ifstream trace_file( trace_filename );
+      std::string line;
+      
+      while( std::getline( trace_file, line ) ) {
+        std::istringstream iss( line );
+        double timestamp;
+        if( !( iss >> timestamp ) ) {
+          break;
+        }
+
+        trace.push_back( timestamp );
+      }
     }
   }
 
   ConfigRange configuration_range;
   configuration_range.link_packets_per_ms = make_pair( 1.0, 2.0 ); /* 10 Mbps to 20 Mbps */
   configuration_range.rtt_ms = make_pair( 100, 200 ); /* ms */
-  configuration_range.max_senders = 16;
-  configuration_range.mean_on_duration = 5000;
-  configuration_range.mean_off_duration = 5000;
+  configuration_range.max_senders = 2;
+  configuration_range.mean_on_duration = 1000;
+  configuration_range.mean_off_duration = 1000;
+  if( not trace.empty() ) {
+    configuration_range.trace = trace;
+  }
   //  configuration_range.lo_only = true;
   RatBreeder breeder( configuration_range );
 

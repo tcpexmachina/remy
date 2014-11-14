@@ -6,6 +6,7 @@
 #include <cassert>
 #include <limits>
 #include <cstdio>
+#include <cmath>
 
 #include "packet.hh"
 
