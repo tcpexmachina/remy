@@ -6,11 +6,11 @@
 
 using namespace std;
 
-Gusteau::Gusteau( void )
+Gusteau::Gusteau( const uint64_t current_time )
   :  _memory(),
      _packets_sent( 0 ),
      _packets_received( 0 ),
-     _last_send_time( 0 ),
+     _last_send_time( current_time ),
      _max_receive_ratio( 1.0 ),
      _the_window( 0 ),
      _intersend_time( 0 ),

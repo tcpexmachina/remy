@@ -27,7 +27,7 @@ private:
   int _flow_start;
 
 public:
-  Gusteau( void );
+  Gusteau( const uint64_t current_time = 0 );
 
   void packets_received( const std::vector< Packet > & packets );
   void reset( const double & tickno ); /* start new flow */
@@ -38,7 +38,10 @@ public:
 
   Gusteau & operator=( const Gusteau & ) { assert( false ); return *this; }
 
+  const int & packets_sent( void ) const { return _packets_sent; }
   double next_event_time( const double & tickno ) const;
+  const int & current_window( void ) const { return _the_window; }
+  const double & current_intersend( void ) const { return _intersend_time; }
 };
 
 #endif
