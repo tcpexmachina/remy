@@ -9,6 +9,54 @@
 #include "receiver.hh"
 #include "random.hh"
 #include "answer.pb.h"
+#include "memory.hh"
+
+static const double EPSILON = 0.0001;
+
+struct StatePoint
+{
+  Memory::DataType _sewma;
+  Memory::DataType _rewma;
+  Memory::DataType _rttr;
+  Memory::DataType _slow_rewma;
+  
+  long unsigned int _buffer_size;
+
+  double _tickno;
+
+  StatePoint( void )
+  : _sewma( 0.0 ), _rewma( 0.0 ),
+    _rttr( 0.0 ), _slow_rewma( 0.0 ),
+    _buffer_size( 0 ), _tickno( 0.0 )
+  {
+  }
+  
+  StatePoint( const double sewma, const double rewma,
+              const double rttr, const double slow_rewma,
+              const long unsigned int buffer,
+              const double tickno )
+    :  _sewma( sewma ), _rewma( rewma ),
+       _rttr( rttr ), _slow_rewma( slow_rewma ),
+       _buffer_size( buffer ), _tickno( tickno )
+  {
+  }
+  
+  bool operator==( const StatePoint & other ) const 
+  { 
+    return ((fabs(_rewma - other._rewma) <  EPSILON)
+            && (fabs(_sewma - other._sewma) < EPSILON)
+            && (fabs(_rttr - other._rttr) < EPSILON)
+            && (fabs(_slow_rewma - other._slow_rewma) < EPSILON)
+            && (_buffer_size == other._buffer_size));
+  }
+  
+  std::string str( void ) const {
+    char tmp[ 256 ];
+    snprintf( tmp, 256, "sewma=%f, rewma=%f, rttr=%f, slowrewma=%f, buffer=%lu, tickno %f", 
+              _sewma, _rewma, _rttr, _slow_rewma, _buffer_size, _tickno );
+    return tmp;
+  }
+};
 
 class NetConfig
 {
@@ -75,6 +123,10 @@ private:
 
   void tick( void );
 
+  std::deque< StatePoint > _history;
+  const unsigned int _max_history;
+  StatePoint _start_config;
+
 public:
   Network( const typename Gang1Type::Sender & example_sender1, const typename Gang2Type::Sender & example_sender2, PRNG & s_prng, const NetConfig & config );
 
@@ -83,6 +135,12 @@ public:
   void run_simulation( const double & duration );
 
   void run_simulation_until( const double tick_limit );
+
+  void run_simulation_with_config( const double & duration,
+                                   const double & sewma, const double & rewma,
+                                   const double & rttr,
+                                   const double & slow_rewma,
+                                   const unsigned int buffer_size );
 
   const SenderGangofGangs<Gang1Type, Gang2Type> & senders( void ) const { return _senders; }
 
@@ -93,6 +151,8 @@ public:
   const double & tickno( void ) const { return _tickno; }
 
   Link & mutable_link( void ) { return _link; }
+
+  const std::deque< StatePoint > & history ( void ) { return _history; }
 };
 
 #endif

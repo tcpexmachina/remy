@@ -2,12 +2,14 @@
 #define RAT_HH
 
 #include <vector>
+#include <deque>
 #include <string>
 #include <limits>
 
 #include "packet.hh"
 #include "whiskertree.hh"
 #include "memory.hh"
+#include "network.hh"
 
 class Rat
 {
@@ -34,9 +36,14 @@ public:
   void packets_received( const std::vector< Packet > & packets );
   void reset( const double & tickno ); /* start new flow */
 
+  void set_mem( const std::vector< Memory::DataType > & data );
+
   template <class NextHop>
   void send( const unsigned int id, NextHop & next, const double & tickno,
 	     const unsigned int packets_sent_cap = std::numeric_limits<unsigned int>::max() );
+
+  template <class NextHop>
+  void force_send( const unsigned int id, NextHop & next, const double & tickno );
 
   const WhiskerTree & whiskers( void ) const { return _whiskers; }
 

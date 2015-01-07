@@ -14,7 +14,7 @@ Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
      _track( s_track ),
      _last_send_time( 0 ),
      _the_window( 0 ),
-     _intersend_time( 0 ),
+     _intersend_time( 0.01 ),
      _flow_id( 0 ),
      _largest_ack( -1 )
 {
@@ -38,10 +38,10 @@ void Rat::packets_received( const vector< Packet > & packets ) {
 
 void Rat::reset( const double & )
 {
-  _memory.reset();
+  //_memory.reset();
   _last_send_time = 0;
   _the_window = 0;
-  _intersend_time = 0;
+  _intersend_time = 0.01;
   _flow_id++;
   _largest_ack = _packets_sent - 1; /* Assume everything's been delivered */
   assert( _flow_id != 0 );
@@ -50,6 +50,12 @@ void Rat::reset( const double & )
   const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
   _the_window = current_whisker.window( _the_window );
   _intersend_time = current_whisker.intersend();
+}
+
+void Rat::set_mem( const std::vector< Memory::DataType > & data )
+{
+  printf("set %f\n", data.at( 0 ));
+  _memory = Memory( data );
 }
 
 double Rat::next_event_time( const double & tickno ) const

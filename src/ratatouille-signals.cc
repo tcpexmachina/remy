@@ -22,7 +22,7 @@ int main( int argc, char *argv[] )
   WhiskerTree whiskers;
   unsigned int num_senders = 2;
   double link_ppt;
-  double delay = 150.0;
+  double delay = 100.0;
   string fader_filename;
 
   for ( int i = 1; i < argc; i++ ) {
@@ -99,7 +99,7 @@ int main( int argc, char *argv[] )
   fig.set_line_color( sg_id, 9, 0.5, 0.2, 0.5, 0.8 );
 
   for( unsigned int i = 0; i < 10; i++ ) {
-    fig.set_line_memory( sg_id, i, -1.0 );
+    fig.set_line_memory( sg_id, i, 10000.0 );
   }
 
   for( const unsigned int x : subfig_ids ) {
@@ -217,7 +217,7 @@ int main( int argc, char *argv[] )
     }
 
     for ( unsigned int i = 0; i < packets_in_flight.size(); i++ ) {
-      fig.add_data_point( sg_id, i + 1, t, packets_in_flight[ i ] );
+      fig.add_data_point( sg_id, i+1, t, packets_in_flight[ i ] );
 
       if ( packets_in_flight[ i ] > upper_limit ) {
 	upper_limit = packets_in_flight[ i ] * 1.1;

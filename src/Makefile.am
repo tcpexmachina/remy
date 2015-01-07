@@ -2,7 +2,7 @@ AM_CPPFLAGS = -I../protobufs -I../graph $(GL_CFLAGS) $(GLFW_CFLAGS) $(GLEW_CFLAG
 AM_CXXFLAGS = $(PICKY_CXXFLAGS)
 LDADD = ../protobufs/libremyprotos.a -ljemalloc -lm $(protobuf_LIBS)
 
-bin_PROGRAMS = remy rat-runner scoring-example ratatouille-signals
+bin_PROGRAMS = remy rat-runner scoring-example ratatouille-signals stability-graph
 
 common_source = delay.hh evaluator.cc evaluator.hh                     \
 	exponential.hh link.hh link-templates.cc                       \
@@ -28,3 +28,7 @@ ratatouille_SOURCES = $(common_source) ratatouille.cc fader.hh fader.cc fader-te
 ratatouille_signals_LDADD = $(ratatouille_LDADD)
 
 ratatouille_signals_SOURCES = $(common_source) ratatouille-signals.cc fader.hh fader.cc fader-templates.cc
+
+stability_graph_LDADD = $(ratatouille_LDADD)
+
+stability_graph_SOURCES = $(common_source) stability-graph.cc fader.hh fader.cc fader-templates.cc

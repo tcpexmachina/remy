@@ -42,6 +42,11 @@ public:
       _min_rtt( 0 )
   {}
 
+  void set_sewma( DataType sewma ) { _rec_send_ewma = sewma; }
+  void set_rewma( DataType rewma ) { _rec_rec_ewma = rewma; }
+  void set_rttr( DataType rttr ) { _rtt_ratio = rttr; }
+  void set_slow_rewma( DataType slow_rewma ) { _slow_rec_rec_ewma = slow_rewma; }
+
   void reset( void ) { _rec_send_ewma = _rec_rec_ewma = _rtt_ratio = _slow_rec_rec_ewma = _last_tick_sent = _last_tick_received = _min_rtt = 0; }
 
   static const unsigned int datasize = 4;

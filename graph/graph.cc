@@ -14,7 +14,7 @@ using namespace std;
 
 Graph::Graph( const unsigned int num_lines,
 	      const unsigned int initial_width, 
-              const unsigned int initial_height,
+             const unsigned int initial_height,
               const string & xlabel, const string & ylabel,
 	      const float min_y, const float max_y )
   : cairo_( std::pair< unsigned int, unsigned int > ( initial_width,
@@ -259,8 +259,8 @@ void Graph::draw_lines( Display* display, const float width,
 
       points.emplace_back( Point( t + 0.001, points.back().y ) );
 
-      // a bit of overhead to maintain the point abstraction
-      // without the display needing to know about it
+      /* a bit of overhead to maintain the point abstraction
+         without the display needing to know about it */
       std::deque< std::pair< float, float > > xy_pairs;
       for( auto & point : line.data_points ) {
         xy_pairs.emplace_back( point.x, point.y );

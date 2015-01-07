@@ -30,7 +30,7 @@ public:
       }
     }
   }
-
+  
   template <class NextHop>
   void tick( NextHop & next, const double & tickno );
 
