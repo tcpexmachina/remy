@@ -40,7 +40,7 @@ public:
   {
     std::vector<unsigned int> ret( num_senders );
     for ( const auto & x : _buffer ) {
-      ret.at( x.src )++;
+      if( x.src < num_senders ) ret.at( x.src )++;
     }
     std::vector<unsigned int> propagating = _pending_packet.packets_in_flight( num_senders );
     for ( unsigned int i = 0; i < num_senders; i++ ) {
@@ -58,6 +58,18 @@ public:
     _limit = limit;
     while ( _buffer.size() > _limit ) {
       _buffer.pop_back();
+    }
+  }
+
+  void add_dummy_packets( const unsigned int num_packets,
+                    const unsigned int src_id,
+                    const unsigned int flow_id ) {
+    if ( _buffer.size() >= _limit ) return;
+
+    unsigned int seq_num = 1;
+    while ( (_buffer.size()) < _limit && (seq_num <= num_packets) ) {
+      _buffer.push_back( Packet( src_id, flow_id, 0.0, seq_num ) );
+      seq_num++;
     }
   }
 };

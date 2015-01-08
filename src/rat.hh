@@ -42,9 +42,6 @@ public:
   void send( const unsigned int id, NextHop & next, const double & tickno,
 	     const unsigned int packets_sent_cap = std::numeric_limits<unsigned int>::max() );
 
-  template <class NextHop>
-  void force_send( const unsigned int id, NextHop & next, const double & tickno );
-
   const WhiskerTree & whiskers( void ) const { return _whiskers; }
 
   Rat & operator=( const Rat & ) { assert( false ); return *this; }

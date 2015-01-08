@@ -16,7 +16,7 @@ Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & examp
     _rec(),
     _tickno( 0 ),
     _history(),
-    _max_history( 50000 ),
+    _max_history( 20000 ),
     _start_config()
 {
 }
@@ -33,7 +33,7 @@ Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & examp
     _rec(),
     _tickno( 0 ),
     _history(),
-    _max_history( 10000 ),
+    _max_history( 20000 ),
     _start_config()
 {
 }
@@ -55,10 +55,10 @@ void Network<Gang1Type, Gang2Type>::tick( void )
     _history.pop_front();
   }
 
-  for( int i = _history.size()-2; i >= 0; i-- ) {
+  for( int i = _history.size()-1; i >= 0; i-- ) {
     const auto &pt = _history.at( i );
 
-    if( pt == _history.back() ) {
+    if( (pt == _history.back()) and (_tickno - pt._tickno > 2.0) ) {
       printf("found match for %s\n \t%s in %f ticks\n" , pt.str().c_str(), 
              _history.back().str().c_str(),
              _tickno - pt._tickno);
@@ -118,19 +118,17 @@ void Network<Gang1Type, Gang2Type>::run_simulation_with_config( const double & t
                                    const double & sewma, const double & rewma,
                                    const double & rttr,
                                    const double & slow_rewma,
-                                   const unsigned int buffer_size __attribute((unused)) )
+                                   const unsigned int buffer_size )
 {
   auto & sender_1 = _senders.mutable_gang1().mutable_sender( 0 ).mutable_sender();
   sender_1.set_mem( std::vector< double > { sewma, rewma, rttr, slow_rewma } );
 
+  _link.add_dummy_packets( buffer_size, _senders.count_senders() + 1, 0 );
+
   if ( _tickno >= tick_limit ) {
     return;
   }
-
-  /*for( unsigned int i = 0; i < buffer_size; i++ ) {
-    sender_1.force_send( 0, _link, 0 );
-    }*/
-
+  
   while ( true ) {
     /* find element with soonest event */
     double next_tickno = min( min( _senders.next_event_time( _tickno ),

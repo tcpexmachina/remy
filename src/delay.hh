@@ -53,7 +53,7 @@ public:
   {
     std::vector<unsigned int> ret( num_senders );
     for ( const auto & x : _queue ) {
-      ret.at( std::get<1>( x ).src )++;
+      if( std::get<1>( x ).src < num_senders ) ret.at( std::get<1>( x ).src )++;
     }
     return ret;
   }
