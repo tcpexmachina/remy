@@ -16,7 +16,7 @@ Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & examp
     _rec(),
     _tickno( 0 ),
     _history(),
-    _max_history( 20000 ),
+    _max_history( 50000 ),
     _start_config()
 {
 }
@@ -33,7 +33,7 @@ Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & examp
     _rec(),
     _tickno( 0 ),
     _history(),
-    _max_history( 20000 ),
+    _max_history( 50000 ),
     _start_config()
 {
 }
@@ -53,17 +53,6 @@ void Network<Gang1Type, Gang2Type>::tick( void )
 
   if( _history.size() >= _max_history ) {
     _history.pop_front();
-  }
-
-  for( int i = _history.size()-1; i >= 0; i-- ) {
-    const auto &pt = _history.at( i );
-
-    if( (pt == _history.back()) and (_tickno - pt._tickno > 2.0) ) {
-      printf("found match for %s\n \t%s in %f ticks\n" , pt.str().c_str(), 
-             _history.back().str().c_str(),
-             _tickno - pt._tickno);
-      break;
-    }
   }
 }
 

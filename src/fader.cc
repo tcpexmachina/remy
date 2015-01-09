@@ -94,7 +94,7 @@ void Fader::rationalize( decltype(physical_values_) & output ) const
 
 void Fader::initialize( void )
 {
-  link_rate_ = 3.16;
+  link_rate_ = 1.5;
   time_increment_ = 0.01;
   horizontal_size_ = 10;
   buffer_size_ = link_rate_ * 150 * 10;

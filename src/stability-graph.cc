@@ -158,7 +158,7 @@ int main( int argc, char *argv[] )
     }
 
     if ( start ) {
-      network.run_simulation_with_config( t * 1000.0, 11.709, 1.1709, 100.0, 11.709, 0 );
+      network.run_simulation_with_config( t * 1000.0, 1.709, 1.1709, 100.0, 1.709, 0 );
       start = false;
     } else {
       network.run_simulation_until( t * 1000.0 );

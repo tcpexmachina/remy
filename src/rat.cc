@@ -54,7 +54,6 @@ void Rat::reset( const double & )
 
 void Rat::set_mem( const std::vector< Memory::DataType > & data )
 {
-  printf("set %f\n", data.at( 0 ));
   _memory = Memory( data );
 }
 

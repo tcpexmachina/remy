@@ -153,6 +153,7 @@ public:
   Link & mutable_link( void ) { return _link; }
 
   const std::deque< StatePoint > & history ( void ) { return _history; }
+  void clear_history ( void ) { _history.clear(); }
 };
 
 #endif
