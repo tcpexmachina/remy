@@ -67,6 +67,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
     while ( 1 ) {
       double new_score = improver.improve( whisker_to_improve );
+
       assert( new_score >= score_to_beat );
       if ( new_score == score_to_beat ) {
 	cerr << "Ending search." << endl;
@@ -113,7 +114,7 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
   auto replacements( whisker_to_improve.next_generation() );
 
   vector< pair< const Whisker &, future< pair< bool, double > > > > scores;
-
+  
   /* find best replacement */
   for ( const auto & test_replacement : replacements ) {
     if ( eval_cache_.find( test_replacement ) == eval_cache_.end() ) {
@@ -134,7 +135,7 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
 			       return make_pair( false, value ); }, eval_cache_.at( test_replacement ) ) );
     }
   }
-
+  
   /* find the best one */
   for ( auto & x : scores ) {
     const Whisker & replacement( x.first );

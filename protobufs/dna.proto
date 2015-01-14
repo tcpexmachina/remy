@@ -25,9 +25,8 @@ message Memory {
 }
 
 message Whisker {
-  optional sint32 window_increment = 31;
-  optional double window_multiple = 32;
-  optional double intersend = 33;
+  optional double intersend_increment = 31;
+  optional double intersend_multiple = 32;
 
   optional MemoryRange domain = 34;
 }
@@ -45,9 +44,8 @@ message OptimizationSetting {
 }
 
 message OptimizationSettings {
-  optional OptimizationSetting window_increment = 51;
-  optional OptimizationSetting window_multiple = 52;
-  optional OptimizationSetting intersend = 53;
+  optional OptimizationSetting intersend_increment = 51;
+  optional OptimizationSetting intersend_multiple = 52;
 }
 
 message Range {

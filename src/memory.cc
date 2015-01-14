@@ -10,7 +10,7 @@ static const double alpha = 1.0 / 8.0;
 
 static const double slow_alpha = 1.0 / 256.0;
 
-void Memory::packets_received( const vector< Packet > & packets, const unsigned int flow_id )
+void Memory::packets_received( const vector< Packet > & packets, const unsigned int flow_id, const unsigned int outstanding_packets )
 {
   for ( const auto &x : packets ) {
     if ( x.flow_id != flow_id ) {
@@ -24,7 +24,7 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
       _min_rtt = rtt;
     } else {
       _rec_send_ewma = (1 - alpha) * _rec_send_ewma + alpha * (x.tick_sent - _last_tick_sent);
-      _rec_rec_ewma = (1 - alpha) * _rec_rec_ewma + alpha * (x.tick_received - _last_tick_received);
+      _rec_rec_ewma = (1 - alpha) * _rec_rec_ewma + alpha * (x.tick_received - _last_tick_received) * outstanding_packets;
       _slow_rec_rec_ewma = (1 - slow_alpha) * _slow_rec_rec_ewma + slow_alpha * (x.tick_received - _last_tick_received);
 
       _last_tick_sent = x.tick_sent;
@@ -39,14 +39,15 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
 
 string Memory::str( void ) const
 {
-  char tmp[ 256 ];
-  snprintf( tmp, 256, "sewma=%f, rewma=%f, rttr=%f, slowrewma=%f", _rec_send_ewma, _rec_rec_ewma, _rtt_ratio, _slow_rec_rec_ewma );
+  char tmp[ 32 ];
+  //snprintf( tmp, 256, "sewma=%f, rewma=%f, rttr=%f, slowrewma=%f", _rec_send_ewma, _rec_rec_ewma, _rtt_ratio, _slow_rec_rec_ewma );
+  snprintf( tmp, 32, "rewma*outstanding=%f", _rec_rec_ewma );
   return tmp;
 }
 
 const Memory & MAX_MEMORY( void )
 {
-  static const Memory max_memory( { 163840, 163840, 163840, 163840 } );
+  static const Memory max_memory( { 163840, 1638400, 163840, 163840 } );
   return max_memory;
 }
 

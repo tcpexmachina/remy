@@ -7,7 +7,7 @@
 #include "network.cc"
 #include "rat-templates.cc"
 
-const unsigned int TICK_COUNT = 1000000;
+const unsigned int TICK_COUNT = 100000;
 
 Evaluator::Evaluator( const ConfigRange & range )
   : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
@@ -118,7 +118,7 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
   PRNG run_prng( prng_seed );
 
   run_whiskers.reset_counts();
-
+  
   /* run tests */
   Evaluator::Outcome the_outcome;
   for ( auto &x : configs ) {

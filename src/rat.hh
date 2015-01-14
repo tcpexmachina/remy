@@ -21,7 +21,6 @@ private:
 
   double _last_send_time;
 
-  int _the_window;
   double _intersend_time;
 
   unsigned int _flow_id;
