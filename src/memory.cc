@@ -40,15 +40,15 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
 
 string Memory::str( void ) const
 {
-  char tmp[ 32 ];
+  char tmp[ 64 ];
   //snprintf( tmp, 256, "sewma=%f, rewma=%f, rttr=%f, slowrewma=%f", _rec_send_ewma, _rec_rec_ewma, _rtt_ratio, _slow_rec_rec_ewma );
-  snprintf( tmp, 32, "rewma*outstanding=%f", _rec_rec_ewma );
+  snprintf( tmp, 64, "rewma=%f, rewma*packets=%f", _rec_rec_ewma, _rec_send_ewma );
   return tmp;
 }
 
 const Memory & MAX_MEMORY( void )
 {
-  static const Memory max_memory( { 163840, std::numeric_limits<int>::max(), 163840, 163840 } );
+  static const Memory max_memory( { std::numeric_limits<int>::max(), 163840, 163840, 163840 } );
   return max_memory;
 }
 
