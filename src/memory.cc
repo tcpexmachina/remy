@@ -23,8 +23,9 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
       _last_tick_received = x.tick_received;
       _min_rtt = rtt;
     } else {
-      _rec_send_ewma = (1 - alpha) * _rec_send_ewma + alpha * (x.tick_sent - _last_tick_sent);
-      _rec_rec_ewma = (1 - alpha) * _rec_rec_ewma + alpha * (x.tick_received - _last_tick_received) * outstanding_packets;
+      //_rec_send_ewma = (1 - alpha) * _rec_send_ewma + alpha * (x.tick_sent - _last_tick_sent);
+       _rec_send_ewma = (1 - alpha) * _rec_send_ewma + alpha * (x.tick_received - _last_tick_received)  * outstanding_packets;
+      _rec_rec_ewma = (1 - alpha) * _rec_rec_ewma + alpha * (x.tick_received - _last_tick_received);
       _slow_rec_rec_ewma = (1 - slow_alpha) * _slow_rec_rec_ewma + slow_alpha * (x.tick_received - _last_tick_received);
 
       _last_tick_sent = x.tick_sent;
@@ -47,7 +48,7 @@ string Memory::str( void ) const
 
 const Memory & MAX_MEMORY( void )
 {
-  static const Memory max_memory( { 163840, 1638400, 163840, 163840 } );
+  static const Memory max_memory( { 163840, std::numeric_limits<int>::max(), 163840, 163840 } );
   return max_memory;
 }
 
