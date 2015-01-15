@@ -41,8 +41,7 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
 string Memory::str( void ) const
 {
   char tmp[ 64 ];
-  //snprintf( tmp, 256, "sewma=%f, rewma=%f, rttr=%f, slowrewma=%f", _rec_send_ewma, _rec_rec_ewma, _rtt_ratio, _slow_rec_rec_ewma );
-  snprintf( tmp, 64, "rewma=%f, rewma*packets=%f", _rec_rec_ewma, _rec_send_ewma );
+  snprintf( tmp, 64, "rewma*packets=%f", _rec_send_ewma );
   return tmp;
 }
 
