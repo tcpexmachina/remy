@@ -29,7 +29,7 @@ public:
 
   const unsigned int & generation( void ) const { return _generation; }
 
-  double intersend( const double previous_intersend ) const { return std::min<double>( std::max<double>( 0, previous_intersend * _intersend_multiple + _intersend_increment ), 1000000 ); }
+  double intersend( const double previous_intersend ) const { return std::min<double>( std::max<double>( 0.0001, previous_intersend * _intersend_multiple + _intersend_increment ), 1000000 ); }
 
   const MemoryRange & domain( void ) const { return _domain; }
 
@@ -103,8 +103,8 @@ public:
   static const OptimizationSettings & get_optimizer( void ) {
     static OptimizationSettings default_settings {
       /* min, max, min change, max change, multiplier, default */
-      { 0.0001,    32, 0.01, 32,  4, 1 }, /* intersend increment */
-      { 0,    1.1, 0.01, 0.5, 4, 1 }, /* intersend multiple */
+      { 0,    32, 0.01, 32,   8, 1 }, /* intersend increment */
+      { 0,    1.1, 0.01, 0.5, 8, 1 }, /* intersend multiple */
     };
     return default_settings;
   }
