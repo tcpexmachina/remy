@@ -3,6 +3,8 @@
 #include "sendergangofgangs.cc"
 #include "link-templates.cc"
 
+const unsigned int MAX_QUEUE = 1000000;
+
 template <class SenderType1, class SenderType2>
 Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
                                             const SenderType2 & example_sender2,
@@ -11,7 +13,7 @@ Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
   : _prng( s_prng ),
     _senders( SenderGang<SenderType1>( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender1, _prng ),
 	      SenderGang<SenderType2>( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender2, _prng, config.num_senders ) ),
-    _link( config.link_ppt ),
+    _link( config.link_ppt, MAX_QUEUE ),
     _delay( config.delay ),
     _rec(),
     _tickno( 0 )
@@ -25,7 +27,7 @@ Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
   : _prng( s_prng ),
     _senders( SenderGang<SenderType1>( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender1, _prng ),
 	      SenderGang<SenderType2>() ),
-    _link( config.link_ppt ),
+    _link( config.link_ppt, MAX_QUEUE ),
     _delay( config.delay ),
     _rec(),
     _tickno( 0 )

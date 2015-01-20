@@ -42,9 +42,9 @@ int main( int argc, char *argv[] )
   }
 
   ConfigRange configuration_range;
-  configuration_range.link_packets_per_ms = make_pair( 1.0, 10.0 );
-  configuration_range.rtt_ms = make_pair( 150, 160 ); /* ms */
-  configuration_range.max_senders = 1;
+  configuration_range.link_packets_per_ms = make_pair( 1.0, 2.0 );
+  configuration_range.rtt_ms = make_pair( 100, 200 ); /* ms */
+  configuration_range.max_senders = 2;
   configuration_range.mean_on_duration = 5000;
   configuration_range.mean_off_duration = 5000;
   //configuration_range.lo_only = true;
