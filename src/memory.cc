@@ -12,6 +12,8 @@ static const double slow_alpha = 1.0 / 256.0;
 
 void Memory::recalculate_signals( void )
 {
+  assert( _packets_sent >= _packets_received );
+
   _imputed_delay = _rec_ewma * (_packets_sent - _packets_received);
 
   /*
@@ -22,12 +24,14 @@ void Memory::recalculate_signals( void )
 
 void Memory::packets_received( const vector< Packet > & packets, const unsigned int flow_id )
 {
-  _packets_received += packets.size();
-
   for ( const auto &x : packets ) {
     if ( x.flow_id != flow_id ) {
       continue;
     }
+
+    _packets_received++;
+
+    //    cerr << "_packets_sent now " << _packets_sent << ",_packets_received (+) now " << _packets_received << endl;
 
     /* update the state of the memory that is NOT the congestion signals */
     const double rtt = x.tick_received - x.tick_sent;
@@ -51,6 +55,8 @@ void Memory::packet_sent( const Packet & packet __attribute((unused)) )
 {
   _packets_sent++;
 
+  //  cerr << "_packets_sent (+) now " << _packets_sent << ",_packets_received now " << _packets_received << endl;
+
   recalculate_signals();
 }
 
@@ -63,7 +69,7 @@ string Memory::str( void ) const
 
 const Memory & MAX_MEMORY( void )
 {
-  static const Memory max_memory( { 10000 } );
+  static const Memory max_memory( { numeric_limits<double>::max() } );
   return max_memory;
 }
 
@@ -76,7 +82,7 @@ RemyBuffers::Memory Memory::DNA( void ) const
 
 /* If fields are missing in the DNA, we want to wildcard the resulting rule to match anything */
 #define get_val_or_default( protobuf, field, limit ) \
-  ( (protobuf).has_ ## field() ? (protobuf).field() : (limit) ? 0 : 163840 )
+  ( (protobuf).has_ ## field() ? (protobuf).field() : (limit) ? 0 : numeric_limits<double>::max() )
 
 Memory::Memory( const bool is_lower_limit, const RemyBuffers::Memory & dna )
   : _imputed_delay( get_val_or_default( dna, imputed_delay, is_lower_limit ) )

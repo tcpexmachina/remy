@@ -19,5 +19,8 @@ void Rat::send( const unsigned int id, NextHop & next, const double & tickno,
     _memory.packet_sent( p );
     next.accept( p, tickno );
     _last_send_time = tickno;
+
+    const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
+    _intersend_time = current_whisker.intersend( _intersend_time );
   }
 }

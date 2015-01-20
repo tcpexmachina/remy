@@ -10,29 +10,22 @@ Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
      _memory(),
      _track( s_track ),
      _last_send_time( 0 ),
-     _intersend_time( 100.0 ),
-     _flow_id( 0 ),
-     _largest_ack( -1 )
+     _intersend_time( 1 ),
+     _flow_id( 0 )
 {
 }
 
 void Rat::packets_received( const vector< Packet > & packets ) {
   /* Assumption: There is no reordering */
-  _largest_ack = max( packets.at( packets.size() - 1 ).seq_num, _largest_ack );
   _memory.packets_received( packets, _flow_id );
-
-  const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
-
-  _intersend_time = current_whisker.intersend( _intersend_time );
 }
 
 void Rat::reset( const double & )
 {
   _memory.reset();
   _last_send_time = 0;
-  _intersend_time = 100.0;
+  _intersend_time = 1;
   _flow_id++;
-  _largest_ack = packets_sent() - 1; /* Assume everything's been delivered */
   assert( _flow_id != 0 );
 }
 

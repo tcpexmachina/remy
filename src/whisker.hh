@@ -103,8 +103,8 @@ public:
   static const OptimizationSettings & get_optimizer( void ) {
     static OptimizationSettings default_settings {
       /* min, max, min change, max change, multiplier, default */
-      { 0,    32, 0.01, 32,   8, 1 }, /* intersend increment */
-      { 0,    1.1, 0.01, 0.5, 8, 1 }, /* intersend multiple */
+      { 0,    10, 0.05, 1,   8, 1 }, /* intersend increment */
+      { 0,    1,  0.01, 0.5, 8, 1 }, /* intersend multiple */
     };
     return default_settings;
   }
