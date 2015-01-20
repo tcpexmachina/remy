@@ -14,8 +14,6 @@ class Simple
 private:
   Memory _memory;
 
-  int _packets_sent, _packets_received;
-
   double _last_send_time;
 
   double _intersend_time;
@@ -37,7 +35,7 @@ public:
 
   double next_event_time( const double & tickno ) const;
 
-  const int & packets_sent( void ) const { return _packets_sent; }
+  const int & packets_sent( void ) const { return _memory.packets_sent(); }
 };
 
 #endif

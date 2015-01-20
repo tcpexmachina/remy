@@ -10,54 +10,67 @@ static const double alpha = 1.0 / 8.0;
 
 static const double slow_alpha = 1.0 / 256.0;
 
-void Memory::packets_received( const vector< Packet > & packets, const unsigned int flow_id, const unsigned int outstanding_packets )
+void Memory::recalculate_signals( void )
 {
+  _imputed_delay = _rec_ewma * (_packets_sent - _packets_received);
+
+  /*
+  fprintf( stderr, "rec_ewma=%f, outstanding=%d, imputed=%f\n",
+	   _rec_ewma, _packets_sent - _packets_received, _imputed_delay );
+  */
+}
+
+void Memory::packets_received( const vector< Packet > & packets, const unsigned int flow_id )
+{
+  _packets_received += packets.size();
+
   for ( const auto &x : packets ) {
     if ( x.flow_id != flow_id ) {
       continue;
     }
 
+    /* update the state of the memory that is NOT the congestion signals */
     const double rtt = x.tick_received - x.tick_sent;
     if ( _last_tick_sent == 0 || _last_tick_received == 0 ) {
       _last_tick_sent = x.tick_sent;
       _last_tick_received = x.tick_received;
       _min_rtt = rtt;
     } else {
-      //_rec_send_ewma = (1 - alpha) * _rec_send_ewma + alpha * (x.tick_sent - _last_tick_sent);
-      _rec_rec_ewma = (1 - alpha) * _rec_rec_ewma + alpha * (x.tick_received - _last_tick_received);
-      _rec_send_ewma = ((1 - alpha) * _rec_rec_ewma + alpha * (x.tick_received - _last_tick_received))  * outstanding_packets;
-      _slow_rec_rec_ewma = (1 - slow_alpha) * _slow_rec_rec_ewma + slow_alpha * (x.tick_received - _last_tick_received);
-
+      _rec_ewma = (1 - alpha) * _rec_ewma + alpha * (x.tick_received - _last_tick_received);
       _last_tick_sent = x.tick_sent;
       _last_tick_received = x.tick_received;
-
       _min_rtt = min( _min_rtt, rtt );
-      _rtt_ratio = double( rtt ) / double( _min_rtt );
-      assert( _rtt_ratio >= 1.0 );
     }
+
+    /* now recalculate the signals themselves */
+    recalculate_signals();
   }
+}
+
+void Memory::packet_sent( const Packet & packet __attribute((unused)) )
+{
+  _packets_sent++;
+
+  recalculate_signals();
 }
 
 string Memory::str( void ) const
 {
   char tmp[ 64 ];
-  snprintf( tmp, 64, "rewma*packets=%f", _rec_send_ewma );
+  snprintf( tmp, 64, "imputed_delay=%f", _imputed_delay );
   return tmp;
 }
 
 const Memory & MAX_MEMORY( void )
 {
-  static const Memory max_memory( { std::numeric_limits<int>::max(), 163840, 163840, 163840 } );
+  static const Memory max_memory( { 10000 } );
   return max_memory;
 }
 
 RemyBuffers::Memory Memory::DNA( void ) const
 {
   RemyBuffers::Memory ret;
-  ret.set_rec_send_ewma( _rec_send_ewma );
-  ret.set_rec_rec_ewma( _rec_rec_ewma );
-  ret.set_rtt_ratio( _rtt_ratio );
-  ret.set_slow_rec_rec_ewma( _slow_rec_rec_ewma );
+  ret.set_imputed_delay( _imputed_delay );
   return ret;
 }
 
@@ -66,23 +79,14 @@ RemyBuffers::Memory Memory::DNA( void ) const
   ( (protobuf).has_ ## field() ? (protobuf).field() : (limit) ? 0 : 163840 )
 
 Memory::Memory( const bool is_lower_limit, const RemyBuffers::Memory & dna )
-  : _rec_send_ewma( get_val_or_default( dna, rec_send_ewma, is_lower_limit ) ),
-    _rec_rec_ewma( get_val_or_default( dna, rec_rec_ewma, is_lower_limit ) ),
-    _rtt_ratio( get_val_or_default( dna, rtt_ratio, is_lower_limit ) ),
-    _slow_rec_rec_ewma( get_val_or_default( dna, slow_rec_rec_ewma, is_lower_limit ) ),
-    _last_tick_sent( 0 ),
-    _last_tick_received( 0 ),
-    _min_rtt( 0 )
+  : _imputed_delay( get_val_or_default( dna, imputed_delay, is_lower_limit ) )
 {
 }
 
 size_t hash_value( const Memory & mem )
 {
   size_t seed = 0;
-  boost::hash_combine( seed, mem._rec_send_ewma );
-  boost::hash_combine( seed, mem._rec_rec_ewma );
-  boost::hash_combine( seed, mem._rtt_ratio );
-  boost::hash_combine( seed, mem._slow_rec_rec_ewma );
+  boost::hash_combine( seed, mem._imputed_delay );
 
   return seed;
 }

@@ -22,6 +22,8 @@ message Memory {
   optional double rec_rec_ewma = 22;
   optional double rtt_ratio = 23;
   optional double slow_rec_rec_ewma = 24;
+
+  optional double imputed_delay = 25;
 }
 
 message Whisker {
