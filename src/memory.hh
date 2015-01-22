@@ -23,7 +23,6 @@ private:
   int _packets_sent = 0, _packets_received = 0;
 
   void recalculate_signals( void );
-  void round_signals( void );
 
 public:
   Memory( const std::vector< DataType > & s_data )
@@ -37,6 +36,11 @@ public:
   void reset( void ) { *this = Memory(); }
 
   static const unsigned int datasize = 1;
+  static double precise_round( const double & value )
+  {
+    return (1.0/10000.0) * int( 10000 * value );
+  }
+
 
   const DataType & field( unsigned int ) const { return _imputed_delay; }
   DataType & mutable_field( unsigned int )     { return _imputed_delay; }

@@ -15,12 +15,6 @@ void Memory::recalculate_signals( void )
   assert( _packets_sent >= _packets_received );
 
   _imputed_delay = _rec_ewma * (_packets_sent - _packets_received);
-  round_signals();
-}
-
-void Memory::round_signals( void )
-{
-  _imputed_delay = (1.0/10000.0) * int( 10000 * _imputed_delay );
 }
 
 void Memory::packets_received( const vector< Packet > & packets, const unsigned int flow_id )
@@ -40,6 +34,7 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
       _min_rtt = rtt;
     } else {
       _rec_ewma = (1 - alpha) * _rec_ewma + alpha * (x.tick_received - _last_tick_received);
+      _rec_ewma = precise_round( _rec_ewma );
       _last_tick_sent = x.tick_sent;
       _last_tick_received = x.tick_received;
       _min_rtt = min( _min_rtt, rtt );
