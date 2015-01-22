@@ -41,7 +41,6 @@ public:
     return (1.0/10000.0) * int( 10000 * value );
   }
 
-
   const DataType & field( unsigned int ) const { return _imputed_delay; }
   DataType & mutable_field( unsigned int )     { return _imputed_delay; }
 

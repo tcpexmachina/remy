@@ -49,8 +49,6 @@ void Memory::packet_sent( const Packet & packet __attribute((unused)) )
 {
   _packets_sent++;
 
-  //  cerr << "_packets_sent (+) now " << _packets_sent << ",_packets_received now " << _packets_received << endl;
-
   recalculate_signals();
 }
 
