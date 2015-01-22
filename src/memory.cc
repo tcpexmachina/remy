@@ -15,11 +15,12 @@ void Memory::recalculate_signals( void )
   assert( _packets_sent >= _packets_received );
 
   _imputed_delay = _rec_ewma * (_packets_sent - _packets_received);
+  round_signals();
+}
 
-  /*
-  fprintf( stderr, "rec_ewma=%f, outstanding=%d, imputed=%f\n",
-	   _rec_ewma, _packets_sent - _packets_received, _imputed_delay );
-  */
+void Memory::round_signals( void )
+{
+  _imputed_delay = (1.0/10000.0) * int( 10000 * _imputed_delay );
 }
 
 void Memory::packets_received( const vector< Packet > & packets, const unsigned int flow_id )
@@ -30,8 +31,6 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
     }
 
     _packets_received++;
-
-    //    cerr << "_packets_sent now " << _packets_sent << ",_packets_received (+) now " << _packets_received << endl;
 
     /* update the state of the memory that is NOT the congestion signals */
     const double rtt = x.tick_received - x.tick_sent;

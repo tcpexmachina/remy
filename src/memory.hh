@@ -23,6 +23,7 @@ private:
   int _packets_sent = 0, _packets_received = 0;
 
   void recalculate_signals( void );
+  void round_signals( void );
 
 public:
   Memory( const std::vector< DataType > & s_data )
