@@ -21,8 +21,8 @@ int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
   unsigned int num_senders = 1;
-  double link_ppt = 1.0;
-  double delay = 150.0;
+  double link_ppt = 2.0;
+  double delay = 50.0;
   double mean_on_duration = 10000000.0;
   double mean_off_duration = 0.0;
 
@@ -68,23 +68,23 @@ int main( int argc, char *argv[] )
   }
 
   google::dense_hash_set< State, State::StateHash > state_set;
-  state_set.set_empty_key( State ( std::vector<double> {-1, -1, -1 } ));
+  state_set.set_empty_key( State ( std::vector<double> {-1 } ));
   
   PRNG prng( 50 );
   NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration ); /* always on */
   Network<Simple, Simple> network( Simple(), prng, configuration );
 
-  double time = 100.0;
+  double time = 10000.0;
   double time_increment = 1.0;
-  const double end_time = 100000.0;
+  const double end_time = 100000000.0;
   while ( time < end_time ) { 
-      network.run_simulation_until( time );
-      auto network_state = State( network.get_state() );
-
-      if ( state_set.find( network_state ) != state_set.end() ) break;
-
-      state_set.insert( network_state );
-      time += time_increment;
+    network.run_simulation_until( time );
+    auto network_state = State( network.get_state() );
+    
+    if ( state_set.find( network_state ) != state_set.end() ) break;
+    
+    state_set.insert( network_state );
+    time += time_increment;
   }
 
   cout << "Found cycle in " << time << " ms" << endl;

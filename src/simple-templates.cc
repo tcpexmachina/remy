@@ -21,7 +21,7 @@ void Simple::send( const unsigned int id, NextHop & next, const double & tickno,
     _last_send_time = tickno;
   }
 
-  if( _memory.imputed_delay() > 100 ) {
+  if( _memory.imputed_delay() > 150 ) {
     _intersend_time = 100000;
   } else {
     _intersend_time = 0.01;
