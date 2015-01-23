@@ -49,6 +49,8 @@ private:
 	id( s_id )
     {}
     virtual ~SwitchedSender() {};
+
+    SenderType & mutable_sender() { return sender; }
   };
 
   class TimeSwitchedSender : public SwitchedSender {
@@ -120,6 +122,8 @@ public:
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
 
   double next_event_time( const double & tickno ) const;
+  
+  const std::vector< double > get_state( void );
 };
 
 #endif

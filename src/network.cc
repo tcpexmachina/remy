@@ -60,3 +60,36 @@ void Network<SenderType1, SenderType2>::run_simulation( const double & duration 
     tick();
   }
 }
+
+template <class SenderType1, class SenderType2>
+void Network<SenderType1, SenderType2>::run_simulation_until( const double & tick_limit )
+{
+  if ( _tickno >= tick_limit ) {
+    return;
+  }
+
+  while ( true ) {
+    /* find element with soonest event */
+    double next_tickno = min( min( _senders.next_event_time( _tickno ),
+				   _link.next_event_time( _tickno ) ),
+			      min( _delay.next_event_time( _tickno ),
+				   _rec.next_event_time( _tickno ) ) );
+
+    if ( next_tickno > tick_limit ) {
+      _tickno = tick_limit;
+      break;
+    }
+
+    assert( next_tickno < std::numeric_limits<double>::max() );
+
+    _tickno = next_tickno;
+
+    tick();
+  }
+}
+
+template <class SenderType1, class SenderType2>
+const std::vector<double> Network<SenderType1, SenderType2>::get_state( void )
+{
+  return _senders.get_state(); /* not including network state for now */
+}

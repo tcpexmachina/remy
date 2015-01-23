@@ -7,19 +7,24 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "evaluator.hh"
+#include "sendergangofgangs.hh"
+#include "simple-templates.cc"
+#include "rat.hh"
+#include "network.hh"
+#include "network.cc"
 #include "state.hh"
+#include "whiskertree.hh"
 
 using namespace std;
 
 int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
-  unsigned int num_senders = 2;
+  unsigned int num_senders = 1;
   double link_ppt = 1.0;
-  double delay = 100.0;
-  double mean_on_duration = 5000.0;
-  double mean_off_duration = 5000.0;
+  double delay = 150.0;
+  double mean_on_duration = 10000000.0;
+  double mean_off_duration = 0.0;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -59,31 +64,30 @@ int main( int argc, char *argv[] )
     } else if ( arg.substr( 0, 4 ) == "rtt=" ) {
       delay = atof( arg.substr( 4 ).c_str() );
       fprintf( stderr, "Setting delay to %f ms\n", delay );
-    } else if ( arg.substr( 0, 3 ) == "on=" ) {
-      mean_on_duration = atof( arg.substr( 3 ).c_str() );
-      fprintf( stderr, "Setting mean_on_duration to %f ms\n", mean_on_duration );
-    } else if ( arg.substr( 0, 4 ) == "off=" ) {
-      mean_off_duration = atof( arg.substr( 4 ).c_str() );
-      fprintf( stderr, "Setting mean_off_duration to %f ms\n", mean_off_duration );
     }
   }
 
-  ConfigRange configuration_range;
-  configuration_range.link_packets_per_ms = make_pair( link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
-  configuration_range.rtt_ms = make_pair( delay, 0 ); /* ms */
-  configuration_range.max_senders = num_senders;
-  configuration_range.mean_on_duration = mean_on_duration;
-  configuration_range.mean_off_duration = mean_off_duration;
-  configuration_range.lo_only = true;
-  
   google::dense_hash_set< State, State::StateHash > state_set;
   state_set.set_empty_key( State ( std::vector<double> {-1, -1, -1 } ));
+  
+  PRNG prng( 50 );
+  NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration ); /* always on */
+  Network<Simple, Simple> network( Simple(), prng, configuration );
 
-  state_set.insert( State(std::vector<double>{ 1, 2.21, 1 }) );
+  double time = 100.0;
+  double time_increment = 1.0;
+  const double end_time = 100000.0;
+  while ( time < end_time ) { 
+      network.run_simulation_until( time );
+      auto network_state = State( network.get_state() );
 
-  google::dense_hash_set< State, State::StateHash >::const_iterator it
-    = state_set.find( State( std::vector< double > { 1, 2.21, 1 } ));
-  cout << (it != state_set.end() ? "present" : "not present")
-       << endl;
+      if ( state_set.find( network_state ) != state_set.end() ) break;
+
+      state_set.insert( network_state );
+      time += time_increment;
+  }
+
+  cout << "Found cycle in " << time << " ms" << endl;
+
   return 0;
 }

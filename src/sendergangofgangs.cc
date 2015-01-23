@@ -74,3 +74,14 @@ double SenderGangofGangs<Sender1,Sender2>::next_event_time( const double & tickn
 {
   return min( gang1_.next_event_time( tickno ), gang2_.next_event_time( tickno ) );
 }
+
+template <class Sender1, class Sender2>
+const std::vector<double> SenderGangofGangs<Sender1,Sender2>::get_state( void )
+{
+    std::vector<double> state;
+    auto gang1_state = gang1_.get_state();
+    auto gang2_state = gang2_.get_state();
+    state.insert( state.end(), gang1_state.begin(), gang1_state.end());
+    state.insert( state.end(), gang2_state.begin(), gang2_state.end());
+    return state;
+}

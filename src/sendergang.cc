@@ -249,3 +249,14 @@ double SenderGang<SenderType>::next_event_time( const double & tickno ) const
 
   return ret;
 }
+
+template <class SenderType>
+const std::vector<double> SenderGang<SenderType>::get_state( void ) 
+{
+  std::vector<double> state;
+  for( auto & sender : _gang ) {
+    auto sender_state = sender.mutable_sender().get_state();
+    state.insert( state.end(), sender_state.begin(), sender_state.end());
+  }
+  return state;
+}

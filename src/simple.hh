@@ -35,6 +35,8 @@ public:
 
   double next_event_time( const double & tickno ) const;
 
+  const std::vector< double > get_state( void );
+
   const int & packets_sent( void ) const { return _memory.packets_sent(); }
 };
 

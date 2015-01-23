@@ -49,10 +49,12 @@ public:
   void advance_to( const unsigned int tickno __attribute((unused)) ) {}
 
   const double & imputed_delay( void ) { return _imputed_delay; }
+  const double & rec_ewma( void ) { return _rec_ewma; }
 
   const int & packets_sent( void ) const { return _packets_sent; }
   const int & packets_received( void ) const { return _packets_received; }
-
+  int outstanding_packets( void ) const { return _packets_sent - _packets_received; }
+  
   std::string str( void ) const;
 
   bool operator>=( const Memory & other ) const { return (_imputed_delay >= other._imputed_delay); }

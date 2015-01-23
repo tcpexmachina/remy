@@ -81,6 +81,9 @@ public:
   Network( const SenderType1 & example_sender1, PRNG & s_prng, const NetConfig & config );
 
   void run_simulation( const double & duration );
+  void run_simulation_until( const double & tick_limit );
+
+  const std::vector< double > get_state( void );
 
   const SenderGangofGangs<SenderType1,SenderType2> & senders( void ) const { return _senders; }
 };
