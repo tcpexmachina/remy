@@ -34,6 +34,8 @@ public:
   void tick( NextHop & next, const double & tickno );
 
   double next_event_time( const double & tickno ) const { return _pending_packet.next_event_time( tickno ); }
+
+  unsigned int buffer_size( void ) const { return _buffer.size(); }
 };
 
 #endif

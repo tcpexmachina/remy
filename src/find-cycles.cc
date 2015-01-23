@@ -68,26 +68,32 @@ int main( int argc, char *argv[] )
   }
 
   google::dense_hash_set< State, State::StateHash > state_set;
-  state_set.set_empty_key( State ( std::vector<double> {-1 } ));
+  state_set.set_empty_key( State ( std::vector<double> { -1 }, -1 ));
   
   PRNG prng( 50 );
   NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration ); /* always on */
-  Network<Simple, Simple> network( Simple(), prng, configuration );
+  Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
 
-  double time = 10000.0;
+  double time = 0.0;
   double time_increment = 1.0;
   const double end_time = 100000000.0;
+  State last_state;
   while ( time < end_time ) { 
     network.run_simulation_until( time );
-    auto network_state = State( network.get_state() );
-    
-    if ( state_set.find( network_state ) != state_set.end() ) break;
+    printf("time %f\n", time);
+    auto network_state = State( network.get_state(), time );
+
+    google::dense_hash_set< State, State::StateHash >::const_iterator match =
+      state_set.find( network_state );
+    if ( (match != state_set.end()) && !(last_state == network_state) ) {
+      cout << "Found cycle in " << time - match->timestep() << " ms" << endl;
+      break;
+    }
     
     state_set.insert( network_state );
+    last_state = network_state;
     time += time_increment;
   }
-
-  cout << "Found cycle in " << time << " ms" << endl;
 
   return 0;
 }

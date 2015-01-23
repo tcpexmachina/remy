@@ -6,7 +6,8 @@
 class State {
 private:
   std::vector< double > _state_values;
-  
+  double _timestep;
+
 public:
   struct StateHash {
     size_t operator()( const State & state ) const {
@@ -18,19 +19,22 @@ public:
     }
   };
 
-  State( const std::vector< double > values )
-    : _state_values( values )
+  State( const std::vector< double > values, const double time )
+    : _state_values( values ),
+      _timestep( time )
   {}
 
   State()
-    : _state_values()
+    : _state_values(),
+      _timestep( 0.0 )
   {}
 
-  const std::vector< double > values ( void ) const { return _state_values; }
+  const std::vector< double > values( void ) const { return _state_values; }
+  double timestep( void ) const { return _timestep; }
 
   bool operator==( const State & other ) const 
   { 
-    return _state_values == other.values();
+    return (_state_values == other.values());
   }
 };
 

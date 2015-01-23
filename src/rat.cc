@@ -37,3 +37,12 @@ double Rat::next_event_time( const double & tickno ) const
     return _last_send_time + _intersend_time;
   }
 }
+
+const std::vector<double> Rat::get_state( void )
+{
+  std::vector<double> state;
+  state.push_back( _memory.rec_ewma() );
+  state.push_back( _memory.outstanding_packets() );
+  state.push_back( _intersend_time );
+  return state;
+}

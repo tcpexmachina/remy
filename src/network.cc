@@ -91,5 +91,9 @@ void Network<SenderType1, SenderType2>::run_simulation_until( const double & tic
 template <class SenderType1, class SenderType2>
 const std::vector<double> Network<SenderType1, SenderType2>::get_state( void )
 {
-  return _senders.get_state(); /* not including network state for now */
+  std::vector<double> state;
+  auto & senders_state = _senders.get_state(); /* not including network state for now */
+  state.insert( state.end(), senders_state.begin(), senders_state.end());
+  state.push_back( double( _link.buffer_size() ) );
+  return state;
 }
