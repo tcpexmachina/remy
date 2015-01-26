@@ -13,6 +13,7 @@ class Simple
 {
 private:
   Memory _memory;
+  std::vector< Memory::DataType > _initial_state;
 
   double _last_send_time;
 
@@ -35,7 +36,8 @@ public:
 
   double next_event_time( const double & tickno ) const;
 
-  const std::vector< double > get_state( void );
+  void set_initial_state( const std::vector< Memory::DataType > & data ); 
+  const std::vector< double > get_state( const double & tickno );
 
   const int & packets_sent( void ) const { return _memory.packets_sent(); }
 };

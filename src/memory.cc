@@ -61,7 +61,7 @@ string Memory::str( void ) const
 
 const Memory & MAX_MEMORY( void )
 {
-  static const Memory max_memory( { numeric_limits<double>::max() } );
+  static const Memory max_memory( { numeric_limits<double>::max(), numeric_limits<double>::max() } );
   return max_memory;
 }
 

@@ -26,7 +26,8 @@ private:
 
 public:
   Memory( const std::vector< DataType > & s_data )
-    : _imputed_delay( s_data.at( 0 ) )
+    : _imputed_delay( s_data.at( 0 ) ),
+      _rec_ewma( s_data.at( 1 ) )
   {}
 
   Memory()
@@ -34,11 +35,12 @@ public:
   {}
 
   void reset( void ) { *this = Memory(); }
+  void reset_to( std::vector< DataType > & data ) { *this = Memory( data ); }
 
   static const unsigned int datasize = 1;
   static double precise_round( const double & value )
   {
-    return (1.0/10000.0) * int( 10000 * value );
+    return (1.0/1000.0) * int( 1000 * value );
   }
 
   const DataType & field( unsigned int ) const { return _imputed_delay; }

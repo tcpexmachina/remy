@@ -1,12 +1,13 @@
 #ifndef STATE_HH
 #define STATE_HH
 
+#include <cmath>
 #include <boost/functional/hash.hpp>
 
 class State {
 private:
   std::vector< double > _state_values;
-  double _timestep;
+  double _timestamp;
 
 public:
   struct StateHash {
@@ -21,20 +22,39 @@ public:
 
   State( const std::vector< double > values, const double time )
     : _state_values( values ),
-      _timestep( time )
+      _timestamp( time )
   {}
 
   State()
     : _state_values(),
-      _timestep( 0.0 )
+      _timestamp( 0.0 )
   {}
 
   const std::vector< double > values( void ) const { return _state_values; }
-  double timestep( void ) const { return _timestep; }
+  double timestamp( void ) const { return _timestamp; }
 
   bool operator==( const State & other ) const 
   { 
-    return (_state_values == other.values());
+    auto compare = other.values();
+    if ( _state_values.size() != compare.size() ) return false;
+
+    const double eps = 0; /* tolerance in the fourth decimal place */
+    for ( unsigned int i = 0; i < _state_values.size(); i++ ) {
+      if ( std::abs(_state_values.at( i ) - compare.at( i )) > eps ) {
+        //printf("discrepancy %f %f\n", _state_values.at( i ), compare.at( i ));
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void print_state( void ) const 
+  {
+    cout << "Time: " << _timestamp << "\t State: ";
+    for( auto val : _state_values ) {
+      cout << "\t" << val << " ";
+    }
+    cout << endl;
   }
 };
 

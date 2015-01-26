@@ -89,11 +89,17 @@ void Network<SenderType1, SenderType2>::run_simulation_until( const double & tic
 }
 
 template <class SenderType1, class SenderType2>
-const std::vector<double> Network<SenderType1, SenderType2>::get_state( void )
+const std::vector<double> Network<SenderType1, SenderType2>::get_state( const double & tickno )
 {
   std::vector<double> state;
-  auto & senders_state = _senders.get_state(); /* not including network state for now */
-  state.insert( state.end(), senders_state.begin(), senders_state.end());
+  auto & senders_state = _senders.get_state( tickno );
+  state.insert( state.end(), senders_state.begin(), senders_state.end() );
   state.push_back( double( _link.buffer_size() ) );
+  state.push_back( (1.0/10000.0) * std::round( 10000 * (_link.next_event_time( _tickno ) - _tickno )) );
+  //state.push_back( _link.next_event_time( _tickno ) - _tickno );
+  /*for( auto val : state ) {
+    printf(" val %f\n", val);
+  }
+  printf("\n");*/
   return state;
 }

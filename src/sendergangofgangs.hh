@@ -35,7 +35,10 @@ public:
 
   double next_event_time( const double & tickno ) const;
 
-  const std::vector<double> get_state( void );
+  const std::vector<double> get_state( const double & tickno );
+
+  SenderGang<Sender1> & mutable_gang1( void ) { return gang1_; }
+  SenderGang<Sender2> & mutable_gang2( void ) { return gang2_; }
 };
 
 #endif

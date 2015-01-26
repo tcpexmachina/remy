@@ -83,9 +83,10 @@ public:
   void run_simulation( const double & duration );
   void run_simulation_until( const double & tick_limit );
 
-  const std::vector< double > get_state( void );
+  const std::vector< double > get_state( const double & tickno );
 
   const SenderGangofGangs<SenderType1,SenderType2> & senders( void ) const { return _senders; }
+  SenderGangofGangs<SenderType1,SenderType2> & mutable_senders( void ) { return _senders; }
 };
 
 #endif

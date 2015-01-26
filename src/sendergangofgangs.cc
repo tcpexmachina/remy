@@ -76,11 +76,11 @@ double SenderGangofGangs<Sender1,Sender2>::next_event_time( const double & tickn
 }
 
 template <class Sender1, class Sender2>
-const std::vector<double> SenderGangofGangs<Sender1,Sender2>::get_state( void )
+const std::vector<double> SenderGangofGangs<Sender1,Sender2>::get_state( const double & tickno )
 {
     std::vector<double> state;
-    auto gang1_state = gang1_.get_state();
-    auto gang2_state = gang2_.get_state();
+    auto gang1_state = gang1_.get_state( tickno );
+    auto gang2_state = gang2_.get_state( tickno );
     state.insert( state.end(), gang1_state.begin(), gang1_state.end());
     state.insert( state.end(), gang2_state.begin(), gang2_state.end());
     return state;

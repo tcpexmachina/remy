@@ -122,8 +122,10 @@ public:
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
 
   double next_event_time( const double & tickno ) const;
+
+  TimeSwitchedSender & mutable_sender( const unsigned int num ) { return _gang.at( num ); }
   
-  const std::vector< double > get_state( void );
+  const std::vector< double > get_state( const double & tickno );
 };
 
 #endif

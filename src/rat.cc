@@ -8,6 +8,7 @@ using namespace std;
 Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
   :  _whiskers( s_whiskers ),
      _memory(),
+     _initial_state(),
      _track( s_track ),
      _last_send_time( 0 ),
      _intersend_time( 1 ),
@@ -22,7 +23,7 @@ void Rat::packets_received( const vector< Packet > & packets ) {
 
 void Rat::reset( const double & )
 {
-  _memory.reset();
+  _memory.reset_to( _initial_state );
   _last_send_time = 0;
   _intersend_time = 1;
   _flow_id++;
@@ -38,11 +39,18 @@ double Rat::next_event_time( const double & tickno ) const
   }
 }
 
-const std::vector<double> Rat::get_state( void )
+void Rat::set_initial_state( const vector< Memory::DataType > & data )
+{
+  _initial_state = data;
+}
+
+const std::vector<double> Rat::get_state( const double & tickno )
 {
   std::vector<double> state;
   state.push_back( _memory.rec_ewma() );
   state.push_back( _memory.outstanding_packets() );
   state.push_back( _intersend_time );
+  state.push_back( (1.0/10000.0) * std::round( 10000 * ( next_event_time( tickno ) - tickno )) );
+  //state.push_back( next_event_time( tickno ) - tickno );
   return state;
 }

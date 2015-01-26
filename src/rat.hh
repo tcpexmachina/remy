@@ -14,6 +14,7 @@ class Rat
 private:
   const WhiskerTree & _whiskers;
   Memory _memory;
+  std::vector< Memory::DataType > _initial_state;
 
   bool _track;
 
@@ -41,7 +42,8 @@ public:
 
   const int & packets_sent( void ) const { return _memory.packets_sent(); }
 
-  const std::vector<double> get_state( void );
+  void set_initial_state( const std::vector< Memory::DataType > & data );
+  const std::vector<double> get_state( const double & tickno );
 };
 
 #endif

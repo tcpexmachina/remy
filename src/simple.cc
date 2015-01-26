@@ -7,6 +7,7 @@ using namespace std;
 
 Simple::Simple( void )
   :  _memory(),
+     _initial_state(),
      _last_send_time( 0 ),
      _intersend_time( 1 ),
      _flow_id( 0 ),
@@ -22,7 +23,7 @@ void Simple::packets_received( const vector< Packet > & packets ) {
 
 void Simple::reset( const double & )
 {
-  _memory.reset();
+  _memory.reset_to( _initial_state );
   _last_send_time = 0;
   _intersend_time = 1;
   _flow_id++;
@@ -39,11 +40,17 @@ double Simple::next_event_time( const double & tickno ) const
   }
 }
 
-const std::vector< double > Simple::get_state( void ) 
+void Simple::set_initial_state( const vector< Memory::DataType > & data )
+{
+  _initial_state = data;
+}
+
+const std::vector< double > Simple::get_state( const double & tickno ) 
 {
   std::vector<double> state;
   state.push_back( _memory.rec_ewma() );
   state.push_back( _memory.outstanding_packets() );
   state.push_back( _intersend_time );
+  state.push_back( (1.0/10000.0) * int( 10000 * ( next_event_time( tickno ) - tickno )) );
   return state;
 }
