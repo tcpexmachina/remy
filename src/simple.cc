@@ -51,6 +51,7 @@ const std::vector< double > Simple::get_state( const double & tickno )
   state.push_back( _memory.rec_ewma() );
   state.push_back( _memory.outstanding_packets() );
   state.push_back( _intersend_time );
-  state.push_back( (1.0/10000.0) * int( 10000 * ( next_event_time( tickno ) - tickno )) );
+  //state.push_back( (1.0/10000.0) * int( 10000 * ( next_event_time( tickno ) - tickno )) );
+  state.push_back( next_event_time( tickno ) - tickno );
   return state;
 }

@@ -40,7 +40,7 @@ public:
   static const unsigned int datasize = 1;
   static double precise_round( const double & value )
   {
-    return (1.0/1000.0) * int( 1000 * value );
+    return (1.0/10000.0) * std::round( 10000 * value );
   }
 
   const DataType & field( unsigned int ) const { return _imputed_delay; }

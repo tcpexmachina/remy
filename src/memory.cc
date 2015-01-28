@@ -29,13 +29,11 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
     /* update the state of the memory that is NOT the congestion signals */
     const double rtt = x.tick_received - x.tick_sent;
     if ( _last_tick_sent == 0 || _last_tick_received == 0 ) {
-      _last_tick_sent = x.tick_sent;
       _last_tick_received = x.tick_received;
       _min_rtt = rtt;
     } else {
       _rec_ewma = (1 - alpha) * _rec_ewma + alpha * (x.tick_received - _last_tick_received);
-      _rec_ewma = precise_round( _rec_ewma );
-      _last_tick_sent = x.tick_sent;
+      //_rec_ewma = precise_round( _rec_ewma );
       _last_tick_received = x.tick_received;
       _min_rtt = min( _min_rtt, rtt );
     }
@@ -48,6 +46,7 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
 void Memory::packet_sent( const Packet & packet __attribute((unused)) )
 {
   _packets_sent++;
+  _last_tick_sent = packet.tick_sent;
 
   recalculate_signals();
 }

@@ -44,13 +44,11 @@ void Rat::set_initial_state( const vector< Memory::DataType > & data )
   _initial_state = data;
 }
 
-const std::vector<double> Rat::get_state( const double & tickno )
+const std::vector<double> Rat::get_state( const double & tickno __attribute((unused)) )
 {
   std::vector<double> state;
   state.push_back( _memory.rec_ewma() );
   state.push_back( _memory.outstanding_packets() );
   state.push_back( _intersend_time );
-  state.push_back( (1.0/10000.0) * std::round( 10000 * ( next_event_time( tickno ) - tickno )) );
-  //state.push_back( next_event_time( tickno ) - tickno );
   return state;
 }

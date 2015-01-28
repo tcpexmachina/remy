@@ -89,14 +89,52 @@ void Network<SenderType1, SenderType2>::run_simulation_until( const double & tic
 }
 
 template <class SenderType1, class SenderType2>
+void Network<SenderType1, SenderType2>::run_until_event( void )
+{
+  /* find element with soonest event */
+  double next_tickno = min( min( _senders.next_event_time( _tickno ),
+                                 _link.next_event_time( _tickno ) ),
+                            min( _delay.next_event_time( _tickno ),
+                                 _rec.next_event_time( _tickno ) ) );
+  
+  assert( next_tickno < std::numeric_limits<double>::max() );
+  
+  _tickno = next_tickno;
+  
+  tick();
+}
+
+template <class SenderType1, class SenderType2>
+void Network<SenderType1, SenderType2>::run_until_sender_event( void )
+{
+  double event_tickno = _senders.next_event_time( _tickno );
+
+  while ( _tickno <= event_tickno ) {
+  /* find element with soonest event */
+    double next_tickno = min( min( _senders.next_event_time( _tickno ),
+                                   _link.next_event_time( _tickno ) ),
+                              min( _delay.next_event_time( _tickno ),
+                                   _rec.next_event_time( _tickno ) ) );
+    
+    assert( next_tickno < std::numeric_limits<double>::max() );
+    
+    _tickno = next_tickno;
+    
+    tick();
+
+    double new_event_tickno = min( _senders.next_event_time( _tickno ),
+                                   _link.next_event_time( _tickno ) );
+    if ( new_event_tickno < event_tickno ) break;
+  }
+}
+
+template <class SenderType1, class SenderType2>
 const std::vector<double> Network<SenderType1, SenderType2>::get_state( const double & tickno )
 {
   std::vector<double> state;
   auto & senders_state = _senders.get_state( tickno );
   state.insert( state.end(), senders_state.begin(), senders_state.end() );
   state.push_back( double( _link.buffer_size() ) );
-  state.push_back( (1.0/10000.0) * std::round( 10000 * (_link.next_event_time( _tickno ) - _tickno )) );
-  //state.push_back( _link.next_event_time( _tickno ) - _tickno );
   /*for( auto val : state ) {
     printf(" val %f\n", val);
   }

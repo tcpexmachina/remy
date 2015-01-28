@@ -32,7 +32,6 @@ public:
   double intersend( const double previous_intersend ) const { return std::min<double>( std::max<double>( 0.01, previous_intersend * _intersend_multiple + _intersend_increment ), 1000000 ); }
 
   const MemoryRange & domain( void ) const { return _domain; }
-
   std::vector< Whisker > next_generation( void ) const;
 
   void promote( const unsigned int generation );

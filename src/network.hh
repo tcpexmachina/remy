@@ -82,6 +82,10 @@ public:
 
   void run_simulation( const double & duration );
   void run_simulation_until( const double & tick_limit );
+  void run_until_event( void );
+  void run_until_sender_event( void );
+
+  const double & tickno( void ) { return _tickno; }
 
   const std::vector< double > get_state( const double & tickno );
 

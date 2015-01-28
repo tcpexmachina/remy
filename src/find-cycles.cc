@@ -86,17 +86,16 @@ int main( int argc, char *argv[] )
   printf("Starting in initial state %f, %f\n", imputed_delay, rewma);
 
   double time = 0.0;
-  double time_increment = 0.001;
   const double end_time = 100000000.0;
   State last_state;
   while ( time < end_time ) { 
-    network.run_simulation_until( time );
-    auto network_state = State( network.get_state( time ), time );
+    network.run_until_event();
+    time = network.tickno();
+    auto network_state = State( network.get_state( network.tickno() ), network.tickno() );
 
     if( network_state == last_state ) {
       /* Don't match if we haven't exited the state */
       last_state = network_state;
-      time += time_increment;
       continue;
     }
     network_state.print_state();
@@ -110,7 +109,6 @@ int main( int argc, char *argv[] )
     
     state_set[ network_state ] = time;
     last_state = network_state;
-    time += time_increment;
   }
 
   return 0;
