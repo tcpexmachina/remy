@@ -87,7 +87,7 @@ public:
 
   const double & tickno( void ) { return _tickno; }
 
-  const std::vector< double > get_state( const double & tickno );
+  const std::vector< double > get_state( void );
 
   const SenderGangofGangs<SenderType1,SenderType2> & senders( void ) const { return _senders; }
   SenderGangofGangs<SenderType1,SenderType2> & mutable_senders( void ) { return _senders; }

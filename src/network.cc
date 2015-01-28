@@ -129,12 +129,16 @@ void Network<SenderType1, SenderType2>::run_until_sender_event( void )
 }
 
 template <class SenderType1, class SenderType2>
-const std::vector<double> Network<SenderType1, SenderType2>::get_state( const double & tickno )
+const std::vector<double> Network<SenderType1, SenderType2>::get_state( void )
 {
   std::vector<double> state;
-  auto & senders_state = _senders.get_state( tickno );
+  auto & senders_state = _senders.get_state( _tickno );
   state.insert( state.end(), senders_state.begin(), senders_state.end() );
   state.push_back( double( _link.buffer_size() ) );
+  state.push_back( _senders.next_event_time( _tickno ) - _tickno );
+  state.push_back( _link.next_event_time( _tickno ) - _tickno );
+  state.push_back( _delay.next_event_time( _tickno ) - _tickno );
+  state.push_back( _rec.next_event_time( _tickno ) - _tickno );
   /*for( auto val : state ) {
     printf(" val %f\n", val);
   }
