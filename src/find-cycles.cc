@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <boost/functional/hash.hpp>
 #include <unordered_map>
+#include <iomanip>
 
 #include "sendergangofgangs.hh"
 #include "simple-templates.cc"
@@ -62,7 +63,7 @@ int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
   unsigned int num_senders = 1;
-  double link_ppt = 2.0;
+  double link_ppt = 1.0;
   double delay = 50.0;
   double mean_on_duration = 10000000.0;
   double mean_off_duration = 0.0;
@@ -139,10 +140,11 @@ int main( int argc, char *argv[] )
       continue;
     }
 
-    cout << time << " [";
-    for ( const auto & x : network_state ) {
-      cout << " " << x;
+    cout << setw(8) << time << " [";
+    for ( unsigned int i = 0; i < network_state.size() - 1; i++ ) {
+      cout << " " <<  setw(10) << network_state.at( i );
     }
+    cout << " " << setw(20) << network_state.at( network_state.size() - 1 );
     cout << " ] ";
 
     auto match = state_set.find( network_state );
