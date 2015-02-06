@@ -93,22 +93,12 @@ int main( int argc, char *argv[] )
 	exit( 1 );
       }
 
-      if ( tree.has_config() ) {
-	printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
-      }
-
-      if ( tree.has_optimizer() ) {
-	printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
-      }
     } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
       num_senders = atoi( arg.substr( 5 ).c_str() );
-      fprintf( stderr, "Setting num_senders to %d\n", num_senders );
     } else if ( arg.substr( 0, 5 ) == "link=" ) {
       link_ppt = atof( arg.substr( 5 ).c_str() );
-      fprintf( stderr, "Setting link packets per ms to %f\n", link_ppt );
     } else if ( arg.substr( 0, 4 ) == "rtt=" ) {
       delay = atof( arg.substr( 4 ).c_str() );
-      fprintf( stderr, "Setting delay to %f ms\n", delay );
     } else if ( arg.substr( 0, 4 ) == "del=" ) {
       imputed_delay = atof( arg.substr( 4 ).c_str() );
     } else if ( arg.substr( 0, 6 ) == "rewma=" ) {
@@ -124,7 +114,6 @@ int main( int argc, char *argv[] )
   NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration ).set_start_buffer( initial_buffer ); /* always on */
   Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
   network.mutable_senders().mutable_gang1().mutable_sender( 0 ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
-  printf("Starting in initial state %f, %f\n", imputed_delay, rewma);
 
   double time = 0.0;
   const double end_time = 100000000.0;
@@ -140,17 +129,17 @@ int main( int argc, char *argv[] )
       continue;
     }
 
-    cout << setw(8) << time << " [";
+    cout << setw(8) << time;
     for ( unsigned int i = 0; i < network_state.size() - 1; i++ ) {
       cout << " " <<  setw(10) << network_state.at( i );
     }
     cout << " " << setw(20) << network_state.at( network_state.size() - 1 );
-    cout << " ] ";
 
     auto match = state_set.find( network_state );
     if ( match != state_set.end() ) {
-      cout << "cycle length \t" << time - match->second << 
-        " ms after \t" << match->second << " ms";
+      cout << initial_buffer << " " << rewma << " "  << 
+        match->second << " " << time - match->second;
+      //break;
     }
 
     cout << endl;
@@ -162,6 +151,8 @@ int main( int argc, char *argv[] )
 
     last_state = network_state;
   }
+
+  cout << endl;
 
   return 0;
 }
