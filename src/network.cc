@@ -13,7 +13,7 @@ Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
   : _prng( s_prng ),
     _senders( SenderGang<SenderType1>( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender1, _prng ),
 	      SenderGang<SenderType2>( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender2, _prng, config.num_senders ) ),
-    _link( config.link_ppt, MAX_QUEUE ),
+    _link( config.link_ppt, config.start_buffer, MAX_QUEUE ),
     _delay( config.delay ),
     _rec(),
     _tickno( 0 )
@@ -27,7 +27,7 @@ Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
   : _prng( s_prng ),
     _senders( SenderGang<SenderType1>( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender1, _prng ),
 	      SenderGang<SenderType2>() ),
-    _link( config.link_ppt, MAX_QUEUE ),
+    _link( config.link_ppt, config.start_buffer, MAX_QUEUE ),
     _delay( config.delay ),
     _rec(),
     _tickno( 0 )
@@ -124,7 +124,7 @@ void Network<SenderType1, SenderType2>::run_until_sender_event( void )
 
     double new_event_tickno = min( _senders.next_event_time( _tickno ),
                                    _link.next_event_time( _tickno ) );
-    if ( new_event_tickno < event_tickno ) break;
+    if ( new_event_tickno > event_tickno ) break;
   }
 }
 
@@ -135,10 +135,10 @@ const std::vector<double> Network<SenderType1, SenderType2>::get_state( void )
   auto & senders_state = _senders.get_state( _tickno );
   state.insert( state.end(), senders_state.begin(), senders_state.end() );
   state.push_back( double( _link.buffer_size() ) );
-  state.push_back( _senders.next_event_time( _tickno ) - _tickno );
+  //state.push_back( _senders.next_event_time( _tickno ) - _tickno );
   state.push_back( _link.next_event_time( _tickno ) - _tickno );
-  state.push_back( _delay.next_event_time( _tickno ) - _tickno );
-  state.push_back( _rec.next_event_time( _tickno ) - _tickno );
+  //state.push_back( _delay.next_event_time( _tickno ) - _tickno );
+  //state.push_back( _rec.next_event_time( _tickno ) - _tickno );
 
   return state;
 }

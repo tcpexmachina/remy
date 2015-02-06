@@ -17,8 +17,15 @@ private:
 
 public:
   Link( const double s_rate,
+        const unsigned int s_packets __attribute((unused)) = 0,
 	const unsigned int s_limit = std::numeric_limits<unsigned int>::max() )
-    : _buffer(), _pending_packet( 1.0 / s_rate ), _limit( s_limit ) {}
+    : _buffer(), _pending_packet( 1.0 / s_rate ), _limit( s_limit ) 
+  {
+    /* Initialize the buffer with some dummy packets */
+    for ( unsigned int i = 0; i < s_packets; i++ ) {
+      _buffer.emplace( -1, -1, 0, i );
+    }
+  }
 
   void accept( const Packet & p, const double & tickno ) noexcept {
     if ( _pending_packet.empty() ) {
