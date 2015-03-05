@@ -9,7 +9,6 @@
 #include <boost/functional/hash.hpp>
 #include <unordered_map>
 #include <unordered_set>
-#include <future>
 #include <iomanip>
 
 #include "sendergangofgangs.hh"
@@ -57,16 +56,54 @@ vector<vector<quantized_t>> fuzz_state( const vector<quantized_t> & state_all_do
   return ret;
 }
 
-pair< double, double > run_simulation( double rewma, 
-                                       unsigned int initial_buffer,
-                                       WhiskerTree whiskers )
+int main( int argc, char *argv[] )
 {
+  WhiskerTree whiskers;
   unsigned int num_senders = 1;
   double link_ppt = 1.0;
   double delay = 50.0;
   double mean_on_duration = 10000000.0;
   double mean_off_duration = 0.0;
   double imputed_delay = 1.0;
+  double rewma = 1.0;
+  unsigned int initial_buffer = 0;
+
+  for ( int i = 1; i < argc; i++ ) {
+    string arg( argv[ i ] );
+    if ( arg.substr( 0, 3 ) == "if=" ) {
+      string filename( arg.substr( 3 ) );
+      int fd = open( filename.c_str(), O_RDONLY );
+      if ( fd < 0 ) {
+	perror( "open" );
+	exit( 1 );
+      }
+
+      RemyBuffers::WhiskerTree tree;
+      if ( !tree.ParseFromFileDescriptor( fd ) ) {
+	fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
+	exit( 1 );
+      }
+      whiskers = WhiskerTree( tree );
+
+      if ( close( fd ) < 0 ) {
+	perror( "close" );
+	exit( 1 );
+      }
+
+    } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
+      num_senders = atoi( arg.substr( 5 ).c_str() );
+    } else if ( arg.substr( 0, 5 ) == "link=" ) {
+      link_ppt = atof( arg.substr( 5 ).c_str() );
+    } else if ( arg.substr( 0, 4 ) == "rtt=" ) {
+      delay = atof( arg.substr( 4 ).c_str() );
+    } else if ( arg.substr( 0, 4 ) == "del=" ) {
+      imputed_delay = atof( arg.substr( 4 ).c_str() );
+    } else if ( arg.substr( 0, 6 ) == "rewma=" ) {
+      rewma = atof( arg.substr( 6 ).c_str() );
+    } else if ( arg.substr( 0, 5 ) == "buff=" ) {
+      initial_buffer = atoi( arg.substr( 5 ).c_str() );
+    }
+  }
 
   PRNG prng( 50 );
   NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration ).set_start_buffer( initial_buffer ); /* always on */
@@ -95,7 +132,7 @@ pair< double, double > run_simulation( double rewma,
       const vector<quantized_t> network_state = all_down( network_state_exact );
       auto hash_val = hash_fn( network_state );
       
-      if ( network_state == last_state ) {
+      if( network_state == last_state ) {
         /* Don't match if we haven't exited the state */
         continue;
       }
@@ -142,82 +179,21 @@ pair< double, double > run_simulation( double rewma,
         /* now check if it was a true match, not collision */
         auto state_match = state_map.find( network_state ) ;
         if ( state_match != state_map.end() ) { 
+          cout << initial_buffer << " " << rewma << " "  << 
+            state_match->second << " " << test_time - state_match->second << endl;
           found_match = true;
-          return pair<double, double> ( state_match->second, 
-                                        test_time - state_match->second );
+          break;
         }
         
         const vector<vector<quantized_t>> fuzzy_states { fuzz_state( network_state ) };
         for ( const auto & x : fuzzy_states ) {
           state_map[ x ] = test_time;
         }
-
       }
 
       last_state = network_state;
     }
   }
 
-  return pair<double, double> ( -1, -1 );
-}
-
-
-int main( int argc, char *argv[] ) {
-  WhiskerTree whiskers;
-  const double rewma_max = 2;
-  const unsigned int buff_max = 20;
-  
-  for ( int i = 1; i < argc; i++ ) {
-    string arg( argv[ i ] );
-    if ( arg.substr( 0, 3 ) == "if=" ) {
-      string filename( arg.substr( 3 ) );
-      int fd = open( filename.c_str(), O_RDONLY );
-      if ( fd < 0 ) {
-	perror( "open" );
-	exit( 1 );
-      }
-
-      RemyBuffers::WhiskerTree tree;
-      if ( !tree.ParseFromFileDescriptor( fd ) ) {
-	fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
-	exit( 1 );
-      }
-      whiskers = WhiskerTree( tree );
-
-      if ( close( fd ) < 0 ) {
-	perror( "close" );
-	exit( 1 );
-      }
-    } 
-  }
-
-  double rewma_chunk = 0.2;
-  unsigned int buff_chunk = 4;
-  double curr_rewma = 0.0;
-  double curr_buff = 0;
-  
-  while ( (rewma_chunk <= rewma_max) && (buff_chunk <= buff_max) ) {
-    vector< tuple< const double, const unsigned int, 
-                   future< pair< double, double > > > > cycles;
-    
-    for ( double i = curr_rewma; i < rewma_chunk + curr_rewma; i += 0.1 ) {
-      for ( unsigned int j = curr_buff; j < buff_chunk + curr_buff; j++ ) {
-        cycles.emplace_back( i, j, 
-                             async( launch::async, [] ( const double i,
-                                                        const unsigned int j,
-                                                        const WhiskerTree & whiskers ) {
-                                      return run_simulation( i, j, whiskers );
-                                    }, i, j, whiskers ));
-      }
-    }
-    
-    for ( auto & x : cycles ) {
-      cout << get<0>(x) << " " << get<1>(x) << " ";
-      const auto result( get<2>(x).get() );
-      cout << result.first << " " << result.second << endl;
-    }
-
-    curr_rewma += rewma_chunk;
-    curr_buff += buff_chunk;
-  }
+  return 0;
 }
