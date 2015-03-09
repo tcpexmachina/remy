@@ -157,7 +157,7 @@ int main( int argc, char *argv[] )
       test_network.mutable_senders().mutable_gang1().mutable_sender( i ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
     }
     unordered_map< vector<quantized_t>, double, boost::hash<vector<quantized_t>> > state_map;
-    unsigned int test_time = 0.0;
+    double test_time = 0.0;
     
     /* Check coarse estimates to see if any of them were a true match.
        If not, continue running network simulation to find a better match. */
