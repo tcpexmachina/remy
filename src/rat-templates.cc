@@ -15,7 +15,7 @@ void Rat::send( const unsigned int id, NextHop & next, const double & tickno,
     /* initial window and intersend time */
     const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
     _the_window = current_whisker.window( _the_window );
-    _intersend_time = current_whisker.intersend();
+    _intersend_time = current_whisker.intersend( _memory.rewma() );
   }
 
   if ( (_packets_sent < _largest_ack + 1 + _the_window)

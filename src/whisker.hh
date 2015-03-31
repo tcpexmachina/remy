@@ -31,7 +31,7 @@ public:
 
   const unsigned int & generation( void ) const { return _generation; }
   unsigned int window( const unsigned int previous_window ) const { return std::min( std::max( 0, int( previous_window * _window_multiple + _window_increment ) ), 1000000 ); }
-  const double & intersend( void ) const { return _intersend; }
+  double intersend( const double rewma ) const { return rewma * _intersend; }
   const MemoryRange & domain( void ) const { return _domain; }
 
   std::vector< Whisker > next_generation( void ) const;
@@ -105,9 +105,9 @@ public:
 
   static const OptimizationSettings & get_optimizer( void ) {
     static OptimizationSettings default_settings {
-      { 0,    256, 1,    32,  4, 1 }, /* window increment */
-      { 0,    1,   0.01, 0.5, 4, 1 }, /* window multiple */
-      { 0.25, 3,   0.05, 1,   4, 3 } /* intersend */
+      { 0,            256,           1,  32, 4, 1 }, /* window increment */
+      { 0,            1,          0.01, 0.5, 4, 1 }, /* window multiple */
+      { 1.0 / 150.0,  30,  1.0 / 150.0,  30, 4, 15 } /* intersend */
     };
     return default_settings;
   }

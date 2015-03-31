@@ -28,7 +28,7 @@ void Rat::packets_received( const vector< Packet > & packets ) {
   const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
 
   _the_window = current_whisker.window( _the_window );
-  _intersend_time = current_whisker.intersend();
+  _intersend_time = current_whisker.intersend( _memory.rewma() );
 }
 
 void Rat::reset( const double & )

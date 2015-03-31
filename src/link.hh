@@ -33,6 +33,8 @@ public:
   template <class NextHop>
   void tick( NextHop & next, const double & tickno );
 
+  unsigned int buffer_size( void ) { return _buffer.size(); }
+
   double next_event_time( const double & tickno ) const { return _pending_packet.next_event_time( tickno ); }
 };
 

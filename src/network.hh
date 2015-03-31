@@ -72,6 +72,8 @@ private:
   Receiver _rec;
 
   double _tickno;
+  
+  bool aborted = false;
 
   void tick( void );
 
@@ -81,6 +83,8 @@ public:
   Network( const SenderType1 & example_sender1, PRNG & s_prng, const NetConfig & config );
 
   void run_simulation( const double & duration );
+
+  bool was_aborted( void ) { return aborted; }
 
   const SenderGangofGangs<SenderType1,SenderType2> & senders( void ) const { return _senders; }
 };

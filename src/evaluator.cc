@@ -7,7 +7,7 @@
 #include "network.cc"
 #include "rat-templates.cc"
 
-const unsigned int TICK_COUNT = 1000000;
+const unsigned int TICK_COUNT = 500000;
 
 Evaluator::Evaluator( const ConfigRange & range )
   : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
@@ -23,6 +23,8 @@ Evaluator::Evaluator( const ConfigRange & range )
   _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
   _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
   _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
+
+  return;
 
   /* now load some random ones just for fun */
   for ( int i = 0; i < 12; i++ ) {
@@ -125,9 +127,13 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
     /* run once */
     Network<Rat, Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
     network1.run_simulation( ticks_to_run );
-    
-    the_outcome.score += network1.senders().utility();
-    the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
+
+    if ( network1.was_aborted() ) { 
+      the_outcome.score += -INT_MAX;
+    } else {
+      the_outcome.score += network1.senders().utility();
+      the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
+    }
   }
 
   the_outcome.used_whiskers = run_whiskers;

@@ -3,6 +3,8 @@
 #include "sendergangofgangs.cc"
 #include "link-templates.cc"
 
+const unsigned int BUFFER_MAX = 10000;
+
 template <class SenderType1, class SenderType2>
 Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
                                             const SenderType2 & example_sender2,
@@ -46,6 +48,11 @@ void Network<SenderType1, SenderType2>::run_simulation( const double & duration 
   assert( _tickno == 0 );
 
   while ( _tickno < duration ) {
+    if ( _link.buffer_size() > BUFFER_MAX ) {
+      aborted = true;
+      break;
+    }
+
     /* find element with soonest event */
     _tickno = min( min( _senders.next_event_time( _tickno ),
 			_link.next_event_time( _tickno ) ),
