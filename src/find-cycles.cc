@@ -161,6 +161,8 @@ int main( int argc, char *argv[] )
     
     /* Check coarse estimates to see if any of them were a true match.
        If not, continue running network simulation to find a better match. */
+    double cycle_len = -1;
+
     while ( test_time < time ) {
       test_network.run_until_sender_event();
       test_time = test_network.tickno();
@@ -179,8 +181,10 @@ int main( int argc, char *argv[] )
         /* now check if it was a true match, not collision */
         auto state_match = state_map.find( network_state ) ;
         if ( state_match != state_map.end() ) { 
+          cycle_len = test_time - state_match->second;
+
           cout << initial_buffer << " " << rewma << " "  << 
-            state_match->second << " " << test_time - state_match->second << endl;
+            state_match->second << " " << cycle_len << " ";
           found_match = true;
           break;
         }
@@ -193,6 +197,19 @@ int main( int argc, char *argv[] )
 
       last_state = network_state;
     }
+
+    if ( found_match ) {
+      /* We found one cycle. Continue running for one more cycle
+         duration in order to calculate utility */
+      auto start_tp_del = test_network.senders().throughputs_delays();
+      test_network.run_simulation_until( test_time + cycle_len );
+      auto end_tp_del = test_network.senders().throughputs_delays();
+      double tp_change = end_tp_del.at( 0 ).first - start_tp_del.at( 0 ).first;
+      double del_change = end_tp_del.at( 0 ).second - start_tp_del.at( 0 ).second;
+
+      cout << tp_change << " " << del_change << endl;
+    }
+
   }
 
   return 0;

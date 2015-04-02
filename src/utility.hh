@@ -13,7 +13,7 @@ private:
 public:
   Utility( void ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ) {}
 
-  void sending_duration( const double & duration, const unsigned int num_sending ) { _tick_share_sending += duration / double( num_sending ); }
+  void sending_duration( const double & duration, const unsigned int num_sending __attribute((unused)) ) { _tick_share_sending += duration; }
   void packets_received( const std::vector< Packet > & packets ) {
     _packets_received += packets.size();
 
@@ -28,7 +28,7 @@ public:
     if ( _tick_share_sending == 0 ) {
       return 0.0;
     }
-    return double( _packets_received ) / _tick_share_sending;
+    return double( _packets_received );
   }
 
   double average_delay( void ) const
@@ -36,7 +36,7 @@ public:
     if ( _packets_received == 0 ) {
       return 0.0;
     }
-    return double( _total_delay ) / double( _packets_received );
+    return double( _total_delay );
   }
 
   double utility( void ) const
