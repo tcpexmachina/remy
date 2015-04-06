@@ -23,6 +23,7 @@ void Aimd::packets_received( const vector< Packet > & packets ) {
     loss_detected = ( not loss_detected ) ?
                     ( packet.seq_num > _largest_ack + 1 ): /* At least lost one packet */
                     ( true ); /* Bypass seq_num check if you saw a loss already */
+
     _largest_ack = max( _largest_ack, packet.seq_num );
 
     _packets_received++;
@@ -65,5 +66,17 @@ void Aimd::reset( const double & )
 
 double Aimd::next_event_time( const double & tickno __attribute ((unused)) ) const
 {
+  if ( packets_sent() < _largest_ack + 1 + _the_window ) {
+    return tickno;
+  }
+
   return std::numeric_limits<double>::max();
+}
+
+const std::vector<double> Aimd::get_state( const double & tickno __attribute((unused)) )
+{
+  std::vector<double> state;
+  state.push_back( _the_window );
+  state.push_back( _packets_sent - _packets_received );
+  return state;
 }

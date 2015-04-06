@@ -12,8 +12,10 @@
 #include <iomanip>
 
 #include "sendergangofgangs.hh"
-#include "simple-templates.cc"
+//#include "simple-templates.cc"
 #include "rat.hh"
+#include "aimd.hh"
+#include "aimd-templates.cc"
 #include "network.hh"
 #include "network.cc"
 #include "whiskertree.hh"
@@ -62,9 +64,9 @@ int main( int argc, char *argv[] )
   unsigned int num_senders = 1;
   double link_ppt = 1.0;
   double delay = 50.0;
-  double mean_on_duration = 10000000.0;
+  double mean_on_duration = 10000000000.0;
   double mean_off_duration = 0.0;
-  double imputed_delay = 1.0;
+  double imputed_delay __attribute((unused))  = 1.0;
   double rewma = 1.0;
   unsigned int initial_buffer = 0;
 
@@ -107,13 +109,14 @@ int main( int argc, char *argv[] )
 
   PRNG prng( 50 );
   NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration ).set_start_buffer( initial_buffer ); /* always on */
-  Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
-  for( unsigned int i = 0; i < num_senders; i++ ) {
+  //Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
+  Network<Aimd, Aimd> network( Aimd(), prng, configuration );
+  /*for( unsigned int i = 0; i < num_senders; i++ ) {
     network.mutable_senders().mutable_gang1().mutable_sender( i ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
-  }
+    }*/
 
   double time = 0.0;
-  const double end_time = 100000000.0;
+  const double end_time = 100000000000.0;
   unordered_set< std::size_t > state_hash_set;
   unordered_set<size_t> hash_matches;
   const unsigned int match_max = 50;
@@ -126,17 +129,25 @@ int main( int argc, char *argv[] )
     vector<quantized_t> last_state;
     /* Get a coarse estimate of possible cycles by matching hash values only.*/
     while ( time < end_time ) { 
-      network.run_until_sender_event();
+      network.run_until_event();
       time = network.tickno();
       const vector<double> network_state_exact { network.get_state() };
       const vector<quantized_t> network_state = all_down( network_state_exact );
       auto hash_val = hash_fn( network_state );
       
+      
       if( network_state == last_state ) {
         /* Don't match if we haven't exited the state */
         continue;
       }
-      
+
+      cout << setw(8) << time << " [";
+      for ( unsigned int i = 0; i < network_state.size() - 1; i++ ) {
+        cout << " " <<  setw(10) << network_state.at( i ) / quantizer;
+      }
+      cout << " " << setw(20) << network_state.at( network_state.size() - 1 ) / quantizer;
+      cout << " ] " << endl;
+ 
       auto match = state_hash_set.find( hash_val );
       if ( match != state_hash_set.end() ) {
         hash_matches.insert( hash_val );
@@ -152,20 +163,22 @@ int main( int argc, char *argv[] )
       last_state = network_state;
     }
     
-    Network<Rat, Rat> test_network( Rat( whiskers ), prng, configuration );
-    for( unsigned int i = 0; i < num_senders; i++ ) {
+    //Network<Rat, Rat> test_network( Rat( whiskers ), prng, configuration );
+    Network<Aimd, Aimd> test_network( Aimd(), prng, configuration );
+    /*for( unsigned int i = 0; i < num_senders; i++ ) {
       test_network.mutable_senders().mutable_gang1().mutable_sender( i ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
-    }
+      }*/
     unordered_map< vector<quantized_t>, double, boost::hash<vector<quantized_t>> > state_map;
     double test_time = 0.0;
     
     /* Check coarse estimates to see if any of them were a true match.
        If not, continue running network simulation to find a better match. */
     double cycle_len = -1;
-
+    
     while ( test_time < time ) {
-      test_network.run_until_sender_event();
+      test_network.run_until_event();
       test_time = test_network.tickno();
+
       const vector<double> network_state_exact { test_network.get_state() };
       const vector<quantized_t> network_state = all_down( network_state_exact );
       auto hash_val = hash_fn( network_state );
@@ -207,7 +220,7 @@ int main( int argc, char *argv[] )
       double tp_change = end_tp_del.at( 0 ).first - start_tp_del.at( 0 ).first;
       double del_change = end_tp_del.at( 0 ).second - start_tp_del.at( 0 ).second;
 
-      cout << tp_change << " " << del_change << endl;
+      cout << tp_change << " " << del_change / tp_change << endl;
     }
 
   }

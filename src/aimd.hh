@@ -4,6 +4,7 @@
 #include <cassert>
 #include <vector>
 #include <string>
+#include <limits>
 
 #include "packet.hh"
 
@@ -34,11 +35,16 @@ public:
   void reset( const double & tickno ); /* start new flow */
 
   template <class NextHop>
-  void send( const unsigned int id, NextHop & next, const double & tickno );
+  void send( const unsigned int id, NextHop & next, const double & tickno,
+             const int packets_sent_cap = std::numeric_limits<int>::max() );
 
   Aimd & operator=( const Aimd & ) { assert( false ); return *this; }
 
   double next_event_time( const double & tickno ) const;
+
+  const int & packets_sent( void ) const { return _packets_sent; }
+
+  const std::vector<double> get_state( const double & tickno );
 };
 
 #endif
