@@ -8,7 +8,7 @@ using namespace std;
 Rat::Rat( WhiskerTree & s_whiskers, const bool s_track )
   :  _whiskers( s_whiskers ),
      _memory(),
-     _initial_state(),
+     _initial_state( { 0, 10 } ),
      _track( s_track ),
      _last_send_time( 0 ),
      _intersend_time( 1 ),
