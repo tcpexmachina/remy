@@ -13,6 +13,8 @@
 #include "sendergangofgangs.hh"
 #include "simple-templates.cc"
 #include "rat.hh"
+#include "aimd.hh"
+#include "aimd-templates.cc"
 #include "network.hh"
 #include "network.cc"
 #include "whiskertree.hh"
@@ -67,7 +69,7 @@ int main( int argc, char *argv[] )
   double delay = 50.0;
   double mean_on_duration = 10000000.0;
   double mean_off_duration = 0.0;
-  double imputed_delay = 1.0;
+  double imputed_delay __attribute((unused)) = 1.0;
   double rewma = 1.0;
   unsigned int initial_buffer = 0;
 
@@ -112,14 +114,15 @@ int main( int argc, char *argv[] )
   
   PRNG prng( 50 );
   NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration ).set_start_buffer( initial_buffer ); /* always on */
-  Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
-  network.mutable_senders().mutable_gang1().mutable_sender( 0 ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
+  //Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
+  Network<Aimd, Aimd> network( Aimd(), prng, configuration );
+  //network.mutable_senders().mutable_gang1().mutable_sender( 0 ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
 
   double time = 0.0;
   const double end_time = 100000000.0;
   vector<quantized_t> last_state;
   while ( time < end_time ) { 
-    network.run_until_sender_event();
+    network.run_until_event();
     time = network.tickno();
     const vector<double> network_state_exact { network.get_state() };
     const vector<quantized_t> network_state = all_down( network_state_exact );
@@ -131,9 +134,9 @@ int main( int argc, char *argv[] )
 
     cout << setw(8) << time;
     for ( unsigned int i = 0; i < network_state.size() - 1; i++ ) {
-      cout << " " <<  setw(10) << network_state.at( i );
+      cout << " " <<  setw(10) << network_state.at( i ) / quantizer;
     }
-    cout << " " << setw(20) << network_state.at( network_state.size() - 1 );
+    cout << " " << setw(20) << network_state.at( network_state.size() - 1 ) / quantizer << " ";
 
     auto match = state_set.find( network_state );
     if ( match != state_set.end() ) {

@@ -40,7 +40,7 @@ void Aimd::packets_received( const vector< Packet > & packets ) {
         _the_window = _the_window / 2.0;
         _last_loss = packet.tick_received;
         _rtt_at_loss = packet.tick_received - packet.tick_sent;
-      }
+      } 
     } else {
       if ( _slow_start ) {
         _the_window += 1.0;
@@ -63,7 +63,17 @@ void Aimd::reset( const double & )
   assert( _flow_id != 0 );
 }
 
-double Aimd::next_event_time( const double & tickno __attribute ((unused)) ) const
+double Aimd::next_event_time( const double & tickno __attribute((unused)) ) const
 {
   return std::numeric_limits<double>::max();
+}
+
+
+const std::vector<double> Aimd::get_state( const double & tickno )
+{
+  std::vector<double> state;
+  state.push_back( _the_window );
+  state.push_back( _largest_ack + 1 + _the_window - _packets_sent );
+  state.push_back( tickno - _last_loss );
+  return state;
 }

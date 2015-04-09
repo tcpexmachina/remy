@@ -39,6 +39,7 @@ public:
   Aimd & operator=( const Aimd & ) { assert( false ); return *this; }
 
   double next_event_time( const double & tickno ) const;
+  const std::vector<double> get_state( const double & tickno );
 };
 
 #endif
