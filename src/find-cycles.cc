@@ -207,7 +207,7 @@ int main( int argc, char *argv[] )
       double tp_change = end_tp_del.at( 0 ).first - start_tp_del.at( 0 ).first;
       double del_change = end_tp_del.at( 0 ).second - start_tp_del.at( 0 ).second;
 
-      cout << tp_change << " " << del_change << endl;
+      cout << tp_change << " " << del_change / tp_change << endl;
     }
 
   }

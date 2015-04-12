@@ -77,6 +77,7 @@ void Network<SenderType1, SenderType2>::run_simulation_until( const double & tic
 
     if ( next_tickno > tick_limit ) {
       _tickno = tick_limit;
+      tick();
       break;
     }
 
