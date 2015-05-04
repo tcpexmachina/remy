@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <iomanip>
+#include <limits>
 
 #include "sendergangofgangs.hh"
 #include "simple-templates.cc"
@@ -56,6 +57,54 @@ vector<vector<quantized_t>> fuzz_state( const vector<quantized_t> & state_all_do
   return ret;
 }
 
+bool quantized_states_equal( std::vector<double> state1,
+                             std::vector<double> state2 ) 
+{
+  const vector<quantized_t> state1_quantized = all_down( state1 );
+  const vector<quantized_t> state2_quantized = all_down( state2 );
+
+  const vector<vector<quantized_t>> fuzzy_states_1 { fuzz_state( state1_quantized ) };
+
+  for ( unsigned int i = 0; i < fuzzy_states_1.size(); i++ ) {
+    if ( fuzzy_states_1.at( i ) == state2_quantized ) return true;
+  }
+  return false;
+}
+
+/*
+  Floyd's algorithm: run the slow network one event at a time,
+  and the fast network two events at a time. When the states match,
+  the network has a cycle.
+ */
+template < class SenderType1, class SenderType2 >
+void find_cycle_in_network( Network< SenderType1, SenderType2 > & network ) {
+  Network<SenderType1, SenderType2> network_fast( network );
+  
+  while ( true ) {
+    network.run_until_sender_event();
+
+    network_fast.run_until_sender_event();
+    network_fast.run_until_sender_event();
+    
+    if ( quantized_states_equal(network.get_state(), network_fast.get_state()) ) {
+        break;
+      }
+  } 
+
+  auto current_state = network.get_state();
+  auto start_tp_del = network.senders().throughputs_delays();
+  double current_tick = network.tickno();
+  network.run_until_sender_event();
+  while ( not quantized_states_equal( current_state, network.get_state()) ) {
+    network.run_until_sender_event();
+  }
+  auto end_tp_del = network.senders().throughputs_delays();
+  double tp_change = end_tp_del.at( 0 ).first - start_tp_del.at( 0 ).first;
+  double del_change = end_tp_del.at( 0 ).second - start_tp_del.at( 0 ).second;
+  cout << tp_change << " " << del_change / tp_change << endl;
+  printf( "cycle len %f\n", network.tickno() - current_tick );
+}
+
 int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
@@ -64,8 +113,8 @@ int main( int argc, char *argv[] )
   double delay = 50.0;
   double mean_on_duration = 10000000.0;
   double mean_off_duration = 0.0;
-  double imputed_delay = 1.0;
-  double rewma = 1.0;
+  double imputed_delay __attribute((unused)) = 1.0;
+  double rewma __attribute((unused)) = 1.0;
   unsigned int initial_buffer = 0;
 
   for ( int i = 1; i < argc; i++ ) {
@@ -108,109 +157,9 @@ int main( int argc, char *argv[] )
   PRNG prng( 50 );
   NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration ).set_start_buffer( initial_buffer ); /* always on */
   Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
-  for( unsigned int i = 0; i < num_senders; i++ ) {
-    network.mutable_senders().mutable_gang1().mutable_sender( i ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
-  }
+  network.mutable_senders().mutable_gang1().mutable_sender( 0 ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
 
-  double time = 0.0;
-  const double end_time = 100000000.0;
-  unordered_set< std::size_t > state_hash_set;
-  unordered_set<size_t> hash_matches;
-  const unsigned int match_max = 50;
-  const auto hash_fn = boost::hash<vector<quantized_t>>();
-
-  bool found_match = false; 
-
-  while ( !found_match ) {
-    unsigned int match_count = 0; 
-    vector<quantized_t> last_state;
-    /* Get a coarse estimate of possible cycles by matching hash values only.*/
-    while ( time < end_time ) { 
-      network.run_until_sender_event();
-      time = network.tickno();
-      const vector<double> network_state_exact { network.get_state() };
-      const vector<quantized_t> network_state = all_down( network_state_exact );
-      auto hash_val = hash_fn( network_state );
-      
-      if( network_state == last_state ) {
-        /* Don't match if we haven't exited the state */
-        continue;
-      }
-      
-      auto match = state_hash_set.find( hash_val );
-      if ( match != state_hash_set.end() ) {
-        hash_matches.insert( hash_val );
-        if( match_count >= match_max ) break;
-        match_count++;
-      }
-
-      const vector<vector<quantized_t>> fuzzy_states { fuzz_state( network_state ) };
-      for ( const auto & x : fuzzy_states ) {
-        state_hash_set.insert( hash_fn( x ) );
-      }
-      
-      last_state = network_state;
-    }
-    
-    Network<Rat, Rat> test_network( Rat( whiskers ), prng, configuration );
-    for( unsigned int i = 0; i < num_senders; i++ ) {
-      test_network.mutable_senders().mutable_gang1().mutable_sender( i ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
-    }
-    unordered_map< vector<quantized_t>, double, boost::hash<vector<quantized_t>> > state_map;
-    double test_time = 0.0;
-    
-    /* Check coarse estimates to see if any of them were a true match.
-       If not, continue running network simulation to find a better match. */
-    double cycle_len = -1;
-
-    while ( test_time < time ) {
-      test_network.run_until_sender_event();
-      test_time = test_network.tickno();
-      const vector<double> network_state_exact { test_network.get_state() };
-      const vector<quantized_t> network_state = all_down( network_state_exact );
-      auto hash_val = hash_fn( network_state );
-      
-      if( network_state == last_state ) {
-        /* Don't match if we haven't exited the state */
-        continue;
-      }
-      
-      /* first check if this is even a possible match or collision */
-      auto hash_match = hash_matches.find( hash_val );
-      if ( hash_match != hash_matches.end() ) {
-        /* now check if it was a true match, not collision */
-        auto state_match = state_map.find( network_state ) ;
-        if ( state_match != state_map.end() ) { 
-          cycle_len = test_time - state_match->second;
-
-          cout << initial_buffer << " " << rewma << " "  << 
-            state_match->second << " " << cycle_len << " ";
-          found_match = true;
-          break;
-        }
-        
-        const vector<vector<quantized_t>> fuzzy_states { fuzz_state( network_state ) };
-        for ( const auto & x : fuzzy_states ) {
-          state_map[ x ] = test_time;
-        }
-      }
-
-      last_state = network_state;
-    }
-
-    if ( found_match ) {
-      /* We found one cycle. Continue running for one more cycle
-         duration in order to calculate utility */
-      auto start_tp_del = test_network.senders().throughputs_delays();
-      test_network.run_simulation_until( test_time + cycle_len );
-      auto end_tp_del = test_network.senders().throughputs_delays();
-      double tp_change = end_tp_del.at( 0 ).first - start_tp_del.at( 0 ).first;
-      double del_change = end_tp_del.at( 0 ).second - start_tp_del.at( 0 ).second;
-
-      cout << tp_change << " " << del_change / tp_change << endl;
-    }
-
-  }
+  find_cycle_in_network( network );
 
   return 0;
 }
