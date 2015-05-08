@@ -15,15 +15,17 @@
 #include "sendergangofgangs.hh"
 #include "simple-templates.cc"
 #include "rat.hh"
+#include "aimd.hh"
+#include "aimd-templates.cc"
 #include "network.hh"
 #include "network.cc"
 #include "whiskertree.hh"
 
 using namespace std;
 
-const double quantizer = 100000000;
-
 typedef int64_t quantized_t;
+
+const double quantizer = 10000000;
 
 vector<quantized_t> all_down( const vector<double> & state ) {
   vector<quantized_t> ret;
@@ -38,6 +40,9 @@ vector<vector<quantized_t>> fuzz_state( const vector<quantized_t> & state_all_do
 
   /* bisect in each axis */
   for ( unsigned int i = 0; i < state_all_down.size(); i++ ) {
+    if ( not ( i == 0 or i == 3 or i == 7 or i == 8 ) ) continue;
+    //if ( not ( i == 2 or i == 5 ) ) continue; 
+
     vector<vector<quantized_t>> new_ret;
 
     for ( const auto & x : ret ) {
@@ -85,10 +90,19 @@ void find_cycle_in_network( Network< SenderType1, SenderType2 > & network ) {
 
     network_fast.run_until_sender_event();
     network_fast.run_until_sender_event();
-    
+
+    auto network_state = network.get_state();
+    auto fast_network_state = network_fast.get_state();
+    /*
+    cout << setw(8) << network.tickno();
+    for ( unsigned int i = 0; i < network_state.size() - 1; i++ ) {
+      cout << " " <<  setw(10) << network_state.at( i );
+    }
+    cout << " " << setw(20) << network_state.at( network_state.size() - 1 ) << endl;
+    */
     if ( quantized_states_equal(network.get_state(), network_fast.get_state()) ) {
-        break;
-      }
+      break;
+    }
   } 
 
   auto current_state = network.get_state();
@@ -108,7 +122,7 @@ void find_cycle_in_network( Network< SenderType1, SenderType2 > & network ) {
 int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
-  unsigned int num_senders = 1;
+  unsigned int num_senders = 2;
   double link_ppt = 1.0;
   double delay = 50.0;
   double mean_on_duration = 10000000.0;
@@ -157,9 +171,38 @@ int main( int argc, char *argv[] )
   PRNG prng( 50 );
   NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration ).set_start_buffer( initial_buffer ); /* always on */
   Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
-  network.mutable_senders().mutable_gang1().mutable_sender( 0 ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
+  //Network<Aimd, Aimd> network( Aimd(), prng, configuration );
+
+  for ( unsigned int i = 0; i < num_senders; i++ ) {
+    network.mutable_senders().mutable_gang1().mutable_sender( i ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
+  }
+
+  network.mutable_senders().mutable_gang1().mutable_sender( 0 ).switch_on( network.tickno() );
 
   find_cycle_in_network( network );
+  printf("tick %f\n", network.tickno());
+
+  network.mutable_senders().mutable_gang1().mutable_sender( 1 ).switch_on( network.tickno() );
+  
+  for ( unsigned int i = 0; i < 9; i++ ) {
+    network.run_simulation_until( network.tickno() + 1 );
+    printf("now on %f\n", network.tickno());
+    Network< Rat, Rat > new_network( network );
+    //Network<Aimd, Aimd> new_network( network );
+    find_cycle_in_network( new_network );
+  }
+
+  network.run_simulation_until( network.tickno() + 80000 );
+
+  network.mutable_senders().mutable_gang1().mutable_sender( 1 ).switch_off( network.tickno(), network.mutable_senders().mutable_gang1().count_active_senders() );
+
+  for ( unsigned int i = 0; i < 9; i++ ) {
+    network.run_simulation_until( network.tickno() + 1000 );
+    printf("now on %f\n", network.tickno());
+    Network< Rat, Rat > new_network( network );
+    //Network<Aimd, Aimd> new_network( network );
+    find_cycle_in_network( new_network );
+  }
 
   return 0;
 }

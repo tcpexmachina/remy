@@ -10,6 +10,8 @@
 #include "random.hh"
 #include "answer.pb.h"
 
+
+
 class NetConfig
 {
 public:

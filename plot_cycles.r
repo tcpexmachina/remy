@@ -1,6 +1,6 @@
 library(ggplot2)
 
-data=read.table('9501.out', header=TRUE)
+data=read.table('outfiles/sweep-out-1ppt.out', header=TRUE)
 print(ggplot(data, aes(x=intersend/10000000, y=buffer/10000000)) +
         geom_path() +
         scale_y_continuous(breaks=seq(50, 51, by=1)) +

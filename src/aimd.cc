@@ -65,5 +65,18 @@ void Aimd::reset( const double & )
 
 double Aimd::next_event_time( const double & tickno __attribute ((unused)) ) const
 {
-  return std::numeric_limits<double>::max();
+  if ( _packets_sent < _largest_ack + 1 + _the_window ) {
+    return tickno;
+  } else {
+    return std::numeric_limits<double>::max();
+  }
+}
+
+const std::vector<double> Aimd::get_state( const double & tickno __attribute((unused)) )
+{
+  std::vector<double> state;
+  state.push_back( _the_window );
+  state.push_back( _largest_ack + 1 + _the_window - _packets_sent );
+  state.push_back( tickno - _last_loss );
+  return state;
 }

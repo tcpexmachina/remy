@@ -88,7 +88,26 @@ private:
     using SwitchedSender::SwitchedSender;
   };
 
-  std::vector< TimeSwitchedSender > _gang;
+  class ManualSwitchedSender : public SwitchedSender {
+  public:
+    template <class NextHop>
+    void tick( NextHop & next, Receiver & rec,
+	       const double & tickno,
+	       const unsigned int num_sending,
+	       Exponential & start_distribution ) override;
+
+    void switcher( const double & tickno,
+		   Exponential & start_distribution,
+		   Exponential & stop_distribution,
+		   const unsigned int num_sending ) override;
+
+    void switch_on( const double & tickno );
+    void switch_off( const double & tickno, const unsigned int num_sending );
+
+    using SwitchedSender::SwitchedSender;
+  };
+
+  std::vector< ManualSwitchedSender > _gang;
 
   Exponential _start_distribution, _stop_distribution;
 
@@ -123,7 +142,7 @@ public:
 
   double next_event_time( const double & tickno ) const;
 
-  TimeSwitchedSender & mutable_sender( const unsigned int num ) { return _gang.at( num ); }
+  ManualSwitchedSender & mutable_sender( const unsigned int num ) { return _gang.at( num ); }
   
   const std::vector< double > get_state( const double & tickno );
 };

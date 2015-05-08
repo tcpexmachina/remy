@@ -47,8 +47,9 @@ void Rat::set_initial_state( const vector< Memory::DataType > & data )
 const std::vector<double> Rat::get_state( const double & tickno __attribute((unused)) )
 {
   std::vector<double> state;
-  state.push_back( _memory.rec_ewma() );
-  state.push_back( _memory.outstanding_packets() );
+  //state.push_back( _memory.rec_ewma() );
+  //state.push_back( _memory.outstanding_packets() );
+  state.push_back( _memory.imputed_delay() );
   state.push_back( _intersend_time );
   return state;
 }

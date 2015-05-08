@@ -15,7 +15,7 @@ SenderGang<SenderType>::SenderGang( const double mean_on_duration,
 {
   for ( unsigned int i = 0; i < num_senders; i++ ) {
     _gang.emplace_back( i + id_range_begin,
-			_start_distribution.sample(),
+			std::numeric_limits<double>::max(),
 			exemplar );
   }
 }
@@ -113,6 +113,35 @@ void SenderGang<SenderType>::ByteSwitchedSender::switcher( const double & tickno
 }
 
 template <class SenderType>
+void SenderGang<SenderType>::ManualSwitchedSender::switcher( const double & tickno __attribute((unused)),
+							   Exponential & start_distribution __attribute((unused)),
+							   Exponential & stop_distribution __attribute((unused)),
+							   const unsigned int num_sending __attribute((unused)) )
+{
+  /* Do nothing. */
+}
+
+template <class SenderType>
+void SenderGang<SenderType>::ManualSwitchedSender::switch_on( const double & tickno )
+{
+  /* switch on */
+  SwitchedSender::switch_on( tickno );
+  
+  /* set next switch time to dummy value */
+  SwitchedSender::next_switch_tick = numeric_limits<double>::max();
+}
+
+template <class SenderType>
+void SenderGang<SenderType>::ManualSwitchedSender::switch_off( const double & tickno, const unsigned int num_sending )
+{
+  /* switch off */
+  SwitchedSender::switch_off( tickno, num_sending );
+  
+  /* set next switch time to dummy value */
+  SwitchedSender::next_switch_tick = numeric_limits<double>::max();
+}
+
+template <class SenderType>
 void SenderGang<SenderType>::SwitchedSender::switch_on( const double & tickno )
 {
   assert( !sending );
@@ -200,6 +229,22 @@ void SenderGang<SenderType>::ByteSwitchedSender::tick( NextHop & next, Receiver 
 }
 
 template <class SenderType>
+template <class NextHop>
+void SenderGang<SenderType>::ManualSwitchedSender::tick( NextHop & next, Receiver & rec,
+						       const double & tickno,
+						       const unsigned int num_sending,
+						       Exponential & start_distribution __attribute((unused)) )
+{
+  SwitchedSender::receive_feedback( rec );
+
+  /* possibly send packets */
+  if ( SwitchedSender::sending ) {
+    SwitchedSender::sender.send( SwitchedSender::id, next, tickno );
+    SwitchedSender::accumulate_sending_time_until( tickno, num_sending );
+  }
+}
+
+template <class SenderType>
 double SenderGang<SenderType>::utility( void ) const
 {
   double total_utility = 0.0;
@@ -246,7 +291,6 @@ double SenderGang<SenderType>::next_event_time( const double & tickno ) const
       ret = the_next_event;
     }
   }
-
   return ret;
 }
 
@@ -255,8 +299,10 @@ const std::vector<double> SenderGang<SenderType>::get_state( const double & tick
 {
   std::vector<double> state;
   for( auto & sender : _gang ) {
-    auto sender_state = sender.mutable_sender().get_state( tickno );
-    state.insert( state.end(), sender_state.begin(), sender_state.end());
+    if ( sender.sending ) {
+      auto sender_state = sender.mutable_sender().get_state( tickno );
+      state.insert( state.end(), sender_state.begin(), sender_state.end());
+    }
   }
   return state;
 }

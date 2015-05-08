@@ -5,6 +5,13 @@
 
 const unsigned int MAX_QUEUE = 1000000;
 
+const unsigned int BINS = 8192;
+
+static unsigned int bin_phase( const double & phase ) 
+{
+  return int( phase * BINS ) + 1;
+}
+
 template <class SenderType1, class SenderType2>
 Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
                                             const SenderType2 & example_sender2,
@@ -136,8 +143,8 @@ const std::vector<double> Network<SenderType1, SenderType2>::get_state( void )
   auto & senders_state = _senders.get_state( _tickno );
   state.insert( state.end(), senders_state.begin(), senders_state.end() );
   state.push_back( double( _link.buffer_size() ) );
-  //state.push_back( _senders.next_event_time( _tickno ) - _tickno );
-  state.push_back( _link.next_event_time( _tickno ) - _tickno );
+  state.push_back( _senders.next_event_time( _tickno ) - _tickno );
+  state.push_back( bin_phase( _link.next_event_time( _tickno ) - _tickno ) );
   //state.push_back( _delay.next_event_time( _tickno ) - _tickno );
   //state.push_back( _rec.next_event_time( _tickno ) - _tickno );
 

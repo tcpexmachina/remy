@@ -17,7 +17,7 @@ void Receiver::accept( const Packet & p, const double & tickno ) noexcept
 double Receiver::next_event_time( const double & tickno ) const
 {
   for ( const auto & x : _collector ) {
-    if ( (not x.second.empty()) and (x.first > 0) ) {
+    if ( (not x.second.empty()) and (x.first >= 0) ) {
       return tickno;
     }
   }
