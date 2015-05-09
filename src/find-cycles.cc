@@ -114,8 +114,9 @@ void find_cycle_in_network( Network< SenderType1, SenderType2 > & network ) {
   auto end_tp_del = network.senders().throughputs_delays();
   double tp_change = end_tp_del.at( 0 ).first - start_tp_del.at( 0 ).first;
   double del_change = end_tp_del.at( 0 ).second - start_tp_del.at( 0 ).second;
-  cout << tp_change << " " << del_change / tp_change << endl;
-  printf( "cycle len %f\n", network.tickno() - current_tick );
+  double cycle_len = network.tickno() - current_tick;
+  cout << tp_change << " " << (tp_change / del_change) / cycle_len << endl;
+  printf( "cycle len %f\n", cycle_len );
 }
 
 int main( int argc, char *argv[] )
