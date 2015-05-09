@@ -13,7 +13,6 @@
 #include <limits>
 
 #include "sendergangofgangs.hh"
-#include "simple-templates.cc"
 #include "rat.hh"
 #include "aimd.hh"
 #include "aimd-templates.cc"
@@ -86,10 +85,10 @@ void find_cycle_in_network( Network< SenderType1, SenderType2 > & network ) {
   Network<SenderType1, SenderType2> network_fast( network );
   
   while ( true ) {
-    network.run_until_sender_event();
+    network.run_until_event();
 
-    network_fast.run_until_sender_event();
-    network_fast.run_until_sender_event();
+    network_fast.run_until_event();
+    network_fast.run_until_event();
 
     auto network_state = network.get_state();
     auto fast_network_state = network_fast.get_state();
@@ -108,9 +107,9 @@ void find_cycle_in_network( Network< SenderType1, SenderType2 > & network ) {
   auto current_state = network.get_state();
   auto start_tp_del = network.senders().throughputs_delays();
   double current_tick = network.tickno();
-  network.run_until_sender_event();
+  network.run_until_event();
   while ( not quantized_states_equal( current_state, network.get_state()) ) {
-    network.run_until_sender_event();
+    network.run_until_event();
   }
   auto end_tp_del = network.senders().throughputs_delays();
   double tp_change = end_tp_del.at( 0 ).first - start_tp_del.at( 0 ).first;
@@ -174,7 +173,7 @@ int main( int argc, char *argv[] )
   //Network<Aimd, Aimd> network( Aimd(), prng, configuration );
 
   for ( unsigned int i = 0; i < num_senders; i++ ) {
-    network.mutable_senders().mutable_gang1().mutable_sender( i ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
+    // network.mutable_senders().mutable_gang1().mutable_sender( i ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
   }
 
   network.mutable_senders().mutable_gang1().mutable_sender( 0 ).switch_on( network.tickno() );
@@ -185,11 +184,11 @@ int main( int argc, char *argv[] )
   network.mutable_senders().mutable_gang1().mutable_sender( 1 ).switch_on( network.tickno() );
   
   for ( unsigned int i = 0; i < 9; i++ ) {
-    network.run_simulation_until( network.tickno() + 1 );
+    network.run_simulation_until( network.tickno() + 0.25 );
     printf("now on %f\n", network.tickno());
     Network< Rat, Rat > new_network( network );
     //Network<Aimd, Aimd> new_network( network );
-    find_cycle_in_network( new_network );
+    find_cycle_in_network( network );
   }
 
   network.run_simulation_until( network.tickno() + 80000 );

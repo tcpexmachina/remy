@@ -6,7 +6,6 @@
 #include "evaluator.hh"
 #include "network.cc"
 #include "rat-templates.cc"
-#include "simple-templates.cc"
 
 const unsigned int TICK_COUNT = 1000000;
 

@@ -14,15 +14,16 @@ class Rat
 private:
   const WhiskerTree & _whiskers;
   Memory _memory;
-  std::vector< Memory::DataType > _initial_state;
 
   bool _track;
 
   double _last_send_time;
 
+  int _the_window;
   double _intersend_time;
 
   unsigned int _flow_id;
+  int _largest_ack;
 
 public:
   Rat( WhiskerTree & s_whiskers, const bool s_track=false );
@@ -32,7 +33,7 @@ public:
 
   template <class NextHop>
   void send( const unsigned int id, NextHop & next, const double & tickno,
-	     const int packets_sent_cap = std::numeric_limits<int>::max() );
+	     const unsigned int packets_sent_cap = std::numeric_limits<int>::max() );
 
   const WhiskerTree & whiskers( void ) const { return _whiskers; }
 
@@ -40,9 +41,8 @@ public:
 
   double next_event_time( const double & tickno ) const;
 
-  const int & packets_sent( void ) const { return _memory.packets_sent(); }
+  const int & packets_sent( void ) const { return _memory.num_packets_sent(); }
 
-  void set_initial_state( const std::vector< Memory::DataType > & data );
   const std::vector<double> get_state( const double & tickno );
 };
 
