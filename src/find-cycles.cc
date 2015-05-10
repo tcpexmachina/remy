@@ -134,6 +134,7 @@ find_cycle_in_network( Network< SenderType1, SenderType2 > & network,
   }
 
   double cycle_len = network.tickno() - current_tick;
+
   return std::pair<double, std::vector< std::pair< double, double > > > { cycle_len, deltas };
 }
 
@@ -144,6 +145,7 @@ int main( int argc, char *argv[] )
   double link_ppt = 1.0;
   double delay = 50.0;
   double rewma __attribute((unused)) = 1.0;
+  double sender_offset = 0.0;
   unsigned int initial_buffer = 0;
   bool verbose = false;
 
@@ -153,17 +155,18 @@ int main( int argc, char *argv[] )
     }
   
     const option command_line_options[] = {
-      { "infile", required_argument, nullptr, 'i' },
-      { "num_senders", required_argument, nullptr, 'n' },
-      { "link_ppt", required_argument, nullptr, 'l' },
-      { "rtt", required_argument, nullptr, 'r' },
+      { "infile",         required_argument, nullptr, 'i' },
+      { "num_senders",    required_argument, nullptr, 'n' },
+      { "link_ppt",       required_argument, nullptr, 'l' },
+      { "rtt",            required_argument, nullptr, 'r' },
       { "initial_buffer", required_argument, nullptr, 'b' },
-      { "verbose", no_argument, nullptr, 'v' },
-      { 0, 0, nullptr, 0 }
+      { "offset",         required_argument, nullptr, 'o' },
+      { "verbose",              no_argument, nullptr, 'v' },
+      { 0,                                0, nullptr,   0 }
     };
 
     while ( true ) {
-      const int opt = getopt_long( argc, argv, "i:n:l:r:b:v", command_line_options, nullptr );
+      const int opt = getopt_long( argc, argv, "i:n:l:r:b:o:v", command_line_options, nullptr );
       if ( opt == -1 ) { /* end of options */
         break;
       }
@@ -201,6 +204,9 @@ int main( int argc, char *argv[] )
       case 'b':
         initial_buffer = atoi( optarg );
         break;
+      case 'o':
+        sender_offset = atof( optarg );
+        break;
       case 'v':
         verbose = true;
         break;
@@ -225,15 +231,21 @@ int main( int argc, char *argv[] )
 
   Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
 
-  for ( unsigned int i = 0; i < num_senders; i++ ) {
+  //for ( unsigned int i = 0; i < num_senders; i++ ) {
     // network.mutable_senders().mutable_gang1().mutable_sender( i ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
-  }
+  //}
 
   network.mutable_senders().mutable_gang1().mutable_sender( 0 ).switch_on( network.tickno() );
   
-  //network.run_simulation_until( network.tickno() + 50 );
-
-  //network.mutable_senders().mutable_gang1().mutable_sender( 1 ).switch_on( network.tickno() );
+  if ( num_senders > 1 ) {
+    network.run_simulation_until( network.tickno() + sender_offset );
+    for( size_t i = 1; i < num_senders; i++ ) {
+      network.mutable_senders().
+        mutable_gang1().
+        mutable_sender( i ).
+        switch_on( network.tickno() );
+    }
+  }
 
   auto statistics = find_cycle_in_network( network, verbose );
   auto cycle_len = statistics.first;

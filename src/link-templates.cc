@@ -1,4 +1,5 @@
 #include <utility>
+#include <cstdio>
 
 #include "link.hh"
 

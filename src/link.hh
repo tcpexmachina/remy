@@ -50,6 +50,14 @@ public:
   double next_event_time( const double & tickno ) const { return _pending_packet.next_event_time( tickno ); }
 
   unsigned int buffer_size( void ) const { return _buffer.size(); }
+  unsigned int buffer_front_source( void ) const 
+  { 
+    if ( _buffer.size() > 0 ) {
+      return _buffer.front().src;
+    } else {
+      return -1;
+    }
+  }
 };
 
 #endif
