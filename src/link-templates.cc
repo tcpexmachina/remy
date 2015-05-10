@@ -13,6 +13,8 @@ void Link::tick( NextHop & next, const double & tickno )
     if ( not _buffer.empty() ) {
       _pending_packet.accept( _buffer.front(), tickno );
       _buffer.pop();
+      _size_statistics[ _buffer.size() ] += tickno - _last_change_tick; 
+      _last_change_tick = tickno;
     }
   }
 }

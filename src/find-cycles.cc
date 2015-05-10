@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cmath>
 #include <vector>
 #include <string>
 #include <google/sparse_hash_set>
@@ -6,12 +7,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <getopt.h>
 #include <boost/functional/hash.hpp>
 #include <unordered_map>
 #include <unordered_set>
 #include <iomanip>
 #include <limits>
 
+#include "exception.hh"
 #include "sendergangofgangs.hh"
 #include "rat.hh"
 #include "aimd.hh"
@@ -19,12 +22,17 @@
 #include "network.hh"
 #include "network.cc"
 #include "whiskertree.hh"
+#include "utility.hh"
 
 using namespace std;
 
 typedef int64_t quantized_t;
-
 const double quantizer = 10000000;
+
+void usage_error( const string & program_name )
+{
+    throw Exception( "Usage", program_name + " " );
+}
 
 vector<quantized_t> all_down( const vector<double> & state ) {
   vector<quantized_t> ret;
@@ -81,7 +89,9 @@ bool quantized_states_equal( std::vector<double> state1,
   the network has a cycle.
  */
 template < class SenderType1, class SenderType2 >
-void find_cycle_in_network( Network< SenderType1, SenderType2 > & network ) {
+std::pair< double, std::vector< std::pair< double, double > > > 
+find_cycle_in_network( Network< SenderType1, SenderType2 > & network,
+                       bool verbose = false ) {
   Network<SenderType1, SenderType2> network_fast( network );
   
   while ( true ) {
@@ -92,13 +102,15 @@ void find_cycle_in_network( Network< SenderType1, SenderType2 > & network ) {
 
     auto network_state = network.get_state();
     auto fast_network_state = network_fast.get_state();
-    /*
-    cout << setw(8) << network.tickno();
-    for ( unsigned int i = 0; i < network_state.size() - 1; i++ ) {
-      cout << " " <<  setw(10) << network_state.at( i );
+
+    if ( verbose ) {
+      cout << setw(8) << network.tickno();
+      for ( unsigned int i = 0; i < network_state.size() - 1; i++ ) {
+        cout << " " <<  setw(10) << network_state.at( i );
+      }
+      cout << " " << setw(20) << network_state.at( network_state.size() - 1 ) << endl;
     }
-    cout << " " << setw(20) << network_state.at( network_state.size() - 1 ) << endl;
-    */
+
     if ( quantized_states_equal(network.get_state(), network_fast.get_state()) ) {
       break;
     }
@@ -112,11 +124,17 @@ void find_cycle_in_network( Network< SenderType1, SenderType2 > & network ) {
     network.run_until_event();
   }
   auto end_tp_del = network.senders().throughputs_delays();
-  double tp_change = end_tp_del.at( 0 ).first - start_tp_del.at( 0 ).first;
-  double del_change = end_tp_del.at( 0 ).second - start_tp_del.at( 0 ).second;
+
+  std::vector< std::pair< double, double > > deltas;
+  for( size_t i = 0; i < start_tp_del.size(); i++ ) {
+    deltas.emplace_back( end_tp_del.at( i ).first -
+                         start_tp_del.at( i ).first,
+                         end_tp_del.at( i ).second -
+                         start_tp_del.at( i ).second );
+  }
+
   double cycle_len = network.tickno() - current_tick;
-  cout << tp_change << " " << (tp_change / del_change) / cycle_len << endl;
-  printf( "cycle len %f\n", cycle_len );
+  return std::pair<double, std::vector< std::pair< double, double > > > { cycle_len, deltas };
 }
 
 int main( int argc, char *argv[] )
@@ -125,84 +143,114 @@ int main( int argc, char *argv[] )
   unsigned int num_senders = 2;
   double link_ppt = 1.0;
   double delay = 50.0;
-  double mean_on_duration = 10000000.0;
-  double mean_off_duration = 0.0;
-  double imputed_delay __attribute((unused)) = 1.0;
   double rewma __attribute((unused)) = 1.0;
   unsigned int initial_buffer = 0;
+  bool verbose = false;
 
-  for ( int i = 1; i < argc; i++ ) {
-    string arg( argv[ i ] );
-    if ( arg.substr( 0, 3 ) == "if=" ) {
-      string filename( arg.substr( 3 ) );
-      int fd = open( filename.c_str(), O_RDONLY );
-      if ( fd < 0 ) {
-	perror( "open" );
-	exit( 1 );
-      }
-
-      RemyBuffers::WhiskerTree tree;
-      if ( !tree.ParseFromFileDescriptor( fd ) ) {
-	fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
-	exit( 1 );
-      }
-      whiskers = WhiskerTree( tree );
-
-      if ( close( fd ) < 0 ) {
-	perror( "close" );
-	exit( 1 );
-      }
-
-    } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
-      num_senders = atoi( arg.substr( 5 ).c_str() );
-    } else if ( arg.substr( 0, 5 ) == "link=" ) {
-      link_ppt = atof( arg.substr( 5 ).c_str() );
-    } else if ( arg.substr( 0, 4 ) == "rtt=" ) {
-      delay = atof( arg.substr( 4 ).c_str() );
-    } else if ( arg.substr( 0, 4 ) == "del=" ) {
-      imputed_delay = atof( arg.substr( 4 ).c_str() );
-    } else if ( arg.substr( 0, 6 ) == "rewma=" ) {
-      rewma = atof( arg.substr( 6 ).c_str() );
-    } else if ( arg.substr( 0, 5 ) == "buff=" ) {
-      initial_buffer = atoi( arg.substr( 5 ).c_str() );
+  try {
+    if ( argc < 3 ) {
+      usage_error( argv[ 0 ] );
     }
+  
+    const option command_line_options[] = {
+      { "infile", required_argument, nullptr, 'i' },
+      { "num_senders", required_argument, nullptr, 'n' },
+      { "link_ppt", required_argument, nullptr, 'l' },
+      { "rtt", required_argument, nullptr, 'r' },
+      { "initial_buffer", required_argument, nullptr, 'b' },
+      { "verbose", no_argument, nullptr, 'v' },
+      { 0, 0, nullptr, 0 }
+    };
+
+    while ( true ) {
+      const int opt = getopt_long( argc, argv, "i:n:l:r:b:v", command_line_options, nullptr );
+      if ( opt == -1 ) { /* end of options */
+        break;
+      }
+    
+      switch ( opt ) {
+      case 'i':
+        {
+          string filename( optarg );
+          int fd = open( filename.c_str(), O_RDONLY );
+          if ( fd < 0 ) {
+            perror( "open" );
+            exit( 1 );
+          }
+          RemyBuffers::WhiskerTree tree;
+          if ( !tree.ParseFromFileDescriptor( fd ) ) {
+            fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
+            exit( 1 );
+          }
+          whiskers = WhiskerTree( tree );
+          if ( close( fd ) < 0 ) {
+            perror( "close" );
+            exit( 1 );
+          }
+        }
+        break;
+      case 'n':
+        num_senders = atoi( optarg );
+        break;
+      case 'l':
+        link_ppt = atof( optarg );
+        break;
+      case 'r':
+        delay = atof( optarg );
+        break;
+      case 'b':
+        initial_buffer = atoi( optarg );
+        break;
+      case 'v':
+        verbose = true;
+        break;
+      case '?':
+        usage_error( argv[ 0 ] );
+        break;
+      default:
+        throw Exception( "getopt_long", "unexpected return value " + to_string( opt ) );
+      }
+    }
+  } catch ( const Exception & e ) {
+    e.perror();
+    return EXIT_FAILURE;
   }
 
   PRNG prng( 50 );
-  NetConfig configuration = NetConfig().set_link_ppt( link_ppt ).set_delay( delay ).set_num_senders( num_senders ).set_on_duration( mean_on_duration ).set_off_duration( mean_off_duration ).set_start_buffer( initial_buffer ); /* always on */
+  NetConfig configuration = NetConfig().
+    set_link_ppt( link_ppt ).
+    set_delay( delay ).
+    set_num_senders( num_senders ).
+    set_start_buffer( initial_buffer );
+
   Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
-  //Network<Aimd, Aimd> network( Aimd(), prng, configuration );
 
   for ( unsigned int i = 0; i < num_senders; i++ ) {
     // network.mutable_senders().mutable_gang1().mutable_sender( i ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
   }
 
   network.mutable_senders().mutable_gang1().mutable_sender( 0 ).switch_on( network.tickno() );
-
-  find_cycle_in_network( network );
-  printf("tick %f\n", network.tickno());
-
-  network.mutable_senders().mutable_gang1().mutable_sender( 1 ).switch_on( network.tickno() );
   
-  for ( unsigned int i = 0; i < 9; i++ ) {
-    network.run_simulation_until( network.tickno() + 0.25 );
-    printf("now on %f\n", network.tickno());
-    Network< Rat, Rat > new_network( network );
-    //Network<Aimd, Aimd> new_network( network );
-    find_cycle_in_network( network );
+  //network.run_simulation_until( network.tickno() + 50 );
+
+  //network.mutable_senders().mutable_gang1().mutable_sender( 1 ).switch_on( network.tickno() );
+
+  auto statistics = find_cycle_in_network( network, verbose );
+  auto cycle_len = statistics.first;
+  auto deltas = statistics.second;
+
+  for ( size_t i = 0; i < deltas.size(); i++ ) {
+    auto packets_received = deltas.at( i ).first;
+    auto total_delay = deltas.at( i ).second;
+    auto norm_avg_delay = ( total_delay / packets_received ) / delay;
+    auto norm_avg_throughput = ( packets_received / cycle_len ) / link_ppt;
+    
+    cout << log2( norm_avg_throughput ) - log2( norm_avg_delay )  << endl;
+    cout << norm_avg_throughput << " " << norm_avg_delay << " " << cycle_len << endl;
   }
 
-  network.run_simulation_until( network.tickno() + 80000 );
-
-  network.mutable_senders().mutable_gang1().mutable_sender( 1 ).switch_off( network.tickno(), network.mutable_senders().mutable_gang1().count_active_senders() );
-
-  for ( unsigned int i = 0; i < 9; i++ ) {
-    network.run_simulation_until( network.tickno() + 1000 );
-    printf("now on %f\n", network.tickno());
-    Network< Rat, Rat > new_network( network );
-    //Network<Aimd, Aimd> new_network( network );
-    find_cycle_in_network( new_network );
-  }
+  cout << "Optimal utility: " << 
+    Utility::optimal_utility( link_ppt, network.mutable_senders().mutable_gang1().count_active_senders() ) << endl;
 
   return 0;
 }

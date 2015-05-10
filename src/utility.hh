@@ -28,10 +28,26 @@ public:
     if ( _tick_share_sending == 0 ) {
       return 0.0;
     }
+    return double( _packets_received ) / _tick_share_sending;
+  }
+
+  double total_packets_received( void ) const
+  {
+    if ( _tick_share_sending == 0 ) {
+      return 0.0;
+    }
     return double( _packets_received );
   }
 
   double average_delay( void ) const
+  {
+    if ( _packets_received == 0 ) {
+      return 0.0;
+    }
+    return double( _total_delay ) / double( _packets_received );
+  }
+
+  double total_delay( void ) const
   {
     if ( _packets_received == 0 ) {
       return 0.0;
@@ -53,6 +69,13 @@ public:
     const double delay_penalty = log2( average_delay() / 100.0 );
 
     return throughput_utility - delay_penalty;
+  }
+
+  static double optimal_utility( const double link_ppt __attribute((unused)),
+                                 const unsigned int num_senders )
+  {
+    const double throughput_utility = log2( 1.0 / num_senders );
+    return throughput_utility;
   }
 };
 
