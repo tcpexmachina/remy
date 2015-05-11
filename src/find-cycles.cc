@@ -2,7 +2,6 @@
 #include <cmath>
 #include <vector>
 #include <string>
-#include <google/sparse_hash_set>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
