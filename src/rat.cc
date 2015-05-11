@@ -65,9 +65,7 @@ const vector<double> Rat::get_state( const double & tickno __attribute((unused))
   for( unsigned int i = 0; i < _memory.datasize; i++ ) {
     state.push_back( _memory.field( i ) );
   }
-  state.push_back( _memory.num_outstanding_packets() );
-  state.push_back( _intersend_time );
+  //state.push_back( _intersend_time );
   state.push_back( _the_window );
-
   return state;
 }

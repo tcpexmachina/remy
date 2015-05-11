@@ -26,6 +26,8 @@
 
 using namespace std;
 
+const double END_TIME = 5000000.0;
+
 typedef int64_t quantized_t;
 const double quantizer = 10000000;
 
@@ -47,7 +49,8 @@ vector<vector<quantized_t>> fuzz_state( const vector<quantized_t> & state_all_do
 
   /* bisect in each axis */
   for ( unsigned int i = 0; i < state_all_down.size(); i++ ) {
-    if ( not ( i == 0 or i == 3 or i == 7 or i == 8 ) ) continue;
+    //if ( i == 4 or i == 9 or i == 10 or i == 11 or i == 12 or i == 13 ) continue;
+    continue;
     //if ( not ( i == 2 or i == 5 ) ) continue; 
 
     vector<vector<quantized_t>> new_ret;
@@ -89,12 +92,15 @@ bool quantized_states_equal( std::vector<double> state1,
   the network has a cycle.
  */
 template < class SenderType1, class SenderType2 >
-std::pair< double, std::vector< std::pair< double, double > > > 
+std::tuple< double, double, std::vector< std::pair< double, double > > > 
 find_cycle_in_network( Network< SenderType1, SenderType2 > & network,
                        bool verbose = false ) {
+  Network<SenderType1, SenderType2> network_slow( network );
   Network<SenderType1, SenderType2> network_fast( network );
   
-  while ( true ) {
+  bool found_cycle = false;
+  /* Phase 1: find a cycle */
+  while ( network_fast.tickno() < END_TIME ) {
     network.run_until_event();
 
     network_fast.run_until_event();
@@ -112,18 +118,34 @@ find_cycle_in_network( Network< SenderType1, SenderType2 > & network,
     }
 
     if ( quantized_states_equal(network.get_state(), network_fast.get_state()) ) {
+      found_cycle = true;
       break;
     }
   } 
 
-  auto current_state = network.get_state();
-  auto start_tp_del = network.senders().throughputs_delays();
-  double current_tick = network.tickno();
-  network.run_until_event();
-  while ( not quantized_states_equal( current_state, network.get_state()) ) {
-    network.run_until_event();
+  if ( not found_cycle ) {
+    throw Exception( "find_cycles", "No cycle found");
   }
-  auto end_tp_del = network.senders().throughputs_delays();
+
+  /* Phase 2: find the beginning of the cycle */
+  while ( true ) {
+    network_slow.run_until_event();
+    network_fast.run_until_event();
+    if ( quantized_states_equal(network_slow.get_state(), network_fast.get_state()) ) {
+      break;
+    }
+  }
+
+  double convergence_time = network_slow.tickno();
+
+  auto current_state = network_slow.get_state();
+  auto start_tp_del = network_slow.senders().throughputs_delays();
+  double current_tick = network_slow.tickno();
+  network_slow.run_until_event();
+  while ( not quantized_states_equal( current_state, network_slow.get_state()) ) {
+    network_slow.run_until_event();
+  }
+  auto end_tp_del = network_slow.senders().throughputs_delays();
 
   std::vector< std::pair< double, double > > deltas;
   for( size_t i = 0; i < start_tp_del.size(); i++ ) {
@@ -133,9 +155,9 @@ find_cycle_in_network( Network< SenderType1, SenderType2 > & network,
                          start_tp_del.at( i ).second );
   }
 
-  double cycle_len = network.tickno() - current_tick;
+  double cycle_len = network_slow.tickno() - current_tick;
 
-  return std::pair<double, std::vector< std::pair< double, double > > > { cycle_len, deltas };
+  return std::tuple<double, double, std::vector< std::pair< double, double > > > { convergence_time, cycle_len, deltas };
 }
 
 int main( int argc, char *argv[] )
@@ -147,6 +169,7 @@ int main( int argc, char *argv[] )
   double rewma __attribute((unused)) = 1.0;
   double sender_offset = 0.0;
   unsigned int initial_buffer = 0;
+  bool aimd __attribute((unused)) = false;
   bool verbose = false;
 
   try {
@@ -161,6 +184,7 @@ int main( int argc, char *argv[] )
       { "rtt",            required_argument, nullptr, 'r' },
       { "initial_buffer", required_argument, nullptr, 'b' },
       { "offset",         required_argument, nullptr, 'o' },
+      { "aimd",                 no_argument, nullptr, 'a' },
       { "verbose",              no_argument, nullptr, 'v' },
       { 0,                                0, nullptr,   0 }
     };
@@ -207,6 +231,9 @@ int main( int argc, char *argv[] )
       case 'o':
         sender_offset = atof( optarg );
         break;
+      case 'a':
+        aimd = true;
+        break;
       case 'v':
         verbose = true;
         break;
@@ -229,11 +256,8 @@ int main( int argc, char *argv[] )
     set_num_senders( num_senders ).
     set_start_buffer( initial_buffer );
 
-  Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
-
-  //for ( unsigned int i = 0; i < num_senders; i++ ) {
-    // network.mutable_senders().mutable_gang1().mutable_sender( i ).mutable_sender().set_initial_state( std::vector< double > { imputed_delay, rewma } );
-  //}
+  //Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
+  Network<Aimd, Aimd> network( Aimd(), prng, configuration );
 
   network.mutable_senders().mutable_gang1().mutable_sender( 0 ).switch_on( network.tickno() );
   
@@ -248,8 +272,9 @@ int main( int argc, char *argv[] )
   }
 
   auto statistics = find_cycle_in_network( network, verbose );
-  auto cycle_len = statistics.first;
-  auto deltas = statistics.second;
+  double convergence_time = std::get< 0 >( statistics );
+  double cycle_len = std::get< 1 >( statistics );
+  auto deltas = std::get< 2 >( statistics );
 
   for ( size_t i = 0; i < deltas.size(); i++ ) {
     auto packets_received = deltas.at( i ).first;
@@ -257,12 +282,13 @@ int main( int argc, char *argv[] )
     auto norm_avg_delay = ( total_delay / packets_received ) / delay;
     auto norm_avg_throughput = ( packets_received / cycle_len ) / link_ppt;
     
-    cout << log2( norm_avg_throughput ) - log2( norm_avg_delay )  << endl;
-    cout << norm_avg_throughput << " " << norm_avg_delay << " " << cycle_len << endl;
+    cout << sender_offset << " " << 
+      convergence_time << " " << 
+      cycle_len << " " << 
+      norm_avg_delay << " " <<
+      norm_avg_throughput << " " <<
+      log2( norm_avg_throughput ) - log2( norm_avg_delay ) << " "  << endl;
   }
-
-  cout << "Optimal utility: " << 
-    Utility::optimal_utility( link_ppt, network.mutable_senders().mutable_gang1().count_active_senders() ) << endl;
 
   return 0;
 }
