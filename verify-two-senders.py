@@ -19,7 +19,7 @@ def build_cmd_and_call(args):
 run_single_sender(1.0, 150)
 
 with open('tmp.out', 'r') as result:
-    offset, start, cycle_len, delay, tp, utility = [r.strip() for r in result.readlines()][0].split()
+    offset, start, cycle_len, delay, tp, utility = [r.strip() for r in result.readlines()][-1].split()
 
 end = float(start) + float(cycle_len)
 

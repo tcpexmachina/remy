@@ -3,7 +3,7 @@
 #include "sendergangofgangs.cc"
 #include "link-templates.cc"
 
-const unsigned int MAX_QUEUE = 100;
+const unsigned int MAX_QUEUE = 1000000;
 
 template <class SenderType1, class SenderType2>
 Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
@@ -106,6 +106,32 @@ void Network<SenderType1, SenderType2>::run_until_event( void )
 }
 
 template <class SenderType1, class SenderType2>
+void Network<SenderType1, SenderType2>::run_until_time_or_event( const double & tick_limit )
+{
+  if ( _tickno >= tick_limit ) {
+    return;
+  }
+
+  /* find element with soonest event */
+  double next_tickno = min( min( _senders.next_event_time( _tickno ),
+                                 _link.next_event_time( _tickno ) ),
+                            min( _delay.next_event_time( _tickno ),
+                                 _rec.next_event_time( _tickno ) ) );
+
+  if ( next_tickno > tick_limit ) {
+    _tickno = tick_limit;
+    tick();
+    return;
+  }
+
+  assert( next_tickno < std::numeric_limits<double>::max() );
+  
+  _tickno = next_tickno;
+  
+  tick();
+}
+
+template <class SenderType1, class SenderType2>
 void Network<SenderType1, SenderType2>::run_until_sender_event( void )
 {
   double event_tickno = _senders.next_event_time( _tickno );
@@ -137,8 +163,8 @@ const std::vector<double> Network<SenderType1, SenderType2>::get_state( void )
   state.insert( state.end(), senders_state.begin(), senders_state.end() );
   state.push_back( double( _link.buffer_size() ) );
   state.push_back( _link.buffer_front_source() );
-  state.push_back( _senders.next_event_time( _tickno ) - _tickno );
-  state.push_back( _link.next_event_time( _tickno ) - _tickno );
+  //state.push_back( _senders.next_event_time( _tickno ) - _tickno );
+  //state.push_back( _link.next_event_time( _tickno ) - _tickno );
 
   return state;
 }

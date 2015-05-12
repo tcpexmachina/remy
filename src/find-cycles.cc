@@ -25,7 +25,7 @@
 
 using namespace std;
 
-const double END_TIME = 5000000.0;
+const double END_TIME = 1000000.0;
 
 typedef int64_t quantized_t;
 const double quantizer = 10000000;
@@ -48,9 +48,9 @@ vector<vector<quantized_t>> fuzz_state( const vector<quantized_t> & state_all_do
 
   /* bisect in each axis */
   for ( unsigned int i = 0; i < state_all_down.size(); i++ ) {
-    //if ( i == 4 or i == 9 or i == 10 or i == 11 or i == 12 or i == 13 ) continue;
-    continue;
+    //if ( i == 4 or i == 9 or i == 10 or i == 11 ) continue;
     //if ( not ( i == 2 or i == 5 ) ) continue; 
+    if ( not ( i == state_all_down.size() - 1 or i == state_all_down.size() - 2 ) ) continue;
 
     vector<vector<quantized_t>> new_ret;
 
@@ -130,6 +130,7 @@ find_cycle_in_network( Network< SenderType1, SenderType2 > & network,
   while ( true ) {
     network_slow.run_until_event();
     network_fast.run_until_event();
+
     if ( quantized_states_equal(network_slow.get_state(), network_fast.get_state()) ) {
       break;
     }
@@ -137,10 +138,14 @@ find_cycle_in_network( Network< SenderType1, SenderType2 > & network,
 
   double convergence_time = network_slow.tickno();
 
+  /* Run through cycle one more time to calculate utility and output
+   trace over entire cycle */
   auto current_state = network_slow.get_state();
   auto start_tp_del = network_slow.senders().throughputs_delays();
   double current_tick = network_slow.tickno();
+
   network_slow.run_until_event();
+
   while ( not quantized_states_equal( current_state, network_slow.get_state()) ) {
     network_slow.run_until_event();
   }
@@ -255,8 +260,8 @@ int main( int argc, char *argv[] )
     set_num_senders( num_senders ).
     set_start_buffer( initial_buffer );
 
-  //Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
-  Network<Aimd, Aimd> network( Aimd(), prng, configuration );
+  Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
+  //Network<Aimd, Aimd> network( Aimd(), prng, configuration );
 
   network.mutable_senders().mutable_gang1().mutable_sender( 0 ).switch_on( network.tickno() );
   
@@ -269,12 +274,12 @@ int main( int argc, char *argv[] )
         switch_on( network.tickno() );
     }
   }
-
+ 
   auto statistics = find_cycle_in_network( network, verbose );
   double convergence_time = std::get< 0 >( statistics );
   double cycle_len = std::get< 1 >( statistics );
   auto deltas = std::get< 2 >( statistics );
-
+  
   for ( size_t i = 0; i < deltas.size(); i++ ) {
     auto packets_received = deltas.at( i ).first;
     auto total_delay = deltas.at( i ).second;
@@ -287,6 +292,91 @@ int main( int argc, char *argv[] )
       norm_avg_delay << " " <<
       norm_avg_throughput << " " <<
       log2( norm_avg_throughput ) - log2( norm_avg_delay ) << " "  << endl;
+  }
+
+  if ( num_senders <= 1 ) return 0;
+  cout << endl;
+
+  /* Now find cycles for each sender turning off.  */
+
+  /* Sender 0 turns off */
+  Network<Rat, Rat> off1_network( network );
+  for ( double offset = 0; offset < cycle_len; offset += 1 ) {
+    Network<Rat, Rat> off1_network_offset( off1_network );
+    off1_network_offset.run_simulation_until( off1_network.tickno() + offset );
+
+    off1_network_offset.mutable_senders().
+      mutable_gang1().
+      mutable_sender( 0 ).
+      switch_off( off1_network_offset.tickno(),
+                  network.mutable_senders().mutable_gang1().
+                  count_active_senders() );
+    
+    try {
+      auto off1_statistics = find_cycle_in_network( off1_network_offset, 
+                                                    verbose );
+      double off1_convergence_time = std::get< 0 >( statistics );
+      double off1_cycle_len = std::get< 1 >( statistics );
+      auto off1_deltas = std::get< 2 >( statistics );
+      
+      for ( size_t i = 0; i < off1_deltas.size(); i++ ) {
+        auto packets_received = off1_deltas.at( i ).first;
+        auto total_delay = off1_deltas.at( i ).second;
+        auto norm_avg_delay = ( total_delay / packets_received ) / delay;
+        auto norm_avg_throughput = ( packets_received / off1_cycle_len ) / link_ppt;
+        
+        cout << offset << " " << 
+          off1_convergence_time << " " << 
+          off1_cycle_len << " " << 
+          norm_avg_delay << " " <<
+          norm_avg_throughput << " " <<
+          log2( norm_avg_throughput ) - log2( norm_avg_delay ) << " "  << endl;
+      }
+    } catch ( const Exception & e ) {
+      cout << "Failed on offset " << offset << endl;
+      continue;
+    }
+  }
+
+  cout << endl;
+  
+  /* Sender 1 turns off */
+  Network<Rat, Rat> off2_network( network );
+  for ( double offset = 0; offset < cycle_len; offset += 1 ) {
+    Network<Rat, Rat> off2_network_offset( off2_network );
+    off2_network_offset.run_simulation_until( off2_network.tickno() + offset );
+
+    off2_network_offset.mutable_senders().
+      mutable_gang1().
+      mutable_sender( 1 ).
+      switch_off( off2_network_offset.tickno(),
+                  network.mutable_senders().mutable_gang1().
+                  count_active_senders() );
+    
+    try {
+      auto off2_statistics = find_cycle_in_network( off2_network_offset, 
+                                                    verbose );
+      double off2_convergence_time = std::get< 0 >( statistics );
+      double off2_cycle_len = std::get< 1 >( statistics );
+      auto off2_deltas = std::get< 2 >( statistics );
+      
+      for ( size_t i = 0; i < off2_deltas.size(); i++ ) {
+        auto packets_received = off2_deltas.at( i ).first;
+        auto total_delay = off2_deltas.at( i ).second;
+        auto norm_avg_delay = ( total_delay / packets_received ) / delay;
+        auto norm_avg_throughput = ( packets_received / off2_cycle_len ) / link_ppt;
+        
+        cout << offset << " " << 
+          off2_convergence_time << " " << 
+          off2_cycle_len << " " << 
+          norm_avg_delay << " " <<
+          norm_avg_throughput << " " <<
+          log2( norm_avg_throughput ) - log2( norm_avg_delay ) << " "  << endl;
+      }
+    } catch ( const Exception & e ) {
+      cout << "Failed on offset " << offset << endl;
+      continue;
+    }
   }
 
   return 0;
