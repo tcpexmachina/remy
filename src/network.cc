@@ -163,8 +163,8 @@ const std::vector<double> Network<SenderType1, SenderType2>::get_state( void )
   state.insert( state.end(), senders_state.begin(), senders_state.end() );
   state.push_back( double( _link.buffer_size() ) );
   state.push_back( _link.buffer_front_source() );
-  //state.push_back( _senders.next_event_time( _tickno ) - _tickno );
-  //state.push_back( _link.next_event_time( _tickno ) - _tickno );
+  state.push_back( _senders.next_event_time( _tickno ) - _tickno );
+  state.push_back( _link.next_event_time( _tickno ) - _tickno );
 
   return state;
 }

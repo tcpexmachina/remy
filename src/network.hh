@@ -98,6 +98,9 @@ public:
 
   const SenderGangofGangs<SenderType1,SenderType2> & senders( void ) const { return _senders; }
   SenderGangofGangs<SenderType1,SenderType2> & mutable_senders( void ) { return _senders; }
+
+  const double & link_ppt( void ) const { return _link.rate(); }
+  const double & delay( void ) const { return _delay.delay(); }
 };
 
 #endif

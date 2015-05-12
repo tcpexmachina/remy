@@ -48,6 +48,8 @@ public:
   }
 
   bool empty( void ) const { return _queue.empty(); }
+
+  const double & delay( void ) const { return _delay; } 
 };
 
 #endif

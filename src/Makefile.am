@@ -13,7 +13,8 @@ common_source = delay.hh evaluator.cc evaluator.hh                     \
         sendergangofgangs.cc sendergangofgangs.hh                      \
 	utility.hh whisker.cc whisker.hh whiskertree.cc whiskertree.hh \
 	aimd-templates.cc aimd.cc aimd.hh                              \
-        configrange.hh configrange.cc exception.hh
+        configrange.hh configrange.cc exception.hh                     \
+	cycle-finder.hh cycle-finder.cc
 
 remy_SOURCES = $(common_source) remy.cc ratbreeder.cc ratbreeder.hh 
 

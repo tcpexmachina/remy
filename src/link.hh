@@ -19,12 +19,14 @@ private:
   std::unordered_map< size_t, double > _size_statistics;
   double _last_change_tick = 0;
 
+  const double _rate;
+
 public:
   Link( const double s_rate,
         const unsigned int s_packets __attribute((unused)) = 0,
 	const unsigned int s_limit = std::numeric_limits<unsigned int>::max() )
     : _buffer(), _pending_packet( 1.0 / s_rate ), _limit( s_limit ),
-      _size_statistics()
+      _size_statistics(), _rate( s_rate )
   {
     /* Initialize the buffer with some dummy packets */
     for ( unsigned int i = 0; i < s_packets; i++ ) {
@@ -58,6 +60,8 @@ public:
       return -1;
     }
   }
+
+  const double & rate( void ) const { return _rate; }
 };
 
 #endif

@@ -22,146 +22,14 @@
 #include "network.cc"
 #include "whiskertree.hh"
 #include "utility.hh"
+#include "cycle-finder.hh"
+#include "cycle-finder.cc"
 
 using namespace std;
-
-const double END_TIME = 1000000.0;
-
-typedef int64_t quantized_t;
-const double quantizer = 10000000;
 
 void usage_error( const string & program_name )
 {
     throw Exception( "Usage", program_name + " " );
-}
-
-vector<quantized_t> all_down( const vector<double> & state ) {
-  vector<quantized_t> ret;
-  for ( const auto & x : state ) {
-    ret.push_back( x * quantizer );
-  }
-  return ret;
-}
-
-vector<vector<quantized_t>> fuzz_state( const vector<quantized_t> & state_all_down ) {
-  vector<vector<quantized_t>> ret { state_all_down };
-
-  /* bisect in each axis */
-  for ( unsigned int i = 0; i < state_all_down.size(); i++ ) {
-    //if ( i == 4 or i == 9 or i == 10 or i == 11 ) continue;
-    //if ( not ( i == 2 or i == 5 ) ) continue; 
-    if ( not ( i == state_all_down.size() - 1 or i == state_all_down.size() - 2 ) ) continue;
-
-    vector<vector<quantized_t>> new_ret;
-
-    for ( const auto & x : ret ) {
-      /* make up version */
-      auto x_upped = x;
-      auto x_downed = x;
-      x_upped.at( i )++;
-      x_downed.at( i )--;
-      new_ret.push_back( x );
-      new_ret.push_back( x_upped );
-      new_ret.push_back( x_downed );
-    }
-
-    ret = new_ret;
-  }
-
-  return ret;
-}
-
-bool quantized_states_equal( std::vector<double> state1,
-                             std::vector<double> state2 ) 
-{
-  const vector<quantized_t> state1_quantized = all_down( state1 );
-  const vector<quantized_t> state2_quantized = all_down( state2 );
-
-  const vector<vector<quantized_t>> fuzzy_states_1 { fuzz_state( state1_quantized ) };
-
-  for ( unsigned int i = 0; i < fuzzy_states_1.size(); i++ ) {
-    if ( fuzzy_states_1.at( i ) == state2_quantized ) return true;
-  }
-  return false;
-}
-
-/*
-  Floyd's algorithm: run the slow network one event at a time,
-  and the fast network two events at a time. When the states match,
-  the network has a cycle.
- */
-template < class SenderType1, class SenderType2 >
-std::tuple< double, double, std::vector< std::pair< double, double > > > 
-find_cycle_in_network( Network< SenderType1, SenderType2 > & network,
-                       bool verbose = false ) {
-  Network<SenderType1, SenderType2> network_slow( network );
-  Network<SenderType1, SenderType2> network_fast( network );
-  
-  bool found_cycle = false;
-  /* Phase 1: find a cycle */
-  while ( network_fast.tickno() < END_TIME ) {
-    network.run_until_event();
-
-    network_fast.run_until_event();
-    network_fast.run_until_event();
-
-    auto network_state = network.get_state();
-    auto fast_network_state = network_fast.get_state();
-
-    if ( verbose ) {
-      cout << setw(8) << network.tickno();
-      for ( unsigned int i = 0; i < network_state.size() - 1; i++ ) {
-        cout << " " <<  setw(10) << network_state.at( i );
-      }
-      cout << " " << setw(20) << network_state.at( network_state.size() - 1 ) << endl;
-    }
-
-    if ( quantized_states_equal(network.get_state(), network_fast.get_state()) ) {
-      found_cycle = true;
-      break;
-    }
-  } 
-
-  if ( not found_cycle ) {
-    throw Exception( "find_cycles", "No cycle found");
-  }
-
-  /* Phase 2: find the beginning of the cycle */
-  while ( true ) {
-    network_slow.run_until_event();
-    network_fast.run_until_event();
-
-    if ( quantized_states_equal(network_slow.get_state(), network_fast.get_state()) ) {
-      break;
-    }
-  }
-
-  double convergence_time = network_slow.tickno();
-
-  /* Run through cycle one more time to calculate utility and output
-   trace over entire cycle */
-  auto current_state = network_slow.get_state();
-  auto start_tp_del = network_slow.senders().throughputs_delays();
-  double current_tick = network_slow.tickno();
-
-  network_slow.run_until_event();
-
-  while ( not quantized_states_equal( current_state, network_slow.get_state()) ) {
-    network_slow.run_until_event();
-  }
-  auto end_tp_del = network_slow.senders().throughputs_delays();
-
-  std::vector< std::pair< double, double > > deltas;
-  for( size_t i = 0; i < start_tp_del.size(); i++ ) {
-    deltas.emplace_back( end_tp_del.at( i ).first -
-                         start_tp_del.at( i ).first,
-                         end_tp_del.at( i ).second -
-                         start_tp_del.at( i ).second );
-  }
-
-  double cycle_len = network_slow.tickno() - current_tick;
-
-  return std::tuple<double, double, std::vector< std::pair< double, double > > > { convergence_time, cycle_len, deltas };
 }
 
 int main( int argc, char *argv[] )
@@ -275,24 +143,9 @@ int main( int argc, char *argv[] )
     }
   }
  
-  auto statistics = find_cycle_in_network( network, verbose );
-  double convergence_time = std::get< 0 >( statistics );
-  double cycle_len = std::get< 1 >( statistics );
-  auto deltas = std::get< 2 >( statistics );
-  
-  for ( size_t i = 0; i < deltas.size(); i++ ) {
-    auto packets_received = deltas.at( i ).first;
-    auto total_delay = deltas.at( i ).second;
-    auto norm_avg_delay = ( total_delay / packets_received ) / delay;
-    auto norm_avg_throughput = ( packets_received / cycle_len ) / link_ppt;
-    
-    cout << sender_offset << " " << 
-      convergence_time << " " << 
-      cycle_len << " " << 
-      norm_avg_delay << " " <<
-      norm_avg_throughput << " " <<
-      log2( norm_avg_throughput ) - log2( norm_avg_delay ) << " "  << endl;
-  }
+  CycleFinder<Rat, Rat> initial_cycle( network, sender_offset );
+  initial_cycle.run_until_cycle_found( verbose );
+  initial_cycle.print_all_statistics();
 
   if ( num_senders <= 1 ) return 0;
   cout << endl;
@@ -300,8 +153,8 @@ int main( int argc, char *argv[] )
   /* Now find cycles for each sender turning off.  */
 
   /* Sender 0 turns off */
-  Network<Rat, Rat> off1_network( network );
-  for ( double offset = 0; offset < cycle_len; offset += 1 ) {
+  Network<Rat, Rat> off1_network( initial_cycle.cycle_start() );
+  for ( double offset = 0; offset < initial_cycle.cycle_len(); offset += 1 ) {
     Network<Rat, Rat> off1_network_offset( off1_network );
     off1_network_offset.run_simulation_until( off1_network.tickno() + offset );
 
@@ -313,25 +166,9 @@ int main( int argc, char *argv[] )
                   count_active_senders() );
     
     try {
-      auto off1_statistics = find_cycle_in_network( off1_network_offset, 
-                                                    verbose );
-      double off1_convergence_time = std::get< 0 >( statistics );
-      double off1_cycle_len = std::get< 1 >( statistics );
-      auto off1_deltas = std::get< 2 >( statistics );
-      
-      for ( size_t i = 0; i < off1_deltas.size(); i++ ) {
-        auto packets_received = off1_deltas.at( i ).first;
-        auto total_delay = off1_deltas.at( i ).second;
-        auto norm_avg_delay = ( total_delay / packets_received ) / delay;
-        auto norm_avg_throughput = ( packets_received / off1_cycle_len ) / link_ppt;
-        
-        cout << offset << " " << 
-          off1_convergence_time << " " << 
-          off1_cycle_len << " " << 
-          norm_avg_delay << " " <<
-          norm_avg_throughput << " " <<
-          log2( norm_avg_throughput ) - log2( norm_avg_delay ) << " "  << endl;
-      }
+      CycleFinder<Rat, Rat> offset1( off1_network_offset, offset );
+      offset1.run_until_cycle_found( verbose );
+      offset1.print_all_statistics();
     } catch ( const Exception & e ) {
       cout << "Failed on offset " << offset << endl;
       continue;
@@ -339,10 +176,10 @@ int main( int argc, char *argv[] )
   }
 
   cout << endl;
-  
+
   /* Sender 1 turns off */
-  Network<Rat, Rat> off2_network( network );
-  for ( double offset = 0; offset < cycle_len; offset += 1 ) {
+  Network<Rat, Rat> off2_network( initial_cycle.cycle_start() );
+  for ( double offset = 0; offset < initial_cycle.cycle_len(); offset += 1 ) {
     Network<Rat, Rat> off2_network_offset( off2_network );
     off2_network_offset.run_simulation_until( off2_network.tickno() + offset );
 
@@ -354,25 +191,9 @@ int main( int argc, char *argv[] )
                   count_active_senders() );
     
     try {
-      auto off2_statistics = find_cycle_in_network( off2_network_offset, 
-                                                    verbose );
-      double off2_convergence_time = std::get< 0 >( statistics );
-      double off2_cycle_len = std::get< 1 >( statistics );
-      auto off2_deltas = std::get< 2 >( statistics );
-      
-      for ( size_t i = 0; i < off2_deltas.size(); i++ ) {
-        auto packets_received = off2_deltas.at( i ).first;
-        auto total_delay = off2_deltas.at( i ).second;
-        auto norm_avg_delay = ( total_delay / packets_received ) / delay;
-        auto norm_avg_throughput = ( packets_received / off2_cycle_len ) / link_ppt;
-        
-        cout << offset << " " << 
-          off2_convergence_time << " " << 
-          off2_cycle_len << " " << 
-          norm_avg_delay << " " <<
-          norm_avg_throughput << " " <<
-          log2( norm_avg_throughput ) - log2( norm_avg_delay ) << " "  << endl;
-      }
+      CycleFinder<Rat, Rat> offset2( off2_network_offset, offset );
+      offset2.run_until_cycle_found();
+      offset2.print_all_statistics();
     } catch ( const Exception & e ) {
       cout << "Failed on offset " << offset << endl;
       continue;
