@@ -117,7 +117,7 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
     if ( quantized_states_equal(_cycle_start.get_state(), network_fast.get_state()) ) {
       break;
     }
-
+    
     _cycle_start.run_until_event();
     network_fast.run_until_event();
   }

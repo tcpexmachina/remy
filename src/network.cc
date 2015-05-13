@@ -165,6 +165,7 @@ const std::vector<double> Network<SenderType1, SenderType2>::get_state( void )
   state.push_back( _link.buffer_front_source() );
   state.push_back( _senders.next_event_time( _tickno ) - _tickno );
   state.push_back( _link.next_event_time( _tickno ) - _tickno );
+  state.push_back( _rec.next_event_time( _tickno ) - _tickno );
 
   return state;
 }
