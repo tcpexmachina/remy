@@ -54,6 +54,8 @@ static bool quantized_states_equal( std::vector<double> state1,
   const vector<quantized_t> state1_quantized = all_down( state1 );
   const vector<quantized_t> state2_quantized = all_down( state2 );
 
+  return state1_quantized == state2_quantized;
+
   const vector<vector<quantized_t>> fuzzy_states_1 { fuzz_state( state1_quantized ) };
 
   for ( unsigned int i = 0; i < fuzzy_states_1.size(); i++ ) {

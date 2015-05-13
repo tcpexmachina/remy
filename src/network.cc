@@ -160,9 +160,11 @@ const std::vector<double> Network<SenderType1, SenderType2>::get_state( void )
 {
   std::vector<double> state;
   state.reserve( (_senders.mutable_gang1().count_senders() * 5) + 5 );
-  auto & senders_state = _senders.mutable_gang1().get_state( _tickno );
-  state.insert( state.end(), senders_state.begin(), senders_state.end() );
-
+  //state.insert( state.end(), senders_state.begin(), senders_state.end() );
+  for( unsigned int i = 0; i < _senders.mutable_gang1().count_senders(); i++ ) {
+    auto sender_state = _senders.mutable_gang1().mutable_sender( i ).mutable_sender().get_state( _tickno );
+    state.insert( state.end(), sender_state.begin(), sender_state.end());
+  }
   state.push_back( double( _link.buffer_size() ) );
   state.push_back( _link.buffer_front_source() );
   state.push_back( _senders.next_event_time( _tickno ) - _tickno );
