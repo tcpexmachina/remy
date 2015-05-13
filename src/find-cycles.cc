@@ -142,7 +142,7 @@ int main( int argc, char *argv[] )
         switch_on( network.tickno() );
     }
   }
- 
+
   CycleFinder<Rat, Rat> initial_cycle( network, sender_offset );
   initial_cycle.run_until_cycle_found( verbose );
   initial_cycle.print_all_statistics();

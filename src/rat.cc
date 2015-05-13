@@ -62,6 +62,7 @@ double Rat::next_event_time( const double & tickno ) const
 const vector<double> Rat::get_state( const double & tickno __attribute((unused)) )
 {
   std::vector<double> state;
+  state.reserve( 5 );
   for( unsigned int i = 0; i < _memory.datasize; i++ ) {
     state.push_back( _memory.field( i ) );
   }

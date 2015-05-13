@@ -159,8 +159,10 @@ template <class SenderType1, class SenderType2>
 const std::vector<double> Network<SenderType1, SenderType2>::get_state( void )
 {
   std::vector<double> state;
-  auto & senders_state = _senders.get_state( _tickno );
+  state.reserve( (_senders.mutable_gang1().count_senders() * 5) + 5 );
+  auto & senders_state = _senders.mutable_gang1().get_state( _tickno );
   state.insert( state.end(), senders_state.begin(), senders_state.end() );
+
   state.push_back( double( _link.buffer_size() ) );
   state.push_back( _link.buffer_front_source() );
   state.push_back( _senders.next_event_time( _tickno ) - _tickno );

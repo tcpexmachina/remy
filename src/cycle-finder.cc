@@ -12,6 +12,7 @@ const double quantizer = 10000000;
 
 static vector<quantized_t> all_down( const vector<double> & state ) {
   vector<quantized_t> ret;
+  ret.reserve( state.size() );
   for ( const auto & x : state ) {
     ret.push_back( x * quantizer );
   }
@@ -99,7 +100,7 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
       cout << " " << setw(20) << network_state.at( network_state.size() - 1 ) << endl;
     }
 
-    if ( quantized_states_equal(_network.get_state(), network_fast.get_state()) ) {
+    if ( quantized_states_equal( network_state, fast_network_state ) ) {
       found_cycle = true;
       break;
     }

@@ -298,6 +298,7 @@ template <class SenderType>
 const std::vector<double> SenderGang<SenderType>::get_state( const double & tickno ) 
 {
   std::vector<double> state;
+  state.reserve( 5 * count_active_senders() );
   for( auto & sender : _gang ) {
     if ( sender.sending ) {
       auto sender_state = sender.mutable_sender().get_state( tickno );
