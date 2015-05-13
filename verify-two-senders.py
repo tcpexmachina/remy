@@ -8,12 +8,12 @@ from multiprocessing import Pool
 outdir = sys.argv[1]
 
 def run_single_sender(linkspeed, rtt):
-    call_str = "pls ./src/find-cycles -i dnafiles/bigbertha2x.dna.5 -n 1 -l %f -r %f > tmp.out" % (linkspeed, rtt)
+    call_str = "./src/find-cycles -i dnafiles/bigbertha2x.dna.5 -n 1 -l %f -r %f > tmp.out" % (linkspeed, rtt)
     subprocess.call(call_str, shell=True)
     
 def build_cmd_and_call(args):
     offset, linkspeed, rtt = args
-    call_str = "pls ./src/find-cycles -i dnafiles/bigbertha2x.dna.5 -n 2 -l %f -r %f -o %f > %s/%f-%f-%u " % (linkspeed, rtt, offset, outdir, offset, linkspeed, rtt)
+    call_str = "./src/find-cycles -i dnafiles/bigbertha2x.dna.5 -n 2 -l %f -r %f -o %f 1> %s/%f-%f-%u.out 2> %s/%f-%f-%u.err" % (linkspeed, rtt, offset, outdir, offset, linkspeed, rtt, outdir, offset, linkspeed, rtt)
     subprocess.call(call_str, shell=True)
 
 run_single_sender(1.0, 150)
