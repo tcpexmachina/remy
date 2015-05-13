@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const double END_TIME = 1000000.0;
+const double END_TIME = 5000000.0;
 
 typedef int64_t quantized_t;
 const double quantizer = 10000000;
@@ -23,9 +23,10 @@ static vector<vector<quantized_t>> fuzz_state( const vector<quantized_t> & state
 
   /* bisect in each axis */
   for ( unsigned int i = 0; i < state_all_down.size(); i++ ) {
+    continue;
     //if ( i == 4 or i == 9 or i == 10 or i == 11 ) continue;
     //if ( not ( i == 2 or i == 5 ) ) continue; 
-    if ( not ( i == state_all_down.size() - 1 or i == state_all_down.size() - 2 ) ) continue;
+    //if ( not ( i == state_all_down.size() - 1 or i == state_all_down.size() - 2 ) ) continue;
 
     vector<vector<quantized_t>> new_ret;
 
@@ -76,7 +77,7 @@ CycleFinder<SenderType1, SenderType2>::CycleFinder( const Network< SenderType1, 
 template < class SenderType1, class SenderType2 >
 void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose ) {
   if ( _cycle_found or _exception ) return;
-
+  
   Network<SenderType1, SenderType2> network_fast( _network );
   
   bool found_cycle = false;
@@ -113,12 +114,12 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
 
   /* Phase 2: find the beginning of the cycle */
   while ( true ) {
-    _cycle_start.run_until_event();
-    network_fast.run_until_event();
-
     if ( quantized_states_equal(_cycle_start.get_state(), network_fast.get_state()) ) {
       break;
     }
+
+    _cycle_start.run_until_event();
+    network_fast.run_until_event();
   }
 
   _convergence_time = _cycle_start.tickno();
@@ -128,7 +129,7 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
   auto current_state = _cycle_start.get_state();
   auto start_tp_del = _cycle_start.senders().throughputs_delays();
   double current_tick = _cycle_start.tickno();
-
+  
   _cycle_start.run_until_event();
 
   while ( not quantized_states_equal( current_state, _cycle_start.get_state()) ) {
@@ -138,9 +139,9 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
 
   for( size_t i = 0; i < start_tp_del.size(); i++ ) {
     _deltas.emplace_back( end_tp_del.at( i ).first -
-                         start_tp_del.at( i ).first,
-                         end_tp_del.at( i ).second -
-                         start_tp_del.at( i ).second );
+                          start_tp_del.at( i ).first,
+                          end_tp_del.at( i ).second -
+                          start_tp_del.at( i ).second );
   }
 
   _cycle_len = _cycle_start.tickno() - current_tick;

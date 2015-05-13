@@ -92,7 +92,7 @@ public:
   void run_until_time_or_event( const double & tick_limit );
   void run_until_sender_event( void );
 
-  const double & tickno( void ) { return _tickno; }
+  const double & tickno( void ) const { return _tickno; }
 
   const std::vector< double > get_state( void );
 

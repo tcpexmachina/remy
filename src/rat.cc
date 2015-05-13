@@ -63,7 +63,6 @@ const vector<double> Rat::get_state( const double & tickno __attribute((unused))
 {
   std::vector<double> state;
   for( unsigned int i = 0; i < _memory.datasize; i++ ) {
-    if ( i == 0 or i == 1 or i == 2 ) continue;
     state.push_back( _memory.field( i ) );
   }
   //state.push_back( _intersend_time );

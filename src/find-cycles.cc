@@ -150,11 +150,12 @@ int main( int argc, char *argv[] )
   if ( num_senders <= 1 ) return 0;
   cout << endl;
 
-  /* Now find cycles for each sender turning off.  */
+  /* Now find cycles for each sender turning off. */
+  double first_cycle_end = initial_cycle.cycle_start().tickno() + initial_cycle.cycle_len();
 
-  /* Sender 0 turns off */
-  Network<Rat, Rat> off1_network( initial_cycle.cycle_start() );
-  for ( double offset = 0; offset < initial_cycle.cycle_len(); offset += 1 ) {
+  /* Sender 1 turns off */
+  Network<Rat, Rat> off1_network( network );
+  for ( double offset = sender_offset; offset < first_cycle_end; offset += 1 ) {
     Network<Rat, Rat> off1_network_offset( off1_network );
     off1_network_offset.run_simulation_until( off1_network.tickno() + offset );
 
@@ -177,9 +178,9 @@ int main( int argc, char *argv[] )
 
   cout << endl;
 
-  /* Sender 1 turns off */
-  Network<Rat, Rat> off2_network( initial_cycle.cycle_start() );
-  for ( double offset = 0; offset < initial_cycle.cycle_len(); offset += 1 ) {
+  /* Sender 2 turns off */
+  Network<Rat, Rat> off2_network( network );
+  for ( double offset = sender_offset; offset < first_cycle_end; offset += 1 ) {
     Network<Rat, Rat> off2_network_offset( off2_network );
     off2_network_offset.run_simulation_until( off2_network.tickno() + offset );
 
