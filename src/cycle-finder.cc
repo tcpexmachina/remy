@@ -177,7 +177,9 @@ void CycleFinder<SenderType1, SenderType2>::print_all_statistics( void ) const
     auto norm_avg_delay = ( total_delay / packets_received ) / _network.delay();
     auto norm_avg_throughput = ( packets_received / _cycle_len ) / _network.link_ppt();
     
-    cout << _offset_value << " " << 
+    cout << _network.link_ppt() << " " <<
+      _network.delay() << " " <<
+      _offset_value << " " << 
       _convergence_time << " " << 
       _cycle_len << " " << 
       norm_avg_delay << " " <<

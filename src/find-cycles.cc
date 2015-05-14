@@ -147,7 +147,6 @@ int main( int argc, char *argv[] )
   initial_cycle.run_until_cycle_found( verbose );
   initial_cycle.print_all_statistics();
 
-  return 0;
   if ( num_senders <= 1 ) return 0;
   cout << endl;
 
