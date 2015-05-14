@@ -68,5 +68,6 @@ const vector<double> Rat::get_state( const double & tickno __attribute((unused))
   }
   //state.push_back( _intersend_time );
   state.push_back( _the_window );
+  state.push_back( _memory.last_tick_received() - tickno );
   return state;
 }

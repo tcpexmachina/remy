@@ -8,7 +8,18 @@ using namespace std;
 const double END_TIME = 5000000.0;
 
 typedef int64_t quantized_t;
-const double quantizer = 10000000;
+const double quantizer = 100000000;
+
+template <class SenderType1, class SenderType2>
+static void print_state_variables( Network<SenderType1, SenderType2> network )
+{
+  cout << setw(8) << network.tickno();
+  auto network_state = network.get_state();
+  for ( unsigned int i = 0; i < network_state.size() - 1; i++ ) {
+    cout << " " <<  setw(10) << network_state.at( i );
+  }
+  cout << " " << setw(20) << network_state.at( network_state.size() - 1 ) << endl;
+}
 
 static vector<quantized_t> all_down( const vector<double> & state ) {
   vector<quantized_t> ret;
@@ -84,29 +95,39 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
   Network<SenderType1, SenderType2> network_fast( _network );
   
   bool found_cycle = false;
+  unsigned int step_limit = 1;
+  unsigned int steps_taken = 0;
   /* Phase 1: find a cycle */
   while ( network_fast.tickno() < END_TIME ) {
-    _network.run_until_event();
+    Network<SenderType1, SenderType2> network_slow( network_fast );
 
-    network_fast.run_until_event();
-    network_fast.run_until_event();
-
-    auto network_state = _network.get_state();
-    auto fast_network_state = network_fast.get_state();
-
-    if ( verbose ) {
-      cout << setw(8) << _network.tickno();
-      for ( unsigned int i = 0; i < network_state.size() - 1; i++ ) {
-        cout << " " <<  setw(10) << network_state.at( i );
+    while ( steps_taken < step_limit ) {
+      network_fast.run_until_event();
+      
+      steps_taken++;
+      
+      auto slow_network_state = network_slow.get_state();
+      auto fast_network_state = network_fast.get_state();
+      
+      if ( quantized_states_equal( slow_network_state, fast_network_state ) ) {
+        found_cycle = true;
+        break;
       }
-      cout << " " << setw(20) << network_state.at( network_state.size() - 1 ) << endl;
-    }
+      
+      if ( verbose ) {
+        cout << setw(8) << network_fast.tickno();
+        for ( unsigned int i = 0; i < fast_network_state.size() - 1; i++ ) {
+          cout << " " <<  setw(10) << fast_network_state.at( i );
+        }
+        cout << " " << setw(20) << fast_network_state.at( fast_network_state.size() - 1 ) << endl;
+      }
+    } 
 
-    if ( quantized_states_equal( network_state, fast_network_state ) ) {
-      found_cycle = true;
-      break;
-    }
-  } 
+    if ( found_cycle ) break;
+
+    steps_taken = 0;
+    step_limit *= 2;
+  }
 
   if ( not found_cycle ) {
     _exception = true;
@@ -115,28 +136,23 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
     throw Exception( "find_cycles", end_str);
   }
 
-  /* Phase 2: find the beginning of the cycle */
-  while ( true ) {
-    if ( quantized_states_equal(_cycle_start.get_state(), network_fast.get_state()) )  break;
-    
-    _cycle_start.run_until_event();
-    network_fast.run_until_event();
-  }
+  /* Phase 2: find the beginning of the cycle and calculate utility */
+  Network<SenderType1, SenderType2> utility_network( _network );
 
-  _convergence_time = _cycle_start.tickno();
-
-  /* Run through cycle one more time to calculate utility and output
-   trace over entire cycle */
-  auto current_state = _cycle_start.get_state();
-  auto start_tp_del = _cycle_start.senders().throughputs_delays();
-  double current_tick = _cycle_start.tickno();
-  
-  Network<SenderType1, SenderType2> utility_network( _cycle_start );
-  utility_network.run_until_event();
-
-  while ( not quantized_states_equal( current_state, utility_network.get_state()) ) {
+  for ( unsigned int i = 0; i < steps_taken; i++ ) {
     utility_network.run_until_event();
   }
+
+  while ( not ( quantized_states_equal( _cycle_start.get_state(),
+                                        utility_network.get_state() ) ) ) {
+    _cycle_start.run_until_event();
+    utility_network.run_until_event();
+  }
+  _convergence_time = _cycle_start.tickno();
+  _cycle_len = utility_network.tickno() - _convergence_time;
+
+  auto start_tp_del = utility_network.senders().throughputs_delays();
+  utility_network.run_simulation_until( utility_network.tickno() + _cycle_len );
   auto end_tp_del = utility_network.senders().throughputs_delays();
 
   for( size_t i = 0; i < start_tp_del.size(); i++ ) {
@@ -145,8 +161,6 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
                           end_tp_del.at( i ).second -
                           start_tp_del.at( i ).second );
   }
-
-  _cycle_len = utility_network.tickno() - current_tick;
 
   _cycle_found = true;
 }

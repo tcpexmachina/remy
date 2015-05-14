@@ -45,6 +45,8 @@ public:
   const DataType & field( unsigned int num ) const { return num == 0 ? _rec_send_ewma : num == 1 ? _rec_rec_ewma : num == 2 ? _rtt_ratio : _slow_rec_rec_ewma ; }
   DataType & mutable_field( unsigned int num )     { return num == 0 ? _rec_send_ewma : num == 1 ? _rec_rec_ewma : num == 2 ? _rtt_ratio : _slow_rec_rec_ewma ; }
 
+  const double & last_tick_received( void ) const { return _last_tick_received; }
+
   void packet_sent( const Packet & packet __attribute((unused)) ) { _packets_sent++; }
   void packets_received( const std::vector< Packet > & packets, const unsigned int flow_id );
   void advance_to( const unsigned int tickno __attribute((unused)) ) {}
