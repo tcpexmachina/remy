@@ -117,9 +117,7 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
 
   /* Phase 2: find the beginning of the cycle */
   while ( true ) {
-    if ( quantized_states_equal(_cycle_start.get_state(), network_fast.get_state()) ) {
-      break;
-    }
+    if ( quantized_states_equal(_cycle_start.get_state(), network_fast.get_state()) )  break;
     
     _cycle_start.run_until_event();
     network_fast.run_until_event();
@@ -133,12 +131,13 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
   auto start_tp_del = _cycle_start.senders().throughputs_delays();
   double current_tick = _cycle_start.tickno();
   
-  _cycle_start.run_until_event();
+  Network<SenderType1, SenderType2> utility_network( _cycle_start );
+  utility_network.run_until_event();
 
-  while ( not quantized_states_equal( current_state, _cycle_start.get_state()) ) {
-    _cycle_start.run_until_event();
+  while ( not quantized_states_equal( current_state, utility_network.get_state()) ) {
+    utility_network.run_until_event();
   }
-  auto end_tp_del = _cycle_start.senders().throughputs_delays();
+  auto end_tp_del = utility_network.senders().throughputs_delays();
 
   for( size_t i = 0; i < start_tp_del.size(); i++ ) {
     _deltas.emplace_back( end_tp_del.at( i ).first -
@@ -147,7 +146,7 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
                           start_tp_del.at( i ).second );
   }
 
-  _cycle_len = _cycle_start.tickno() - current_tick;
+  _cycle_len = utility_network.tickno() - current_tick;
 
   _cycle_found = true;
 }
