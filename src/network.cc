@@ -3,7 +3,7 @@
 #include "sendergangofgangs.cc"
 #include "link-templates.cc"
 
-const unsigned int MAX_QUEUE = 1000000;
+const unsigned int MAX_QUEUE = 100;
 
 template <class SenderType1, class SenderType2>
 Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
