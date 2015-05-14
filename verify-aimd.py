@@ -13,7 +13,7 @@ def run_single_sender(linkspeed, rtt):
     
 def build_cmd_and_call(args):
     offset, linkspeed, rtt = args
-    call_str = "./src/find-cycles -n 2 -l %f -r %f -o %f > %s/%f-%f-%u " % (linkspeed, rtt, offset, outdir, offset, linkspeed, rtt)
+    call_str = "./src/find-cycles -n 2 -l %f -r %f -o %f -v > %s/%f-%f-%u " % (linkspeed, rtt, offset, outdir, offset, linkspeed, rtt)
     subprocess.call(call_str, shell=True)
 
 run_single_sender(1.0, 150)
