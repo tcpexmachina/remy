@@ -140,18 +140,16 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
     utility_network.run_until_event();
   }
   _convergence_time = _cycle_start.tickno();
-  _cycle_len = utility_network.tickno() - _convergence_time;
+  _cycle_len = utility_network.tickno() - _cycle_start.tickno();
 
   auto start_tp_del = utility_network.senders().throughputs_delays();
-  if ( verbose ) {
-    /* output the cycle */
-    double curr_tickno = utility_network.tickno();
-    while( utility_network.tickno() < curr_tickno + _cycle_len ) {
-      utility_network.run_until_event();
+
+  for ( unsigned int i = 0; i < steps_taken; i++ ) {
+    utility_network.run_until_event();
+    if ( verbose ) {
+      /* output the cycle */
       print_state_variables( utility_network );
     }
-  } else {
-    utility_network.run_simulation_until( utility_network.tickno() + _cycle_len );
   }
   auto end_tp_del = utility_network.senders().throughputs_delays();
 
