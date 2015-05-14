@@ -84,9 +84,8 @@ CycleFinder<SenderType1, SenderType2>::CycleFinder( const Network< SenderType1, 
 }
 
 /*
-  Floyd's algorithm: run the slow network one event at a time,
-  and the fast network two events at a time. When the states match,
-  the network has a cycle.
+  Brent's algorithm: run the fast network one event at a time
+  and jump the slow network forward every power-of-two events.
  */
 template < class SenderType1, class SenderType2 >
 void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose ) {
