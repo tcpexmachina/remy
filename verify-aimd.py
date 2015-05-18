@@ -24,6 +24,6 @@ with open('tmp.out', 'r') as result:
 end = float(start) + float(cycle_len)
 
 pool = Pool()
-offsets = np.linspace(0, end, 1000)
+offsets = np.linspace(0, end, 10000)
 args = [(o, 1.0, 150) for o in offsets]
 pool.map(build_cmd_and_call, args)

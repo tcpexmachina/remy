@@ -158,7 +158,6 @@ int main( int argc, char *argv[] )
   cout << rewma << " " << initial_buffer << " " ;
   initial_cycle.print_all_statistics();
 
-  return 0;
   if ( num_senders <= 1 ) return 0;
   cout << endl;
 

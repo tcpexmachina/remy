@@ -64,7 +64,7 @@ void Network<SenderType1, SenderType2>::run_simulation( const double & duration 
 template <class SenderType1, class SenderType2>
 void Network<SenderType1, SenderType2>::run_simulation_until( const double & tick_limit )
 {
-  if ( _tickno >= tick_limit ) {
+  if ( _tickno > tick_limit ) {
     return;
   }
 

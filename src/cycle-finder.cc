@@ -140,18 +140,16 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
     utility_network.run_until_event();
   }
   _convergence_time = _cycle_start.tickno();
-  _cycle_len = utility_network.tickno() - _convergence_time;
+  _cycle_len = utility_network.tickno() - _cycle_start.tickno();
 
   auto start_tp_del = utility_network.senders().throughputs_delays();
-  if ( verbose ) {
-    /* output the cycle */
-    double curr_tickno = utility_network.tickno();
-    while( utility_network.tickno() < curr_tickno + _cycle_len ) {
-      utility_network.run_until_event();
+
+  for ( unsigned int i = 0; i < steps_taken; i++ ) {
+    utility_network.run_until_event();
+    if ( verbose ) {
+      /* output the cycle */
       print_state_variables( utility_network );
     }
-  } else {
-    utility_network.run_simulation_until( utility_network.tickno() + _cycle_len );
   }
   auto end_tp_del = utility_network.senders().throughputs_delays();
 
@@ -179,7 +177,9 @@ void CycleFinder<SenderType1, SenderType2>::print_all_statistics( void ) const
     auto norm_avg_delay = ( total_delay / packets_received ) / _network.delay();
     auto norm_avg_throughput = ( packets_received / _cycle_len ) / _network.link_ppt();
     
-    cout << _offset_value << " " << 
+    cout << _network.link_ppt() << " " <<
+      _network.delay() << " " <<
+      _offset_value << " " << 
       _convergence_time << " " << 
       _cycle_len << " " << 
       norm_avg_delay << " " <<
