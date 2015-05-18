@@ -107,7 +107,7 @@ void CycleFinder<SenderType1, SenderType2>::run_until_cycle_found( bool verbose 
       
       auto slow_network_state = network_slow.get_state();
       auto fast_network_state = network_fast.get_state();
-      
+
       if ( quantized_states_equal( slow_network_state, fast_network_state ) ) {
         found_cycle = true;
         break;

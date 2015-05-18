@@ -40,6 +40,7 @@ int main( int argc, char *argv[] )
   double delay = 50.0;
   double rewma __attribute((unused)) = 1.0;
   double sender_offset = 0.0;
+  double initial_min_rtt __attribute((unused)) = 0.0;
   unsigned int initial_buffer = 0;
   bool aimd __attribute((unused)) = false;
   bool verbose = false;
@@ -56,13 +57,15 @@ int main( int argc, char *argv[] )
       { "rtt",            required_argument, nullptr, 'r' },
       { "initial_buffer", required_argument, nullptr, 'b' },
       { "offset",         required_argument, nullptr, 'o' },
+      { "min_rtt",        required_argument, nullptr, 'm' },
+      { "rewma",          required_argument, nullptr, 'e' },
       { "aimd",                 no_argument, nullptr, 'a' },
       { "verbose",              no_argument, nullptr, 'v' },
       { 0,                                0, nullptr,   0 }
     };
 
     while ( true ) {
-      const int opt = getopt_long( argc, argv, "i:n:l:r:b:o:v", command_line_options, nullptr );
+      const int opt = getopt_long( argc, argv, "i:n:l:r:b:o:m:e:v", command_line_options, nullptr );
       if ( opt == -1 ) { /* end of options */
         break;
       }
@@ -103,6 +106,12 @@ int main( int argc, char *argv[] )
       case 'o':
         sender_offset = atof( optarg );
         break;
+      case 'm':
+        initial_min_rtt = atof( optarg );
+        break;
+      case 'e':
+        rewma = atof( optarg );
+        break;
       case 'a':
         aimd = true;
         break;
@@ -128,10 +137,11 @@ int main( int argc, char *argv[] )
     set_num_senders( num_senders ).
     set_start_buffer( initial_buffer );
 
-  //Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
-  Network<Aimd, Aimd> network( Aimd(), prng, configuration );
+  Network<Rat, Rat> network( Rat( whiskers ), prng, configuration );
+  //Network<Aimd, Aimd> network( Aimd(), prng, configuration );
 
   network.mutable_senders().mutable_gang1().mutable_sender( 0 ).switch_on( network.tickno() );
+  network.mutable_senders().mutable_gang1().mutable_sender( 0 ).mutable_sender().set_rewma( rewma );
   
   if ( num_senders > 1 ) {
     network.run_simulation_until( network.tickno() + sender_offset );
@@ -143,8 +153,9 @@ int main( int argc, char *argv[] )
     }
   }
 
-  CycleFinder<Aimd, Aimd> initial_cycle( network, sender_offset );
+  CycleFinder<Rat, Rat> initial_cycle( network, sender_offset );
   initial_cycle.run_until_cycle_found( verbose );
+  cout << rewma << " " << initial_buffer << " " ;
   initial_cycle.print_all_statistics();
 
   return 0;
@@ -155,9 +166,9 @@ int main( int argc, char *argv[] )
   double first_cycle_end = initial_cycle.cycle_start().tickno() + initial_cycle.cycle_len();
 
   /* Sender 1 turns off */
-  Network<Aimd, Aimd> off1_network( network );
+  Network<Rat, Rat> off1_network( network );
   for ( double offset = sender_offset; offset < first_cycle_end; offset += 1 ) {
-    Network<Aimd, Aimd> off1_network_offset( off1_network );
+    Network<Rat, Rat> off1_network_offset( off1_network );
     off1_network_offset.run_simulation_until( off1_network.tickno() + offset );
 
     off1_network_offset.mutable_senders().
@@ -168,7 +179,7 @@ int main( int argc, char *argv[] )
                   count_active_senders() );
     
     try {
-      CycleFinder<Aimd, Aimd> offset1( off1_network_offset, offset );
+      CycleFinder<Rat, Rat> offset1( off1_network_offset, offset );
       offset1.run_until_cycle_found( verbose );
       offset1.print_all_statistics();
     } catch ( const Exception & e ) {
@@ -180,9 +191,9 @@ int main( int argc, char *argv[] )
   cout << endl;
 
   /* Sender 2 turns off */
-  Network<Aimd, Aimd> off2_network( network );
+  Network<Rat, Rat> off2_network( network );
   for ( double offset = sender_offset; offset < first_cycle_end; offset += 1 ) {
-    Network<Aimd, Aimd> off2_network_offset( off2_network );
+    Network<Rat, Rat> off2_network_offset( off2_network );
     off2_network_offset.run_simulation_until( off2_network.tickno() + offset );
 
     off2_network_offset.mutable_senders().
@@ -193,7 +204,7 @@ int main( int argc, char *argv[] )
                   count_active_senders() );
     
     try {
-      CycleFinder<Aimd, Aimd> offset2( off2_network_offset, offset );
+      CycleFinder<Rat, Rat> offset2( off2_network_offset, offset );
       offset2.run_until_cycle_found();
       offset2.print_all_statistics();
     } catch ( const Exception & e ) {

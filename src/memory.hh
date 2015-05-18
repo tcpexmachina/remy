@@ -40,6 +40,8 @@ public:
 
   void reset( void ) { *this = Memory(); }
 
+  void set_rewma( double rewma ) { _rec_send_ewma = rewma; }
+
   static const unsigned int datasize = 4;
 
   const DataType & field( unsigned int num ) const { return num == 0 ? _rec_send_ewma : num == 1 ? _rec_rec_ewma : num == 2 ? _rtt_ratio : _slow_rec_rec_ewma ; }

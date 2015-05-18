@@ -30,6 +30,7 @@ void Rat::packets_received( const vector< Packet > & packets ) {
 void Rat::reset( const double & )
 {
   _memory.reset();
+  _memory.set_rewma( _initial_rewma );
   _last_send_time = 0;
   _the_window = 0;
   _intersend_time = 0;

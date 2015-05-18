@@ -25,11 +25,18 @@ private:
   unsigned int _flow_id;
   int _largest_ack;
 
+  double _initial_rewma = 1.0;
+
 public:
   Rat( WhiskerTree & s_whiskers, const bool s_track=false );
 
   void packets_received( const std::vector< Packet > & packets );
   void reset( const double & tickno ); /* start new flow */
+
+  void set_rewma( const double rewma ) { 
+    _memory.set_rewma( rewma ); 
+    _initial_rewma = rewma;
+  }
 
   template <class NextHop>
   void send( const unsigned int id, NextHop & next, const double & tickno,
