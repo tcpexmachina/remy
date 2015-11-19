@@ -12,6 +12,7 @@
 #include "aimd-templates.cc"
 #include "graph.hh"
 #include "fader-templates.cc"
+#include "rat-templates.cc"
 
 using namespace std;
 

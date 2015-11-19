@@ -58,7 +58,7 @@ public:
 	     const double & tickno,
 	     const unsigned int num_sending,
 	     PRNG & prng,
-	     Exponential & start_distribution ) override;
+	     Exponential & start_distribution );
 
   void switcher( const double & tickno,
 		 PRNG & prng,
@@ -80,7 +80,7 @@ public:
 	     const double & tickno,
 	     const unsigned int num_sending,
 	     PRNG & prng,
-	     Exponential & start_distribution ) override;
+	     Exponential & start_distribution );
 
   void switcher( const double & tickno,
 		 PRNG & prng,
@@ -99,7 +99,7 @@ public:
 	     const double & tickno,
 	     const unsigned int num_sending,
 	     PRNG & prng,
-	     Exponential & start_distribution ) override;
+	     Exponential & start_distribution );
 
   void switcher( const double &,
 		 PRNG &,
