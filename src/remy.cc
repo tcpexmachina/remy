@@ -7,6 +7,7 @@
 #include <fcntl.h>
 
 #include "ratbreeder.hh"
+#include "dna.pb.h"
 
 using namespace std;
 
@@ -14,6 +15,8 @@ int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
   string output_filename;
+  RemyBuffers::ConfigRange input_config;
+  string config_filename;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -38,18 +41,43 @@ int main( int argc, char *argv[] )
       }
     } else if ( arg.substr( 0, 3 ) == "of=" ) {
       output_filename = string( arg.substr( 3 ) );
-    }
+    } else if ( arg.substr(0, 3 ) == "cf=" ) {
+      config_filename = string( arg.substr( 3 ) );
+      int cfd = open( config_filename.c_str(), O_RDONLY );
+      if ( cfd < 0 ) {
+        perror( "open config file error");
+        exit( 1 );
+      }
+      if ( !input_config.ParseFromFileDescriptor( cfd ) ) {
+        fprintf( stderr, "Could not parse input config from file %s. \n", config_filename.c_str() );
+        exit ( 1 );
+      }
+      if ( close( cfd ) < 0 ) {
+        perror( "close" );
+        exit( 1 );
+      }
+    } 
   }
 
-  ConfigRange configuration_range;
-  configuration_range.link_packets_per_ms = make_pair( 1.0, 2.0 ); /* 10 Mbps to 20 Mbps */
-  configuration_range.rtt_ms = make_pair( 100, 200 ); /* ms */
-  configuration_range.max_senders = 16;
-  configuration_range.mean_on_duration = 5000;
-  configuration_range.mean_off_duration = 5000;
-  //  configuration_range.lo_only = true;
-  RatBreeder breeder( configuration_range );
+  if ( config_filename.empty() ) {
+    fprintf( stderr, "Provide an input config protobuf. \n");
+    exit ( 1 );
+  }
 
+
+  ConfigRange configuration_range;
+  
+  configuration_range.link_packets_per_ms = make_pair( input_config.link_packets_per_ms().low(), input_config.link_packets_per_ms().high() );
+
+  configuration_range.rtt_ms = make_pair( input_config.rtt().low(), input_config.rtt().high() );
+
+  //configuration_range.num_senders = make_pair( input_config.num_senders().low(), input_config.num_senders().high() );
+  configuration_range.min_senders = input_config.num_senders().low();
+  configuration_range.max_senders = input_config.num_senders().high();
+  configuration_range.mean_on_duration = input_config.mean_on_duration();
+
+  configuration_range.mean_off_duration = input_config.mean_off_duration();
+  RatBreeder breeder( configuration_range );
   unsigned int run = 0;
 
   printf( "#######################\n" );
