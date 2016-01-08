@@ -8,7 +8,7 @@
 
 #include "ratbreeder.hh"
 #include "dna.pb.h"
-
+#include "configrange.hh"
 using namespace std;
 
 int main( int argc, char *argv[] )
@@ -67,30 +67,27 @@ int main( int argc, char *argv[] )
 
   ConfigRange configuration_range;
   
-  configuration_range.link_packets_per_ms = make_pair( input_config.link_packets_per_ms().low(), input_config.link_packets_per_ms().high() );
+  configuration_range.link_ppt = Range( input_config.link_packets_per_ms().low(), input_config.link_packets_per_ms().high(), input_config.link_packets_per_ms().incr() );
 
-  configuration_range.rtt_ms = make_pair( input_config.rtt().low(), input_config.rtt().high() );
+  configuration_range.rtt = Range( input_config.rtt().low(), input_config.rtt().high(), input_config.rtt().incr() );
 
-  //configuration_range.num_senders = make_pair( input_config.num_senders().low(), input_config.num_senders().high() );
-  configuration_range.min_senders = input_config.num_senders().low();
-  configuration_range.max_senders = input_config.num_senders().high();
-  configuration_range.mean_on_duration = input_config.mean_on_duration();
-
-  configuration_range.mean_off_duration = input_config.mean_off_duration();
+  configuration_range.num_senders = Range( input_config.num_senders().low(), input_config.num_senders().high(), input_config.num_senders().incr() );
+  configuration_range.mean_on_duration = Range( input_config.mean_on_duration().low(), input_config.mean_on_duration().high(), input_config.mean_on_duration().incr() );
+  configuration_range.mean_off_duration = Range( input_config.mean_off_duration().low(), input_config.mean_off_duration().high(), input_config.mean_off_duration().incr() );
   RatBreeder breeder( configuration_range );
   unsigned int run = 0;
 
   printf( "#######################\n" );
   printf( "Optimizing for link packets_per_ms in [%f, %f]\n",
-	  configuration_range.link_packets_per_ms.first,
-	  configuration_range.link_packets_per_ms.second );
+	  configuration_range.link_ppt.low,
+	  configuration_range.link_ppt.high );
   printf( "Optimizing for rtt_ms in [%f, %f]\n",
-	  configuration_range.rtt_ms.first,
-	  configuration_range.rtt_ms.second );
-  printf( "Optimizing for num_senders = 1-%d\n",
-	  configuration_range.max_senders );
-  printf( "Optimizing for mean_on_duration = %f, mean_off_duration = %f\n",
-	  configuration_range.mean_on_duration, configuration_range.mean_off_duration );
+	  configuration_range.rtt.low,
+	  configuration_range.rtt.high );
+  printf( "Optimizing for num_senders in [%f, %f]\n",
+	  configuration_range.num_senders.low, configuration_range.num_senders.high );
+  printf( "Optimizing for mean_on_duration in [%f, %f], mean_off_duration in [ %f, %f]\n",
+	  configuration_range.mean_on_duration.low, configuration_range.mean_on_duration.high, configuration_range.mean_off_duration.low, configuration_range.mean_off_duration.high );
 
   printf( "Initial rules (use if=FILENAME to read from disk): %s\n", whiskers.str().c_str() );
   printf( "#######################\n" );

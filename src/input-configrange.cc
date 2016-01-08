@@ -88,9 +88,8 @@ int main(int argc, char *argv[]) {
   input_config.mutable_link_packets_per_ms()->CopyFrom(link_ppt);
   input_config.mutable_rtt()->CopyFrom(rtt);
   input_config.mutable_num_senders()->CopyFrom(num_senders);
-  input_config.set_mean_on_duration(mean_on_duration.low());
-  input_config.set_mean_off_duration(mean_off_duration.high());
-
+  input_config.mutable_mean_on_duration()->CopyFrom(mean_on_duration);
+  input_config.mutable_mean_off_duration()->CopyFrom(mean_off_duration);
   // write to file
   char of[ 128 ];
   snprintf( of, 128, "%s", output_filename.c_str());

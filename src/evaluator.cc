@@ -14,8 +14,8 @@ Evaluator::Evaluator( const ConfigRange & range )
     _configs()
 {
   /* first load "anchors" */
-  _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-
+  _configs.push_back( NetConfig().set_link_ppt( range.link_ppt.low ).set_delay( range.rtt.low ).set_num_senders( range.num_senders.low ).set_on_duration( range.mean_on_duration.low ).set_off_duration( range.mean_off_duration.low ) );
+ /*
   if ( range.lo_only ) {
     return;
   }
@@ -23,15 +23,15 @@ Evaluator::Evaluator( const ConfigRange & range )
   _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
   _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
   _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-
+*/
   /* now load some random ones just for fun */
-  for ( int i = 0; i < 12; i++ ) {
+  /*for ( int i = 0; i < 12; i++ ) {
     boost::random::uniform_real_distribution<> link_speed( range.link_packets_per_ms.first, range.link_packets_per_ms.second );
     boost::random::uniform_real_distribution<> rtt( range.rtt_ms.first, range.rtt_ms.second );
     boost::random::uniform_int_distribution<> num_senders( 1, range.max_senders );
 
-    _configs.push_back( NetConfig().set_link_ppt( link_speed( global_PRNG() ) ).set_delay( rtt( global_PRNG() ) ).set_num_senders( num_senders( global_PRNG() ) ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-  }
+    _configs.push_back( NetConfig().set_link_ppt( link_speed( global_PRNG() ) ).set_delay( rtt( global_PRNG() ) ).set_num_senders( num_senders( global_PRNG() ) ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );*/
+ // }
 }
 
 ProblemBuffers::Problem Evaluator::DNA( const WhiskerTree & whiskers ) const

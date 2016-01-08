@@ -61,8 +61,8 @@ message ConfigRange {
   optional Range rtt = 72;
   optional Range num_senders = 73;
   optional Range buffer_size = 74;
-  optional double mean_off_duration = 75;
-  optional double mean_on_duration = 76;
+  optional Range mean_off_duration = 75;
+  optional Range mean_on_duration = 76;
 }
 
 message NetConfig {
