@@ -59,16 +59,16 @@ RemyBuffers::Range set_range_protobuf(int argc, char *argv[], string arg_name) {
 
 int main(int argc, char *argv[]) {
   string output_filename;
-  //bool infinite_buffers;
+  bool infinite_buffers = false;
 
   for (int i = 1; i < argc; i++) {
     string arg( argv[ i ] );
     if ( arg.substr( 0, 3 ) == "of=") {
       output_filename = string( arg.substr( 3 ) ) + ".cfg";
     }
-    /*if ( arg == "inf_buffers") {
+    if ( arg == "inf_buffers") {
       infinite_buffers = true;
-    } */
+    } 
   }
 
   if (output_filename.empty()) {
@@ -90,6 +90,19 @@ int main(int argc, char *argv[]) {
   input_config.mutable_num_senders()->CopyFrom(num_senders);
   input_config.mutable_mean_on_duration()->CopyFrom(mean_on_duration);
   input_config.mutable_mean_off_duration()->CopyFrom(mean_off_duration);
+  if ( !(infinite_buffers) ) {
+    RemyBuffers::Range buffer_size = set_range_protobuf(argc, argv, "buf_size");
+    input_config.mutable_buffer_size()->CopyFrom(buffer_size);
+  } else {
+    RemyBuffers::Range buffer_size;
+    buffer_size.set_low( numeric_limits<unsigned int>::max() );
+    buffer_size.set_high( numeric_limits<unsigned int>::max() );
+    buffer_size.set_incr( 0 );
+    input_config.mutable_buffer_size()->CopyFrom(buffer_size);
+  }
+
+   
+
   // write to file
   char of[ 128 ];
   snprintf( of, 128, "%s", output_filename.c_str());

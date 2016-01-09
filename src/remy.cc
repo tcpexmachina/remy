@@ -67,13 +67,13 @@ int main( int argc, char *argv[] )
 
   ConfigRange configuration_range;
   
-  configuration_range.link_ppt = Range( input_config.link_packets_per_ms().low(), input_config.link_packets_per_ms().high(), input_config.link_packets_per_ms().incr() );
+  configuration_range.link_ppt = Range( input_config.link_packets_per_ms() );
+  configuration_range.rtt = Range( input_config.rtt() ); 
+  configuration_range.num_senders = Range( input_config.num_senders() ); 
+  configuration_range.mean_on_duration = Range( input_config.mean_on_duration() ); 
+  configuration_range.mean_off_duration = Range( input_config.mean_off_duration() );
+  configuration_range.buffer_size = Range( input_config.buffer_size() ); 
 
-  configuration_range.rtt = Range( input_config.rtt().low(), input_config.rtt().high(), input_config.rtt().incr() );
-
-  configuration_range.num_senders = Range( input_config.num_senders().low(), input_config.num_senders().high(), input_config.num_senders().incr() );
-  configuration_range.mean_on_duration = Range( input_config.mean_on_duration().low(), input_config.mean_on_duration().high(), input_config.mean_on_duration().incr() );
-  configuration_range.mean_off_duration = Range( input_config.mean_off_duration().low(), input_config.mean_off_duration().high(), input_config.mean_off_duration().incr() );
   RatBreeder breeder( configuration_range );
   unsigned int run = 0;
 
@@ -88,7 +88,13 @@ int main( int argc, char *argv[] )
 	  configuration_range.num_senders.low, configuration_range.num_senders.high );
   printf( "Optimizing for mean_on_duration in [%f, %f], mean_off_duration in [ %f, %f]\n",
 	  configuration_range.mean_on_duration.low, configuration_range.mean_on_duration.high, configuration_range.mean_off_duration.low, configuration_range.mean_off_duration.high );
-
+  if ( configuration_range.buffer_size.low != numeric_limits<unsigned int>::max() ) {
+    printf( "Optimizing for buffer_size in [%f, %f]\n",
+            configuration_range.buffer_size.low,
+            configuration_range.buffer_size.high );
+  } else {
+    printf( "Optimizing for infinitely sized buffers. \n");
+  }
   printf( "Initial rules (use if=FILENAME to read from disk): %s\n", whiskers.str().c_str() );
   printf( "#######################\n" );
 

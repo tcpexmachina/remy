@@ -71,5 +71,5 @@ message NetConfig {
   optional uint32 num_senders = 3;
   optional double link_ppt = 4;
   optional double delay = 5;
-  optional double buffer_size = 6;
+  optional uint32 buffer_size = 6;
 }
