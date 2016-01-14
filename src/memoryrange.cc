@@ -17,18 +17,18 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
       ersatz_lower.mutable_field( i ) = ersatz_upper.mutable_field( i ) = median( _acc[ i ] );
 
       if ( x._lower == ersatz_upper ) {
-	/* try range midpoint instead */
-	ersatz_lower.mutable_field( i ) = ersatz_upper.mutable_field( i ) = (x._lower.field( i ) + x._upper.field( i )) / 2;
+        /* try range midpoint instead */
+        ersatz_lower.mutable_field( i ) = ersatz_upper.mutable_field( i ) = (x._lower.field( i ) + x._upper.field( i )) / 2;
       }
 
       if ( x._lower == ersatz_upper ) {
-	assert( !(ersatz_lower == x._upper) );
-	assert( x._lower == ersatz_lower );
-	/* cannot double on this axis */
-	doubled.push_back( x );
+        assert( !(ersatz_lower == x._upper) );
+        assert( x._lower == ersatz_lower );
+        /* cannot double on this axis */
+        doubled.push_back( x );
       } else {
-	doubled.emplace_back( x._lower, ersatz_upper );
-	doubled.emplace_back( ersatz_lower, x._upper );
+        doubled.emplace_back( x._lower, ersatz_upper );
+        doubled.emplace_back( ersatz_lower, x._upper );
       }
     }
 
