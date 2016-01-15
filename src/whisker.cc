@@ -75,9 +75,22 @@ vector< Whisker > Whisker::next_generation( bool optimize_window_increment, bool
 {
   vector< Whisker > ret;
 
-  for ( const auto & alt_window : get_optimizer().window_increment.alternatives( _window_increment, optimize_window_increment ) ) {
-    for ( const auto & alt_multiple : get_optimizer().window_multiple.alternatives( _window_multiple, optimize_window_multiple ) ) {
-      for ( const auto & alt_intersend : get_optimizer().intersend.alternatives( _intersend, optimize_intersend ) ) {
+  auto window_increment_alternatives = get_optimizer().window_increment.alternatives( _window_increment, optimize_window_increment );
+  auto window_multiple_alternatives = get_optimizer().window_multiple.alternatives( _window_increment, optimize_window_multiple );
+  auto intersend_alternatives = get_optimizer().intersend.alternatives( _window_increment, optimize_intersend );
+
+  printf("Window increment range %u to %u, window multiple range %f to %f, intersend range %f to %f",
+         *(min_element(window_increment_alternatives.begin(), window_increment_alternatives.end())),
+         *(max_element(window_increment_alternatives.begin(), window_increment_alternatives.end())),
+         *(min_element(window_multiple_alternatives.begin(), window_multiple_alternatives.end())),
+         *(max_element(window_multiple_alternatives.begin(), window_multiple_alternatives.end())),
+         *(min_element(intersend_alternatives.begin(), intersend_alternatives.end())),
+         *(max_element(intersend_alternatives.begin(), intersend_alternatives.end()))
+    );
+
+  for ( const auto & alt_window : window_increment_alternatives ) {
+    for ( const auto & alt_multiple : window_multiple_alternatives ) {
+      for ( const auto & alt_intersend : intersend_alternatives ) {
         Whisker new_whisker { *this };
         new_whisker._generation++;
 
