@@ -34,7 +34,7 @@ public:
   const double & intersend( void ) const { return _intersend; }
   const MemoryRange & domain( void ) const { return _domain; }
 
-  std::vector< Whisker > next_generation( void ) const;
+  std::vector< Whisker > next_generation( bool optimize_window_increment, bool optimize_window_multiple, bool optimize_intersend ) const;
 
   void promote( const unsigned int generation );
 
@@ -67,7 +67,7 @@ public:
 
     T default_value;
 
-    std::vector< T > alternatives( const T & value ) const;
+    std::vector< T > alternatives( const T & value, bool active ) const;
     bool eligible_value( const T & value ) const;
 
     RemyBuffers::OptimizationSetting DNA( void ) const

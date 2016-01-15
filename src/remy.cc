@@ -14,6 +14,7 @@ int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
   string output_filename;
+  RatBreederOptions options;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -21,48 +22,66 @@ int main( int argc, char *argv[] )
       string filename( arg.substr( 3 ) );
       int fd = open( filename.c_str(), O_RDONLY );
       if ( fd < 0 ) {
-	perror( "open" );
-	exit( 1 );
+        perror( "open" );
+        exit( 1 );
       }
 
       RemyBuffers::WhiskerTree tree;
       if ( !tree.ParseFromFileDescriptor( fd ) ) {
-	fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
-	exit( 1 );
+        fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
+        exit( 1 );
       }
       whiskers = WhiskerTree( tree );
 
       if ( close( fd ) < 0 ) {
-	perror( "close" );
-	exit( 1 );
+        perror( "close" );
+        exit( 1 );
       }
+
     } else if ( arg.substr( 0, 3 ) == "of=" ) {
       output_filename = string( arg.substr( 3 ) );
+
+    } else if ( arg.substr( 0, 4 ) == "opt=" ) {
+      options.improver_options.optimize_window_increment = false;
+      options.improver_options.optimize_window_multiple = false;
+      options.improver_options.optimize_intersend = false;
+      for (char & c : arg.substr( 4 )) {
+        if (c == 'b') options.improver_options.optimize_window_increment = true;
+        else if (c == 'm') options.improver_options.optimize_window_multiple = true;
+        else if (c == 'r') options.improver_options.optimize_intersend = true;
+        else {
+          fprintf( stderr, "Invalid optimize option: %c\n", c );
+          exit( 1 );
+        }
+      }
     }
   }
 
-  ConfigRange configuration_range;
-  configuration_range.link_packets_per_ms = make_pair( 1.0, 2.0 ); /* 10 Mbps to 20 Mbps */
-  configuration_range.rtt_ms = make_pair( 100, 200 ); /* ms */
-  configuration_range.max_senders = 16;
-  configuration_range.mean_on_duration = 5000;
-  configuration_range.mean_off_duration = 5000;
-  //  configuration_range.lo_only = true;
-  RatBreeder breeder( configuration_range );
+  options.config_range.link_packets_per_ms = make_pair( 1.0, 2.0 ); /* 10 Mbps to 20 Mbps */
+  options.config_range.rtt_ms = make_pair( 100, 200 ); /* ms */
+  options.config_range.max_senders = 16;
+  options.config_range.mean_on_duration = 5000;
+  options.config_range.mean_off_duration = 5000;
+
+  //  options.config_range.lo_only = true;
+  RatBreeder breeder( options );
 
   unsigned int run = 0;
 
   printf( "#######################\n" );
   printf( "Optimizing for link packets_per_ms in [%f, %f]\n",
-	  configuration_range.link_packets_per_ms.first,
-	  configuration_range.link_packets_per_ms.second );
+          options.config_range.link_packets_per_ms.first,
+          options.config_range.link_packets_per_ms.second );
   printf( "Optimizing for rtt_ms in [%f, %f]\n",
-	  configuration_range.rtt_ms.first,
-	  configuration_range.rtt_ms.second );
+          options.config_range.rtt_ms.first,
+          options.config_range.rtt_ms.second );
   printf( "Optimizing for num_senders = 1-%d\n",
-	  configuration_range.max_senders );
+          options.config_range.max_senders );
   printf( "Optimizing for mean_on_duration = %f, mean_off_duration = %f\n",
-	  configuration_range.mean_on_duration, configuration_range.mean_off_duration );
+          options.config_range.mean_on_duration, options.config_range.mean_off_duration );
+  printf( "Optimizing window increment: %d, window multiple: %d, intersend: %d\n",
+          options.improver_options.optimize_window_increment, options.improver_options.optimize_window_multiple,
+          options.improver_options.optimize_intersend);
 
   printf( "Initial rules (use if=FILENAME to read from disk): %s\n", whiskers.str().c_str() );
   printf( "#######################\n" );
@@ -82,7 +101,7 @@ int main( int argc, char *argv[] )
     for ( auto &run : outcome.throughputs_delays ) {
       printf( "===\nconfig: %s\n", run.first.str().c_str() );
       for ( auto &x : run.second ) {
-	printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
+        printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
       }
     }
 
@@ -92,22 +111,22 @@ int main( int argc, char *argv[] )
       fprintf( stderr, "Writing to \"%s\"... ", of );
       int fd = open( of, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR );
       if ( fd < 0 ) {
-	perror( "open" );
-	exit( 1 );
+        perror( "open" );
+        exit( 1 );
       }
 
       auto remycc = whiskers.DNA();
-      remycc.mutable_config()->CopyFrom( configuration_range.DNA() );
+      remycc.mutable_config()->CopyFrom( options.config_range.DNA() );
       remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
 
       if ( not remycc.SerializeToFileDescriptor( fd ) ) {
-	fprintf( stderr, "Could not serialize RemyCC.\n" );
-	exit( 1 );
+        fprintf( stderr, "Could not serialize RemyCC.\n" );
+        exit( 1 );
       }
 
       if ( close( fd ) < 0 ) {
-	perror( "close" );
-	exit( 1 );
+        perror( "close" );
+        exit( 1 );
       }
 
       fprintf( stderr, "done.\n" );
