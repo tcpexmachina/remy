@@ -45,7 +45,10 @@ bool Whisker::OptimizationSetting< T >::eligible_value( const T & value ) const
 template < typename T >
 vector< T > Whisker::OptimizationSetting< T >::alternatives( const T & value, bool active ) const
 {
-  assert( eligible_value( value ) );
+  if ( !eligible_value( value ) ) {
+    printf("Ineligible value: %s is not between %s and %s\n", to_string( value ).c_str(), to_string( min_value ).c_str(), to_string( max_value ).c_str());
+    assert(false);
+  }
 
   vector< T > ret( 1, value );
 
@@ -76,17 +79,17 @@ vector< Whisker > Whisker::next_generation( bool optimize_window_increment, bool
   vector< Whisker > ret;
 
   auto window_increment_alternatives = get_optimizer().window_increment.alternatives( _window_increment, optimize_window_increment );
-  auto window_multiple_alternatives = get_optimizer().window_multiple.alternatives( _window_increment, optimize_window_multiple );
-  auto intersend_alternatives = get_optimizer().intersend.alternatives( _window_increment, optimize_intersend );
+  auto window_multiple_alternatives = get_optimizer().window_multiple.alternatives( _window_multiple, optimize_window_multiple );
+  auto intersend_alternatives = get_optimizer().intersend.alternatives( _intersend, optimize_intersend );
 
-  printf("Window increment range %u to %u, window multiple range %f to %f, intersend range %f to %f\n",
+  printf("Alternatives: window increment %u to %u, window multiple %f to %f, intersend %f to %f\n",
          *(min_element(window_increment_alternatives.begin(), window_increment_alternatives.end())),
          *(max_element(window_increment_alternatives.begin(), window_increment_alternatives.end())),
          *(min_element(window_multiple_alternatives.begin(), window_multiple_alternatives.end())),
          *(max_element(window_multiple_alternatives.begin(), window_multiple_alternatives.end())),
          *(min_element(intersend_alternatives.begin(), intersend_alternatives.end())),
          *(max_element(intersend_alternatives.begin(), intersend_alternatives.end()))
-    );
+  );
 
   for ( const auto & alt_window : window_increment_alternatives ) {
     for ( const auto & alt_multiple : window_multiple_alternatives ) {

@@ -157,5 +157,7 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
     }
   }
 
+  cout << "Chose " << whisker_to_improve.str() << endl;
+
   return score_to_beat_;
 }
