@@ -79,7 +79,7 @@ vector< Whisker > Whisker::next_generation( bool optimize_window_increment, bool
   auto window_multiple_alternatives = get_optimizer().window_multiple.alternatives( _window_increment, optimize_window_multiple );
   auto intersend_alternatives = get_optimizer().intersend.alternatives( _window_increment, optimize_intersend );
 
-  printf("Window increment range %u to %u, window multiple range %f to %f, intersend range %f to %f",
+  printf("Window increment range %u to %u, window multiple range %f to %f, intersend range %f to %f\n",
          *(min_element(window_increment_alternatives.begin(), window_increment_alternatives.end())),
          *(max_element(window_increment_alternatives.begin(), window_increment_alternatives.end())),
          *(min_element(window_multiple_alternatives.begin(), window_multiple_alternatives.end())),
