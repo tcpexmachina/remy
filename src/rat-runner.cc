@@ -25,28 +25,28 @@ int main( int argc, char *argv[] )
       string filename( arg.substr( 3 ) );
       int fd = open( filename.c_str(), O_RDONLY );
       if ( fd < 0 ) {
-	perror( "open" );
-	exit( 1 );
+        perror( "open" );
+        exit( 1 );
       }
 
       RemyBuffers::WhiskerTree tree;
       if ( !tree.ParseFromFileDescriptor( fd ) ) {
-	fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
-	exit( 1 );
+        fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
+        exit( 1 );
       }
       whiskers = WhiskerTree( tree );
 
       if ( close( fd ) < 0 ) {
-	perror( "close" );
-	exit( 1 );
+        perror( "close" );
+        exit( 1 );
       }
 
       if ( tree.has_config() ) {
-	printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
+        printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
       }
 
       if ( tree.has_optimizer() ) {
-	printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
+        printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
       }
     } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
       num_senders = atoi( arg.substr( 5 ).c_str() );
