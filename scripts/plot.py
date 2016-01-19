@@ -29,6 +29,8 @@ parser.add_argument("-w", "--mean-off", type=float, default=5000.0,
     help="Mean off duration (milliseconds)")
 parser.add_argument("--dry-run", action="store_true", default=False,
     help="Print commands, don't run them.")
+parser.add_argument("-o", "--output-file", type=argparse.FileType('w'), default=open('output.txt', 'w'),
+    help="Output file to write results to")
 args = parser.parse_args()
 
 def print_command(command):
@@ -77,4 +79,6 @@ for remyccfile in args.remycc:
     for link_ppt in link_ppt_range:
         output = run_ratrunner(remyccfile, link_ppt, args.delay, args.mean_on, args.mean_off)
         norm_score = parse_ratrunner_output(output)
-        print("{:f} {:f}".format(link_ppt, norm_score))
+        line = "{:f},{:f}\n".format(link_ppt, norm_score)
+        print(line)
+        args.output_file.write(line)
