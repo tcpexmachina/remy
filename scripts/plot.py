@@ -81,6 +81,7 @@ for remyccfile in args.remycc:
     for link_ppt in link_ppt_range:
         output = run_ratrunner(remyccfile, args.nsenders, link_ppt, args.delay, args.mean_on, args.mean_off)
         norm_score = parse_ratrunner_output(output)
-        line = "{:f},{:f}\n".format(link_ppt, norm_score)
+        line = "{:f},{:f}".format(link_ppt, norm_score)
         print(line)
-        args.output_file.write(line)
+        args.output_file.write(line + "\n")
+        args.output_file.flush()
