@@ -7,6 +7,8 @@ import subprocess
 import re
 import numpy as np
 
+use_color = True
+
 ROOTDIR = os.path.dirname(os.path.dirname(__file__))
 RATRUNNERCMD = os.path.join(ROOTDIR, "src", "rat-runner")
 NORM_SCORE_REGEX = re.compile("^\s*normalized_score = (-?\d+(\.\d+)?)\s*$", re.MULTILINE)
@@ -19,7 +21,7 @@ parser.add_argument("-n", "--num-points", type=int, default=100,
     help="Number of points to plot")
 parser.add_argument("-s", "--nsenders", type=int, default=2,
     help="Number of senders")
-parser.add_argument("-l", "--link-ppt", type=float, default=[0.1, 10], nargs=2, metavar="PPMS",
+parser.add_argument("-l", "--link-ppt", type=float, default=[-1.0, 1.0], nargs=2, metavar="PPMS",
     help="Link packets per millisecond, range to test, first argument is low, second is high")
 parser.add_argument("-d", "--delay", type=float, default=100.0,
     help="Delay (milliseconds)")
@@ -41,7 +43,7 @@ def get_output_from_command(command, show=True):
     """Runs a command, returns its output and optionally
     Raises subprocess.CalledProcessError if the command returned a non-zero exit code."""
     print_command(command)
-    output = subprocess.check_output(command, **subprocess_kwargs)
+    output = subprocess.check_output(command, stderr=subprocess.STDOUT)
     output = output.decode()
     if show:
         sys.stdout.write(output)
@@ -75,6 +77,6 @@ link_ppt_range = np.logspace(args.link_ppt[0], args.link_ppt[1], args.num_points
 
 for remyccfile in args.remycc:
     for link_ppt in link_ppt_range:
-        output = run_ratrunner(remyccfile, link_ppt, args.delay, args.mean_on, args.mean_off)
+        output = run_ratrunner(remyccfile, args.nsenders, link_ppt, args.delay, args.mean_on, args.mean_off)
         norm_score = parse_ratrunner_output(output)
         print("{:f} {:f}".format(link_ppt, norm_score))
