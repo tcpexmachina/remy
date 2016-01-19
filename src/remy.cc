@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <math.h>
 
 #include "ratbreeder.hh"
 
@@ -57,11 +58,11 @@ int main( int argc, char *argv[] )
     }
   }
 
-  options.config_range.link_packets_per_ms = make_pair( 1.0, 2.0 ); /* 10 Mbps to 20 Mbps */
-  options.config_range.rtt_ms = make_pair( 100, 200 ); /* ms */
-  options.config_range.max_senders = 16;
-  options.config_range.mean_on_duration = 5000;
-  options.config_range.mean_off_duration = 5000;
+  options.config_range.link_packets_per_ms = make_pair( sqrt(0.1), sqrt(1000.0) ); /* 3.17 Mbps to 317 Mbps */
+  options.config_range.rtt_ms = make_pair( 150, 150 ); /* ms */
+  options.config_range.max_senders = 2;
+  options.config_range.mean_on_duration = 1000;
+  options.config_range.mean_off_duration = 1000;
 
   //  options.config_range.lo_only = true;
   RatBreeder breeder( options );
