@@ -138,6 +138,16 @@ def log_arguments(argsfile, args):
         argsfile.write("{:>20} = {}".format(key, value))
     argsfile.close()
 
+def make_results_dir(dirname):
+    if dirname is None:
+        dirname = os.path.join("results", "results" + time.strftime("%Y%m%d-%H%M%S"))
+    if os.path.exists("last"):
+        os.unlink("last")
+    os.symlink(dirname, "last")
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    return dirname
+
 # Script starts here
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -157,13 +167,13 @@ parser.add_argument("-w", "--mean-off", type=float, default=1000.0,
     help="Mean off duration (milliseconds)")
 parser.add_argument("--dry-run", action="store_true", default=False,
     help="Print commands, don't run them.")
-parser.add_argument("-r", "--results-dir", type=str, default="results",
-    help="Directory to place output files in, will be created if it doesn't exist. (default: plot-output-<timestamp>)")
+parser.add_argument("-r", "--results-dir", type=str, default=None,
+    help="Directory to place output files in.")
 parser.add_argument("--no-console-output-files", action="store_false", default=True, dest="console_output_files",
     help="Don't generate console output files")
 args = parser.parse_args()
 
-results_dirname = args.results_dir
+results_dirname = make_results_dir(args.results_dir)
 output_dirname = os.path.join(results_dirname, "results-" + time.strftime("%Y%m%d-%H%M%S"))
 console_dirname = os.path.join(output_dirname, "outputs")
 results_dirname = os.path.join(output_dirname, "results")
