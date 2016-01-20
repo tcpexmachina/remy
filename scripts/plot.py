@@ -15,7 +15,7 @@ use_color = True
 
 HLINE1 = "-" * 80
 HLINE2 = "=" * 80
-ROOTDIR = os.path.dirname(os.path.dirname(__file__))
+ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RATRUNNERCMD = os.path.join(ROOTDIR, "src", "rat-runner")
 SENDER_REGEX = re.compile("^sender: \[tp=(-?\d+(?:\.\d+)?), del=(-?\d+(?:\.\d+)?)\]$", re.MULTILINE)
 NORM_SCORE_REGEX = re.compile("^normalized_score = (-?\d+(?:\.\d+)?)$", re.MULTILINE)
@@ -39,9 +39,9 @@ def run_command(command, show=True, writefile=None, includestderr=True):
 
     output = subprocess.check_output(command, **kwargs)
     output = output.decode()
+    print_command(command)
 
     if show:
-        print_command(command)
         sys.stdout.write(output)
         sys.stdout.flush()
 
@@ -174,16 +174,15 @@ parser.add_argument("--no-console-output-files", action="store_false", default=T
 args = parser.parse_args()
 
 results_dirname = make_results_dir(args.results_dir)
-output_dirname = os.path.join(results_dirname, "results-" + time.strftime("%Y%m%d-%H%M%S"))
-console_dirname = os.path.join(output_dirname, "outputs")
-results_dirname = os.path.join(output_dirname, "results")
-plots_dirname = os.path.join(output_dirname, "plots")
+console_dirname = os.path.join(results_dirname, "outputs")
+results_dirname = os.path.join(results_dirname, "results")
+plots_dirname = os.path.join(results_dirname, "plots")
 
 os.makedirs(console_dirname)
 os.makedirs(results_dirname)
 os.makedirs(plots_dirname)
 
-args_file = open(os.path.join(output_dirname, "args.txt"), "w")
+args_file = open(os.path.join(results_dirname, "args.txt"), "w")
 log_arguments(args_file, args)
 args_file.close()
 
