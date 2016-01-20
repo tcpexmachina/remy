@@ -135,7 +135,7 @@ def log_arguments(argsfile, args):
 
     argsfile.write("\nArguments:\n")
     for key, value in vars(args).items():
-        argsfile.write("{:>20} = {}".format(key, value))
+        argsfile.write("{:>20} = {}\n".format(key, value))
     argsfile.close()
 
 def make_results_dir(dirname):
@@ -145,7 +145,7 @@ def make_results_dir(dirname):
         os.unlink("last")
     os.symlink(dirname, "last")
     if not os.path.exists(dirname):
-        os.makedirs(dirname)
+        os.makedirs(dirname, exist_ok=True)
     return dirname
 
 # Script starts here
@@ -178,9 +178,9 @@ console_dirname = os.path.join(results_dirname, "outputs")
 data_dirname = os.path.join(results_dirname, "results")
 plots_dirname = os.path.join(results_dirname, "plots")
 
-os.makedirs(console_dirname)
-os.makedirs(results_dirname)
-os.makedirs(plots_dirname)
+os.makedirs(console_dirname, exist_ok=True)
+os.makedirs(data_dirname, exist_ok=True)
+os.makedirs(plots_dirname, exist_ok=True)
 
 args_file = open(os.path.join(results_dirname, "args.txt"), "w")
 log_arguments(args_file, args)
