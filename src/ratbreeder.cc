@@ -35,6 +35,8 @@ void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int ge
 
 Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 {
+  cerr << "RatBreeder::improve 0" << endl;
+
   /* back up the original whiskertree */
   /* this is to ensure we don't regress */
   WhiskerTree input_whiskertree( whiskers );
@@ -43,13 +45,21 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   whiskers.reset_generation();
   unsigned int generation = 0;
 
+  cerr << "RatBreeder::improve 1" << endl;
+
   while ( generation < 5 ) {
     const Evaluator eval( _options.config_range );
 
+    cerr << "RatBreeder::improve 1a" << endl;
+
     auto outcome( eval.score( whiskers ) );
+
+    cerr << "RatBreeder::improve 1b" << endl;
 
     /* is there a whisker at this generation that we can improve? */
     auto most_used_whisker_ptr = outcome.used_whiskers.most_used( generation );
+
+    cerr << "RatBreeder::improve 1c" << endl;
 
     /* if not, increase generation and promote all whiskers */
     if ( !most_used_whisker_ptr ) {
@@ -59,11 +69,15 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       continue;
     }
 
+    cerr << "RatBreeder::improve 1d" << endl;
+
     WhiskerImprover improver( eval, whiskers, _options.improver_options, outcome.score );
 
     Whisker whisker_to_improve = *most_used_whisker_ptr;
 
     double score_to_beat = outcome.score;
+
+    cerr << "RatBreeder::improve 1e" << endl;
 
     while ( 1 ) {
       double new_score = improver.improve( whisker_to_improve );
@@ -77,19 +91,29 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       }
     }
 
+    cerr << "RatBreeder::improve 1f" << endl;
+
     whisker_to_improve.demote( generation + 1 );
 
     const auto result __attribute((unused)) = whiskers.replace( whisker_to_improve );
+    cerr << "RatBreeder::improve 1g" << endl;
     assert( result );
   }
+
+  cerr << "RatBreeder::improve 2" << endl;
 
   /* Split most used whisker */
   apply_best_split( whiskers, generation );
 
+  cerr << "RatBreeder::improve 3" << endl;
+
   /* carefully evaluate what we have vs. the previous best */
   const Evaluator eval2( _options.config_range );
+  cerr << "RatBreeder::improve 4" << endl;
   const auto new_score = eval2.score( whiskers, false, 10 );
+  cerr << "RatBreeder::improve 5" << endl;
   const auto old_score = eval2.score( input_whiskertree, false, 10 );
+  cerr << "RatBreeder::improve 6" << endl;
 
   if ( old_score.score >= new_score.score ) {
     fprintf( stderr, "Regression, old=%f, new=%f\n", old_score.score, new_score.score );
@@ -112,11 +136,16 @@ WhiskerImprover::WhiskerImprover( const Evaluator & s_evaluator,
 
 double WhiskerImprover::improve( Whisker & whisker_to_improve )
 {
+  cerr << "WhiskerImprover::improve 1" << endl;
+
   auto replacements( whisker_to_improve.next_generation( options_.optimize_window_increment,
                                                          options_.optimize_window_multiple,
                                                          options_.optimize_intersend) );
+  cerr << "WhiskerImprover:: 2" << endl;
 
   vector< pair< const Whisker &, future< pair< bool, double > > > > scores;
+
+  cerr << "WhiskerImprover::improve 3" << endl;
 
   /* find best replacement */
   for ( const auto & test_replacement : replacements ) {
@@ -138,6 +167,8 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
 			       return make_pair( false, value ); }, eval_cache_.at( test_replacement ) ) );
     }
   }
+
+  cerr << "WhiskerImprover::improve 4" << endl;
 
   /* find the best one */
   for ( auto & x : scores ) {
