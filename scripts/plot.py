@@ -7,6 +7,9 @@ import subprocess
 import re
 import time
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import csv
 from warnings import warn
 from itertools import chain
@@ -120,14 +123,21 @@ def generate_data_and_plot(remyccfilename, link_ppt_range, parameters, console_d
         data_file = open(os.path.join(data_dir, data_filename), "w")
         data_csv = csv.writer(data_file)
 
+    norm_scores = []
+
     for link_ppt in link_ppt_range:
         parameters["link_ppt"] = link_ppt
         norm_score, sender_data = compute_normalized_score(remyccfilename, parameters, console_dir)
         sender_numbers = chain(*sender_data)
+        norm_scores.append(norm_score)
         if data_dir:
             data_csv.writerow([link_ppt, norm_score] + list(sender_numbers))
 
+    plt.plot([10*l for l in link_ppt_range], norm_scores, label=remyccfilename)
+
     data_file.close()
+
+    return norm_scores
 
 def log_arguments(argsfile, args):
     argsfile.write("Started at " + time.asctime() + "\n")
@@ -157,7 +167,7 @@ parser.add_argument("-n", "--num-points", type=int, default=1000,
     help="Number of points to plot")
 parser.add_argument("-s", "--nsenders", type=int, default=2,
     help="Number of senders")
-parser.add_argument("-l", "--link-ppt", type=float, default=[1.0, 1000.0], nargs=2, metavar="PPMS",
+parser.add_argument("-l", "--link-ppt", type=float, default=[0.1, 100.0], nargs=2, metavar="PPMS",
     help="Link packets per millisecond, range to test, first argument is low, second is high")
 parser.add_argument("-d", "--delay", type=float, default=150.0,
     help="Delay (milliseconds)")
@@ -175,7 +185,7 @@ args = parser.parse_args()
 
 results_dirname = make_results_dir(args.results_dir)
 console_dirname = os.path.join(results_dirname, "outputs")
-data_dirname = os.path.join(results_dirname, "results")
+data_dirname = os.path.join(results_dirname, "data")
 plots_dirname = os.path.join(results_dirname, "plots")
 
 os.makedirs(console_dirname, exist_ok=True)
@@ -190,5 +200,14 @@ link_ppt_range = np.logspace(np.log10(args.link_ppt[0]), np.log10(args.link_ppt[
 parameter_keys = ["nsenders", "delay", "mean_on", "mean_off"]
 parameters = {key: getattr(args, key) for key in parameter_keys}
 
+data = []
 for remyccfile in args.remycc:
-    generate_data_and_plot(remyccfile, link_ppt_range, parameters, console_dirname, data_dirname, plots_dirname)
+    norm_scores = generate_data_and_plot(remyccfile, link_ppt_range, parameters, console_dirname, data_dirname, plots_dirname)
+    data.append(norm_scores)
+
+plot_filename = "link_ppt"
+plt.xlabel("link speed (Mbps)")
+plt.ylabel("normalized score")
+plt.legend()
+plt.savefig(os.path.join(plots_dirname, "{:s}.png".format(plot_filename)), format="png", bbox_inches="tight")
+plt.savefig(os.path.join(plots_dirname, "{:s}.pdf".format(plot_filename)), format="pdf", bbox_inches="tight")
