@@ -13,8 +13,8 @@ from itertools import chain
 
 use_color = True
 
-HLINE1 = "-" * 80
-HLINE2 = "=" * 80
+HLINE1 = "-" * 80 + "\n"
+HLINE2 = "=" * 80 + "\n"
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RATRUNNERCMD = os.path.join(ROOTDIR, "src", "rat-runner")
 SENDER_REGEX = re.compile("^sender: \[tp=(-?\d+(?:\.\d+)?), del=(-?\d+(?:\.\d+)?)\]$", re.MULTILINE)
@@ -48,10 +48,10 @@ def run_command(command, show=True, writefile=None, includestderr=True):
     if writefile:
         writefile.writelines([
             HLINE2,
-            "This was the console output for the command:",
-            "    " + " ".join(command),
+            "This was the console output for the command:\n",
+            "    " + " ".join(command) + "\n",
             HLINE2,
-            ""
+            "\n"
         ])
         writefile.write(output)
 
