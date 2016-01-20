@@ -13,12 +13,8 @@ Evaluator::Evaluator( const ConfigRange & range )
   : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _configs()
 {
-
-  cerr << "Evaluator::Evaluator 0" << endl;
-
   /* first load "anchors" */
   _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-  cerr << "Evaluator::Evaluator 1" << endl;
 
   if ( range.lo_only ) {
     return;
@@ -27,22 +23,15 @@ Evaluator::Evaluator( const ConfigRange & range )
   _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.first ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
   _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.first ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
   _configs.push_back( NetConfig().set_link_ppt( range.link_packets_per_ms.second ).set_delay( range.rtt_ms.second ).set_num_senders( range.max_senders ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-  cerr << "Evaluator::Evaluator 2" << endl;
 
   /* now load some random ones just for fun */
   for ( int i = 0; i < 12; i++ ) {
-    cerr << "Evaluator::Evaluator 2a" << endl;
     boost::random::uniform_real_distribution<> link_speed( range.link_packets_per_ms.first, range.link_packets_per_ms.second );
-    cerr << "Evaluator::Evaluator 2b" << endl;
     boost::random::uniform_real_distribution<> rtt( range.rtt_ms.first, range.rtt_ms.second );
-    cerr << "Evaluator::Evaluator 2c" << endl;
     boost::random::uniform_int_distribution<> num_senders( 1, range.max_senders );
-    cerr << "Evaluator::Evaluator 2d" << endl;
 
     _configs.push_back( NetConfig().set_link_ppt( link_speed( global_PRNG() ) ).set_delay( rtt( global_PRNG() ) ).set_num_senders( num_senders( global_PRNG() ) ).set_on_duration( range.mean_on_duration ).set_off_duration( range.mean_off_duration ) );
-    cerr << "Evaluator::Evaluator 2e" << endl;
   }
-  cerr << "Evaluator::Evaluator 3" << endl;
 }
 
 ProblemBuffers::Problem Evaluator::DNA( const WhiskerTree & whiskers ) const
@@ -88,7 +77,7 @@ AnswerBuffers::Outcome Evaluator::Outcome::DNA( void ) const
 
     for ( const auto & x : run.second ) {
       AnswerBuffers::SenderResults *results = tp_del->add_results();
-      results->set_throughput( x.first );
+      results->set_throughput( x.first ); 
       results->set_delay( x.second );
     }
   }
@@ -126,12 +115,9 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
 				     const bool trace,
 				     const unsigned int ticks_to_run )
 {
-  cerr << "Evaluator::score 0" << endl;
   PRNG run_prng( prng_seed );
-  cerr << "Evaluator::score 1" << endl;
 
   run_whiskers.reset_counts();
-  cerr << "Evaluator::score 2" << endl;
 
   /* run tests */
   Evaluator::Outcome the_outcome;
@@ -139,14 +125,12 @@ Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
     /* run once */
     Network<Rat, Rat> network1( Rat( run_whiskers, trace ), run_prng, x );
     network1.run_simulation( ticks_to_run );
-
+    
     the_outcome.score += network1.senders().utility();
     the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
   }
 
-  cerr << "Evaluator::score 3" << endl;
   the_outcome.used_whiskers = run_whiskers;
 
-  cerr << "Evaluator::score 4" << endl;
   return the_outcome;
 }
