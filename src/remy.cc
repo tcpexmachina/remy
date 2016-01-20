@@ -59,7 +59,7 @@ int main( int argc, char *argv[] )
   }
 
   options.config_range.link_packets_per_ms = make_pair( sqrt(0.1), sqrt(1000.0) ); /* 3.17 Mbps to 317 Mbps */
-  options.config_range.rtt_ms = make_pair( 150, 150 ); /* ms */
+  options.config_range.rtt_ms = make_pair( 149, 151 ); /* ms */
   options.config_range.max_senders = 2;
   options.config_range.mean_on_duration = 1000;
   options.config_range.mean_off_duration = 1000;
