@@ -100,7 +100,7 @@ def parse_ratrunner_output(result):
 def compute_normalized_score(remyccfilename, parameters, console_dir=None):
     kwargs = {}
     if console_dir:
-        filename = "ratrunner-{remycc}-{nsenders:d}-{link_ppt:f}-{delay:f}-{mean_on:f}-{mean_off:f}.out".format(
+        filename = "ratrunner-{remycc}-{link_ppt:f}.out".format(
                 remycc=os.path.basename(remyccfilename), **parameters)
         filename = os.path.join(console_dir, filename)
         kwargs["console_file"] = open(filename, "w")
@@ -113,21 +113,21 @@ def compute_normalized_score(remyccfilename, parameters, console_dir=None):
     norm_score = parse_ratrunner_output(output)
     return norm_score
 
-def generate_data_and_plot(remyccfilename, link_ppt_range, parameters, console_dir=None, results_dir=None, plots_dir=None):
-    if results_dir:
-        results_filename = "results-{remycc}-{nsenders:d}-{delay:f}-{mean_on:f}-{mean_off:f}.csv".format(
-                remycc=os.path.basename(remyccfilename), **parameters)
-        results_file = open(os.path.join(results_dir, results_filename), "w")
-        results_csv = csv.writer(results_file)
+def generate_data_and_plot(remyccfilename, link_ppt_range, parameters, console_dir=None, data_dir=None, plots_dir=None):
+    if data_dir:
+        data_filename = "data-{remycc}.csv".format(
+                remycc=os.path.basename(remyccfilename))
+        data_file = open(os.path.join(data_dir, data_filename), "w")
+        data_csv = csv.writer(data_file)
 
     for link_ppt in link_ppt_range:
         parameters["link_ppt"] = link_ppt
         norm_score, sender_data = compute_normalized_score(remyccfilename, parameters, console_dir)
         sender_numbers = chain(*sender_data)
-        if results_dir:
-            results_csv.writerow([link_ppt, norm_score] + list(sender_numbers))
+        if data_dir:
+            data_csv.writerow([link_ppt, norm_score] + list(sender_numbers))
 
-    results_file.close()
+    data_file.close()
 
 def log_arguments(argsfile, args):
     argsfile.write("Started at " + time.asctime() + "\n")
@@ -175,7 +175,7 @@ args = parser.parse_args()
 
 results_dirname = make_results_dir(args.results_dir)
 console_dirname = os.path.join(results_dirname, "outputs")
-results_dirname = os.path.join(results_dirname, "results")
+data_dirname = os.path.join(results_dirname, "results")
 plots_dirname = os.path.join(results_dirname, "plots")
 
 os.makedirs(console_dirname)
@@ -191,4 +191,4 @@ parameter_keys = ["nsenders", "delay", "mean_on", "mean_off"]
 parameters = {key: getattr(args, key) for key in parameter_keys}
 
 for remyccfile in args.remycc:
-    generate_data_and_plot(remyccfile, link_ppt_range, parameters, console_dirname, results_dirname, plots_dirname)
+    generate_data_and_plot(remyccfile, link_ppt_range, parameters, console_dirname, data_dirname, plots_dirname)
