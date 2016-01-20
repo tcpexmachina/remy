@@ -7,6 +7,7 @@ import subprocess
 import re
 import time
 import numpy as np
+import csv
 from warnings import warn
 from itertools import chain
 
@@ -100,9 +101,9 @@ def compute_normalized_score(remyccfilename, parameters, console_dir=None):
     kwargs = {}
     if console_dir:
         filename = "ratrunner-{remycc}-{nsenders:d}-{link_ppt:f}-{delay:f}-{mean_on:f}-{mean_off:f}.out".format(
-                remycc=remyccfilename, **parameters)
+                remycc=os.path.basename(remyccfilename), **parameters)
         filename = os.path.join(console_dir, filename)
-        kwargs["console_file"] = open(filename)
+        kwargs["console_file"] = open(filename, "w")
 
     output = run_ratrunner(remyccfilename, parameters, **kwargs)
 
@@ -115,8 +116,8 @@ def compute_normalized_score(remyccfilename, parameters, console_dir=None):
 def generate_data_and_plot(remyccfilename, link_ppt_range, parameters, console_dir=None, results_dir=None, plots_dir=None):
     if results_dir:
         results_filename = "results-{remycc}-{nsenders:d}-{delay:f}-{mean_on:f}-{mean_off:f}.csv".format(
-                remycc=remyccfilename, **parameters)
-        results_file = open(os.path.join(results_dir, results_filename))
+                remycc=os.path.basename(remyccfilename), **parameters)
+        results_file = open(os.path.join(results_dir, results_filename), "w")
         results_csv = csv.writer(results_file)
 
     for link_ppt in link_ppt_range:
@@ -126,14 +127,14 @@ def generate_data_and_plot(remyccfilename, link_ppt_range, parameters, console_d
         if results_dir:
             results_csv.writerow([link_ppt, norm_score] + list(sender_numbers))
 
-    results_csv.close()
+    results_file.close()
 
 def log_arguments(argsfile, args):
     argsfile.write("Started at " + time.asctime() + "\n")
-    argsfile.write("Git commit: " + subprocess.check_output(['git', 'rev-parse', 'HEAD']) + "\n")
+    argsfile.write("Git commit: " + subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode() + "\n")
 
     argsfile.write("\nArguments:\n")
-    for key, value in vars(args):
+    for key, value in vars(args).items():
         argsfile.write("{:>20} = {}".format(key, value))
     argsfile.close()
 
@@ -168,7 +169,11 @@ console_dirname = os.path.join(output_dirname, "outputs")
 results_dirname = os.path.join(output_dirname, "results")
 plots_dirname = os.path.join(output_dirname, "plots")
 
-args_file = open(os.path.join(output_dirname, "args.txt"))
+os.makedirs(console_dirname)
+os.makedirs(results_dirname)
+os.makedirs(plots_dirname)
+
+args_file = open(os.path.join(output_dirname, "args.txt"), "w")
 log_arguments(args_file, args)
 args_file.close()
 
