@@ -57,12 +57,12 @@ private:
     void tick( NextHop & next, Receiver & rec,
 	       const double & tickno,
 	       const unsigned int num_sending,
-	       Exponential & start_distribution ) override;
+	       Exponential & start_distribution );
 
     void switcher( const double & tickno,
 		   Exponential & start_distribution,
 		   Exponential & stop_distribution,
-		   const unsigned int num_sending ) override;
+		   const unsigned int num_sending );
 
     using SwitchedSender::SwitchedSender;
   };
@@ -76,12 +76,12 @@ private:
     void tick( NextHop & next, Receiver & rec,
 	       const double & tickno,
 	       const unsigned int num_sending,
-	       Exponential & start_distribution ) override;
+	       Exponential & start_distribution );
 
     void switcher( const double & tickno,
 		   Exponential & start_distribution,
 		   Exponential & stop_distribution,
-		   const unsigned int num_sending ) override;
+		   const unsigned int num_sending );
 
     using SwitchedSender::SwitchedSender;
   };
