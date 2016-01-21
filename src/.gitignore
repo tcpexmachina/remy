@@ -1,0 +1,12 @@
+.deps/
+Makefile
+Makefile.in
+answer.pb.cc
+answer.pb.h
+dna.pb.cc
+dna.pb.h
+problem.pb.cc
+problem.pb.h
+rat-runner
+remy
+scoring-example
