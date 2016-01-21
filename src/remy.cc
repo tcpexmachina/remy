@@ -60,7 +60,7 @@ int main( int argc, char *argv[] )
   }
 
   if ( config_filename.empty() ) {
-    fprintf( stderr, "Provide an input config protobuf. \n");
+    fprintf( stderr, "Provide an input config protobuf (generated using './configure'). \n");
     exit ( 1 );
   }
 

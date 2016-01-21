@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <vector>
 #include <string>
+#include <limits>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -39,17 +40,20 @@ RemyBuffers::Range set_range_protobuf(int argc, char *argv[], string arg_name) {
     fprintf( stderr, "Please provide min, max and incr for %s with %s, %s, %s\n", arg_name.c_str(), min_string.c_str(), max_string.c_str(), incr_string.c_str());
     exit(1);
   }
-    
-  if ( ( min != max ) && ( incr == 0 ) ) {
-    fprintf( stderr, "Provide non-zero incr for %s\n", arg_name.c_str());
-    exit(1);
-  }
-    
-  if ( (incr > (max-min)) || (min>max) ) {
-    fprintf( stderr, "Provide valid min and max and incr for %s\n.", arg_name.c_str());
-    exit(1);
-  }
 
+  if ( min < max ) {
+    if ( incr == 0 ) {
+      fprintf( stderr, "Please provide non-zero incr for %s\n", arg_name.c_str());
+      exit(1);
+    } else if (  incr > max - min  ) {
+      fprintf( stderr, "Please provide valid incr for %s\n.", arg_name.c_str());
+      exit(1);
+    }
+  } else if ( min > max ){
+    fprintf( stderr, "Please provide valid min and max for %s\n.", arg_name.c_str());
+    exit(1);
+  }
+    
   RemyBuffers::Range range;
   range.set_low(min);
   range.set_high(max);
