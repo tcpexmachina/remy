@@ -1,6 +1,0 @@
-.deps
-Makefile
-Makefile.in
-*.pb.cc
-*.pb.h
-libremyprotos.a

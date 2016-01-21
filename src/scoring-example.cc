@@ -7,7 +7,7 @@
 #include <fcntl.h>
 
 #include "evaluator.hh"
-
+#include "configrange.hh"
 using namespace std;
 
 
@@ -68,12 +68,11 @@ int main( int argc, char *argv[] )
   }
 
   ConfigRange configuration_range;
-  configuration_range.link_packets_per_ms = make_pair( link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
-  configuration_range.rtt_ms = make_pair( delay, 0 ); /* ms */
-  configuration_range.max_senders = num_senders;
-  configuration_range.mean_on_duration = mean_on_duration;
-  configuration_range.mean_off_duration = mean_off_duration;
-  configuration_range.lo_only = true;
+  configuration_range.link_ppt = Range( link_ppt,link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
+  configuration_range.rtt = Range( delay, delay, 0 ); /* ms */
+  configuration_range.num_senders = Range(num_senders, num_senders, 0 );
+  configuration_range.mean_on_duration = Range(mean_on_duration, mean_on_duration, 0);
+  configuration_range.mean_off_duration = Range(mean_off_duration, mean_off_duration, 0);
 
   Evaluator eval( configuration_range );
 

@@ -14,16 +14,18 @@ class NetConfig
 {
 public:
   double mean_on_duration, mean_off_duration;
-  unsigned int num_senders;
+  double num_senders;
   double link_ppt;
   double delay;
+  double buffer_size;
 
   NetConfig( void )
     : mean_on_duration( 5000.0 ),
       mean_off_duration( 5000.0 ),
       num_senders( 8 ),
       link_ppt( 1.0 ),
-      delay( 150 )
+      delay( 150 ),
+      buffer_size( std::numeric_limits<unsigned int>::max() )
   {}
 
   NetConfig( const RemyBuffers::NetConfig & dna )
@@ -31,7 +33,8 @@ public:
       mean_off_duration( dna.mean_off_duration() ),
       num_senders( dna.num_senders() ),
       link_ppt( dna.link_ppt() ),
-      delay( dna.delay() )
+      delay( dna.delay() ),
+      buffer_size( dna.buffer_size() )
   {}
   
   NetConfig & set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
@@ -39,6 +42,7 @@ public:
   NetConfig & set_num_senders( const unsigned int n ) { num_senders = n; return *this; }
   NetConfig & set_on_duration( const double & duration ) { mean_on_duration = duration; return *this; }
   NetConfig & set_off_duration( const double & duration ) { mean_off_duration = duration; return *this; }
+  NetConfig & set_buffer_size( const unsigned int n ) { buffer_size = n; return *this; }
 
   RemyBuffers::NetConfig DNA( void ) const
   {
@@ -48,15 +52,15 @@ public:
       ret.set_num_senders( num_senders );
       ret.set_delay( delay );
       ret.set_link_ppt( link_ppt );
-
+      ret.set_buffer_size( buffer_size );
       return ret;
   }
 
   std::string str( void ) const
   {
     char tmp[ 256 ];
-    snprintf( tmp, 256, "mean_on=%f, mean_off=%f, nsrc=%d, link_ppt=%f, delay=%f\n",
-	      mean_on_duration, mean_off_duration, num_senders, link_ppt, delay );
+    snprintf( tmp, 256, "mean_on=%f, mean_off=%f, nsrc=%f, link_ppt=%f, delay=%f, buffer_size=%f\n",
+	     mean_on_duration, mean_off_duration, num_senders, link_ppt, delay, buffer_size );
     return tmp;
   }
 };

@@ -10,6 +10,8 @@ message WhiskerTree {
   optional ConfigRange config = 4;
 
   optional OptimizationSettings optimizer = 5;
+
+  optional ConfigVector configvector = 6;
 }
 
 message MemoryRange {
@@ -53,15 +55,16 @@ message OptimizationSettings {
 message Range {
   optional double low = 61;
   optional double high = 62;
+  optional double incr = 63;
 }
 
 message ConfigRange {
   optional Range link_packets_per_ms = 71;
   optional Range rtt = 72;
   optional Range num_senders = 73;
-
-  optional double mean_off_duration = 81;
-  optional double mean_on_duration = 82;
+  optional Range buffer_size = 74;
+  optional Range mean_off_duration = 75;
+  optional Range mean_on_duration = 76;
 }
 
 message NetConfig {
@@ -70,4 +73,9 @@ message NetConfig {
   optional uint32 num_senders = 3;
   optional double link_ppt = 4;
   optional double delay = 5;
+  optional uint32 buffer_size = 6;
+}
+
+message ConfigVector {
+  repeated NetConfig config = 81;
 }

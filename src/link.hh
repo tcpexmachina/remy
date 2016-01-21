@@ -17,7 +17,7 @@ private:
 
 public:
   Link( const double s_rate,
-	const unsigned int s_limit = std::numeric_limits<unsigned int>::max() )
+	const unsigned int s_limit )
     : _buffer(), _pending_packet( 1.0 / s_rate ), _limit( s_limit ) {}
 
   void accept( const Packet & p, const double & tickno ) noexcept {
