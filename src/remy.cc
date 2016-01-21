@@ -49,11 +49,14 @@ int main( int argc, char *argv[] )
       options.improver_options.optimize_window_increment = false;
       options.improver_options.optimize_window_multiple = false;
       options.improver_options.optimize_intersend = false;
-      for (char & c : arg.substr( 4 )) {
-        if (c == 'b') options.improver_options.optimize_window_increment = true;
-        else if (c == 'm') options.improver_options.optimize_window_multiple = true;
-        else if (c == 'r') options.improver_options.optimize_intersend = true;
-        else {
+      for ( char & c : arg.substr( 4 ) ) {
+        if ( c == 'b' ) {
+          options.improver_options.optimize_window_increment = true;
+        } else if ( c == 'm' ) {
+          options.improver_options.optimize_window_multiple = true;
+        } else if ( c == 'r' ) {
+          options.improver_options.optimize_intersend = true;
+        } else {
           fprintf( stderr, "Invalid optimize option: %c\n", c );
           exit( 1 );
         }
@@ -78,7 +81,8 @@ int main( int argc, char *argv[] )
   }
 
   if ( config_filename.empty() ) {
-    fprintf( stderr, "Provide an input config protobuf (generated using './configure'). \n");
+    fprintf( stderr, "An input configuration protobuf must be provided via the cf= option. \n");
+    fprintf( stderr, "You can generate one using './configuration'. \n");
     exit ( 1 );
   }
 
