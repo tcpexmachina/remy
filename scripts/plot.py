@@ -205,7 +205,7 @@ def log_arguments(argsfile, args):
 def make_results_dir(dirname):
     if dirname is None:
         dirname = os.path.join("results", "results" + time.strftime("%Y%m%d-%H%M%S"))
-    if os.path.exists("last"):
+    if os.path.islink("last"):
         os.unlink("last")
     os.symlink(dirname, "last")
     if not os.path.exists(dirname):
@@ -262,7 +262,7 @@ args = parser.parse_args()
 # Sanity-check arguments, warn user say they can stop things early
 if not os.path.isdir(args.originals):
     warn("The path {} is not a directory.".format(args.originals))
-if len(args.remyccs) == 0:
+if len(args.remycc) == 0:
     warn("No RemyCC files specified, plotting only originals.")
 
 # Make directories
