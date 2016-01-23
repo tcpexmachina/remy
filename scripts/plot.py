@@ -24,8 +24,10 @@ ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RATRUNNERCMD = os.path.join(ROOTDIR, "src", "rat-runner")
 SENDER_REGEX = re.compile("^sender: \[tp=(-?\d+(?:\.\d+)?), del=(-?\d+(?:\.\d+)?)\]$", re.MULTILINE)
 NORM_SCORE_REGEX = re.compile("^normalized_score = (-?\d+(?:\.\d+)?)$", re.MULTILINE)
+LINK_PPT_PRIOR_REGEX = re.compile("^link_packets_per_ms\s+\{\n\s+low: (-?\d+(?:\.\d+)?)\n\s+high: (-?\d+(?:\.\d+)?)$", re.MULTILINE)
 REMYCCSPEC_REGEX = re.compile("^([\w/]+)\.\{(\d+)\:(\d+)(?:\:(\d+))?\}$")
 NORM_SCORE_GROUP = 1
+LINK_PPT_TO_MBPS_CONVERSION = 10
 
 def print_command(command):
     message = "$ " + " ".join(command)
@@ -89,15 +91,16 @@ def run_ratrunner(remyccfilename, parameters, console_file=None):
 
 def parse_ratrunner_output(result):
     """Parses the output of rat-runner to extract the normalized score, and
-    sender throughputs and delays. Returns a 2-tuple. The first element is the
+    sender throughputs and delays. Returns a 3-tuple. The first element is the
     normalized score from the rat-runnner script. The second element is a list
     of lists, one list for each sender, each inner list having two elements,
-    [throughput, delay]."""
+    [throughput, delay]. The third element is a list [low, high], being
+    the link rate range under "prior assumptions"."""
 
     norm_matches = NORM_SCORE_REGEX.findall(result)
     if len(norm_matches) != 1:
         print(result)
-        raise RuntimeError("Found no or duplicate normalized scores in this output.".format(NORM_SCORE_REGEX.pattern))
+        raise RuntimeError("Found no or duplicate normalized scores in this output.")
     norm_score = float(norm_matches[0])
 
     sender_matches = SENDER_REGEX.findall(result)
@@ -106,7 +109,13 @@ def parse_ratrunner_output(result):
         print(result)
         warn("No senders found in this output.")
 
-    return norm_score, sender_data
+    link_ppt_prior_matches = LINK_PPT_PRIOR_REGEX.findall(result)
+    if len(link_ppt_prior_matches) != 1:
+        print(result)
+        raise RuntimeError("Found no or duplicate link packets per ms prior assumptions in this output.")
+    link_ppt_prior = tuple(map(float, link_ppt_prior_matches[0]))
+
+    return norm_score, sender_data, link_ppt_prior
 
 def compute_normalized_score(remyccfilename, parameters, console_dir=None):
     """Runs rat-runner on the given RemyCC `remyccfilename` and with the given
@@ -136,7 +145,7 @@ def generate_data_and_plot(remyccfilename, link_ppt_range, parameters, console_d
     """For a given RemyCC `remyccfilename`, runs rat-runner once on each link
     speed in `link_ppt_range` (each being specified in packets per millisecond),
     with other parameters as specified in the dict `parameters`. Returns the
-    normalized scores as given by rat-runner.
+    link rates specified under "prior assumptions".
 
     If `console_dir` is specified, the outputs of each rat-runner run are stored in
         a file (each) in that directory.
@@ -151,22 +160,22 @@ def generate_data_and_plot(remyccfilename, link_ppt_range, parameters, console_d
         data_csv = csv.writer(data_file)
 
     norm_scores = []
-
     npoints = len(link_ppt_range)
+
     for i, link_ppt in enumerate(link_ppt_range, start=1):
         parameters["link_ppt"] = link_ppt
         print("\033[KGenerating score for if={:s}, link={:f} ({:d} of {:d})...".format(
                     remyccfilename, link_ppt, i, npoints),
                     file=sys.stderr, end='\r', flush=True)
-        norm_score, sender_data = compute_normalized_score(remyccfilename, parameters, console_dir)
-        sender_numbers = chain(*sender_data)
+        norm_score, sender_data, link_ppt_prior = compute_normalized_score(remyccfilename, parameters, console_dir)
         norm_scores.append(norm_score)
+        sender_numbers = chain(*sender_data)
         if data_dir:
             data_csv.writerow([link_ppt, norm_score] + list(sender_numbers))
 
     if axes:
         print("\033[KPlotting for file {}...".format(remyccfilename), file=sys.stderr, end='\r', flush=True)
-        link_speeds = [10*l for l in link_ppt_range]
+        link_speeds = [LINK_PPT_TO_MBPS_CONVERSION*l for l in link_ppt_range]
         add_plot(axes, link_speeds, norm_scores, label=remyccfilename)
 
     data_file.close()
@@ -174,7 +183,7 @@ def generate_data_and_plot(remyccfilename, link_ppt_range, parameters, console_d
     print("\033[KDone file {}.".format(remyccfilename), file=sys.stderr)
     sys.stderr.flush()
 
-    return norm_scores
+    return link_ppt_prior
 
 def plot_from_original_file(datafilename, axes):
     """Plots data from the file `datafile` to the axes `axes`."""
@@ -229,6 +238,7 @@ def generate_remyccs_list(specs):
                 step = int(match.group(3))
             result.extend("{name}.{index:d}".format(name=name, index=index) for index in range(start, stop+1, step))
     return result
+
 
 
 
@@ -290,8 +300,10 @@ remyccfiles = generate_remyccs_list(args.remycc)
 ax = plt.axes()
 
 # Generate data and plots (the main part)
+link_ppt_priors = []
 for remyccfile in remyccfiles:
-    norm_scores = generate_data_and_plot(remyccfile, link_ppt_range, parameters, console_dirname, data_dirname, ax)
+    link_ppt_prior = generate_data_and_plot(remyccfile, link_ppt_range, parameters, console_dirname, data_dirname, ax)
+    link_ppt_priors.append(link_ppt_prior)
 
 # Add the remaining plots
 if os.path.isdir(args.originals):
@@ -301,6 +313,17 @@ if os.path.isdir(args.originals):
             warn("Skipping {}: not a file".format(path))
         print("Plotting file {}...".format(path), file=sys.stderr)
         plot_from_original_file(path, ax)
+
+# If there were RemyCCs involved, check they all had the same training range.
+# If they did, highlight the range on the graph.
+if len(link_ppt_priors) > 0:
+    if not all([l == link_ppt_priors[0] for l in link_ppt_priors]):
+        print(set(link_ppt_priors))
+        warn("Not all RemyCCs had the same training range.")
+    else:
+        link_ppt_low, link_ppt_high = link_ppt_priors[0]
+        plt.axvspan(LINK_PPT_TO_MBPS_CONVERSION*link_ppt_low, LINK_PPT_TO_MBPS_CONVERSION*link_ppt_high,
+                linewidth=0.0, facecolor="0.2", alpha=0.2)
 
 # Make plot pretty and save
 plot_filename = "link_ppt"
