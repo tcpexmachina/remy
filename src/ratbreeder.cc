@@ -10,7 +10,7 @@ using namespace std;
 
 void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int generation ) const
 {
-  const Evaluator eval( _range );
+  const Evaluator eval( _options.config_range );
   auto outcome( eval.score( whiskers, true ) );
 
   while ( 1 ) {
@@ -20,14 +20,14 @@ void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int ge
     WhiskerTree bisected_whisker( *my_whisker, true );
 
     if ( bisected_whisker.num_children() == 1 ) {
-      //      printf( "Got unbisectable whisker! %s\n", my_whisker->str().c_str() );
+      printf( "Got unbisectable whisker! %s\n", my_whisker->str().c_str() );
       auto mutable_whisker( *my_whisker );
       mutable_whisker.promote( generation + 1 );
       assert( outcome.used_whiskers.replace( mutable_whisker ) );
       continue;
     }
 
-    //    printf( "Bisecting === %s === into === %s ===\n", my_whisker->str().c_str(), bisected_whisker.str().c_str() );
+    printf( "Bisecting === %s === into === %s ===\n", my_whisker->str().c_str(), bisected_whisker.str().c_str() );
     assert( whiskers.replace( *my_whisker, bisected_whisker ) );
     break;
   }
@@ -44,7 +44,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   unsigned int generation = 0;
 
   while ( generation < 5 ) {
-    const Evaluator eval( _range );
+    const Evaluator eval( _options.config_range );
 
     auto outcome( eval.score( whiskers ) );
 
@@ -59,7 +59,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       continue;
     }
 
-    WhiskerImprover improver( eval, whiskers, outcome.score );
+    WhiskerImprover improver( eval, whiskers, _options.improver_options, outcome.score );
 
     Whisker whisker_to_improve = *most_used_whisker_ptr;
 
@@ -69,11 +69,11 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       double new_score = improver.improve( whisker_to_improve );
       assert( new_score >= score_to_beat );
       if ( new_score == score_to_beat ) {
-	cerr << "Ending search." << endl;
-	break;
+        cerr << "Ending search." << endl;
+        break;
       } else {
-	cerr << "Score jumps from " << score_to_beat << " to " << new_score << endl;
-	score_to_beat = new_score;
+        cerr << "Score jumps from " << score_to_beat << " to " << new_score << endl;
+        score_to_beat = new_score;
       }
     }
 
@@ -87,7 +87,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   apply_best_split( whiskers, generation );
 
   /* carefully evaluate what we have vs. the previous best */
-  const Evaluator eval2( _range );
+  const Evaluator eval2( _options.config_range );
   const auto new_score = eval2.score( whiskers, false, 10 );
   const auto old_score = eval2.score( input_whiskertree, false, 10 );
 
@@ -102,15 +102,19 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
 WhiskerImprover::WhiskerImprover( const Evaluator & s_evaluator,
 				  const WhiskerTree & rat,
-				  const double score_to_beat )
+          const WhiskerImproverOptions & options,
+				  const double score_to_beat)
   : eval_( s_evaluator ),
     rat_( rat ),
+    options_( options ),
     score_to_beat_( score_to_beat )
 {}
 
 double WhiskerImprover::improve( Whisker & whisker_to_improve )
 {
-  auto replacements( whisker_to_improve.next_generation() );
+  auto replacements( whisker_to_improve.next_generation( options_.optimize_window_increment,
+                                                         options_.optimize_window_multiple,
+                                                         options_.optimize_intersend) );
 
   vector< pair< const Whisker &, future< pair< bool, double > > > > scores;
 
@@ -152,6 +156,8 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
       whisker_to_improve = replacement;
     }
   }
+
+  cout << "Chose " << whisker_to_improve.str() << endl;
 
   return score_to_beat_;
 }
