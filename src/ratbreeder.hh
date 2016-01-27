@@ -3,6 +3,8 @@
 
 #include <unordered_map>
 #include <boost/functional/hash.hpp>
+#include <future>
+#include <vector>
 
 #include "configrange.hh"
 #include "evaluator.hh"
@@ -23,6 +25,7 @@ struct RatBreederOptions
 class WhiskerImprover
 {
 private:
+  static constexpr double OPT_FACTOR = 0.1; /* Only fully evaluate the top OPT_FACTOR replacements */
   const Evaluator eval_;
 
   WhiskerTree rat_;
@@ -31,6 +34,10 @@ private:
   std::unordered_map< Whisker, double, boost::hash< Whisker > > eval_cache_ {};
 
   double score_to_beat_;
+
+  void evaluate_replacements(const std::vector< Whisker > &replacements,
+    std::vector< std::pair< const Whisker &, std::future< std::pair< bool, double > > > > &scores,
+    const double carefulness);
 
 public:
   WhiskerImprover( const Evaluator & evaluator, const WhiskerTree & rat, const WhiskerImproverOptions & options,

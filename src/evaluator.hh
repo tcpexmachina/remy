@@ -39,7 +39,7 @@ public:
 
   Outcome score( WhiskerTree & run_whiskers,
 		 const bool trace = false,
-		 const unsigned int carefulness = 1 ) const;
+     const double carefulness = 1) const;
 
   static Evaluator::Outcome parse_problem_and_evaluate( const ProblemBuffers::Problem & problem );
 
