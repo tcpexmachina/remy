@@ -80,7 +80,8 @@ int main( int argc, char *argv[] )
   }
 
   if ( config_filename.empty() ) {
-    fprintf( stderr, "Provide an input config protobuf (generated using './configure'). \n");
+    fprintf( stderr, "An input configuration protobuf must be provided via the cf= option. \n");
+    fprintf( stderr, "You can generate one using './configuration'. \n");
     exit ( 1 );
   }
 
