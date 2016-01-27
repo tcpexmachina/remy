@@ -23,6 +23,7 @@ ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RATRUNNERCMD = os.path.join(ROOTDIR, "src", "rat-runner")
 SENDER_REGEX = re.compile("^sender: \[tp=(-?\d+(?:\.\d+)?), del=(-?\d+(?:\.\d+)?)\]$", re.MULTILINE)
 NORM_SCORE_REGEX = re.compile("^normalized_score = (-?\d+(?:\.\d+)?)$", re.MULTILINE)
+REMYCCSPEC_REGEX = re.compile("^([\w/]+)\.\{(\d+)\:(\d+)(?:\:(\d+))?\}$")
 NORM_SCORE_GROUP = 1
 
 def print_command(command):
@@ -168,11 +169,32 @@ def make_results_dir(dirname):
         os.makedirs(dirname, exist_ok=True)
     return dirname
 
+def generate_remyccs_list(specs):
+    result = []
+    for spec in specs:
+        match = REMYCCSPEC_REGEX.match(spec)
+        if not match:
+            result.append(spec)
+        else:
+            name = match.group(1)
+            start = int(match.group(2))
+            if match.group(4) is None:
+                stop = int(match.group(3))
+                step = 1
+            else:
+                stop = int(match.group(4))
+                step = int(match.group(3))
+            result.extend("{name}.{index:d}".format(name=name, index=index) for index in range(start, stop+1, step))
+    return result
+
+
+
+
 # Script starts here
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("remycc", nargs="+", type=str,
-    help="RemyCC file(s) to run")
+    help="RemyCC file(s) to run, can also use e.g. name.[5:5:30] to do name.5, name.10, ..., name.30")
 parser.add_argument("-n", "--num-points", type=int, default=1000,
     help="Number of points to plot")
 parser.add_argument("-s", "--nsenders", type=int, default=2,
@@ -210,10 +232,10 @@ link_ppt_range = np.logspace(np.log10(args.link_ppt[0]), np.log10(args.link_ppt[
 parameter_keys = ["nsenders", "delay", "mean_on", "mean_off"]
 parameters = {key: getattr(args, key) for key in parameter_keys}
 
-data = []
-for remyccfile in args.remycc:
+remyccfiles = generate_remyccs_list(args.remycc)
+
+for remyccfile in remyccfiles:
     norm_scores = generate_data_and_plot(remyccfile, link_ppt_range, parameters, console_dirname, data_dirname, plots_dirname)
-    data.append(norm_scores)
 
 plot_filename = "link_ppt"
 plt.xlabel("link speed (Mbps)")
