@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 "Runs rat-runner enough times to generate a plot, and plots the result."
 
+import sys
 import os
 import argparse
 import subprocess
@@ -42,9 +43,9 @@ def run_command(command, show=True, writefile=None, includestderr=True):
 
     output = subprocess.check_output(command, **kwargs)
     output = output.decode()
-    print_command(command)
 
     if show:
+        print_command(command)
         sys.stdout.write(output)
         sys.stdout.flush()
 
@@ -127,15 +128,24 @@ def generate_data_and_plot(remyccfilename, link_ppt_range, parameters, console_d
 
     for link_ppt in link_ppt_range:
         parameters["link_ppt"] = link_ppt
+
+        sys.stderr.write("\033[KGenerating score for if={:s}, link={:f}...\r".format(remyccfilename, link_ppt))
+        sys.stderr.flush()
+
         norm_score, sender_data = compute_normalized_score(remyccfilename, parameters, console_dir)
         sender_numbers = chain(*sender_data)
         norm_scores.append(norm_score)
         if data_dir:
             data_csv.writerow([link_ppt, norm_score] + list(sender_numbers))
 
+    sys.stderr.write("\033[KPlotting for file {}...\r".format(remyccfilename))
+    sys.stderr.flush()
     plt.plot([10*l for l in link_ppt_range], norm_scores, label=remyccfilename)
 
     data_file.close()
+
+    sys.stderr.write("\033[KDone file {}.\n".format(remyccfilename))
+    sys.stderr.flush()
 
     return norm_scores
 
