@@ -43,15 +43,18 @@ bool Whisker::OptimizationSetting< T >::eligible_value( const T & value ) const
 }
 
 template < typename T >
-vector< T > Whisker::OptimizationSetting< T >::alternatives( const T & value ) const
+vector< T > Whisker::OptimizationSetting< T >::alternatives( const T & value, bool active ) const
 {
   assert( eligible_value( value ) );
 
   vector< T > ret( 1, value );
 
+  /* If this axis isn't active, return only the current value. */
+  if (!active) return ret;
+
   for ( T proposed_change = min_change;
-	proposed_change <= max_change;
-	proposed_change *= multiplier ) {
+        proposed_change <= max_change;
+        proposed_change *= multiplier ) {
     /* explore positive change */
     const T proposed_value_up = value + proposed_change;
     const T proposed_value_down = value - proposed_change;
@@ -68,15 +71,15 @@ vector< T > Whisker::OptimizationSetting< T >::alternatives( const T & value ) c
   return ret;
 }
 
-vector< Whisker > Whisker::next_generation( void ) const
+vector< Whisker > Whisker::next_generation( bool optimize_window_increment, bool optimize_window_multiple, bool optimize_intersend ) const
 {
   vector< Whisker > ret;
 
-  for ( const auto & alt_window : get_optimizer().window_increment.alternatives( _window_increment ) ) {
-    for ( const auto & alt_multiple : get_optimizer().window_multiple.alternatives( _window_multiple ) ) {
-      for ( const auto & alt_intersend : get_optimizer().intersend.alternatives( _intersend ) ) {
-	Whisker new_whisker { *this };
-	new_whisker._generation++;
+  for ( const auto & alt_window : get_optimizer().window_increment.alternatives( _window_increment, optimize_window_increment ) ) {
+    for ( const auto & alt_multiple : get_optimizer().window_multiple.alternatives( _window_multiple, optimize_window_multiple ) ) {
+      for ( const auto & alt_intersend : get_optimizer().intersend.alternatives( _intersend, optimize_intersend ) ) {
+        Whisker new_whisker { *this };
+        new_whisker._generation++;
 
 	new_whisker._window_increment = alt_window;
 	new_whisker._window_multiple = alt_multiple;
