@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <limits>
+#include <fstream>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -11,8 +12,14 @@
 #include "dna.pb.h"
 using namespace std;
 
-// Parses input arguments, create range protobuf for specific parameter
-RemyBuffers::Range set_range_protobuf(int argc, char *argv[], string arg_name) {
+// Parses input arguments, create range protobuf for specific parameter.
+// If mandatory is false and no input arguments are found, skips and returns false.
+// If the input arugments are invalid, or if mandatory is true and no input arguments
+// are found, calls exit(1).
+// If all input arguments were found, updates the range and returns true.
+bool update_config_with_range(RemyBuffers::Range * range, int argc,
+    char *argv[], string arg_name, bool mandatory) {
+
   string min_string = "min_" + arg_name + "=";
   string max_string = "max_" + arg_name + "=";
   string incr_string = arg_name + "_incr=";
@@ -36,11 +43,17 @@ RemyBuffers::Range set_range_protobuf(int argc, char *argv[], string arg_name) {
     }
   }
 
+  if ( (min == -1 ) && (max == -1) && !mandatory ) {
+    fprintf( stderr, "No arguments found for %s\n", arg_name.c_str() );
+    return false;
+  }
+
   if ( (min == -1) || (max == -1) ) {
     fprintf( stderr, "Please provide min, max and incr for %s with %s, %s, %s\n", arg_name.c_str(), min_string.c_str(), max_string.c_str(), incr_string.c_str());
     exit(1);
   }
 
+  // check for validity
   if ( min < max ) {
     if ( incr == 0 ) {
       fprintf( stderr, "Please provide non-zero incr for %s\n", arg_name.c_str());
@@ -53,20 +66,24 @@ RemyBuffers::Range set_range_protobuf(int argc, char *argv[], string arg_name) {
     fprintf( stderr, "Please provide valid min and max for %s\n.", arg_name.c_str());
     exit(1);
   }
-    
-  RemyBuffers::Range range;
-  range.set_low(min);
-  range.set_high(max);
-  range.set_incr(incr);
-  return range;
+
+  range->set_low(min);
+  range->set_high(max);
+  range->set_incr(incr);
+
+  return true;
 }
 
 int main(int argc, char *argv[]) {
-  string output_filename;
+  string input_filename, output_filename;
   bool infinite_buffers = false;
+  ifstream input_file;
 
   for (int i = 1; i < argc; i++) {
     string arg( argv[ i ] );
+    if ( arg.substr( 0, 3 ) == "if=") {
+      input_filename = string( arg.substr( 3 ) );
+    }
     if ( arg.substr( 0, 3 ) == "of=") {
       output_filename = string( arg.substr( 3 ) ) + ".cfg";
     }
@@ -80,23 +97,32 @@ int main(int argc, char *argv[]) {
     exit ( 1 );
   }
 
-  // parse all other config range parameters
-  RemyBuffers::Range link_ppt = set_range_protobuf(argc, argv, "link_ppt");
-  RemyBuffers::Range rtt = set_range_protobuf(argc, argv, "rtt");
-  RemyBuffers::Range num_senders = set_range_protobuf(argc, argv, "nsrc");
-  RemyBuffers::Range mean_on_duration = set_range_protobuf(argc, argv, "on");
-  RemyBuffers::Range mean_off_duration = set_range_protobuf(argc, argv, "off");
+  RemyBuffers::ConfigRange input_config;
+  bool mandatory = true;
 
-  // add these ranges to configrange protobuf
-  RemyBuffers::ConfigRange input_config; 
-  input_config.mutable_link_packets_per_ms()->CopyFrom(link_ppt);
-  input_config.mutable_rtt()->CopyFrom(rtt);
-  input_config.mutable_num_senders()->CopyFrom(num_senders);
-  input_config.mutable_mean_on_duration()->CopyFrom(mean_on_duration);
-  input_config.mutable_mean_off_duration()->CopyFrom(mean_off_duration);
+  // If there's an input file, read it and use it
+  if (!input_filename.empty()) {
+    mandatory = false;
+    input_file.open( input_filename );
+    if ( !input_file.is_open() ) {
+      fprintf(stderr, "Could not open file %s\n", input_filename.c_str() );
+      exit( 1 );
+    }
+    if ( !input_config.ParseFromIstream( &input_file )) {
+      fprintf(stderr, "Could not parse file %s\n", input_filename.c_str() );
+      exit( 1 );
+    }
+    input_file.close();
+  }
+
+  update_config_with_range(input_config.mutable_link_packets_per_ms(), argc, argv, "link_ppt", mandatory);
+  update_config_with_range(input_config.mutable_rtt(), argc, argv, "rtt", mandatory);
+  update_config_with_range(input_config.mutable_num_senders(), argc, argv, "nsrc", mandatory);
+  update_config_with_range(input_config.mutable_mean_on_duration(), argc, argv, "on", mandatory);
+  update_config_with_range(input_config.mutable_mean_off_duration(), argc, argv, "off", mandatory);
+
   if ( !(infinite_buffers) ) {
-    RemyBuffers::Range buffer_size = set_range_protobuf(argc, argv, "buf_size");
-    input_config.mutable_buffer_size()->CopyFrom(buffer_size);
+    update_config_with_range(input_config.mutable_buffer_size(), argc, argv, "buf_size", mandatory);
   } else {
     RemyBuffers::Range buffer_size;
     buffer_size.set_low( numeric_limits<unsigned int>::max() );
