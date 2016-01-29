@@ -91,14 +91,7 @@ int main( int argc, char *argv[] )
     exit ( 1 );
   }
 
-
-  options.config_range.link_ppt = Range( input_config.link_packets_per_ms() );
-  options.config_range.rtt = Range( input_config.rtt() );
-  options.config_range.num_senders = Range( input_config.num_senders() );
-  options.config_range.mean_on_duration = Range( input_config.mean_on_duration() );
-  options.config_range.mean_off_duration = Range( input_config.mean_off_duration() );
-  options.config_range.buffer_size = Range( input_config.buffer_size() );
-  options.config_range.simulation_ticks = input_config.simulation_ticks();
+  options.config_range = ConfigRange( input_config );
 
   RatBreeder breeder( options );
 
