@@ -15,6 +15,7 @@ import csv
 from math import log2
 from warnings import warn
 from itertools import chain
+from socket import gethostname
 
 use_color = True
 
@@ -204,6 +205,7 @@ def plot_from_original_file(datafilename, axes):
 
 def log_arguments(argsfile, args):
     argsfile.write("Started at " + time.asctime() + "\n")
+    argsfile.write("Machine name: " + gethostname() + "\n")
     argsfile.write("Git commit: " + subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode() + "\n")
 
     argsfile.write("\nArguments:\n")
