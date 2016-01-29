@@ -11,6 +11,12 @@
 #include "configrange.hh"
 using namespace std;
 
+void print_range( const Range & range, const string & name )
+{
+  printf( "Optimizing for %s over [%f : %f : %f]\n", name.c_str(),
+    range.low, range.incr, range.high );
+}
+
 int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
@@ -76,7 +82,7 @@ int main( int argc, char *argv[] )
         perror( "close" );
         exit( 1 );
       }
-    } 
+    }
   }
 
   if ( config_filename.empty() ) {
@@ -101,23 +107,17 @@ int main( int argc, char *argv[] )
   printf( "#######################\n" );
   printf( "Evaluator simulations will run for %d ticks\n",
     options.config_range.simulation_ticks );
-  printf( "Optimizing for link packets_per_ms in [%f, %f]\n",
-	  options.config_range.link_ppt.low,
-	  options.config_range.link_ppt.high );
-  printf( "Optimizing for rtt_ms in [%f, %f]\n",
-	  options.config_range.rtt.low,
-	  options.config_range.rtt.high );
-  printf( "Optimizing for num_senders in [%f, %f]\n",
-	  options.config_range.num_senders.low, options.config_range.num_senders.high );
-  printf( "Optimizing for mean_on_duration in [%f, %f], mean_off_duration in [ %f, %f]\n",
-	  options.config_range.mean_on_duration.low, options.config_range.mean_on_duration.high, options.config_range.mean_off_duration.low, options.config_range.mean_off_duration.high );
   printf( "Optimizing window increment: %d, window multiple: %d, intersend: %d\n",
           options.improver_options.optimize_window_increment, options.improver_options.optimize_window_multiple,
           options.improver_options.optimize_intersend);
+  print_range( options.config_range.link_ppt, "link packets_per_ms" );
+  print_range( options.config_range.rtt, "rtt_ms" );
+  print_range( options.config_range.num_senders, "num_senders" );
+  print_range( options.config_range.mean_on_duration, "mean_on_duration" );
+  print_range( options.config_range.mean_off_duration, "mean_off_duration" );
+
   if ( options.config_range.buffer_size.low != numeric_limits<unsigned int>::max() ) {
-    printf( "Optimizing for buffer_size in [%f, %f]\n",
-            options.config_range.buffer_size.low,
-            options.config_range.buffer_size.high );
+    print_range( options.config_range.buffer_size, "buffer_size" );
   } else {
     printf( "Optimizing for infinitely sized buffers. \n");
   }
@@ -147,7 +147,7 @@ int main( int argc, char *argv[] )
           RemyBuffers::NetConfig* net_config = training_configs.add_config();
           *net_config = run.first.DNA();
           written = true;
-      
+
         }
       }
       printf( "===\nconfig: %s\n", run.first.str().c_str() );
