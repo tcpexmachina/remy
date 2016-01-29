@@ -20,7 +20,8 @@ RemyBuffers::ConfigRange ConfigRange::DNA( void ) const
   ret.mutable_num_senders()->CopyFrom( pair_to_range( num_senders ) );
   ret.mutable_mean_on_duration()->CopyFrom( pair_to_range( mean_on_duration ) );
   ret.mutable_mean_off_duration()->CopyFrom( pair_to_range( mean_off_duration ) );
-  ret.mutable_buffer_size()->CopyFrom( pair_to_range( buffer_size ) );  
+  ret.mutable_buffer_size()->CopyFrom( pair_to_range( buffer_size ) );
+  ret.set_simulation_ticks( simulation_ticks );
 
   return ret;
 }

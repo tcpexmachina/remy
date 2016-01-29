@@ -20,6 +20,7 @@ int main( int argc, char *argv[] )
   double mean_on_duration = 5000.0;
   double mean_off_duration = 5000.0;
   double buffer_size = numeric_limits<unsigned int>::max();
+  unsigned int simulation_ticks = 1000000;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -81,6 +82,8 @@ int main( int argc, char *argv[] )
   configuration_range.mean_on_duration = Range( mean_on_duration, mean_on_duration, 0 );
   configuration_range.mean_off_duration = Range( mean_off_duration, mean_off_duration, 0 );
   configuration_range.buffer_size = Range( buffer_size, buffer_size, 0 );
+  configuration_range.simulation_ticks = simulation_ticks;
+
   Evaluator eval( configuration_range );
   auto outcome = eval.score( whiskers, false, 10 );
   printf( "score = %f\n", outcome.score );

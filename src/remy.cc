@@ -92,12 +92,15 @@ int main( int argc, char *argv[] )
   options.config_range.mean_on_duration = Range( input_config.mean_on_duration() );
   options.config_range.mean_off_duration = Range( input_config.mean_off_duration() );
   options.config_range.buffer_size = Range( input_config.buffer_size() );
+  options.config_range.simulation_ticks = input_config.simulation_ticks();
 
   RatBreeder breeder( options );
 
   unsigned int run = 0;
 
   printf( "#######################\n" );
+  printf( "Evaluator simulations will run for %d ticks\n",
+    options.config_range.simulation_ticks );
   printf( "Optimizing for link packets_per_ms in [%f, %f]\n",
 	  options.config_range.link_ppt.low,
 	  options.config_range.link_ppt.high );

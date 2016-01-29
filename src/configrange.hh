@@ -42,7 +42,8 @@ public:
   Range mean_off_duration = Range();
   Range num_senders = Range();
   Range buffer_size = Range();
- 
+  unsigned int simulation_ticks = 1000000;
+
   RemyBuffers::ConfigRange DNA( void ) const;
 };
 
