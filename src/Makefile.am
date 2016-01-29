@@ -2,7 +2,7 @@ AM_CPPFLAGS = -I../protobufs
 AM_CXXFLAGS = $(PICKY_CXXFLAGS)
 LDADD = ../protobufs/libremyprotos.a -ljemalloc -lm $(protobuf_LIBS)
 
-bin_PROGRAMS = remy rat-runner scoring-example configuration
+bin_PROGRAMS = remy rat-runner scoring-example configuration inspect-config
 
 common_source = delay.hh evaluator.cc evaluator.hh                     \
 	exponential.hh link.hh link-templates.cc                       \
@@ -23,3 +23,5 @@ rat_runner_SOURCES = $(common_source) rat-runner.cc
 scoring_example_SOURCES = $(common_source) scoring-example.cc
 
 configuration_SOURCES = input-configrange.cc
+
+inspect_config_SOURCES = inspect-configrange.cc

@@ -30,6 +30,7 @@ Makefile.in
 /protobufs/problem.pb.cc
 /protobufs/problem.pb.h
 /src/configuration
+/src/inspect-config
 /src/rat-runner
 /src/remy
 /src/scoring-example
