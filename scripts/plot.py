@@ -13,6 +13,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import csv
+import json
 from math import log2
 from warnings import warn
 from itertools import chain
@@ -209,14 +210,16 @@ def plot_from_original_file(datafilename, axes):
         print("Error plotting from {}: {}".format(datafilename, e), file=sys.stderr)
 
 def log_arguments(argsfile, args):
-    argsfile.write("Started at " + time.asctime() + "\n")
-    argsfile.write("Machine name: " + gethostname() + "\n")
-    argsfile.write("Git commit: " + subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode() + "\n")
-
-    argsfile.write("\nArguments:\n")
-    for key, value in vars(args).items():
-        argsfile.write("{:>20} = {}\n".format(key, value))
-    argsfile.close()
+    jsondict = {
+        "start-time": time.asctime(),
+        "machine-name": gethostname(),
+        "git": {
+            "commit": subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip(),
+            "branch": subprocess.check_output(['git', 'symbolic-ref', '--short', '--quiet', 'HEAD']).decode().strip(),
+        },
+        "args": vars(args)
+    }
+    json.dump(jsondict, argsfile, indent=2, sort_keys=True)
 
 def make_results_dir(dirname):
     if dirname is None:
@@ -295,7 +298,7 @@ os.makedirs(data_dirname, exist_ok=True)
 os.makedirs(plots_dirname, exist_ok=True)
 
 # Log arguments
-args_file = open(os.path.join(results_dirname, "args.txt"), "w")
+args_file = open(os.path.join(results_dirname, "args.json"), "w")
 log_arguments(args_file, args)
 args_file.close()
 
