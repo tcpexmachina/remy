@@ -20,6 +20,7 @@ from itertools import chain
 from socket import gethostname
 
 use_color = True
+DEFAULT_RESULTS_DIR = "results"
 
 HLINE1 = "-" * 80 + "\n"
 HLINE2 = "=" * 80 + "\n"
@@ -223,7 +224,7 @@ def log_arguments(argsfile, args):
 
 def make_results_dir(dirname):
     if dirname is None:
-        dirname = os.path.join("results", "results" + time.strftime("%Y%m%d-%H%M%S"))
+        dirname = os.path.join(DEFAULT_RESULTS_DIR, "results" + time.strftime("%Y%m%d-%H%M%S"))
     if os.path.islink("last"):
         os.unlink("last")
     os.symlink(dirname, "last")
