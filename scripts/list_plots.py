@@ -15,8 +15,10 @@ parser.add_argument("-v", "--verbosity", type=int, default=0,
 args = parser.parse_args()
 
 directory = args.directory
+entries = os.listdir(directory)
+entries.sort()
 
-for entry in os.listdir(directory):
+for entry in entries:
 
     dirname = os.path.join(directory, entry)
 
@@ -42,6 +44,9 @@ for entry in os.listdir(directory):
     remyccs = [os.path.basename(r) for r in remyccs]
     npoints = args_dict.get("num_points", -1)
 
-    print("{dirname:30} {branch:14} {commit:9} {npoints:>5d} {remyccs}".format(
+    plotsdirname = os.path.join(dirname, "plots")
+    noplots = "[no plots] " if os.path.isdir(plotsdirname) and len(os.listdir(plotsdirname)) == 0 else ""
+
+    print("{dirname:30} {branch:14} {commit:9} {npoints:>5d} {noplots}{remyccs}".format(
         dirname=dirname, branch=git_branch, commit=git_commit, npoints=npoints,
-        remyccs=" ".join(remyccs)))
+        remyccs=" ".join(remyccs), noplots=noplots))
