@@ -72,7 +72,7 @@ def run_ratrunner(remyccfilename, parameters, console_file=None):
     `remyccfilename` is the name of the RemyCC to test.
     `parameters` is a dict of parameters.
     If `console_file` is specified, it must be a file object, and the output will be written to it."""
-    defaults = dict(nsenders=2, link_ppt=1.0, delay=100.0, mean_on=5000.0, mean_off=5000.0)
+    defaults = dict(nsenders=2, link_ppt=1.0, delay=100.0, mean_on=5000.0, mean_off=5000.0, buffer_size="inf")
     unrecognized_parameters = [k for k in parameters if k not in defaults]
     if unrecognized_parameters:
         warn("Unrecognized parameters: {}".format(unrecognized_parameters))
@@ -87,6 +87,7 @@ def run_ratrunner(remyccfilename, parameters, console_file=None):
         "rtt={:f}".format(parameters["delay"]),
         "on={:f}".format(parameters["mean_on"]),
         "off={:f}".format(parameters["mean_off"]),
+        "buf={:s}".format(parameters["buffer_size"]),
     ]
 
     return run_command(command, show=False, writefile=console_file, includestderr=True)
@@ -265,6 +266,8 @@ parser.add_argument("-q", "--mean-on", type=float, default=1000.0,
     help="Mean on duration (milliseconds)")
 parser.add_argument("-w", "--mean-off", type=float, default=1000.0,
     help="Mean off duration (milliseconds)")
+parser.add_argument("-b", "--buffer", type=str, default="inf",
+    help="Buffer size, a number or 'inf' for infinite buffers")
 parser.add_argument("--dry-run", action="store_true", default=False,
     help="Print commands, don't run them.")
 parser.add_argument("-r", "--results-dir", type=str, default=None,

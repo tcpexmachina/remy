@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <vector>
 #include <string>
+#include <limits>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -18,6 +19,7 @@ int main( int argc, char *argv[] )
   double delay = 100.0;
   double mean_on_duration = 5000.0;
   double mean_off_duration = 5000.0;
+  double buffer_size = numeric_limits<unsigned int>::max();
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -63,15 +65,22 @@ int main( int argc, char *argv[] )
     } else if ( arg.substr( 0, 4 ) == "off=" ) {
       mean_off_duration = atof( arg.substr( 4 ).c_str() );
       fprintf( stderr, "Setting mean_off_duration to %f ms\n", mean_off_duration );
+    } else if ( arg.substr( 0, 4 ) == "buf=" ) {
+      if (arg.substr( 4 ) == "inf") {
+        buffer_size = numeric_limits<unsigned int>::max();
+      } else {
+        buffer_size = atoi( arg.substr( 4 ).c_str() );
+      }
     }
   }
 
   ConfigRange configuration_range;
   configuration_range.link_ppt = Range( link_ppt,link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
   configuration_range.rtt = Range( delay, delay, 0 ); /* ms */
-  configuration_range.num_senders = Range(num_senders, num_senders, 0 );
-  configuration_range.mean_on_duration = Range(mean_on_duration, mean_on_duration, 0);
-  configuration_range.mean_off_duration = Range(mean_off_duration, mean_off_duration, 0);
+  configuration_range.num_senders = Range( num_senders, num_senders, 0 );
+  configuration_range.mean_on_duration = Range( mean_on_duration, mean_on_duration, 0 );
+  configuration_range.mean_off_duration = Range( mean_off_duration, mean_off_duration, 0 );
+  configuration_range.buffer_size = Range( buffer_size, buffer_size, 0 );
   Evaluator eval( configuration_range );
   auto outcome = eval.score( whiskers, false, 10 );
   printf( "score = %f\n", outcome.score );
