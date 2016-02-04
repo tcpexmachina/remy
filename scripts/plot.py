@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-"Runs rat-runner enough times to generate a plot, and plots the result."
+"""Runs rat-runner enough times to generate a plot, and plots the result.
+This script requires Python 3."""
 
 import sys
 import os
@@ -115,6 +116,9 @@ def parse_ratrunner_output(result):
         print(result)
         raise RuntimeError("Found no or duplicate link packets per ms prior assumptions in this output.")
     link_ppt_prior = tuple(map(float, link_ppt_prior_matches[0]))
+
+    # Divide norm_score the number of senders (rat-runner returns the sum)
+    norm_score /= len(sender_data)
 
     return norm_score, sender_data, link_ppt_prior
 
