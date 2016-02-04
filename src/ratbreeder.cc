@@ -71,7 +71,7 @@ Evaluator< WhiskerTree >::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   return new_score;
 }
 
-vector< Whisker > WhiskerImprover::get_replacements( Whisker & whisker_to_improve ) 
+vector< Whisker > WhiskerImprover::get_replacements( Whisker & whisker_to_improve )
 {
   return whisker_to_improve.next_generation( _options.optimize_window_increment,
                                              _options.optimize_window_multiple,

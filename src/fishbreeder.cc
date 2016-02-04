@@ -71,7 +71,7 @@ Evaluator< FinTree >::Outcome FishBreeder::improve( FinTree & fins )
   return new_score;
 }
 
-vector< Fin > FinImprover::get_replacements( Fin & action_to_improve ) 
+vector< Fin > FinImprover::get_replacements( Fin & action_to_improve )
 {
   return action_to_improve.next_generation();
 }

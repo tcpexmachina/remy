@@ -26,7 +26,7 @@ DEFAULT_RESULTS_DIR = "results"
 HLINE1 = "-" * 80 + "\n"
 HLINE2 = "=" * 80 + "\n"
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RATRUNNERCMD = os.path.join(ROOTDIR, "src", "rat-runner")
+RATRUNNERCMD = os.path.join(ROOTDIR, "src", "sender-runner")
 SENDER_REGEX = re.compile("^sender: \[tp=(-?\d+(?:\.\d+)?), del=(-?\d+(?:\.\d+)?)\]$", re.MULTILINE)
 NORM_SCORE_REGEX = re.compile("^normalized_score = (-?\d+(?:\.\d+)?)$", re.MULTILINE)
 LINK_PPT_PRIOR_REGEX = re.compile("^link_packets_per_ms\s+\{\n\s+low: (-?\d+(?:\.\d+)?)\n\s+high: (-?\d+(?:\.\d+)?)$", re.MULTILINE)
@@ -322,10 +322,13 @@ def log_arguments(argsfile, args):
         "machine-name": gethostname(),
         "git": {
             "commit": subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip(),
-            "branch": subprocess.check_output(['git', 'symbolic-ref', '--short', '--quiet', 'HEAD']).decode().strip(),
         },
         "args": vars(args)
     }
+    try:
+        jsondict["git"]["branch"] = subprocess.check_output(['git', 'symbolic-ref', '--short', '--quiet', 'HEAD']).decode().strip()
+    except subprocess.CalledProcessError:
+        pass
     json.dump(jsondict, argsfile, indent=2, sort_keys=True)
 
 def make_results_dir(dirname):

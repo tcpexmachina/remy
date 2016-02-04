@@ -29,6 +29,8 @@ Makefile.in
 /protobufs/dna.pb.h
 /protobufs/problem.pb.cc
 /protobufs/problem.pb.h
+/protobufs/simulationresults.pb.cc
+/protobufs/simulationresults.pb.h
 /src/configuration
 /src/inspect-config
 /src/sender-runner
