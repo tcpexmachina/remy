@@ -469,7 +469,6 @@ elif len(link_ppt_priors) > 1:
 plot_filename = "link_ppt"
 ax.set_xlabel("link speed (Mbps)")
 ax.set_ylabel("normalized score")
-box = ax.get_position()
 ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1))
 plt.savefig(os.path.join(plots_dirname, "{:s}.png".format(plot_filename)), format="png", bbox_inches="tight")
 plt.savefig(os.path.join(plots_dirname, "{:s}.pdf".format(plot_filename)), format="pdf", bbox_inches="tight")
