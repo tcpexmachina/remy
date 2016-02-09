@@ -25,7 +25,7 @@ struct RatBreederOptions
 class WhiskerImprover
 {
 private:
-  static constexpr double OPT_FACTOR = 0.1; /* Only fully evaluate the top OPT_FACTOR replacements */
+  static constexpr double PERCENT_ERROR = 0.3;
   const Evaluator eval_;
 
   WhiskerTree rat_;

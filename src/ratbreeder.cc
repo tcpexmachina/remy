@@ -150,23 +150,19 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
 
   /* Run for 5% simulation time to get estimates for the final score */
   evaluate_replacements(replacements, scores, 0.05);
-  accumulator_t_right acc(
-    tag::tail< boost::accumulators::right >::cache_size = scores.size() );
-  accumulator_t_right acc1(
-    tag::tail< boost::accumulators::right >::cache_size = scores.size() );
   vector<double> raw_scores;
   for ( auto & x : scores ) {
     const double score( x.second.get().second );
-    acc(score);
     raw_scores.push_back(score);
   }
-  /* Keep only the top OPTIMIZATION_FACTOR of the replacements */
-  double cutoff = quantile(acc, quantile_probability = 1 - OPT_FACTOR );
+  double best_score = *std::max_element(raw_scores.begin(), raw_scores.end());
+  double lower_bound = std::min(best_score * (1 + PERCENT_ERROR), 
+    best_score * (1 - PERCENT_ERROR));
   vector<Whisker> top_replacements;
   for ( uint i = 0; i < scores.size(); i ++ ) {
     const Whisker & replacement( scores.at(i).first );
     const double score( raw_scores.at(i) );
-    if ( score >= cutoff ) {
+    if ( score >= lower_bound ) {
       top_replacements.push_back(replacement);
     }
   }
@@ -177,15 +173,16 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
   raw_scores.clear();
   for ( auto & x : scores ) {
     const double score( x.second.get().second );
-    acc1(score);
     raw_scores.push_back(score);
   }
-  cutoff = quantile(acc1, quantile_probability = 1 - OPT_FACTOR );
+  best_score = *std::max_element(raw_scores.begin(), raw_scores.end());
+  lower_bound = std::min(best_score * (1 + PERCENT_ERROR), 
+    best_score * (1 - PERCENT_ERROR));
   vector<Whisker> full_top_replacements;
   for ( uint i = 0; i < scores.size(); i ++ ) {
     const Whisker & replacement( scores.at(i).first );
     const double score( raw_scores.at(i) );
-    if ( score >= cutoff ) {
+    if ( score >= lower_bound ) {
       full_top_replacements.push_back(replacement);
     }
     if ( score > score_to_beat_ ) {
@@ -194,15 +191,6 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
     }
   }
   
-  int c1 = 0;
-  for (auto & w1 : top_replacements) {
-    for (auto & w2 : full_top_replacements) {
-      if (w1 == w2) {
-        c1 ++;
-        break;
-      }
-    }
-  }
   int c2 = 0;
   for (auto & w2 : full_top_replacements) {
     for (auto & w1 : top_replacements) {
@@ -213,8 +201,9 @@ double WhiskerImprover::improve( Whisker & whisker_to_improve )
     }
   }
   std::fstream fs;
-  fs.open("top10.txt", std::fstream::in | std::fstream::out | std::fstream::app);
-  fs << c1  << " " << c2 << " " << top_replacements.size();
+  fs.open("PERCENT_ERROR.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+  fs << c2  << " " << full_top_replacements.size() << " " 
+    << top_replacements.size() << " " << replacements.size() <<"\n";
   fs.close();
 
   cout << "Chose " << whisker_to_improve.str() << endl;
