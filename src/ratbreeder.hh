@@ -25,7 +25,7 @@ struct RatBreederOptions
 class WhiskerImprover
 {
 private:
-  static constexpr double PERCENT_ERROR = 0.3;
+  const double MAX_PERCENT_ERROR = 0.05;
   const Evaluator eval_;
 
   WhiskerTree rat_;
@@ -38,6 +38,9 @@ private:
   void evaluate_replacements(const std::vector< Whisker > &replacements,
     std::vector< std::pair< const Whisker &, std::future< std::pair< bool, double > > > > &scores,
     const double carefulness);
+
+  std::vector<Whisker> early_bail_out(const std::vector< Whisker > &replacements,
+        const double carefulness, const double quantile_to_keep);
 
 public:
   WhiskerImprover( const Evaluator & evaluator, const WhiskerTree & rat, const WhiskerImproverOptions & options,

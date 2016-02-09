@@ -38,8 +38,8 @@ public:
   ProblemBuffers::Problem DNA( const WhiskerTree & whiskers ) const;
 
   Outcome score( WhiskerTree & run_whiskers,
-		 const bool trace = false,
-     const double carefulness = 1) const;
+		const bool trace = false,
+		const double carefulness = 1) const;
 
   static Evaluator::Outcome parse_problem_and_evaluate( const ProblemBuffers::Problem & problem );
 
