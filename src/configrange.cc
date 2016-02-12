@@ -18,7 +18,8 @@ ConfigRange::ConfigRange( void ) :
   mean_off_duration( Range() ),
   num_senders( Range() ),
   buffer_size( Range() ),
-  simulation_ticks( 1000000 )
+  simulation_ticks( 1000000 ),
+  simulation_log_interval_ticks( 1000 )
 {
 }
 
@@ -29,7 +30,8 @@ ConfigRange::ConfigRange( RemyBuffers::ConfigRange input_config ) :
   mean_off_duration( Range( input_config.mean_off_duration() ) ),
   num_senders( Range( input_config.num_senders() ) ),
   buffer_size( Range( input_config.buffer_size() ) ),
-  simulation_ticks( input_config.simulation_ticks() )
+  simulation_ticks( input_config.simulation_ticks() ),
+  simulation_log_interval_ticks( input_config.simulation_log_interval_ticks() )
 {
 }
 

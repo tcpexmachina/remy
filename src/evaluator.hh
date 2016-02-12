@@ -36,6 +36,7 @@ public:
 private:
   const unsigned int _prng_seed;
   unsigned int _tick_count;
+  double _log_interval_ticks;
 
   std::vector< NetConfig > _configs;
 
@@ -47,8 +48,9 @@ public:
   ProblemBuffers::Problem DNA( const T & actions ) const;
 
   Outcome score( T & run_actions,
-		const bool trace = false,
-		const double carefulness = 1) const;
+		 const bool trace = false,
+		 const double carefulness = 1,
+     const bool log_simulation = false ) const;
 
   static Evaluator::Outcome parse_problem_and_evaluate( const ProblemBuffers::Problem & problem );
 
@@ -56,7 +58,9 @@ public:
 			const unsigned int prng_seed,
 			const std::vector<NetConfig> & configs,
 			const bool trace,
-			const unsigned int ticks_to_run );
+			const unsigned int ticks_to_run,
+      const double _log_interval = 1000,
+      const bool log_simulation = false );
 };
 
 #endif

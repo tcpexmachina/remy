@@ -86,7 +86,7 @@ public:
 
   Network( const typename Gang1Type::Sender & example_sender1, PRNG & s_prng, const NetConfig & config );
 
-  void run_simulation( const double & duration, SimulationRunData & run_data = NULL, const double interval = 1000 );
+  void run_simulation( const double & duration, SimulationRunData * run_data = NULL, const double interval = 1000 );
 
   void run_simulation_until( const double tick_limit );
 
