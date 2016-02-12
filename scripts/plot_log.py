@@ -9,17 +9,24 @@ except ImportError:
     exit(1)
 import matplotlib.pyplot as plt
 
-def make_plot(attrname, ylabel, times, num_senders):
+def datagetter(attrname):
+    def datagetterfunc(points, sender_data_id):
+        return [getattr(point.sender_data[sender_data_id], attrname) for point in points]
+    return datagetterfunc
+
+def make_plot(attrname, times, num_senders, unit=None, valuesfunc=None):
     figfilename = "{}.png".format(attrname)
     print("Generating {}...".format(figfilename))
     plt.figure()
+    if valuesfunc is None:
+        valuesfunc = datagetter(attrname)
     for i in range(num_senders):
-        values = [getattr(point.sender_data[i], attrname) for point in run_data.point]
+        values = valuesfunc(run_data.point, i)
         plt.plot(times, values, label="sender {:d}".format(i))
     pretty_name = attrname.capitalize().replace("_", " ")
     plt.title(pretty_name)
     plt.xlabel("Time (s)")
-    plt.ylabel(ylabel)
+    plt.ylabel(pretty_name + "({})".format(unit) if unit else "")
     plt.xlim([min(times), max(times)])
     plt.legend(loc='lower right')
     plt.savefig(figfilename, format="png", bbox_inches="tight")
@@ -40,12 +47,35 @@ data = read_log_file(logfile)
 logfile.close()
 
 PLOTS = [
-    ("average_throughput_since_start", "Throughput"),
-    ("average_delay_since_start", "Delay (ms)"),
+    ("average_throughput", None),
+    ("average_delay", "ms"),
+    ("sending_duration", "ms"),
+    ("packets_received", None),
+    ("total_delay", "ms"),
 ]
 
+def diffgetter(numerator, denominator):
+    def diffgetterfunc(points, sender_data_id):
+        numerator_values = datagetter(numerator)(points, sender_data_id)
+        denominator_values = datagetter(denominator)(points, sender_data_id)
+        data = [0.0]
+        for i in xrange(1, len(points)):
+            n = numerator_values[i] - numerator_values[i-1]
+            d = denominator_values[i] - denominator_values[i-1]
+            if n == 0 and d == 0:
+                data.append(data[-1])
+            elif d == 0:
+                data.append(0.0)
+            else:
+                data.append(n/d)
+        return data
+    return diffgetterfunc
+
 for run_data in data.run_data:
-    for attrname, ylabel in PLOTS:
+    for attrname, unit in PLOTS:
         times = [point.seconds for point in run_data.point]
         num_senders = run_data.config.num_senders
-        make_plot(attrname, ylabel, times, num_senders)
+        make_plot(attrname, times, num_senders, unit=unit)
+
+    make_plot("throughput", times, num_senders, valuesfunc=diffgetter("packets_received", "sending_duration"))
+    make_plot("delay", times, num_senders, valuesfunc=diffgetter("total_delay", "packets_received"))

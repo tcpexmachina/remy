@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cassert>
 #include <climits>
+#include "senderdatapoint.hh"
 
 class Utility
 {
@@ -23,6 +24,11 @@ public:
       assert( x.tick_received >= x.tick_sent );
       _total_delay += x.tick_received - x.tick_sent;
     }
+  }
+
+  SenderDataPoint statistics_for_log( void ) const {
+    return SenderDataPoint( average_throughput_normalized_to_equal_share(),
+        average_delay(), _tick_share_sending, _packets_received, _total_delay );
   }
 
   /* returns throughput normalized to equal share of link */

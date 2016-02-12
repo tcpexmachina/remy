@@ -263,6 +263,17 @@ vector< pair< double, double > > SenderGang<SenderType, SwitcherType>::throughpu
   return ret;
 }
 
+template <class SenderType, class SwitcherType>
+vector< SenderDataPoint > SenderGang<SenderType, SwitcherType>::statistics_for_log( void ) const
+{
+  vector < SenderDataPoint > points;
+  points.reserve( _gang.size() );
+  for ( auto &x : _gang ) {
+    points.push_back( x.utility.statistics_for_log() );
+  }
+  return points;
+}
+
 template <class SenderType>
 double SwitchedSender<SenderType>::next_event_time( const double & tickno ) const
 {

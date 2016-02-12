@@ -57,7 +57,7 @@ void Network<Gang1Type, Gang2Type>::run_simulation( const double & duration,
 
     if ( run_data != NULL && _tickno > next_log_time ) {
       SimulationRunDataPoint & datum = run_data->add_datum( _tickno / 1000.0 );
-      datum.add_sender_data( _senders.throughputs_delays() );
+      datum.add_sender_data( _senders.statistics_for_log() );
       next_log_time += interval;
     }
 

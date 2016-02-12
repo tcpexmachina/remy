@@ -4,6 +4,7 @@
 #include <vector>
 #include <utility>
 #include "receiver.hh"
+#include "senderdatapoint.hh"
 
 template <class Gang1Type, class Gang2Type>
 class SenderGangofGangs
@@ -33,6 +34,7 @@ public:
   double utility( void ) const;
 
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
+  std::vector< SenderDataPoint > statistics_for_log( void ) const;
 
   double next_event_time( const double & tickno ) const;
 
