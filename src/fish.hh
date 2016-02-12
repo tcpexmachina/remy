@@ -51,6 +51,7 @@ public:
   double next_event_time( const double & tickno ) const;
 
   const int & packets_sent( void ) const { return _packets_sent; }
+  double lambda( void ) const { return _lambda; }
 };
 
 #endif

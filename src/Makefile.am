@@ -10,10 +10,11 @@ common_source = delay.hh evaluator.cc evaluator.hh                 \
 	network.cc network.hh packet.hh poisson.hh                     \
 	random.cc random.hh rat.cc rat.hh rat-templates.cc             \
 	receiver.cc receiver.hh sendergang.cc sendergang.hh            \
-	sendergangofgangs.cc sendergangofgangs.hh                  \
+	sendergang-templates.cc                                        \
+	sendergangofgangs.cc sendergangofgangs.hh                      \
 	utility.hh whisker.cc whisker.hh whiskertree.cc whiskertree.hh \
 	aimd-templates.cc aimd.cc aimd.hh                              \
-	configrange.hh configrange.cc                              \
+	configrange.hh configrange.cc                                  \
 	simulationresults.hh simulationresults.cc                      \
 	action.hh fin.hh fin.cc fintree.cc fintree.hh  	               \
 	fish.hh fish.cc fish-templates.cc

@@ -4,7 +4,6 @@
 #include <cmath>
 #include <cassert>
 #include <climits>
-#include "senderdatapoint.hh"
 
 class Utility
 {
@@ -17,7 +16,7 @@ public:
   Utility( void ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ) {}
 
   void sending_duration( const double & duration, const unsigned int num_sending ) { _tick_share_sending += duration / double( num_sending ); }
-  void packets_received( const std::vector< Packet > & packets ) {
+  void add_packets_received( const std::vector< Packet > & packets ) {
     _packets_received += packets.size();
 
     for ( auto &x : packets ) {
@@ -26,10 +25,9 @@ public:
     }
   }
 
-  SenderDataPoint statistics_for_log( void ) const {
-    return SenderDataPoint( average_throughput_normalized_to_equal_share(),
-        average_delay(), _tick_share_sending, _packets_received, _total_delay );
-  }
+  double tick_share_sending( void ) const { return _tick_share_sending; }
+  unsigned int packets_received( void ) const { return _packets_received; }
+  double total_delay( void ) const { return _total_delay; }
 
   /* returns throughput normalized to equal share of link */
   double average_throughput_normalized_to_equal_share( void ) const

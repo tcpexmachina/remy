@@ -33,6 +33,7 @@ public:
   void switch_off( const double & tickno, const unsigned int num_sending );
 
   double next_event_time( const double & tickno ) const;
+    SenderDataPoint statistics_for_log( void ) const;
   Utility utility;
   bool sending;
   unsigned int id;

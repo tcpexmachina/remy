@@ -52,6 +52,8 @@ PLOTS = [
     ("sending_duration", "ms"),
     ("packets_received", None),
     ("total_delay", "ms"),
+    ("window_size", None),
+    ("intersend_time", "ms"),
 ]
 
 def diffgetter(numerator, denominator):

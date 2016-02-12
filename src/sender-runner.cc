@@ -134,7 +134,7 @@ int main( int argc, char *argv[] )
       simulation_ticks = atoi( arg.substr( 5 ).c_str() ) * 1000;
       fprintf( stderr, "Setting simulation_ticks to %u ms\n", simulation_ticks );
     } else if ( arg.substr( 0, 9 ) == "interval=" ) {
-      simulation_log_interval_ticks = atoi( arg.substr( 9 ).c_str() ) * 1000;
+      simulation_log_interval_ticks = atof( arg.substr( 9 ).c_str() ) * 1000;
       fprintf( stderr, "Setting simulation_log_interval_ticks to %f ms\n", simulation_log_interval_ticks );
     } else if ( arg.substr( 0, 4 ) == "buf=" ) {
       if (arg.substr( 4 ) == "inf") {
