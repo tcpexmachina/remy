@@ -3,29 +3,31 @@ import subprocess
 from warnings import warn
 
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RATRUNNERCMD = os.path.join(ROOTDIR, "src", "rat-runner")
+SENDERRUNNERCMD = os.path.join(ROOTDIR, "src", "sender-runner")
 HLINE2 = "=" * 80 + "\n"
 
-class RatRunnerRunner:
-    """Manages the running of rat-runner."""
+class SenderRunnerRunner:
+    """Manages the running of sender-runner."""
 
     general_default_parameters = {
         'nsenders': 2,
         'link_ppt': 1.0,
-        'delay': 100.0,
+        'delay': 150.0,
         'mean_on': 5000.0,
         'mean_off': 5000.0,
         'buffer_size': 'inf',
+        'interval': 1.0,
     }
 
-    ratrunner_parameters = [
-    #   (rat-runner option name, Python option name)
+    senderrunner_parameters = [
+    #   (sender-runner option name, Python option name)
         ("nsrc", "nsenders"),
         ("link", "link_ppt"),
         ("rtt", "delay"),
         ("on", "mean_on"),
         ("off", "mean_off"),
         ("buf", "buffer_size"),
+        ("interval", "interval"),
     ]
 
     def __init__(self, **kwargs):
@@ -34,7 +36,7 @@ class RatRunnerRunner:
             if key in kwargs:
                 self.default_parameters[key] = kwargs.pop(key)
 
-        self.ratrunnercmd = RATRUNNERCMD
+        self.senderrunnercmd = SENDERRUNNERCMD
 
         if kwargs:
             warn("Unrecognized keyword arguments: {}".format(kwargs))
@@ -73,8 +75,8 @@ class RatRunnerRunner:
         if outfile_was_str:
             outfile.close()
 
-    def run(self, remyccfilename, parameters, outfile=None):
-        """Runs rat-runner with the given parameters and returns the output
+    def run(self, remyccfilename, parameters={}, outfile=None, datafile=None):
+        """Runs sender-runner with the given parameters and returns the output
         (from both stdout and stderr).
 
         `remyccfilename` is the name of the RemyCC to test.
@@ -84,9 +86,11 @@ class RatRunnerRunner:
             and the output will be written to it.
         """
         parameters = self._get_parameters(parameters)
-        command = [self.ratrunnercmd, "if={:s}".format(remyccfilename)]
-        command += ["{}:{}".format(rroptname, parameters[paramname]) for rroptname, paramname in
-                self.ratrunner_parameters]
+        command = [self.senderrunnercmd, "if={:s}".format(remyccfilename)]
+        command += ["{}={}".format(rroptname, parameters[paramname]) for rroptname, paramname in
+                self.senderrunner_parameters]
+        if datafile:
+            command.append("datafile={}".format(datafile))
         output = subprocess.check_output(command, stderr=subprocess.STDOUT)
         output = output.decode()
         self._write_to_file(command, output, outfile)
