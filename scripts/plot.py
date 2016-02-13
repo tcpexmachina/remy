@@ -18,8 +18,9 @@ import json
 from math import log2
 from warnings import warn
 from itertools import chain
-from socket import gethostname
+
 from senderrunner_runner import SenderRunnerRunner
+import utils
 
 use_color = True
 DEFAULT_RESULTS_DIR = "results"
@@ -252,32 +253,6 @@ def plot_from_original_file(datafilename, axes):
     except (IOError, ValueError) as e:
         print("Error plotting from {}: {}".format(datafilename, e), file=sys.stderr)
 
-def log_arguments(argsfile, args):
-    jsondict = {
-        "start-time": time.asctime(),
-        "machine-name": gethostname(),
-        "git": {
-            "commit": subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip(),
-        },
-        "args": vars(args)
-    }
-    try:
-        jsondict["git"]["branch"] = subprocess.check_output(['git', 'symbolic-ref', '--short', '--quiet', 'HEAD']).decode().strip()
-    except subprocess.CalledProcessError:
-        pass
-    json.dump(jsondict, argsfile, indent=2, sort_keys=True)
-
-def make_results_dir(dirname):
-    """Makes a results directory with the given name and directs symlink to it."""
-
-    if dirname is None:
-        dirname = os.path.join(DEFAULT_RESULTS_DIR, "results" + time.strftime("%Y%m%d-%H%M%S"))
-    if os.path.islink(LAST_RESULTS_SYMLINK):
-        os.unlink(LAST_RESULTS_SYMLINK)
-    os.symlink(dirname, LAST_RESULTS_SYMLINK)
-    os.makedirs(dirname, exist_ok=True)
-    return dirname
-
 def generate_remyccs_list(specs):
     """Returns a list of RemyCC files, for example:
         ["myremycc.5"] -> ["myremycc.5"]
@@ -300,7 +275,8 @@ def generate_remyccs_list(specs):
             result.extend("{name}.{index:d}".format(name=name, index=index) for index in range(start, stop+1, step))
     return result
 
-
+def make_results_dir(dirname):
+    return utils.make_output_dir(dirname, DEFAULT_RESULTS_DIR, "results" + time.strftime("%Y%m%d-%H%M%S"), LAST_RESULTS_SYMLINK)
 
 
 # Script starts here
@@ -353,9 +329,7 @@ os.makedirs(data_dirname, exist_ok=True)
 os.makedirs(plots_dirname, exist_ok=True)
 
 # Log arguments
-args_file = open(os.path.join(results_dirname, "args.json"), "w")
-log_arguments(args_file, args)
-args_file.close()
+utils.log_arguments(results_dirname, args)
 
 # Generate parameters
 link_ppt_range = np.logspace(np.log10(args.link_ppt[0]), np.log10(args.link_ppt[1]), args.num_points)

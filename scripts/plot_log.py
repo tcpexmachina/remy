@@ -1,5 +1,6 @@
 #!/usr/bin/python2
-"""Reads and plots the data in a simulation log protocol buffer file."""
+"""Reads and plots the data in a simulation log protocol buffer file.
+This script requires Python 2, because protobufs doesn't really work for Python 3 yet."""
 
 import argparse
 import os
@@ -10,6 +11,7 @@ except ImportError:
     exit(1)
 import matplotlib.pyplot as plt
 from senderrunner_runner import SenderRunnerRunner
+import utils
 
 DEFAULT_PLOTS_DIR = "log-plots"
 LAST_PLOTS_SYMLINK = "last-plots"
@@ -23,6 +25,7 @@ class BasePlotGenerator(object):
     figfilename = None
     legend_location = 'lower right'
     plotsdir = '.'
+    plot_kwargs = {}
 
     def __init__(self, plotsdir=None):
         self._plotsdir = plotsdir or self.plotsdir
@@ -39,6 +42,9 @@ class BasePlotGenerator(object):
         that need to plot more than one series should override this method."""
         yield self.get_plot_data(run_data) + (None,)
 
+    def get_plot_data(self, run_data):
+        raise NotImplementedError("Subclasses must implement either get_plot_data() or iter_plot_data()")
+
     def plot(self, run_data):
         """Generates the plot for `run_data`, which should be a
         SimulationRunData instance."""
@@ -47,7 +53,7 @@ class BasePlotGenerator(object):
         plt.figure()
 
         for x, y, label in self.iter_plot_data(run_data):
-            plt.plot(x, y, label=label)
+            plt.plot(x, y, label=label, **self.plot_kwargs)
 
         plt.title(self.title)
         plt.xlabel(self.xlabel)
@@ -56,7 +62,8 @@ class BasePlotGenerator(object):
             plt.xlim(self.get_xlim(run_data))
         if hasattr(self, 'get_ylim'):
             plt.ylim(self.get_ylim(run_data))
-        plt.legend(loc=self.legend_location)
+        if len(plt.gca().lines) > 1:
+            plt.legend(loc=self.legend_location)
         plt.savefig(self.get_figfilename(), format='png', bbox_inches='tight')
         plt.close()
 
@@ -140,21 +147,66 @@ class DifferenceQuotientTimePlotGenerator(TimePlotGenerator):
         return data
 
 
-def make_plots_dir(dirname, argvalue):
-    """Makes a plots directory with the given name and directs symlink to it."""
+class BaseParametricPlotGenerator(BasePlotGenerator):
 
-    if dirname is None:
-        if argvalue.endswith(".data"):
-            basename = argvalue[:-5]
-        else:
-            basename = argvalue
-        dirname = os.path.join(DEFAULT_PLOTS_DIR, argvalue)
-    if os.path.islink(LAST_PLOTS_SYMLINK):
-        os.unlink(LAST_PLOTS_SYMLINK)
-    os.symlink(dirname, LAST_PLOTS_SYMLINK)
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
-    return dirname
+    plot_kwargs = {'linestyle': 'solid', 'linewidth': 0.25, 'color': (0.75, 0.75, 0.75),
+            'marker': '.', 'markersize': 5.0, 'markerfacecolor': 'blue', 'markeredgecolor': 'blue'}
+
+
+class SenderVersusSenderPlotGenerator(BaseParametricPlotGenerator):
+    """Generates plots that show the correlation between two senders."""
+
+    def __init__(self, attrname, sender_indices, unit=None, **kwargs):
+        self.attrname = attrname
+        self.figfilename = "{}_sender{:d}_vs_sender{:d}".format(attrname, sender_indices[0], sender_indices[1])
+
+        pretty_name = attrname.capitalize().replace("_", " ")
+        axis_label = pretty_name
+        if unit:
+            axis_label += " ({})".format(unit)
+        self.xlabel = axis_label + " of sender {:d}".format(sender_indices[0])
+        self.ylabel = axis_label + " of sender {:d}".format(sender_indices[1])
+        self.title = pretty_name + ": sender {:d} vs sender {:d}".format(*sender_indices)
+        self.indices = sender_indices
+
+        super(SenderVersusSenderPlotGenerator, self).__init__(**kwargs)
+
+    def get_plot_data(self, run_data):
+        x = self.get_raw_data(run_data, self.indices[0], self.attrname)
+        y = self.get_raw_data(run_data, self.indices[1], self.attrname)
+        return x, y
+
+
+class ParametricPlotGenerator(BaseParametricPlotGenerator):
+    """Generates plots that show the correlation between two variables (for one sender)."""
+
+    def __init__(self, attrnames, sender_index, units=None, **kwargs):
+        self.attrnames = attrnames
+        self.figfilename = "{}_vs_{}_sender{:d}".format(attrnames[0], attrnames[1], sender_index)
+
+        pretty_names = [attrname.capitalize().replace("_", " ") for attrname in attrnames]
+        axis_labels = pretty_names
+        if units:
+            axis_labels = [label + " ({})".format(unit) for label, unit in zip(axis_labels, units)]
+        self.xlabel = axis_labels[0]
+        self.ylabel = axis_labels[1]
+        self.title = "{} vs {} for sender {:d}".format(pretty_names[0], pretty_names[1], sender_index)
+        self.index = sender_index
+
+        super(ParametricPlotGenerator, self).__init__(**kwargs)
+
+    def get_plot_data(self, run_data):
+        x = self.get_raw_data(run_data, self.index, self.attrnames[0])
+        y = self.get_raw_data(run_data, self.index, self.attrnames[1])
+        return x, y
+
+
+def make_plots_dir(dirname, argvalue):
+    if argvalue.endswith(".data"):
+        basename = argvalue[:-5]
+    else:
+        basename = argvalue
+    return utils.make_output_dir(dirname, DEFAULT_PLOTS_DIR, basename, LAST_PLOTS_SYMLINK)
 
 def read_data_file(logfilename):
     logfile = open(logfilename, 'rb')
@@ -200,6 +252,7 @@ if not data.run_data:
 
 plotsdir = make_plots_dir(args.plots_dir, args.inputfile)
 BasePlotGenerator.plotsdir = plotsdir
+utils.log_arguments(plotsdir, args)
 
 generators = [
     RawDataTimePlotGenerator("average_throughput"),
@@ -211,6 +264,10 @@ generators = [
     RawDataTimePlotGenerator("intersend_time", "ms"),
     DifferenceQuotientTimePlotGenerator("packets_received", "sending_duration", "throughput"),
     DifferenceQuotientTimePlotGenerator("total_delay", "packets_received", "delay"),
+    SenderVersusSenderPlotGenerator("window_size", (0, 1)),
+    SenderVersusSenderPlotGenerator("intersend_time", (0, 1)),
+    ParametricPlotGenerator(("window_size", "intersend_time"), 0),
+    ParametricPlotGenerator(("window_size", "intersend_time"), 1),
 ]
 
 for run_data in data.run_data:
