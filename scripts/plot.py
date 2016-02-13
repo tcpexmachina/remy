@@ -19,12 +19,12 @@ from math import log2
 from warnings import warn
 from itertools import chain
 from socket import gethostname
+from ratrunner_runner import RatRunnerRunner
 
 use_color = True
 DEFAULT_RESULTS_DIR = "results"
 
 HLINE1 = "-" * 80 + "\n"
-HLINE2 = "=" * 80 + "\n"
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RATRUNNERCMD = os.path.join(ROOTDIR, "src", "sender-runner")
 SENDER_REGEX = re.compile("^sender: \[tp=(-?\d+(?:\.\d+)?), del=(-?\d+(?:\.\d+)?)\]$", re.MULTILINE)
@@ -39,61 +39,6 @@ def print_command(command):
     if use_color:
         message = "\033[1;36m" + message + "\033[0m"
     print(message)
-
-def run_command(command, show=True, writefile=None, includestderr=True):
-    """Runs a command returns its output.
-    Raises subprocess.CalledProcessError if the command returned a non-zero exit code.
-    If `show` is True, also writes the output to stdout.
-    If `writefile` is True, also writes the output to the file object `writefile`.
-    If `includestderr` is True, stderr from the called process is also captured."""
-    kwargs = {}
-    if includestderr:
-        kwargs['stderr'] = subprocess.STDOUT
-
-    output = subprocess.check_output(command, **kwargs)
-    output = output.decode()
-
-    if show:
-        print_command(command)
-        sys.stdout.write(output)
-        sys.stdout.flush()
-
-    if writefile:
-        writefile.writelines([
-            HLINE2,
-            "This was the console output for the command:\n",
-            "    " + " ".join(command) + "\n",
-            HLINE2,
-            "\n"
-        ])
-        writefile.write(output)
-
-    return output
-
-def run_ratrunner(remyccfilename, parameters, console_file=None):
-    """Runs rat-runner with the given parameters and returns the result.
-    `remyccfilename` is the name of the RemyCC to test.
-    `parameters` is a dict of parameters.
-    If `console_file` is specified, it must be a file object, and the output will be written to it."""
-    defaults = dict(nsenders=2, link_ppt=1.0, delay=100.0, mean_on=5000.0, mean_off=5000.0, buffer_size="inf")
-    unrecognized_parameters = [k for k in parameters if k not in defaults]
-    if unrecognized_parameters:
-        warn("Unrecognized parameters: {}".format(unrecognized_parameters))
-    defaults.update(parameters)
-    parameters = defaults
-
-    command = [
-        RATRUNNERCMD,
-        "if={:s}".format(remyccfilename),
-        "nsrc={:d}".format(parameters["nsenders"]),
-        "link={:f}".format(parameters["link_ppt"]),
-        "rtt={:f}".format(parameters["delay"]),
-        "on={:f}".format(parameters["mean_on"]),
-        "off={:f}".format(parameters["mean_off"]),
-        "buf={:s}".format(parameters["buffer_size"]),
-    ]
-
-    return run_command(command, show=False, writefile=console_file, includestderr=True)
 
 def parse_ratrunner_output(result):
     """Parses the output of rat-runner to extract the normalized score, and
@@ -213,11 +158,14 @@ class BaseRemyCCPerformancePlotGenerator:
 
 
 class RatRunnerFilesMixin:
-    """Provides functionality relating to rat-runner output files.
-    Subclass constructors must provide a `console_dir` attribute to objects of
-    the class, which may be None."""
+    """Provides functionality relating to rat-runner output files. Subclass
+    constructors must provide a `console_dir` attribute to objects of the class.
+    This may be None; if so, this `get_console_filename` returns None."""
 
     def get_console_filename(self, remyccfilename, link_ppt):
+        if self.console_dir is None:
+            return None
+
         filename = "ratrunner-{remycc}-{link_ppt:f}.out".format(
                 remycc=os.path.basename(remyccfilename), link_ppt=link_ppt)
         filename = os.path.join(self.console_dir, filename)
@@ -234,7 +182,7 @@ class RatRunnerRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRemyCCPer
     """
 
     def __init__(self, link_ppt_range, parameters, **kwargs):
-        self.parameters = parameters
+        self.ratrunner = RatRunnerRunner(**parameters)
         self.console_dir = kwargs.pop("console_dir", None)
         super(RatRunnerRemyCCPerformancePlotGenerator, self).__init__(link_ppt_range, **kwargs)
 
@@ -242,19 +190,8 @@ class RatRunnerRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRemyCCPer
         """Runs rat-runner on the given RemyCC `remyccfilename` and with the given
         parameters, and returns the normalized score and sender throughputs and delays.
         """
-        parameters = dict(self.parameters)
-        parameters["link_ppt"] = link_ppt
-
-        kwargs = {}
-        if self.console_dir:
-            filename = self.get_console_filename(remyccfilename, link_ppt)
-            kwargs["console_file"] = open(filename, "w")
-
-        output = run_ratrunner(remyccfilename, parameters, **kwargs)
-
-        if "console_file" in kwargs:
-            kwargs["console_file"].close()
-
+        outfile = self.get_console_filename(remyccfilename, link_ppt)
+        output = self.ratrunner.run(remyccfilename, {'link_ppt': link_ppt}, outfile=outfile)
         return parse_ratrunner_output(output)
 
 
