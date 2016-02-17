@@ -4,8 +4,10 @@
 #include "evaluator.hh"
 #include "network.cc"
 #include "rat-templates.cc"
+#include "fish-templates.cc"
 
-Evaluator::Evaluator( const ConfigRange & range )
+template <typename T>
+Evaluator< T >::Evaluator( const ConfigRange & range )
   : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _tick_count( range.simulation_ticks ),
     _configs()
@@ -32,7 +34,8 @@ Evaluator::Evaluator( const ConfigRange & range )
   }
 }
 
-ProblemBuffers::Problem Evaluator::DNA( const WhiskerTree & whiskers ) const
+template <>
+ProblemBuffers::Problem Evaluator< WhiskerTree >::DNA( const WhiskerTree & whiskers ) const
 {
   ProblemBuffers::Problem ret;
 
@@ -52,7 +55,85 @@ ProblemBuffers::Problem Evaluator::DNA( const WhiskerTree & whiskers ) const
   return ret;
 }
 
-Evaluator::Outcome Evaluator::parse_problem_and_evaluate( const ProblemBuffers::Problem & problem )
+template <>
+ProblemBuffers::Problem Evaluator< FinTree >::DNA( const FinTree & fins ) const
+{
+  ProblemBuffers::Problem ret;
+
+  ret.mutable_fins()->CopyFrom( fins.DNA() );
+
+  ProblemBuffers::ProblemSettings settings;
+  settings.set_prng_seed( _prng_seed );
+  settings.set_tick_count( TICK_COUNT );
+
+  ret.mutable_settings()->CopyFrom( settings );
+
+  for ( auto &x : _configs ) {
+    RemyBuffers::NetConfig *config = ret.add_configs();
+    *config = x.DNA();
+  }
+
+  return ret;
+}
+
+template <>
+Evaluator< WhiskerTree >::Outcome Evaluator< WhiskerTree >::score( WhiskerTree & run_whiskers,
+             const unsigned int prng_seed,
+             const vector<NetConfig> & configs,
+             const bool trace,
+             const unsigned int ticks_to_run )
+{
+  PRNG run_prng( prng_seed );
+
+  run_whiskers.reset_counts();
+
+  /* run tests */
+  Evaluator::Outcome the_outcome;
+  for ( auto &x : configs ) {
+    /* run once */
+    Network<SenderGang<Rat, TimeSwitchedSender<Rat>>,
+      SenderGang<Rat, TimeSwitchedSender<Rat>>> network1( Rat( run_whiskers, trace ), run_prng, x );
+    network1.run_simulation( ticks_to_run );
+    
+    the_outcome.score += network1.senders().utility();
+    the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
+  }
+
+  the_outcome.used_actions = run_whiskers;
+
+  return the_outcome;
+}
+
+template <>
+Evaluator< FinTree >::Outcome Evaluator< FinTree >::score( FinTree & run_fins,
+             const unsigned int prng_seed,
+             const vector<NetConfig> & configs,
+             const bool trace,
+             const unsigned int ticks_to_run )
+{
+  PRNG run_prng( prng_seed );
+  unsigned int fish_prng_seed( run_prng() );
+
+  run_fins.reset_counts();
+
+  /* run tests */
+  Evaluator::Outcome the_outcome;
+  for ( auto &x : configs ) {
+    /* run once */
+    Network<Fish, Fish> network1( Fish( run_fins, fish_prng_seed, trace ), run_prng, x );
+    network1.run_simulation( ticks_to_run );
+    
+    the_outcome.score += network1.senders().utility();
+    the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
+  }
+
+  the_outcome.used_actions = run_fins;
+
+  return the_outcome;
+}
+
+template <>
+typename Evaluator< WhiskerTree >::Outcome Evaluator< WhiskerTree >::parse_problem_and_evaluate( const ProblemBuffers::Problem & problem )
 {
   vector<NetConfig> configs;
   for ( const auto &x : problem.configs() ) {
@@ -61,11 +142,26 @@ Evaluator::Outcome Evaluator::parse_problem_and_evaluate( const ProblemBuffers::
 
   WhiskerTree run_whiskers = WhiskerTree( problem.whiskers() );
 
-  return Evaluator::score( run_whiskers, problem.settings().prng_seed(),
+  return Evaluator< WhiskerTree >::score( run_whiskers, problem.settings().prng_seed(),
 			   configs, false, problem.settings().tick_count() );
 }
 
-AnswerBuffers::Outcome Evaluator::Outcome::DNA( void ) const
+template <>
+typename Evaluator< FinTree >::Outcome Evaluator< FinTree >::parse_problem_and_evaluate( const ProblemBuffers::Problem & problem )
+{
+  vector<NetConfig> configs;
+  for ( const auto &x : problem.configs() ) {
+    configs.emplace_back( x );
+  }
+
+  FinTree run_fins = FinTree( problem.fins() );
+
+  return Evaluator< FinTree >::score( run_fins, problem.settings().prng_seed(),
+         configs, false, problem.settings().tick_count() );
+}
+
+template <typename T>
+AnswerBuffers::Outcome Evaluator< T >::Outcome::DNA( void ) const
 {
   AnswerBuffers::Outcome ret;
 
@@ -85,11 +181,9 @@ AnswerBuffers::Outcome Evaluator::Outcome::DNA( void ) const
   return ret;
 }
 
-Evaluator::Outcome::Outcome( const AnswerBuffers::Outcome & dna )
-  : score( dna.score() ),
-    throughputs_delays(),
-    used_whiskers()
-{
+template <typename T>
+Evaluator< T >::Outcome::Outcome( const AnswerBuffers::Outcome & dna )
+  : score( dna.score() ), throughputs_delays(), used_actions() {
   for ( const auto &x : dna.throughputs_delays() ) {
     vector< pair< double, double > > tp_del;
     for ( const auto &result : x.results() ) {
@@ -100,36 +194,13 @@ Evaluator::Outcome::Outcome( const AnswerBuffers::Outcome & dna )
   }
 }
 
-Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
+template <typename T>
+typename Evaluator< T >::Outcome Evaluator< T >::score( T & run_actions,
 				     const bool trace, const double carefulness ) const
 {
   return score( run_whiskers, _prng_seed, _configs, trace, _tick_count * carefulness );
 }
 
 
-Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
-				     const unsigned int prng_seed,
-				     const vector<NetConfig> & configs,
-				     const bool trace,
-				     const unsigned int ticks_to_run )
-{
-  PRNG run_prng( prng_seed );
-
-  run_whiskers.reset_counts();
-
-  /* run tests */
-  Evaluator::Outcome the_outcome;
-  for ( auto &x : configs ) {
-    /* run once */
-    Network<SenderGang<Rat, TimeSwitchedSender<Rat>>,
-	    SenderGang<Rat, TimeSwitchedSender<Rat>>> network1( Rat( run_whiskers, trace ), run_prng, x );
-    network1.run_simulation( ticks_to_run );
-    
-    the_outcome.score += network1.senders().utility();
-    the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
-  }
-
-  the_outcome.used_whiskers = run_whiskers;
-
-  return the_outcome;
-}
+template class Evaluator< WhiskerTree>;
+template class Evaluator< FinTree >;

@@ -57,6 +57,7 @@ public:
   void advance_to( const unsigned int tickno __attribute((unused)) ) {}
 
   std::string str( void ) const;
+  std::string str( unsigned int num ) const;
 
   bool operator>=( const Memory & other ) const { return (_rec_send_ewma >= other._rec_send_ewma) && (_rec_rec_ewma >= other._rec_rec_ewma) && (_rtt_ratio >= other._rtt_ratio) && (_slow_rec_rec_ewma >= other._slow_rec_rec_ewma) && (_queueing_delay >= other._queueing_delay); }
   bool operator<( const Memory & other ) const { return (_rec_send_ewma < other._rec_send_ewma) && (_rec_rec_ewma < other._rec_rec_ewma) && (_rtt_ratio < other._rtt_ratio) && (_slow_rec_rec_ewma < other._slow_rec_rec_ewma) && (_queueing_delay < other._queueing_delay); }

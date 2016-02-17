@@ -70,9 +70,15 @@ bool MemoryRange::operator==( const MemoryRange & other ) const
 string MemoryRange::str( void ) const
 {
   char tmp[ 256 ];
-  snprintf( tmp, 256, "(lo=<%s>, hi=<%s>)",
-	    _lower.str().c_str(),
-	    _upper.str().c_str() );
+  strcpy( tmp, "(lo=< ");
+  for ( auto & i : _active_axis ) {
+    strcat( tmp, _lower.str( i ).c_str() );
+  }
+  strcat( tmp, ">, hi=< ");
+  for ( auto & i : _active_axis ) {
+    strcat( tmp, _upper.str( i ).c_str() );
+  }
+  strcat( tmp, ">)");
   return tmp;
 }
 

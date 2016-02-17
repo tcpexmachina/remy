@@ -7,6 +7,7 @@ message Problem {
   optional ProblemSettings settings = 1;
   repeated RemyBuffers.NetConfig configs = 2;
   optional RemyBuffers.WhiskerTree whiskers = 3;
+  optional RemyBuffers.FinTree fins = 4;
 }
 
 message ProblemSettings {

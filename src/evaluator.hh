@@ -6,10 +6,12 @@
 
 #include "random.hh"
 #include "whiskertree.hh"
+#include "fintree.hh"
 #include "network.hh"
 #include "problem.pb.h"
 #include "answer.pb.h"
 
+template <typename T>
 class Evaluator
 {
 public:
@@ -18,9 +20,9 @@ public:
   public:
     double score;
     std::vector< std::pair< NetConfig, std::vector< std::pair< double, double > > > > throughputs_delays;
-    WhiskerTree used_whiskers;
+    T used_actions;
 
-    Outcome() : score( 0 ), throughputs_delays(), used_whiskers() {}
+    Outcome() : score( 0 ), throughputs_delays(), used_actions() {}
 
     Outcome( const AnswerBuffers::Outcome & dna );
 
@@ -36,15 +38,15 @@ private:
 public:
   Evaluator( const ConfigRange & range );
   
-  ProblemBuffers::Problem DNA( const WhiskerTree & whiskers ) const;
+  ProblemBuffers::Problem DNA( const T & actions ) const;
 
-  Outcome score( WhiskerTree & run_whiskers,
+  Outcome score( T & run_actions,
 		const bool trace = false,
 		const double carefulness = 1) const;
 
   static Evaluator::Outcome parse_problem_and_evaluate( const ProblemBuffers::Problem & problem );
 
-  static Outcome score( WhiskerTree & run_whiskers,
+  static Outcome score( T & run_actions,
 			const unsigned int prng_seed,
 			const std::vector<NetConfig> & configs,
 			const bool trace,

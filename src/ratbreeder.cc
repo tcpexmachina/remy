@@ -15,11 +15,11 @@ typedef accumulator_set< double, stats< tag::tail_quantile <boost::accumulators:
 
 void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int generation ) const
 {
-  const Evaluator eval( _options.config_range );
+  const Evaluator< WhiskerTree > eval( _options.config_range );
   auto outcome( eval.score( whiskers, true ) );
 
   while ( 1 ) {
-    auto my_whisker( outcome.used_whiskers.most_used( generation ) );
+    auto my_whisker( outcome.used_actions.most_used( generation ) );
     assert( my_whisker );
 
     WhiskerTree bisected_whisker( *my_whisker, true );
@@ -28,7 +28,7 @@ void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int ge
       printf( "Got unbisectable whisker! %s\n", my_whisker->str().c_str() );
       auto mutable_whisker( *my_whisker );
       mutable_whisker.promote( generation + 1 );
-      assert( outcome.used_whiskers.replace( mutable_whisker ) );
+      assert( outcome.used_actions.replace( mutable_whisker ) );
       continue;
     }
 
@@ -38,7 +38,7 @@ void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int ge
   }
 }
 
-Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
+Evaluator< WhiskerTree >::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 {
   /* back up the original whiskertree */
   /* this is to ensure we don't regress */
@@ -49,12 +49,12 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   unsigned int generation = 0;
 
   while ( generation < 5 ) {
-    const Evaluator eval( _options.config_range );
+    const Evaluator< WhiskerTree > eval( _options.config_range );
 
     auto outcome( eval.score( whiskers ) );
 
     /* is there a whisker at this generation that we can improve? */
-    auto most_used_whisker_ptr = outcome.used_whiskers.most_used( generation );
+    auto most_used_whisker_ptr = outcome.used_actions.most_used( generation );
 
     /* if not, increase generation and promote all whiskers */
     if ( !most_used_whisker_ptr ) {
@@ -92,7 +92,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   apply_best_split( whiskers, generation );
 
   /* carefully evaluate what we have vs. the previous best */
-  const Evaluator eval2( _options.config_range );
+  const Evaluator< WhiskerTree > eval2( _options.config_range );
   const auto new_score = eval2.score( whiskers, false, 10 );
   const auto old_score = eval2.score( input_whiskertree, false, 10 );
 
@@ -105,7 +105,7 @@ Evaluator::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   return new_score;
 }
 
-WhiskerImprover::WhiskerImprover( const Evaluator & s_evaluator,
+WhiskerImprover::WhiskerImprover( const Evaluator< WhiskerTree > & s_evaluator,
 				  const WhiskerTree & rat,
           const WhiskerImproverOptions & options,
 				  const double score_to_beat)
@@ -123,7 +123,7 @@ void WhiskerImprover::evaluate_replacements(const vector<Whisker> &replacements,
     if ( eval_cache_.find( test_replacement ) == eval_cache_.end() ) {
       /* need to fire off a new thread to evaluate */
       scores.emplace_back( test_replacement,
-                           async( launch::async, [] ( const Evaluator & e,
+                           async( launch::async, [] ( const Evaluator< WhiskerTree > & e,
                                                       const Whisker & r,
                                                       const WhiskerTree & rat,
                                                       const double carefulness ) {

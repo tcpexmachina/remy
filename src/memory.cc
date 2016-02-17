@@ -46,6 +46,29 @@ string Memory::str( void ) const
   return tmp;
 }
 
+string Memory::str( unsigned int num ) const
+{
+  char tmp[ 50 ];
+  switch ( num ) {
+    case 0:
+      snprintf( tmp, 50, "sewma=%f ", _rec_send_ewma );
+      break;
+    case 1:
+      snprintf( tmp, 50, "rewma=%f ", _rec_rec_ewma );
+      break;
+    case 2:
+      snprintf( tmp, 50, "rttr=%f ", _rtt_ratio );
+      break;
+    case 3:
+      snprintf( tmp, 50, "slowrewma=%f ", _slow_rec_rec_ewma );
+      break;
+    case 4:
+      snprintf( tmp, 50, "qdelay=%f ", _queueing_delay );
+      break;
+  }
+  return tmp;
+}
+
 const Memory & MAX_MEMORY( void )
 {
   static const Memory max_memory( { 163840, 163840, 163840, 163840, 163840 } );

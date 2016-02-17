@@ -26,7 +26,7 @@ class WhiskerImprover
 {
 private:
   const double MAX_PERCENT_ERROR = 0.05;
-  const Evaluator eval_;
+  const Evaluator< WhiskerTree > eval_;
 
   WhiskerTree rat_;
   WhiskerImproverOptions options_;
@@ -43,7 +43,7 @@ private:
         const double carefulness, const double quantile_to_keep);
 
 public:
-  WhiskerImprover( const Evaluator & evaluator, const WhiskerTree & rat, const WhiskerImproverOptions & options,
+  WhiskerImprover( const Evaluator<  WhiskerTree > & evaluator, const WhiskerTree & rat, const WhiskerImproverOptions & options,
                    const double score_to_beat );
   double improve( Whisker & whisker_to_improve );
 };
@@ -58,7 +58,7 @@ private:
 public:
   RatBreeder( const RatBreederOptions & s_options ) : _options( s_options ) {}
 
-  Evaluator::Outcome improve( WhiskerTree & whiskers );
+  Evaluator< WhiskerTree >::Outcome improve( WhiskerTree & whiskers );
 };
 
 #endif

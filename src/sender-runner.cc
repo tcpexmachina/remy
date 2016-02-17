@@ -11,9 +11,42 @@
 #include "configrange.hh"
 using namespace std;
 
+template <typename T>
+void print_tree(T & tree) 
+{
+  if ( tree.has_config() ) {
+    printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
+  }
+
+  if ( tree.has_optimizer() ) {
+    printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
+  }
+}
+
+template <typename T>
+void parse_outcome( T & outcome ) 
+{
+  printf( "score = %f\n", outcome.score );
+  double norm_score = 0;
+
+  for ( auto &run : outcome.throughputs_delays ) {
+    printf( "===\nconfig: %s\n", run.first.str().c_str() );
+    for ( auto &x : run.second ) {
+      printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
+      norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
+    }
+  }
+
+  printf( "normalized_score = %f\n", norm_score );
+
+  printf( "Rules: %s\n", outcome.used_actions.str().c_str() );
+}
+
 int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
+  FinTree fins;
+  bool is_poisson = false;
   unsigned int num_senders = 2;
   double link_ppt = 1.0;
   double delay = 100.0;
@@ -24,32 +57,41 @@ int main( int argc, char *argv[] )
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
-    if ( arg.substr( 0, 3 ) == "if=" ) {
+    if ( arg.substr( 0, 7) == "sender=" ) {
+        string sender_type( arg.substr( 7 ) );
+        if ( sender_type == "poisson" ) {
+          is_poisson = true;
+          fprintf( stderr, "Running poisson sender\n" );
+        }
+    } else if ( arg.substr( 0, 3 ) == "if=" ) {
       string filename( arg.substr( 3 ) );
       int fd = open( filename.c_str(), O_RDONLY );
       if ( fd < 0 ) {
-	perror( "open" );
-	exit( 1 );
+        perror( "open" );
+        exit( 1 );
       }
 
-      RemyBuffers::WhiskerTree tree;
-      if ( !tree.ParseFromFileDescriptor( fd ) ) {
-	fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
-	exit( 1 );
+      if ( is_poisson ) {
+        RemyBuffers::FinTree tree;
+        if ( !tree.ParseFromFileDescriptor( fd ) ) {
+          fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
+          exit( 1 );
+        }
+        fins = FinTree( tree );
+        print_tree< RemyBuffers::FinTree >(tree);
+      } else {
+        RemyBuffers::WhiskerTree tree;
+        if ( !tree.ParseFromFileDescriptor( fd ) ) {
+          fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
+          exit( 1 );
+        }
+        whiskers = WhiskerTree( tree );  
+        print_tree< RemyBuffers::WhiskerTree >(tree);
       }
-      whiskers = WhiskerTree( tree );
 
       if ( close( fd ) < 0 ) {
-	perror( "close" );
-	exit( 1 );
-      }
-
-      if ( tree.has_config() ) {
-	printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
-      }
-
-      if ( tree.has_optimizer() ) {
-	printf( "Remy optimization settings:\n%s\n\n", tree.optimizer().DebugString().c_str() );
+        perror( "close" );
+        exit( 1 );
       }
     } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
       num_senders = atoi( arg.substr( 5 ).c_str() );
@@ -84,22 +126,15 @@ int main( int argc, char *argv[] )
   configuration_range.buffer_size = Range( buffer_size, buffer_size, 0 );
   configuration_range.simulation_ticks = simulation_ticks;
 
-  Evaluator eval( configuration_range );
-  auto outcome = eval.score( whiskers, false, 10 );
-  printf( "score = %f\n", outcome.score );
-  double norm_score = 0;
-
-  for ( auto &run : outcome.throughputs_delays ) {
-    printf( "===\nconfig: %s\n", run.first.str().c_str() );
-    for ( auto &x : run.second ) {
-      printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
-      norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
-    }
+  if ( is_poisson ) {
+    Evaluator< FinTree > eval( configuration_range );
+    auto outcome = eval.score( fins, false, 10 );
+    parse_outcome< Evaluator< FinTree >::Outcome > ( outcome );
+  } else {
+    Evaluator< WhiskerTree > eval( configuration_range );
+    auto outcome = eval.score( whiskers, false, 10 );
+    parse_outcome< Evaluator< WhiskerTree >::Outcome > ( outcome );
   }
-
-  printf( "normalized_score = %f\n", norm_score );
-
-  printf( "Whiskers: %s\n", outcome.used_whiskers.str().c_str() );
 
   return 0;
 }
