@@ -21,7 +21,7 @@ WhiskerTree::WhiskerTree( const Whisker & whisker, const bool bisect )
   if ( !bisect ) {
     _leaf.push_back( whisker );
   } else {
-    for ( auto &x : whisker.bisect() ) {
+    for ( auto &x : whisker.bisect<Whisker>() ) {
       _children.push_back( WhiskerTree( x, false ) );
     }
   }

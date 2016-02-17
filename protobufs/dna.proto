@@ -24,6 +24,7 @@ message Memory {
   optional double rec_rec_ewma = 22;
   optional double rtt_ratio = 23;
   optional double slow_rec_rec_ewma = 24;
+  optional double queueing_delay = 25;
 }
 
 message Whisker {
@@ -32,6 +33,12 @@ message Whisker {
   optional double intersend = 33;
 
   optional MemoryRange domain = 34;
+}
+
+message Fin {
+  optional double lambda = 37;
+
+  optional MemoryRange domain = 38;
 }
 
 message OptimizationSetting {
@@ -50,6 +57,7 @@ message OptimizationSettings {
   optional OptimizationSetting window_increment = 51;
   optional OptimizationSetting window_multiple = 52;
   optional OptimizationSetting intersend = 53;
+  optional OptimizationSetting lambda = 54;
 }
 
 message Range {
