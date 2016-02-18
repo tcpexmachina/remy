@@ -104,7 +104,7 @@ Evaluator::Outcome::Outcome( const AnswerBuffers::Outcome & dna )
 }
 
 Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
-				     const bool trace, const unsigned int carefulness ) const
+				     const bool trace, const double carefulness ) const
 {
   return score( run_whiskers, _prng_seed, _configs, trace, TICK_COUNT * carefulness );
 }

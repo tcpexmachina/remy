@@ -1,12 +1,17 @@
-#include <iostream>
-#include <vector>
 #include <cassert>
-#include <future>
 #include <limits>
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics.hpp>
+#include <boost/accumulators/statistics/tail_quantile.hpp>
 
 #include "ratbreeder.hh"
 
+using namespace boost::accumulators;
 using namespace std;
+
+typedef accumulator_set< double, stats< tag::tail_quantile <boost::accumulators::right > > >
+  accumulator_t_right;
+
 
 void RatBreeder::apply_best_split( WhiskerTree & whiskers, const unsigned int generation ) const
 {
@@ -110,51 +115,94 @@ WhiskerImprover::WhiskerImprover( const Evaluator & s_evaluator,
     score_to_beat_( score_to_beat )
 {}
 
-double WhiskerImprover::improve( Whisker & whisker_to_improve )
+void WhiskerImprover::evaluate_replacements(const vector<Whisker> &replacements,
+    vector< pair< const Whisker &, future< pair< bool, double > > > > &scores,
+    const double carefulness ) 
 {
-  auto replacements( whisker_to_improve.next_generation( options_.optimize_window_increment,
-                                                         options_.optimize_window_multiple,
-                                                         options_.optimize_intersend) );
-
-  vector< pair< const Whisker &, future< pair< bool, double > > > > scores;
-
-  /* find best replacement */
   for ( const auto & test_replacement : replacements ) {
     if ( eval_cache_.find( test_replacement ) == eval_cache_.end() ) {
       /* need to fire off a new thread to evaluate */
       scores.emplace_back( test_replacement,
-			   async( launch::async, [] ( const Evaluator & e,
-						      const Whisker & r,
-						      const WhiskerTree & rat ) {
-				    WhiskerTree replaced_whiskertree( rat );
-				    const bool found_replacement __attribute((unused)) = replaced_whiskertree.replace( r );
-				    assert( found_replacement );
-				    return make_pair( true, e.score( replaced_whiskertree ).score ); },
-				  eval_, test_replacement, rat_ ) );
+                           async( launch::async, [] ( const Evaluator & e,
+                                                      const Whisker & r,
+                                                      const WhiskerTree & rat,
+                                                      const double carefulness ) {
+                                    WhiskerTree replaced_whiskertree( rat );
+                                    const bool found_replacement __attribute((unused)) = replaced_whiskertree.replace( r );
+                                    assert( found_replacement );
+                                    return make_pair( true, e.score( replaced_whiskertree, false, carefulness ).score ); },
+                                  eval_, test_replacement, rat_, carefulness ) );
     } else {
       /* we already know the score */
       scores.emplace_back( test_replacement,
-			   async( launch::deferred, [] ( const double value ) {
-			       return make_pair( false, value ); }, eval_cache_.at( test_replacement ) ) );
+        async( launch::deferred, [] ( const double value ) {
+               return make_pair( false, value ); }, eval_cache_.at( test_replacement ) ) );
+    }
+  } 
+}
+
+vector<Whisker> WhiskerImprover::early_bail_out( const vector< Whisker > &replacements,
+        const double carefulness, const double quantile_to_keep )
+{  
+  vector< pair< const Whisker &, future< pair< bool, double > > > > scores;
+  evaluate_replacements( replacements, scores, carefulness );
+  
+  accumulator_t_right acc(
+     tag::tail< boost::accumulators::right >::cache_size = scores.size() );
+  vector<double> raw_scores;
+  for ( auto & x : scores ) {
+    const double score( x.second.get().second );
+    acc( score );
+    raw_scores.push_back( score );
+  }
+  
+  /* Set the lower bound to be MAX_PERCENT_ERROR worse than the current best score */
+  double lower_bound = std::min( score_to_beat_ * (1 + MAX_PERCENT_ERROR), 
+        score_to_beat_ * (1 - MAX_PERCENT_ERROR) );
+  /* Get the score at given quantile */
+  double quantile_bound = quantile( acc, quantile_probability = 1 - quantile_to_keep );
+  double cutoff = std::max( lower_bound, quantile_bound );
+
+  /* Discard replacements below threshold */
+  vector<Whisker> top_replacements;
+  for ( uint i = 0; i < scores.size(); i ++ ) {
+    const Whisker & replacement( scores.at( i ).first );
+    const double score( raw_scores.at( i ) );
+    if ( score >= cutoff ) {
+      top_replacements.push_back( replacement );
     }
   }
+  return top_replacements;
+}
 
-  /* find the best one */
+double WhiskerImprover::improve( Whisker & whisker_to_improve )
+{
+  auto replacements( whisker_to_improve.next_generation( options_.optimize_window_increment,
+                                                         options_.optimize_window_multiple,
+                                                         options_.optimize_intersend ) );
+  vector< pair< const Whisker &, future< pair< bool, double > > > > scores;
+
+  /* Run for 10% simulation time to get estimates for the final score 
+     and discard bad performing ones early on. */
+  vector<Whisker> top_replacements = early_bail_out( replacements, 0.1, 0.5 );
+
+  /* find best replacement */
+  evaluate_replacements( top_replacements, scores, 1 );
   for ( auto & x : scores ) {
-    const Whisker & replacement( x.first );
-    const auto outcome( x.second.get() );
-    const bool was_new_evaluation( outcome.first );
-    const double score( outcome.second );
+     const Whisker & replacement( x.first );
+     const auto outcome( x.second.get() );
+     const bool was_new_evaluation( outcome.first );
+     const double score( outcome.second );
 
-    /* should we cache this result? */
-    if ( was_new_evaluation ) {
-      eval_cache_.insert( make_pair( replacement, score ) );
-    }
+     /* should we cache this result? */
+     if ( was_new_evaluation ) {
+       eval_cache_.insert( make_pair( replacement, score ) );
+     }
 
-    if ( score > score_to_beat_ ) {
+     if ( score > score_to_beat_ ) {
       score_to_beat_ = score;
       whisker_to_improve = replacement;
-    }
+     }
   }
 
   cout << "Chose " << whisker_to_improve.str() << endl;
