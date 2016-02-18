@@ -2,6 +2,8 @@
 #define SENDER_DATA_POINT_HH
 
 #include "simulationresults.pb.h"
+#include "dna.pb.h"
+#include "memory.hh"
 
 enum SenderDataPointSenderType { RAT, FISH };
 
@@ -28,14 +30,16 @@ public:
     } else if (type == FISH) {
       ret.set_lambda( lambda );
     }
+    ret.mutable_memory()->CopyFrom( memory.DNA() );
     return ret;
   }
 
-  SenderDataPoint( SenderDataPointSenderType type, double average_throughput,
+  SenderDataPoint( SenderDataPointSenderType type, Memory memory, double average_throughput,
       double average_delay, double sending_duration, unsigned int
       packets_received, double total_delay, unsigned int window_size, double
       intersend_time, double lambda ) :
     type( type ),
+    memory( memory ),
     average_throughput( average_throughput ),
     average_delay( average_delay ),
     sending_duration( sending_duration ),
@@ -47,6 +51,7 @@ public:
 
 private:
   SenderDataPointSenderType type;
+  Memory memory;
   double average_throughput = 0;
   double average_delay = 0;
   double sending_duration = 0;
