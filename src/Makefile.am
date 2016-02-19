@@ -13,7 +13,7 @@ common_source = delay.hh evaluator.cc evaluator.hh                     \
         sendergangofgangs.cc sendergangofgangs.hh                      \
 	utility.hh whisker.cc whisker.hh whiskertree.cc whiskertree.hh \
 	aimd-templates.cc aimd.cc aimd.hh                              \
-        configrange.hh configrange.cc
+        configrange.hh configrange.cc configvector.hh configvector.cc
 
 
 remy_SOURCES = $(common_source) remy.cc ratbreeder.cc ratbreeder.hh 
@@ -24,4 +24,4 @@ scoring_example_SOURCES = $(common_source) scoring-example.cc
 
 configuration_SOURCES = input-configrange.cc
 
-inspect_config_SOURCES = inspect-configrange.cc
+inspect_config_SOURCES = $(common_source) inspect-configrange.cc
