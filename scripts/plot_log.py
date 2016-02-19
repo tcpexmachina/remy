@@ -103,11 +103,11 @@ class BaseAnimationGenerator(BaseFigureGenerator):
     """Abstract base class to generate timed animations."""
 
     interval = 1
-    history = 10
+    history = 15
     file_extension = 'mp4'
 
     plot_kwargs = {'linestyle': 'solid', 'linewidth': 0.25, 'color': (0.75, 0.75, 0.75),
-            'marker': '.', 'markersize': 5.0, 'markerfacecolor': 'blue', 'markeredgecolor': 'blue'}
+            'marker': '.', 'markersize': 12.0, 'markerfacecolor': 'blue', 'markeredgecolor': 'blue'}
 
     def __init__(self, **kwargs):
         self._interval = kwargs.pop('interval', self.interval)
