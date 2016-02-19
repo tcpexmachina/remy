@@ -11,30 +11,61 @@ except ImportError:
     exit(1)
 import matplotlib.pyplot as plt
 from senderrunner_runner import SenderRunnerRunner
+from matplotlib.animation import FuncAnimation
 import utils
 
 DEFAULT_PLOTS_DIR = "log-plots"
 LAST_PLOTS_SYMLINK = "last-plots"
 
-class BasePlotGenerator(object):
-    """Abstract base class to generate plots."""
+def pretty(name):
+    return name.split('.')[-1].capitalize().replace("_", " ")
+
+
+class BaseFigureGenerator(object):
+    """Abstract base class to generate figures.
+    BasePlotGenerator and BaseAnimationGenerator both derive from this class."""
 
     title = None
     xlabel = None
     ylabel = None
     figfilename = None
-    legend_location = 'lower right'
     plotsdir = '.'
     plot_kwargs = {}
+    file_extension = None
 
-    def __init__(self, plotsdir=None):
-        self._plotsdir = plotsdir or self.plotsdir
+    def __init__(self, **kwargs):
+        self._plotsdir = kwargs.pop('plotsdir', self.plotsdir)
+        super(BaseFigureGenerator, self).__init__(**kwargs)
 
     def get_figfilename(self):
         name = os.path.join(self._plotsdir, self.figfilename)
-        if not name.endswith(".png"):
-            name += ".png"
+        if not name.endswith("." + self.file_extension):
+            name += "." + self.file_extension
         return name
+
+    def generate(self, run_data):
+        """Generates the figure for `run_data`, which should be a
+        SimulationRunData instance."""
+        raise NotImplementedError("Subclasses must implement generate()")
+
+    @staticmethod
+    def get_raw_data(run_data, index, attrname):
+        attrnames = attrname.split('.')
+        result = [getattr(point.sender_data[index], attrnames[0]) for point in run_data.point]
+        for attr in attrnames[1:]:
+            result = [getattr(point, attr) for point in result]
+        return result
+
+    @staticmethod
+    def get_times(run_data):
+        return [point.seconds for point in run_data.point]
+
+
+class BasePlotGenerator(BaseFigureGenerator):
+    """Abstract base class to generate plots."""
+
+    legend_location = 'lower right'
+    file_extension = 'png'
 
     def iter_plot_data(self, run_data):
         """Iterates through data to be plotted. The default implementation just
@@ -45,11 +76,11 @@ class BasePlotGenerator(object):
     def get_plot_data(self, run_data):
         raise NotImplementedError("Subclasses must implement either get_plot_data() or iter_plot_data()")
 
-    def plot(self, run_data):
+    def generate(self, run_data):
         """Generates the plot for `run_data`, which should be a
         SimulationRunData instance."""
 
-        print("Generating {}...".format(self.figfilename))
+        print("Generating {}...".format(self.get_figfilename()))
         plt.figure()
 
         for x, y, label in self.iter_plot_data(run_data):
@@ -67,18 +98,61 @@ class BasePlotGenerator(object):
         plt.savefig(self.get_figfilename(), format='png', bbox_inches='tight')
         plt.close()
 
-    @staticmethod
-    def get_raw_data(run_data, index, attrname):
-        return [getattr(point.sender_data[index], attrname) for point in run_data.point]
+
+class BaseAnimationGenerator(BaseFigureGenerator):
+    """Abstract base class to generate timed animations."""
+
+    interval = 1
+    history = 10
+    file_extension = 'mp4'
+
+    plot_kwargs = {'linestyle': 'solid', 'linewidth': 0.25, 'color': (0.75, 0.75, 0.75),
+            'marker': '.', 'markersize': 5.0, 'markerfacecolor': 'blue', 'markeredgecolor': 'blue'}
+
+    def __init__(self, **kwargs):
+        self._interval = kwargs.pop('interval', self.interval)
+        super(BaseAnimationGenerator, self).__init__(**kwargs)
+
+    def _animate(self, i):
+        if i < self.history:
+            self._line.set_data(self._x[:i], self._y[:i])
+        else:
+            self._line.set_data(self._x[i-self.history:i], self._y[i-self.history:i])
+        self._text.set_text('t = {:.2f}'.format(self._times[i]))
+
+    def generate(self, run_data):
+        """Generates the animation for `run_data`, which should be a
+        SimulationRunData instance."""
+
+        print("Generating {}...".format(self.get_figfilename()))
+
+        self._fig = plt.figure()
+        self._ax = plt.axes()
+        self._line = self._ax.plot([], [], **self.plot_kwargs)[0]
+        self._text = self._ax.text(0.02, 0.02, '')
+
+        self._ax.set_title(self.title)
+        self._ax.set_xlabel(self.xlabel)
+        self._ax.set_ylabel(self.ylabel)
+
+        self._times = self.get_times(run_data)
+        self._x, self._y = self.get_plot_data(run_data)
+
+        self._ax.set_xlim([0, max(self._x)])
+        self._ax.set_ylim([0, max(self._y)])
+
+        anim = FuncAnimation(self._fig, self._animate, frames=len(self._times),
+            interval=self._interval)
+        anim.save(self.get_figfilename())
+
+    def get_plot_data(self, run_data):
+        raise NotImplementedError("Subclasses must implement get_plot_data()")
 
 
 class TimePlotGenerator(BasePlotGenerator):
     """Abstract base class to generate plots where the x-axis is time."""
 
     xlabel = "Time (ms)"
-
-    def get_times(self, run_data):
-        return [point.seconds for point in run_data.point]
 
     def get_xlim(self, run_data):
         x = self.get_times(run_data)
@@ -103,7 +177,7 @@ class RawDataTimePlotGenerator(TimePlotGenerator):
         self.attrname = attrname
         self.figfilename = attrname
 
-        pretty_name = attrname.capitalize().replace("_", " ")
+        pretty_name = pretty(attrname)
         self.ylabel = pretty_name
         if unit:
             self.ylabel += " ({})".format(unit)
@@ -153,14 +227,14 @@ class BaseParametricPlotGenerator(BasePlotGenerator):
             'marker': '.', 'markersize': 5.0, 'markerfacecolor': 'blue', 'markeredgecolor': 'blue'}
 
 
-class SenderVersusSenderPlotGenerator(BaseParametricPlotGenerator):
-    """Generates plots that show the correlation between two senders."""
+class SenderVersusSenderMixin(object):
+    """Provides methods to show the correlation between two senders."""
 
     def __init__(self, attrname, sender_indices, unit=None, **kwargs):
         self.attrname = attrname
         self.figfilename = "{}_sender{:d}_vs_sender{:d}".format(attrname, sender_indices[0], sender_indices[1])
 
-        pretty_name = attrname.capitalize().replace("_", " ")
+        pretty_name = pretty(attrname)
         axis_label = pretty_name
         if unit:
             axis_label += " ({})".format(unit)
@@ -169,7 +243,7 @@ class SenderVersusSenderPlotGenerator(BaseParametricPlotGenerator):
         self.title = pretty_name + ": sender {:d} vs sender {:d}".format(*sender_indices)
         self.indices = sender_indices
 
-        super(SenderVersusSenderPlotGenerator, self).__init__(**kwargs)
+        super(SenderVersusSenderMixin, self).__init__(**kwargs)
 
     def get_plot_data(self, run_data):
         x = self.get_raw_data(run_data, self.indices[0], self.attrname)
@@ -177,14 +251,14 @@ class SenderVersusSenderPlotGenerator(BaseParametricPlotGenerator):
         return x, y
 
 
-class ParametricPlotGenerator(BaseParametricPlotGenerator):
-    """Generates plots that show the correlation between two variables (for one sender)."""
+class SingleSenderParametricMixin(object):
+    """Provides methods to show the correlation between two variables (for one sender)."""
 
     def __init__(self, attrnames, sender_index, units=None, **kwargs):
         self.attrnames = attrnames
         self.figfilename = "{}_vs_{}_sender{:d}".format(attrnames[0], attrnames[1], sender_index)
 
-        pretty_names = [attrname.capitalize().replace("_", " ") for attrname in attrnames]
+        pretty_names = [pretty(attrname) for attrname in attrnames]
         axis_labels = pretty_names
         if units:
             axis_labels = [label + " ({})".format(unit) for label, unit in zip(axis_labels, units)]
@@ -193,12 +267,32 @@ class ParametricPlotGenerator(BaseParametricPlotGenerator):
         self.title = "{} vs {} for sender {:d}".format(pretty_names[0], pretty_names[1], sender_index)
         self.index = sender_index
 
-        super(ParametricPlotGenerator, self).__init__(**kwargs)
+        super(SingleSenderParametricMixin, self).__init__(**kwargs)
 
     def get_plot_data(self, run_data):
         x = self.get_raw_data(run_data, self.index, self.attrnames[0])
         y = self.get_raw_data(run_data, self.index, self.attrnames[1])
         return x, y
+
+
+class SenderVersusSenderPlotGenerator(SenderVersusSenderMixin, BaseParametricPlotGenerator):
+    """Generates plots that show the correlation between two senders."""
+    pass
+
+
+class SenderVersusSenderAnimationGenerator(SenderVersusSenderMixin, BaseAnimationGenerator):
+    """Generates animations that show the progress of two senders with time."""
+    pass
+
+
+class SingleSenderParametricPlotGenerator(SingleSenderParametricMixin, BaseParametricPlotGenerator):
+    """Generates plots that show the correlation between two variables."""
+    pass
+
+
+class SingleSenderParametricAnimationGenerator(SingleSenderParametricMixin, BaseAnimationGenerator):
+    """Generates animations that show the progress of two variables with time."""
+    pass
 
 
 def make_plots_dir(dirname, argvalue):
@@ -233,6 +327,8 @@ senderrunner_group.add_argument("-b", "--buffer-size", type=str, default="inf",
     help="Buffer size, a number or 'inf' for infinite buffers")
 senderrunner_group.add_argument("-i", "--interval", type=float, default=0.1,
     help="Logging interval (seconds)")
+senderrunner_group.add_argument("-T", "--sim-time", type=float, default=100,
+    help="Simulation time to run for (seconds)")
 parser.add_argument("-O", "--plots-dir", type=str, default=None,
     help="Directory to place output files in.")
 args = parser.parse_args()
@@ -242,7 +338,7 @@ data = read_data_file(args.inputfile)
 
 # If there's nothing in it, it was probably a RemyCC
 if not data.run_data:
-    parameter_keys = ["nsenders", "link_ppt", "delay", "mean_on", "mean_off", "buffer_size", "interval"]
+    parameter_keys = ["nsenders", "link_ppt", "delay", "mean_on", "mean_off", "buffer_size", "interval", "sim_time"]
     parameters = {key: getattr(args, key) for key in parameter_keys}
     datafile = args.inputfile + ".data"
     print("Running sender-runner to produce " + datafile)
@@ -251,8 +347,10 @@ if not data.run_data:
     data = read_data_file(datafile)
 
 plotsdir = make_plots_dir(args.plots_dir, args.inputfile)
-BasePlotGenerator.plotsdir = plotsdir
+BaseFigureGenerator.plotsdir = plotsdir
 utils.log_arguments(plotsdir, args)
+
+BaseAnimationGenerator.interval = data.settings.log_interval_ticks
 
 generators = [
     RawDataTimePlotGenerator("average_throughput"),
@@ -262,14 +360,34 @@ generators = [
     RawDataTimePlotGenerator("total_delay", "ms"),
     RawDataTimePlotGenerator("window_size"),
     RawDataTimePlotGenerator("intersend_time", "ms"),
+    RawDataTimePlotGenerator("memory.rec_send_ewma", "ms"),
+    RawDataTimePlotGenerator("memory.rec_rec_ewma", "ms"),
+    RawDataTimePlotGenerator("memory.rtt_ratio", "ms"),
+    RawDataTimePlotGenerator("memory.slow_rec_rec_ewma", "ms"),
     DifferenceQuotientTimePlotGenerator("packets_received", "sending_duration", "throughput"),
     DifferenceQuotientTimePlotGenerator("total_delay", "packets_received", "delay"),
     SenderVersusSenderPlotGenerator("window_size", (0, 1)),
     SenderVersusSenderPlotGenerator("intersend_time", (0, 1)),
-    ParametricPlotGenerator(("window_size", "intersend_time"), 0),
-    ParametricPlotGenerator(("window_size", "intersend_time"), 1),
+    SenderVersusSenderPlotGenerator("memory.rec_send_ewma", (0, 1)),
+    SenderVersusSenderPlotGenerator("memory.rec_rec_ewma", (0, 1)),
+    SenderVersusSenderPlotGenerator("memory.rtt_ratio", (0, 1)),
+    SenderVersusSenderPlotGenerator("memory.slow_rec_rec_ewma", (0, 1)),
+    SingleSenderParametricPlotGenerator(("window_size", "intersend_time"), 0),
+    SingleSenderParametricPlotGenerator(("window_size", "intersend_time"), 1),
+    SingleSenderParametricPlotGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 0),
+    SingleSenderParametricPlotGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 1),
+    SenderVersusSenderAnimationGenerator("window_size", (0, 1)),
+    SenderVersusSenderAnimationGenerator("intersend_time", (0, 1)),
+    SenderVersusSenderAnimationGenerator("memory.rec_send_ewma", (0, 1)),
+    SenderVersusSenderAnimationGenerator("memory.rec_rec_ewma", (0, 1)),
+    SenderVersusSenderAnimationGenerator("memory.rtt_ratio", (0, 1)),
+    SenderVersusSenderAnimationGenerator("memory.slow_rec_rec_ewma", (0, 1)),
+    SingleSenderParametricAnimationGenerator(("window_size", "intersend_time"), 0),
+    SingleSenderParametricAnimationGenerator(("window_size", "intersend_time"), 1),
+    SingleSenderParametricAnimationGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 0),
+    SingleSenderParametricAnimationGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 1),
 ]
 
 for run_data in data.run_data:
     for generator in generators:
-        generator.plot(run_data)
+        generator.generate(run_data)

@@ -17,6 +17,7 @@ class SenderRunnerRunner:
         'mean_off': 5000.0,
         'buffer_size': 'inf',
         'interval': 1.0,
+        'sim_time': 1000.0,
     }
 
     senderrunner_parameters = [
@@ -28,6 +29,7 @@ class SenderRunnerRunner:
         ("off", "mean_off"),
         ("buf", "buffer_size"),
         ("interval", "interval"),
+        ("time", "sim_time"),
     ]
 
     def __init__(self, **kwargs):
