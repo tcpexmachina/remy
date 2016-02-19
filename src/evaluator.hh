@@ -9,7 +9,7 @@
 #include "network.hh"
 #include "problem.pb.h"
 #include "answer.pb.h"
-
+#include "configvector.hh"
 class Evaluator
 {
 public:
@@ -33,7 +33,7 @@ private:
   std::vector< NetConfig > _configs;
 
 public:
-  Evaluator( const ConfigRange & range );
+  Evaluator( const ConfigVector & vector );
   
   ProblemBuffers::Problem DNA( const WhiskerTree & whiskers ) const;
 
