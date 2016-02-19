@@ -131,7 +131,7 @@ int main( int argc, char *argv[] )
       mean_off_duration = atof( arg.substr( 4 ).c_str() );
       fprintf( stderr, "Setting mean_off_duration to %f ms\n", mean_off_duration );
     } else if ( arg.substr( 0, 5 ) == "time=" ) {
-      simulation_ticks = atoi( arg.substr( 5 ).c_str() ) * 1000;
+      simulation_ticks = atof( arg.substr( 5 ).c_str() ) * 1000;
       fprintf( stderr, "Setting simulation_ticks to %u ms\n", simulation_ticks );
     } else if ( arg.substr( 0, 9 ) == "interval=" ) {
       simulation_log_interval_ticks = atof( arg.substr( 9 ).c_str() ) * 1000;
