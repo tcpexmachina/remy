@@ -9,10 +9,10 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
 {
   vector< MemoryRange > ret { *this };
 
-  /* bisect in each axis */
-  for ( unsigned int i = 0; i < Memory::datasize; i++ ) {
-    vector< MemoryRange > doubled;
-    for ( const auto &x : ret ) {
+  /* bisect in each active axis */
+  for ( auto & i : _active_axis ) {
+      vector< MemoryRange > doubled;
+      for ( const auto &x : ret ) {
       auto ersatz_lower( x._lower ), ersatz_upper( x._upper );
       ersatz_lower.mutable_field( i ) = ersatz_upper.mutable_field( i ) = median( _acc[ i ] );
 
@@ -43,7 +43,7 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
 Memory MemoryRange::range_median( void ) const
 {
   Memory median_data( _lower );
-  for ( unsigned int i = 0; i < Memory::datasize; i++ ) {
+  for ( auto & i : _active_axis ) {
     median_data.mutable_field( i ) = (_lower.field( i ) + _upper.field( i )) / 2;
   }
   return median_data;
@@ -57,7 +57,7 @@ bool MemoryRange::contains( const Memory & query ) const
 void MemoryRange::track( const Memory & query ) const
 {
   /* log it */
-  for ( unsigned int i = 0; i < Memory::datasize; i++ ) {
+  for ( auto & i : _active_axis ) {
     _acc[ i ]( query.field( i ) );
   }
 }
@@ -89,6 +89,7 @@ RemyBuffers::MemoryRange MemoryRange::DNA( void ) const
 MemoryRange::MemoryRange( const RemyBuffers::MemoryRange & dna )
   : _lower( true, dna.lower() ),
     _upper( false, dna.upper() ),
+    _active_axis( {MemoryRange::SEND_EWMA, MemoryRange::REC_EWMA, MemoryRange::RTT_RATIO, MemoryRange::SLOW_REC_EWMA } ), 
     _acc( Memory::datasize ),
     _count( 0 )
 {}
