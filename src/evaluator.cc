@@ -87,6 +87,13 @@ Evaluator< WhiskerTree >::Outcome Evaluator< WhiskerTree >::score( WhiskerTree &
 
   /* run tests */
   Evaluator< WhiskerTree >::Outcome the_outcome( run_whiskers );
+
+  if ( log_simulation ) {
+    the_outcome.simulation_results.set_prng_seed( prng_seed );
+    the_outcome.simulation_results.set_tick_count( ticks_to_run );
+    the_outcome.simulation_results.set_log_interval_ticks( log_interval_ticks );
+  }
+
   for ( auto &x : configs ) {
     SimulationRunData * run_data = (log_simulation) ?
         &(the_outcome.simulation_results.add_run_data( x )) : NULL;
@@ -121,6 +128,13 @@ Evaluator< FinTree >::Outcome Evaluator< FinTree >::score( FinTree & run_fins,
 
   /* run tests */
   Evaluator< FinTree >::Outcome the_outcome( run_fins );
+
+  if ( log_simulation ) {
+    the_outcome.simulation_results.set_prng_seed( prng_seed );
+    the_outcome.simulation_results.set_tick_count( ticks_to_run );
+    the_outcome.simulation_results.set_log_interval_ticks( log_interval_ticks );
+  }
+
   for ( auto &x : configs ) {
     SimulationRunData * run_data = (log_simulation) ?
         &(the_outcome.simulation_results.add_run_data( x )) : NULL;

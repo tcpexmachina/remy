@@ -24,6 +24,10 @@ public:
   // Adds a run and returns a reference to it
   SimulationRunData & add_run_data( const NetConfig & config );
 
+  void set_prng_seed( unsigned int prng_seed ) { this->prng_seed = prng_seed; }
+  void set_tick_count( unsigned int tick_count ) { this->tick_count = tick_count; }
+  void set_log_interval_ticks( unsigned int log_interval_ticks ) { this->log_interval_ticks = log_interval_ticks; }
+
 private:
   void _populate_actions( SimulationResultBuffers::SimulationsData & pb ) const;
 
@@ -31,8 +35,9 @@ private:
   std::vector< struct SimulationRunData > run_data;
 
   // problem settings
-  const unsigned int prng_seed = 0;
-  const unsigned int tick_count = 0;
+  unsigned int prng_seed = 0;
+  unsigned int tick_count = 0;
+  unsigned int log_interval_ticks = 0;
 };
 
 // Generate machine code for these classes, since it doesn't seem to be generated without prompt.
