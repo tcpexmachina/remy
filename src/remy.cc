@@ -16,8 +16,8 @@ int main( int argc, char *argv[] )
   WhiskerTree whiskers;
   string output_filename;
   RatBreederOptions options;
-  RemyBuffers::ConfigRange input_config;
   string config_filename;
+  RemyBuffers::ConfigVector config_vector;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -68,7 +68,7 @@ int main( int argc, char *argv[] )
         perror( "open config file error");
         exit( 1 );
       }
-      if ( !input_config.ParseFromFileDescriptor( cfd ) ) {
+      if ( !config_vector.ParseFromFileDescriptor( cfd ) ) {
         fprintf( stderr, "Could not parse input config from file %s. \n", config_filename.c_str() );
         exit ( 1 );
       }
@@ -85,40 +85,12 @@ int main( int argc, char *argv[] )
     exit ( 1 );
   }
 
-
-  options.config_range.link_ppt = Range( input_config.link_packets_per_ms() );
-  options.config_range.rtt = Range( input_config.rtt() );
-  options.config_range.num_senders = Range( input_config.num_senders() );
-  options.config_range.mean_on_duration = Range( input_config.mean_on_duration() );
-  options.config_range.mean_off_duration = Range( input_config.mean_off_duration() );
-  options.config_range.buffer_size = Range( input_config.buffer_size() );
-
+  options.config_vector.ReadVector(config_vector);
   RatBreeder breeder( options );
 
   unsigned int run = 0;
 
-  printf( "#######################\n" );
-  printf( "Optimizing for link packets_per_ms in [%f, %f]\n",
-	  options.config_range.link_ppt.low,
-	  options.config_range.link_ppt.high );
-  printf( "Optimizing for rtt_ms in [%f, %f]\n",
-	  options.config_range.rtt.low,
-	  options.config_range.rtt.high );
-  printf( "Optimizing for num_senders in [%f, %f]\n",
-	  options.config_range.num_senders.low, options.config_range.num_senders.high );
-  printf( "Optimizing for mean_on_duration in [%f, %f], mean_off_duration in [ %f, %f]\n",
-	  options.config_range.mean_on_duration.low, options.config_range.mean_on_duration.high, options.config_range.mean_off_duration.low, options.config_range.mean_off_duration.high );
-  printf( "Optimizing window increment: %d, window multiple: %d, intersend: %d\n",
-          options.improver_options.optimize_window_increment, options.improver_options.optimize_window_multiple,
-          options.improver_options.optimize_intersend);
-  if ( options.config_range.buffer_size.low != numeric_limits<unsigned int>::max() ) {
-    printf( "Optimizing for buffer_size in [%f, %f]\n",
-            options.config_range.buffer_size.low,
-            options.config_range.buffer_size.high );
-  } else {
-    printf( "Optimizing for infinitely sized buffers. \n");
-  }
-
+  printf("Training on a specific vector of networks specified by the config\n");
   printf( "Initial rules (use if=FILENAME to read from disk): %s\n", whiskers.str().c_str() );
   printf( "#######################\n" );
 
@@ -164,7 +136,6 @@ int main( int argc, char *argv[] )
       }
 
       auto remycc = whiskers.DNA();
-      remycc.mutable_config()->CopyFrom( options.config_range.DNA() );
       remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
       remycc.mutable_configvector()->CopyFrom( training_configs );
       if ( not remycc.SerializeToFileDescriptor( fd ) ) {
