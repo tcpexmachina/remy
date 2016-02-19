@@ -3,6 +3,8 @@
 
 #include <unordered_map>
 #include <boost/functional/hash.hpp>
+#include <future>
+#include <vector>
 
 #include "configvector.hh"
 #include "evaluator.hh"
@@ -23,6 +25,7 @@ struct RatBreederOptions
 class WhiskerImprover
 {
 private:
+  const double MAX_PERCENT_ERROR = 0.05;
   const Evaluator eval_;
 
   WhiskerTree rat_;
@@ -31,6 +34,13 @@ private:
   std::unordered_map< Whisker, double, boost::hash< Whisker > > eval_cache_ {};
 
   double score_to_beat_;
+
+  void evaluate_replacements(const std::vector< Whisker > &replacements,
+    std::vector< std::pair< const Whisker &, std::future< std::pair< bool, double > > > > &scores,
+    const double carefulness);
+
+  std::vector<Whisker> early_bail_out(const std::vector< Whisker > &replacements,
+        const double carefulness, const double quantile_to_keep);
 
 public:
   WhiskerImprover( const Evaluator & evaluator, const WhiskerTree & rat, const WhiskerImproverOptions & options,
