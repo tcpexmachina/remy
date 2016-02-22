@@ -14,6 +14,20 @@ message WhiskerTree {
   optional ConfigVector configvector = 6;
 }
 
+message FinTree {
+  optional MemoryRange domain = 1;
+
+  repeated FinTree children = 2;
+
+  optional Fin leaf = 3;
+
+  optional ConfigRange config = 4;
+
+  optional OptimizationSettings optimizer = 5;
+
+  optional ConfigVector configvector = 6;
+}
+
 message MemoryRange {
   optional Memory lower = 11;
   optional Memory upper = 12;

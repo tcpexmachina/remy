@@ -14,7 +14,7 @@ common_source = delay.hh evaluator.cc evaluator.hh                     \
 	utility.hh whisker.cc whisker.hh whiskertree.cc whiskertree.hh \
 	aimd-templates.cc aimd.cc aimd.hh                              \
         configrange.hh configrange.cc                              \
-    action.hh fin.hh fin.cc
+    action.hh fin.hh fin.cc fintree.cc fintree.hh
 
 noinst_LIBRARIES = libremycore.a
 libremycore_a_SOURCES = $(common_source)
