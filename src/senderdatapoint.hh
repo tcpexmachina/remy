@@ -31,13 +31,14 @@ public:
       ret.set_lambda( lambda );
     }
     ret.mutable_memory()->CopyFrom( memory.DNA() );
+    ret.set_sending( sending );
     return ret;
   }
 
   SenderDataPoint( SenderDataPointSenderType type, Memory memory, double average_throughput,
       double average_delay, double sending_duration, unsigned int
       packets_received, double total_delay, unsigned int window_size, double
-      intersend_time, double lambda ) :
+      intersend_time, double lambda, bool sending ) :
     type( type ),
     memory( memory ),
     average_throughput( average_throughput ),
@@ -47,7 +48,8 @@ public:
     total_delay( total_delay ),
     window_size( window_size ),
     intersend_time( intersend_time ),
-    lambda( lambda ) {};
+    lambda( lambda ),
+    sending( sending ) {};
 
 private:
   SenderDataPointSenderType type;
@@ -60,6 +62,7 @@ private:
   unsigned int window_size = 0;
   double intersend_time = 0;
   double lambda = 0;
+  bool sending = false;
 };
 
 #endif // SENDER_DATA_POINT_HH

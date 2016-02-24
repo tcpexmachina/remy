@@ -13,6 +13,7 @@ except ImportError:
     exit(1)
 import matplotlib.pyplot as plt
 from senderrunner_runner import SenderRunnerRunner
+from matplotlib.patches import Circle
 from matplotlib.animation import FuncAnimation
 import utils
 
@@ -66,6 +67,10 @@ class BaseFigureGenerator(object):
     @staticmethod
     def get_times(run_data):
         return [point.seconds for point in run_data.point]
+
+    @staticmethod
+    def get_sending(run_data):
+        return [tuple(data.sending for data in point.sender_data) for point in run_data.point]
 
 
 class BasePlotGenerator(BaseFigureGenerator):
@@ -131,6 +136,8 @@ class BaseAnimationGenerator(BaseFigureGenerator):
         else:
             self._line.set_data(self._x[i-self.history:i], self._y[i-self.history:i])
         self._text.set_text('t = {:.2f} ({:d})'.format(self._times[i], i))
+        for circle, sending in zip(self._circles, self._sending[i]):
+            circle.set_facecolor('g' if sending else 'r')
 
     def generate(self, run_data):
         """Generates the animation for `run_data`, which should be a
@@ -139,20 +146,27 @@ class BaseAnimationGenerator(BaseFigureGenerator):
         self._print_generating_line()
 
         self._times = self.get_times(run_data)
+        self._sending = self.get_sending(run_data)
         self._x, self._y = self.get_plot_data(run_data)
         xmax = max(self._x)
         ymax = max(self._y)
 
         self._fig = plt.figure()
         self._ax = self._fig.add_subplot(111)
-        self._line = self._ax.plot([], [], **self.plot_kwargs)[0]
-        self._text = self._ax.text(xmax/20, 19*ymax/20, '')
-
         self._ax.set_title(self.title)
         self._ax.set_xlabel(self.xlabel)
         self._ax.set_ylabel(self.ylabel)
         self._ax.set_xlim([0, xmax])
         self._ax.set_ylim([0, ymax])
+
+        self._line = self._ax.plot([], [], **self.plot_kwargs)[0]
+        self._text = self._ax.text(0.05, 0.95, '', transform=self._ax.transAxes)
+        self._circles = []
+        for i in range(run_data.config.num_senders):
+            circle = Circle((0.05+i*0.05, 0.90), radius=0.02, facecolor='k', transform=self._ax.transAxes)
+            self._ax.add_artist(circle)
+            self._circles.append(circle)
+
 
         anim = FuncAnimation(self._fig, self._animate, frames=len(self._times),
             interval=self._interval)
@@ -195,6 +209,8 @@ class BaseGridAnimationGenerator(BaseAnimationGenerator):
                     self._lines[i*nvars+j].set_data(x[index-self.history:index],
                             y[index-self.history:index])
         self._text.set_text('t = {:.2f} ({:d})'.format(self._times[index], index))
+        for circle, sending in zip(self._circles, self._sending[index]):
+            circle.set_facecolor('g' if sending else 'r')
 
     def generate(self, run_data):
         """Override the single animation case."""
@@ -202,13 +218,20 @@ class BaseGridAnimationGenerator(BaseAnimationGenerator):
         self._print_generating_line()
 
         self._times = self.get_times(run_data)
+        self._sending = self.get_sending(run_data)
         self._data = self.get_plot_data(run_data)
         nvars = self._nvars = len(self._data)
         maxes = [max(d) for d in self._data]
 
         self._fig = plt.figure()
         self._lines = [] # will be a 2D list of axes, indexed by (row, col)
-        self._text = self._fig.text(0.95, 0.95, '', horizontalalignment='right', size=self.timetextsize)
+        self._text = self._fig.text(0.05, 0.95, '', size=self.timetextsize)
+        self._circles = []
+        for i in range(run_data.config.num_senders):
+            circle = Circle((0.05+i*0.05, 0.92), radius=0.02, facecolor='k', transform=self._fig.transFigure)
+            self._fig.patches.append(circle)
+            self._circles.append(circle)
+
 
         for i in range(nvars):
             for j in range(nvars):
@@ -479,6 +502,7 @@ if not args.animations_only:
         RawDataTimePlotGenerator("memory.rec_rec_ewma", "ms"),
         RawDataTimePlotGenerator("memory.rtt_ratio", "ms"),
         RawDataTimePlotGenerator("memory.slow_rec_rec_ewma", "ms"),
+        RawDataTimePlotGenerator("sending"),
         DifferenceQuotientTimePlotGenerator("packets_received", "sending_duration", "throughput"),
         DifferenceQuotientTimePlotGenerator("total_delay", "packets_received", "delay"),
         SenderVersusSenderPlotGenerator("window_size", (0, 1)),
@@ -494,7 +518,8 @@ if not args.animations_only:
     ])
 
 if not args.plots_only:
-    generators.extend([SenderVersusSenderAnimationGenerator("window_size", (0, 1)),
+    generators.extend([
+        SenderVersusSenderAnimationGenerator("window_size", (0, 1)),
         SenderVersusSenderAnimationGenerator("intersend_time", (0, 1)),
         SenderVersusSenderAnimationGenerator("memory.rec_send_ewma", (0, 1)),
         SenderVersusSenderAnimationGenerator("memory.rec_rec_ewma", (0, 1)),
