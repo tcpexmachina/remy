@@ -21,7 +21,8 @@ int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
   string output_filename;
-  RatBreederOptions options;
+  BreederOptions options;
+  WhiskerImproverOptions whisker_options;
   RemyBuffers::ConfigRange input_config;
   string config_filename;
 
@@ -51,16 +52,16 @@ int main( int argc, char *argv[] )
       output_filename = string( arg.substr( 3 ) );
 
     } else if ( arg.substr( 0, 4 ) == "opt=" ) {
-      options.improver_options.optimize_window_increment = false;
-      options.improver_options.optimize_window_multiple = false;
-      options.improver_options.optimize_intersend = false;
+      whisker_options.optimize_window_increment = false;
+      whisker_options.optimize_window_multiple = false;
+      whisker_options.optimize_intersend = false;
       for ( char & c : arg.substr( 4 ) ) {
         if ( c == 'b' ) {
-          options.improver_options.optimize_window_increment = true;
+          whisker_options.optimize_window_increment = true;
         } else if ( c == 'm' ) {
-          options.improver_options.optimize_window_multiple = true;
+          whisker_options.optimize_window_multiple = true;
         } else if ( c == 'r' ) {
-          options.improver_options.optimize_intersend = true;
+          whisker_options.optimize_intersend = true;
         } else {
           fprintf( stderr, "Invalid optimize option: %c\n", c );
           exit( 1 );
@@ -93,7 +94,7 @@ int main( int argc, char *argv[] )
 
   options.config_range = ConfigRange( input_config );
 
-  RatBreeder breeder( options );
+  RatBreeder breeder( options, whisker_options );
 
   unsigned int run = 0;
 
@@ -101,8 +102,8 @@ int main( int argc, char *argv[] )
   printf( "Evaluator simulations will run for %d ticks\n",
     options.config_range.simulation_ticks );
   printf( "Optimizing window increment: %d, window multiple: %d, intersend: %d\n",
-          options.improver_options.optimize_window_increment, options.improver_options.optimize_window_multiple,
-          options.improver_options.optimize_intersend);
+          whisker_options.optimize_window_increment, whisker_options.optimize_window_multiple,
+          whisker_options.optimize_intersend);
   print_range( options.config_range.link_ppt, "link packets_per_ms" );
   print_range( options.config_range.rtt, "rtt_ms" );
   print_range( options.config_range.num_senders, "num_senders" );

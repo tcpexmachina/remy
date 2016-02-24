@@ -1,13 +1,7 @@
 #ifndef RATBREEDER_HH
 #define RATBREEDER_HH
 
-#include <unordered_map>
-#include <boost/functional/hash.hpp>
-#include <future>
-#include <vector>
-
-#include "configrange.hh"
-#include "evaluator.hh"
+#include "breeder.hh"
 
 struct WhiskerImproverOptions
 {
@@ -16,47 +10,28 @@ struct WhiskerImproverOptions
   bool optimize_intersend = true;
 };
 
-struct RatBreederOptions
+class WhiskerImprover : public ActionImprover< WhiskerTree, Whisker >
 {
-  ConfigRange config_range = ConfigRange();
-  WhiskerImproverOptions improver_options = WhiskerImproverOptions();
-};
+protected:
+  WhiskerImproverOptions _options;
 
-class WhiskerImprover
-{
-private:
-  const double MAX_PERCENT_ERROR = 0.05;
-  const Evaluator< WhiskerTree > eval_;
-
-  WhiskerTree rat_;
-  WhiskerImproverOptions options_;
-
-  std::unordered_map< Whisker, double, boost::hash< Whisker > > eval_cache_ {};
-
-  double score_to_beat_;
-
-  void evaluate_replacements(const std::vector< Whisker > &replacements,
-    std::vector< std::pair< const Whisker &, std::future< std::pair< bool, double > > > > &scores,
-    const double carefulness);
-
-  std::vector<Whisker> early_bail_out(const std::vector< Whisker > &replacements,
-        const double carefulness, const double quantile_to_keep);
+  std::vector< Whisker > get_replacements( Whisker & action_to_improve );
 
 public:
   WhiskerImprover( const Evaluator<  WhiskerTree > & evaluator, const WhiskerTree & rat, const WhiskerImproverOptions & options,
-                   const double score_to_beat );
-  double improve( Whisker & whisker_to_improve );
+                   const double score_to_beat )
+    : ActionImprover< WhiskerTree, Whisker >( evaluator, rat, score_to_beat),
+      _options( options ) {};
 };
 
-class RatBreeder
+class RatBreeder : public Breeder< WhiskerTree >
 {
 private:
-  RatBreederOptions _options;
-
-  void apply_best_split( WhiskerTree & whiskers, const unsigned int generation ) const;
+  WhiskerImproverOptions _whisker_options;
 
 public:
-  RatBreeder( const RatBreederOptions & s_options ) : _options( s_options ) {}
+  RatBreeder( const BreederOptions & s_options, const WhiskerImproverOptions & s_whisker_options ) 
+    : Breeder( s_options ), _whisker_options( s_whisker_options ) {};
 
   Evaluator< WhiskerTree >::Outcome improve( WhiskerTree & whiskers );
 };
