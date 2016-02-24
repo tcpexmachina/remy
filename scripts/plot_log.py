@@ -4,6 +4,8 @@ This script requires Python 2, because protobufs doesn't really work for Python 
 
 import argparse
 import os
+import sys
+from textwrap import wrap
 try:
     import simulationresults_pb2
 except ImportError:
@@ -48,8 +50,13 @@ class BaseFigureGenerator(object):
         SimulationRunData instance."""
         raise NotImplementedError("Subclasses must implement generate()")
 
+    def _print_generating_line(self):
+        print("Generating {}...".format(self.get_figfilename()))
+
     @staticmethod
     def get_raw_data(run_data, index, attrname):
+        """Retrieves the attribute specified by `attrname` from each data point
+        in `run_data`, for the sender `index`, and returns it in a list."""
         attrnames = attrname.split('.')
         result = [getattr(point.sender_data[index], attrnames[0]) for point in run_data.point]
         for attr in attrnames[1:]:
@@ -74,13 +81,16 @@ class BasePlotGenerator(BaseFigureGenerator):
         yield self.get_plot_data(run_data) + (None,)
 
     def get_plot_data(self, run_data):
+        """Either this or `iter_plot_data()` be impelemented by subclasses.
+        Returns a tuple of two elements (x, y) each being a list of data points.
+        The two lists must have the same length."""
         raise NotImplementedError("Subclasses must implement either get_plot_data() or iter_plot_data()")
 
     def generate(self, run_data):
         """Generates the plot for `run_data`, which should be a
         SimulationRunData instance."""
 
-        print("Generating {}...".format(self.get_figfilename()))
+        self._print_generating_line()
         plt.figure()
 
         for x, y, label in self.iter_plot_data(run_data):
@@ -103,7 +113,7 @@ class BaseAnimationGenerator(BaseFigureGenerator):
     """Abstract base class to generate timed animations."""
 
     interval = 1
-    history = 15
+    history = 20
     file_extension = 'mp4'
 
     plot_kwargs = {'linestyle': 'solid', 'linewidth': 0.25, 'color': (0.75, 0.75, 0.75),
@@ -118,35 +128,119 @@ class BaseAnimationGenerator(BaseFigureGenerator):
             self._line.set_data(self._x[:i], self._y[:i])
         else:
             self._line.set_data(self._x[i-self.history:i], self._y[i-self.history:i])
-        self._text.set_text('t = {:.2f}'.format(self._times[i]))
+        self._text.set_text('t = {:.2f} ({:d})'.format(self._times[i], i))
 
     def generate(self, run_data):
         """Generates the animation for `run_data`, which should be a
         SimulationRunData instance."""
 
-        print("Generating {}...".format(self.get_figfilename()))
+        self._print_generating_line()
+
+        self._times = self.get_times(run_data)
+        self._x, self._y = self.get_plot_data(run_data)
+        xmax = max(self._x)
+        ymax = max(self._y)
 
         self._fig = plt.figure()
-        self._ax = plt.axes()
+        self._ax = self._fig.add_subplot(111)
         self._line = self._ax.plot([], [], **self.plot_kwargs)[0]
-        self._text = self._ax.text(0.02, 0.02, '')
+        self._text = self._ax.text(xmax/20, 19*ymax/20, '')
 
         self._ax.set_title(self.title)
         self._ax.set_xlabel(self.xlabel)
         self._ax.set_ylabel(self.ylabel)
-
-        self._times = self.get_times(run_data)
-        self._x, self._y = self.get_plot_data(run_data)
-
-        self._ax.set_xlim([0, max(self._x)])
-        self._ax.set_ylim([0, max(self._y)])
+        self._ax.set_xlim([0, xmax])
+        self._ax.set_ylim([0, ymax])
 
         anim = FuncAnimation(self._fig, self._animate, frames=len(self._times),
             interval=self._interval)
         anim.save(self.get_figfilename())
 
     def get_plot_data(self, run_data):
+        """Must be impelemented by subclasses. Returns a tuple of two elements
+        (x, y) each being a list of data points. The two lists must have the
+        same length."""
         raise NotImplementedError("Subclasses must implement get_plot_data()")
+
+
+class BaseGridAnimationGenerator(BaseAnimationGenerator):
+    """Abstract base class to generate grid animations.
+
+    Subclasses must implement get_plot_data(), which must return a tuple of
+    lists. The animation will then draw one plot for each pair of lists.
+    """
+
+    ticklabelsize = 5
+    axislabelsize = 8
+    timetextsize = 9
+    wrapwidth = 10
+    dpi = 200
+    plot_kwargs = {'linestyle': 'solid', 'linewidth': 0.25, 'color': (0.75, 0.75, 0.75),
+            'marker': '.', 'markersize': 4.0, 'markerfacecolor': 'blue', 'markeredgecolor': 'blue'}
+
+    def _animate(self, index):
+        """Override the single animation case."""
+        sys.stdout.write("Up to frame {:d} of {:d}...\r".format(index, len(self._times)))
+        sys.stdout.flush()
+        nvars = self._nvars
+        for i in range(nvars):
+            y = self._data[i]
+            for j in range(nvars):
+                x = self._data[j]
+                if index < self.history:
+                    self._lines[i*nvars+j].set_data(x[:index], y[:index])
+                else:
+                    self._lines[i*nvars+j].set_data(x[index-self.history:index],
+                            y[index-self.history:index])
+        self._text.set_text('t = {:.2f} ({:d})'.format(self._times[index], index))
+
+    def generate(self, run_data):
+        """Override the single animation case."""
+
+        self._print_generating_line()
+
+        self._times = self.get_times(run_data)
+        self._data = self.get_plot_data(run_data)
+        nvars = self._nvars = len(self._data)
+        maxes = [max(d) for d in self._data]
+
+        self._fig = plt.figure()
+        self._lines = [] # will be a 2D list of axes, indexed by (row, col)
+        self._text = self._fig.text(0.95, 0.95, '', horizontalalignment='right', size=self.timetextsize)
+
+        for i in range(nvars):
+            for j in range(nvars):
+                ax = self._fig.add_subplot(nvars, nvars, i*nvars+j+1)
+                line = ax.plot([], [], **self.plot_kwargs)[0]
+                self._lines.append(line)
+
+                ax.set_xlim([0, maxes[j]])
+                ax.set_ylim([0, maxes[i]])
+
+                # x tick labels apply to last row only
+                if i == nvars-1:
+                    for label in ax.get_xticklabels():
+                        label.set_size(self.ticklabelsize)
+                        label.set_rotation('vertical')
+                else:
+                    ax.set_xticklabels([])
+                if i == 0:
+                    xlabeltext = '\n'.join(wrap(self.titles[j], self.wrapwidth))
+                    ax.set_xlabel(xlabeltext, fontsize=self.axislabelsize)
+                    ax.get_xaxis().set_label_position('top')
+
+                # y tick labels apply to first column only
+                if j == 0:
+                    for label in ax.get_yticklabels():
+                        label.set_size(self.ticklabelsize)
+                    ylabeltext = '\n'.join(wrap(self.titles[i], self.wrapwidth))
+                    ax.set_ylabel(ylabeltext, fontsize=self.axislabelsize)
+                else:
+                    ax.set_yticklabels([])
+
+        anim = FuncAnimation(self._fig, self._animate, frames=len(self._times),
+            interval=self._interval)
+        anim.save(self.get_figfilename(), dpi=self.dpi)
 
 
 class TimePlotGenerator(BasePlotGenerator):
@@ -295,6 +389,18 @@ class SingleSenderParametricAnimationGenerator(SingleSenderParametricMixin, Base
     pass
 
 
+class MultiVariableParametricGridAnimationGenerator(BaseGridAnimationGenerator):
+
+    def __init__(self, *specs, **kwargs):
+        self.figfilename = kwargs.pop("figfilename", "multi")
+        self.titles = [pretty(attrname) + " " + str(sender_index) for attrname, sender_index in specs]
+        self.specs = specs
+        super(MultiVariableParametricGridAnimationGenerator, self).__init__(**kwargs)
+
+    def get_plot_data(self, run_data):
+        return [self.get_raw_data(run_data, index, attrname) for attrname, index in self.specs]
+
+
 def make_plots_dir(dirname, argvalue):
     if argvalue.endswith(".data"):
         basename = argvalue[:-5]
@@ -386,6 +492,16 @@ generators = [
     SingleSenderParametricAnimationGenerator(("window_size", "intersend_time"), 1),
     SingleSenderParametricAnimationGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 0),
     SingleSenderParametricAnimationGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 1),
+    MultiVariableParametricGridAnimationGenerator(
+        ("memory.rec_send_ewma", 0),
+        ("memory.rec_send_ewma", 1),
+        ("memory.rec_rec_ewma", 0),
+        ("memory.rec_rec_ewma", 1),
+        ("memory.rtt_ratio", 0),
+        ("memory.rtt_ratio", 1),
+        ("memory.slow_rec_rec_ewma", 0),
+        ("memory.slow_rec_rec_ewma", 1),
+    )
 ]
 
 for run_data in data.run_data:
