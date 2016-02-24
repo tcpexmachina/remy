@@ -71,7 +71,7 @@ class BaseFigureGenerator(object):
 class BasePlotGenerator(BaseFigureGenerator):
     """Abstract base class to generate plots."""
 
-    legend_location = 'lower right'
+    legend_location = 'best'
     file_extension = 'png'
 
     def iter_plot_data(self, run_data):
@@ -124,6 +124,8 @@ class BaseAnimationGenerator(BaseFigureGenerator):
         super(BaseAnimationGenerator, self).__init__(**kwargs)
 
     def _animate(self, i):
+        sys.stdout.write("Up to frame {:d} of {:d}...\r".format(i, len(self._times)))
+        sys.stdout.flush()
         if i < self.history:
             self._line.set_data(self._x[:i], self._y[:i])
         else:
@@ -437,6 +439,10 @@ senderrunner_group.add_argument("-T", "--sim-time", type=float, default=100,
     help="Simulation time to run for (seconds)")
 parser.add_argument("-O", "--plots-dir", type=str, default=None,
     help="Directory to place output files in.")
+parser.add_argument("--plots-only", action="store_true", default=False,
+    help="Only generate plots, not animations")
+parser.add_argument("--animations-only", action="store_true", default=False,
+    help="Only generate animations, not plots")
 args = parser.parse_args()
 
 # First, try reading it as a data file
@@ -458,51 +464,57 @@ utils.log_arguments(plotsdir, args)
 
 BaseAnimationGenerator.interval = data.settings.log_interval_ticks
 
-generators = [
-    RawDataTimePlotGenerator("average_throughput"),
-    RawDataTimePlotGenerator("average_delay", "ms"),
-    RawDataTimePlotGenerator("sending_duration", "ms"),
-    RawDataTimePlotGenerator("packets_received"),
-    RawDataTimePlotGenerator("total_delay", "ms"),
-    RawDataTimePlotGenerator("window_size"),
-    RawDataTimePlotGenerator("intersend_time", "ms"),
-    RawDataTimePlotGenerator("memory.rec_send_ewma", "ms"),
-    RawDataTimePlotGenerator("memory.rec_rec_ewma", "ms"),
-    RawDataTimePlotGenerator("memory.rtt_ratio", "ms"),
-    RawDataTimePlotGenerator("memory.slow_rec_rec_ewma", "ms"),
-    DifferenceQuotientTimePlotGenerator("packets_received", "sending_duration", "throughput"),
-    DifferenceQuotientTimePlotGenerator("total_delay", "packets_received", "delay"),
-    SenderVersusSenderPlotGenerator("window_size", (0, 1)),
-    SenderVersusSenderPlotGenerator("intersend_time", (0, 1)),
-    SenderVersusSenderPlotGenerator("memory.rec_send_ewma", (0, 1)),
-    SenderVersusSenderPlotGenerator("memory.rec_rec_ewma", (0, 1)),
-    SenderVersusSenderPlotGenerator("memory.rtt_ratio", (0, 1)),
-    SenderVersusSenderPlotGenerator("memory.slow_rec_rec_ewma", (0, 1)),
-    SingleSenderParametricPlotGenerator(("window_size", "intersend_time"), 0),
-    SingleSenderParametricPlotGenerator(("window_size", "intersend_time"), 1),
-    SingleSenderParametricPlotGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 0),
-    SingleSenderParametricPlotGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 1),
-    SenderVersusSenderAnimationGenerator("window_size", (0, 1)),
-    SenderVersusSenderAnimationGenerator("intersend_time", (0, 1)),
-    SenderVersusSenderAnimationGenerator("memory.rec_send_ewma", (0, 1)),
-    SenderVersusSenderAnimationGenerator("memory.rec_rec_ewma", (0, 1)),
-    SenderVersusSenderAnimationGenerator("memory.rtt_ratio", (0, 1)),
-    SenderVersusSenderAnimationGenerator("memory.slow_rec_rec_ewma", (0, 1)),
-    SingleSenderParametricAnimationGenerator(("window_size", "intersend_time"), 0),
-    SingleSenderParametricAnimationGenerator(("window_size", "intersend_time"), 1),
-    SingleSenderParametricAnimationGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 0),
-    SingleSenderParametricAnimationGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 1),
-    MultiVariableParametricGridAnimationGenerator(
-        ("memory.rec_send_ewma", 0),
-        ("memory.rec_send_ewma", 1),
-        ("memory.rec_rec_ewma", 0),
-        ("memory.rec_rec_ewma", 1),
-        ("memory.rtt_ratio", 0),
-        ("memory.rtt_ratio", 1),
-        ("memory.slow_rec_rec_ewma", 0),
-        ("memory.slow_rec_rec_ewma", 1),
-    )
-]
+generators = []
+
+if not args.animations_only:
+    generators.extend([
+        RawDataTimePlotGenerator("average_throughput"),
+        RawDataTimePlotGenerator("average_delay", "ms"),
+        RawDataTimePlotGenerator("sending_duration", "ms"),
+        RawDataTimePlotGenerator("packets_received"),
+        RawDataTimePlotGenerator("total_delay", "ms"),
+        RawDataTimePlotGenerator("window_size"),
+        RawDataTimePlotGenerator("intersend_time", "ms"),
+        RawDataTimePlotGenerator("memory.rec_send_ewma", "ms"),
+        RawDataTimePlotGenerator("memory.rec_rec_ewma", "ms"),
+        RawDataTimePlotGenerator("memory.rtt_ratio", "ms"),
+        RawDataTimePlotGenerator("memory.slow_rec_rec_ewma", "ms"),
+        DifferenceQuotientTimePlotGenerator("packets_received", "sending_duration", "throughput"),
+        DifferenceQuotientTimePlotGenerator("total_delay", "packets_received", "delay"),
+        SenderVersusSenderPlotGenerator("window_size", (0, 1)),
+        SenderVersusSenderPlotGenerator("intersend_time", (0, 1)),
+        SenderVersusSenderPlotGenerator("memory.rec_send_ewma", (0, 1)),
+        SenderVersusSenderPlotGenerator("memory.rec_rec_ewma", (0, 1)),
+        SenderVersusSenderPlotGenerator("memory.rtt_ratio", (0, 1)),
+        SenderVersusSenderPlotGenerator("memory.slow_rec_rec_ewma", (0, 1)),
+        SingleSenderParametricPlotGenerator(("window_size", "intersend_time"), 0),
+        SingleSenderParametricPlotGenerator(("window_size", "intersend_time"), 1),
+        SingleSenderParametricPlotGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 0),
+        SingleSenderParametricPlotGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 1),
+    ])
+
+if not args.plots_only:
+    generators.extend([SenderVersusSenderAnimationGenerator("window_size", (0, 1)),
+        SenderVersusSenderAnimationGenerator("intersend_time", (0, 1)),
+        SenderVersusSenderAnimationGenerator("memory.rec_send_ewma", (0, 1)),
+        SenderVersusSenderAnimationGenerator("memory.rec_rec_ewma", (0, 1)),
+        SenderVersusSenderAnimationGenerator("memory.rtt_ratio", (0, 1)),
+        SenderVersusSenderAnimationGenerator("memory.slow_rec_rec_ewma", (0, 1)),
+        SingleSenderParametricAnimationGenerator(("window_size", "intersend_time"), 0),
+        SingleSenderParametricAnimationGenerator(("window_size", "intersend_time"), 1),
+        SingleSenderParametricAnimationGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 0),
+        SingleSenderParametricAnimationGenerator(("memory.rec_send_ewma", "memory.rec_rec_ewma"), 1),
+        MultiVariableParametricGridAnimationGenerator(
+            ("memory.rec_send_ewma", 0),
+            ("memory.rec_send_ewma", 1),
+            ("memory.rec_rec_ewma", 0),
+            ("memory.rec_rec_ewma", 1),
+            ("memory.rtt_ratio", 0),
+            ("memory.rtt_ratio", 1),
+            ("memory.slow_rec_rec_ewma", 0),
+            ("memory.slow_rec_rec_ewma", 1),
+        )
+    ])
 
 for run_data in data.run_data:
     for generator in generators:
