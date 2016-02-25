@@ -120,6 +120,7 @@ class BaseAnimationGenerator(BaseFigureGenerator):
     interval = 1
     history = 20
     file_extension = 'mp4'
+    dpi = 200
 
     plot_kwargs = {'linestyle': 'solid', 'linewidth': 0.25, 'color': (0.75, 0.75, 0.75),
             'marker': '.', 'markersize': 12.0, 'markerfacecolor': 'blue', 'markeredgecolor': 'blue'}
@@ -170,7 +171,7 @@ class BaseAnimationGenerator(BaseFigureGenerator):
 
         anim = FuncAnimation(self._fig, self._animate, frames=len(self._times),
             interval=self._interval)
-        anim.save(self.get_figfilename())
+        anim.save(self.get_figfilename(), dpi=self.dpi)
 
     def get_plot_data(self, run_data):
         """Must be impelemented by subclasses. Returns a tuple of two elements
@@ -190,7 +191,6 @@ class BaseGridAnimationGenerator(BaseAnimationGenerator):
     axislabelsize = 8
     timetextsize = 9
     wrapwidth = 10
-    dpi = 200
     plot_kwargs = {'linestyle': 'solid', 'linewidth': 0.25, 'color': (0.75, 0.75, 0.75),
             'marker': '.', 'markersize': 4.0, 'markerfacecolor': 'blue', 'markeredgecolor': 'blue'}
 
