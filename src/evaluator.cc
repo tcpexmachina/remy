@@ -7,10 +7,9 @@
 #include "network.cc"
 #include "rat-templates.cc"
 
-const unsigned int TICK_COUNT = 1000000;
-
 Evaluator::Evaluator( const ConfigRange & range )
   : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
+    _tick_count( range.simulation_ticks ),
     _configs()
 {
   // add configs from every point in the cube of configs
@@ -43,7 +42,7 @@ ProblemBuffers::Problem Evaluator::DNA( const WhiskerTree & whiskers ) const
 
   ProblemBuffers::ProblemSettings settings;
   settings.set_prng_seed( _prng_seed );
-  settings.set_tick_count( TICK_COUNT );
+  settings.set_tick_count( _tick_count );
 
   ret.mutable_settings()->CopyFrom( settings );
 
@@ -106,7 +105,7 @@ Evaluator::Outcome::Outcome( const AnswerBuffers::Outcome & dna )
 Evaluator::Outcome Evaluator::score( WhiskerTree & run_whiskers,
 				     const bool trace, const double carefulness ) const
 {
-  return score( run_whiskers, _prng_seed, _configs, trace, TICK_COUNT * carefulness );
+  return score( run_whiskers, _prng_seed, _configs, trace, _tick_count * carefulness );
 }
 
 
