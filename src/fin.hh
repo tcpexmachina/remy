@@ -48,7 +48,7 @@ public:
 
   static const OptimizationSettings & get_optimizer( void ) {
     static OptimizationSettings default_settings {
-      { 0.1, 10,   0.05, 1,   4, 5 },  /* lambda */
+      { 0.01, 10,   0.01, 3,   4, 5 },  /* lambda */
     };
     return default_settings;
   }

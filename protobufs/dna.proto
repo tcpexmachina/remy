@@ -31,6 +31,16 @@ message FinTree {
 message MemoryRange {
   optional Memory lower = 11;
   optional Memory upper = 12;
+  
+  enum Axis {
+    SEND_EWMA = 0;
+    REC_EWMA = 1;
+    RTT_RATIO = 2;
+    SLOW_REC_EWMA = 3;
+    QUEUEING_DELAY = 4;
+  }
+
+  repeated Axis active_axis = 13;
 }
 
 message Memory {

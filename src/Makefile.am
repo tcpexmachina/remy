@@ -2,7 +2,7 @@ AM_CPPFLAGS = $(CXX11_FLAGS) -I../protobufs
 AM_CXXFLAGS = $(PICKY_CXXFLAGS)
 LDADD = ../protobufs/libremyprotos.a -lm $(protobuf_LIBS)
 
-bin_PROGRAMS = remy sender-runner scoring-example configuration inspect-config
+bin_PROGRAMS = remy remy-poisson sender-runner scoring-example configuration inspect-config
 
 common_source = delay.hh evaluator.cc evaluator.hh                 \
 	exponential.hh link.hh link-templates.cc                       \
@@ -21,7 +21,9 @@ noinst_LIBRARIES = libremycore.a
 libremycore_a_SOURCES = $(common_source)
 
 remy_SOURCES = $(common_source) remy.cc ratbreeder.cc ratbreeder.hh \
-	breeder.cc breeder.hh fishbreeder.cc fishbreeder.hh
+	breeder.cc breeder.hh
+
+remy_poisson_SOURCES = $(common_source) remy-poisson.cc breeder.cc breeder.hh fishbreeder.cc fishbreeder.hh
 
 sender_runner_SOURCES = $(common_source) sender-runner.cc
 

@@ -35,6 +35,8 @@ private:
 
   std::vector< NetConfig > _configs;
 
+  ProblemBuffers::Problem _ProblemSettings_DNA ( void ) const;
+
 public:
   Evaluator( const ConfigRange & range );
   

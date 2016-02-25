@@ -34,12 +34,10 @@ Evaluator< T >::Evaluator( const ConfigRange & range )
   }
 }
 
-template <>
-ProblemBuffers::Problem Evaluator< WhiskerTree >::DNA( const WhiskerTree & whiskers ) const
+template <typename T>
+ProblemBuffers::Problem Evaluator< T >::_ProblemSettings_DNA( void ) const
 {
   ProblemBuffers::Problem ret;
-
-  ret.mutable_whiskers()->CopyFrom( whiskers.DNA() );
 
   ProblemBuffers::ProblemSettings settings;
   settings.set_prng_seed( _prng_seed );
@@ -56,22 +54,19 @@ ProblemBuffers::Problem Evaluator< WhiskerTree >::DNA( const WhiskerTree & whisk
 }
 
 template <>
+ProblemBuffers::Problem Evaluator< WhiskerTree >::DNA( const WhiskerTree & whiskers ) const
+{
+  ProblemBuffers::Problem ret = _ProblemSettings_DNA();
+  ret.mutable_whiskers()->CopyFrom( whiskers.DNA() );
+
+  return ret;
+}
+
+template <>
 ProblemBuffers::Problem Evaluator< FinTree >::DNA( const FinTree & fins ) const
 {
-  ProblemBuffers::Problem ret;
-
+  ProblemBuffers::Problem ret = _ProblemSettings_DNA();
   ret.mutable_fins()->CopyFrom( fins.DNA() );
-
-  ProblemBuffers::ProblemSettings settings;
-  settings.set_prng_seed( _prng_seed );
-  settings.set_tick_count( TICK_COUNT );
-
-  ret.mutable_settings()->CopyFrom( settings );
-
-  for ( auto &x : _configs ) {
-    RemyBuffers::NetConfig *config = ret.add_configs();
-    *config = x.DNA();
-  }
 
   return ret;
 }
@@ -120,7 +115,8 @@ Evaluator< FinTree >::Outcome Evaluator< FinTree >::score( FinTree & run_fins,
   Evaluator::Outcome the_outcome;
   for ( auto &x : configs ) {
     /* run once */
-    Network<Fish, Fish> network1( Fish( run_fins, fish_prng_seed, trace ), run_prng, x );
+    Network<SenderGang<Fish, TimeSwitchedSender<Fish>>,
+      SenderGang<Fish, TimeSwitchedSender<Fish>>> network1( Fish( run_fins, fish_prng_seed, trace ), run_prng, x );
     network1.run_simulation( ticks_to_run );
     
     the_outcome.score += network1.senders().utility();
@@ -198,7 +194,7 @@ template <typename T>
 typename Evaluator< T >::Outcome Evaluator< T >::score( T & run_actions,
 				     const bool trace, const double carefulness ) const
 {
-  return score( run_whiskers, _prng_seed, _configs, trace, _tick_count * carefulness );
+  return score( run_actions, _prng_seed, _configs, trace, _tick_count * carefulness );
 }
 
 

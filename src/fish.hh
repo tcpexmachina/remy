@@ -25,9 +25,15 @@ private:
   bool _track;
 
   double _lambda;
+  double _max_intersend;
+  unsigned int _batch_size;
+
   PRNG _prng;
+  Exponential _distribution;
 
   void _update_send_time( const double tickno );
+
+  void _update_lambda( const double lambda );
 
 public:
   Fish( const FinTree & fins, const unsigned int s_prng_seed, const bool s_track );

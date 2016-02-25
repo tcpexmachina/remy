@@ -15,8 +15,11 @@ Fish::Fish( const FinTree & fins, const unsigned int s_prng_seed, const bool s_t
      _flow_id( 0 ),
      _largest_ack( -1 ), 
      _track( s_track ),
-     _lambda( 1 ),
-     _prng( s_prng_seed )
+     _lambda( 0 ),
+     _max_intersend( 0 ),
+     _batch_size( 5 ),
+     _prng( s_prng_seed ),
+     _distribution( 1 )
 {
 }
 
@@ -26,8 +29,7 @@ void Fish::packets_received( const vector< Packet > & packets ) {
     _memory.packets_received( packets, _flow_id );
     
     const Fin & current_fin( _fins.use_fin( _memory, _track ) );
-
-    _lambda = current_fin.lambda();
+    _update_lambda( current_fin.lambda() );
     _update_send_time( _last_send_time );
 }
 
@@ -36,7 +38,8 @@ void Fish::reset( const double & )
   _memory.reset();
   _last_send_time = 0;
   _next_send_time = 0;
-  _lambda = 1;
+  _lambda = 0;
+  _max_intersend = 0;
   _flow_id++;
   /* Give up on everything sent so far that hasn't been acked,
      Fixes the problem of tail losses */
@@ -53,10 +56,15 @@ double Fish::next_event_time( const double & tickno ) const
   }
 }
 
-
 void Fish::_update_send_time( const double tickno )
 {
   _last_send_time = tickno;
-  Exponential _distribution( _lambda, _prng );
-  _next_send_time = _last_send_time + _distribution.sample();
+  _next_send_time = _last_send_time + _batch_size * min( _distribution.sample( _prng ), _max_intersend );
+}
+
+void Fish::_update_lambda( const double lambda ) 
+{
+  _lambda = lambda;
+  _max_intersend = 2.0 / lambda;
+  _distribution.set_lambda( lambda );
 }

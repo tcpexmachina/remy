@@ -27,8 +27,8 @@ std::vector< MemoryRange > MemoryRange::bisect( void ) const
 	/* cannot double on this axis */
 	doubled.push_back( x );
       } else {
-	doubled.emplace_back( x._lower, ersatz_upper );
-	doubled.emplace_back( ersatz_lower, x._upper );
+	doubled.emplace_back( x._lower, ersatz_upper, x._active_axis );
+	doubled.emplace_back( ersatz_lower, x._upper, x._active_axis );
       }
     }
 
@@ -88,17 +88,24 @@ RemyBuffers::MemoryRange MemoryRange::DNA( void ) const
 
   ret.mutable_lower()->CopyFrom( _lower.DNA() );
   ret.mutable_upper()->CopyFrom( _upper.DNA() );
-
+  for (uint i = 0; i < _active_axis.size(); i ++ ){
+    ret.set_active_axis(i, _active_axis.at(i) );
+  }
+  
   return ret;
 }
 
 MemoryRange::MemoryRange( const RemyBuffers::MemoryRange & dna )
   : _lower( true, dna.lower() ),
     _upper( false, dna.upper() ),
-    _active_axis( {MemoryRange::SEND_EWMA, MemoryRange::REC_EWMA, MemoryRange::RTT_RATIO, MemoryRange::SLOW_REC_EWMA } ), 
+    _active_axis( ), 
     _acc( Memory::datasize ),
     _count( 0 )
-{}
+{
+  for (auto & x : dna.active_axis()) {
+    _active_axis.push_back( (Axis) x );
+  }
+}
 
 size_t hash_value( const MemoryRange & mr )
 {

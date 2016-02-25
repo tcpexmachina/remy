@@ -3,7 +3,7 @@
 using namespace std;
 
 FinTree::FinTree()
-  : _domain( Memory(), MAX_MEMORY(), { MemoryRange::QUEUEING_DELAY } ),
+  : _domain( Memory(), MAX_MEMORY(), { RemyBuffers::MemoryRange::QUEUEING_DELAY } ),
     _children(),
     _leaf( 1, Fin( _domain ) )
 {
