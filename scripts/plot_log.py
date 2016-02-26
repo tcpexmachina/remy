@@ -8,9 +8,14 @@ import sys
 from textwrap import wrap
 try:
     import simulationresults_pb2
-except ImportError:
-    print("Run 'make' in the directory one level above this one before using this script.")
+except ImportError as e:
+    if "google.protobuf" in str(e):
+        print("This script requires google.protobuf. Run: sudo apt-get install python-protobuf")
+    else:
+        print("Run 'make' in the directory one level above this one before using this script.")
     exit(1)
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from senderrunner_runner import SenderRunnerRunner
 from matplotlib.patches import Circle
