@@ -23,6 +23,26 @@ LAST_PLOTS_SYMLINK = "last-plots"
 def pretty(name):
     return name.split('.')[-1].capitalize().replace("_", " ")
 
+def contains_memory(memoryrange, memory):
+    for field, value in memoryrange.lower.ListFields():
+        if getattr(memory, field.name) < value:
+            return False
+    for field, value in memoryrange.upper.ListFields():
+        if getattr(memory, field.name) > value:
+            return False
+    return True
+
+def find_whisker(tree, memory):
+    while tree.children:
+        for child in tree.children:
+            if contains_memory(child.domain, memory):
+                tree = child
+                break # then continue in while loop
+        else:
+            raise RuntimeError("Couldn't find whisker for {!r}".format(point.memory))
+    assert tree.HasField("leaf"), "WhiskerTree has neither leaf nor children"
+    assert contains_memory(tree.leaf.domain, memory)
+    return tree.leaf
 
 class BaseFigureGenerator(object):
     """Abstract base class to generate figures.
@@ -38,6 +58,7 @@ class BaseFigureGenerator(object):
 
     def __init__(self, **kwargs):
         self._plotsdir = kwargs.pop('plotsdir', self.plotsdir)
+        self.whiskers = kwargs.pop('whiskers', None)
         super(BaseFigureGenerator, self).__init__(**kwargs)
 
     def get_figfilename(self):
@@ -54,11 +75,13 @@ class BaseFigureGenerator(object):
     def _print_generating_line(self):
         print("Generating {}...".format(self.get_figfilename()))
 
-    @staticmethod
-    def get_raw_data(run_data, index, attrname):
+    def get_raw_data(self, run_data, index, attrname):
         """Retrieves the attribute specified by `attrname` from each data point
         in `run_data`, for the sender `index`, and returns it in a list."""
         attrnames = attrname.split('.')
+        if attrnames[0] == "whisker": # special case
+            return self.get_whisker_data(run_data, index, attrnames[1])
+
         result = [getattr(point.sender_data[index], attrnames[0]) for point in run_data.point]
         for attr in attrnames[1:]:
             result = [getattr(point, attr) for point in result]
@@ -71,6 +94,20 @@ class BaseFigureGenerator(object):
     @staticmethod
     def get_sending(run_data):
         return [tuple(data.sending for data in point.sender_data) for point in run_data.point]
+
+    def get_whisker_data(self, run_data, index, attrname):
+        """Retrieves the attribute of the whisker specified by `attrname`, from
+        the whisker that would be active at each data point in `run_data`,
+        for the sender `index`, and returns it in a list."""
+        # This is a little hacky, it should be refactored into a proper
+        # structure for Memory and MemoryRange if it needs to be touched again.
+        assert self.whiskers is not None, "Generators referencing whiskers must pass in the WhiskerTree to the constructor"
+        data = []
+        for point in run_data.point:
+            whisker = find_whisker(self.whiskers, point.sender_data[index].memory)
+            value = getattr(whisker, attrname)
+            data.append(value)
+        return data
 
 
 class BasePlotGenerator(BaseFigureGenerator):
@@ -271,7 +308,7 @@ class BaseGridAnimationGenerator(BaseAnimationGenerator):
 class TimePlotGenerator(BasePlotGenerator):
     """Abstract base class to generate plots where the x-axis is time."""
 
-    xlabel = "Time (ms)"
+    xlabel = "Time (s)"
 
     def get_xlim(self, run_data):
         x = self.get_times(run_data)
@@ -503,6 +540,9 @@ if not args.animations_only:
         RawDataTimePlotGenerator("memory.rtt_ratio", "ms"),
         RawDataTimePlotGenerator("memory.slow_rec_rec_ewma", "ms"),
         RawDataTimePlotGenerator("sending"),
+        RawDataTimePlotGenerator("whisker.window_increment", whiskers=data.whiskers),
+        RawDataTimePlotGenerator("whisker.window_multiple", whiskers=data.whiskers),
+        RawDataTimePlotGenerator("whisker.intersend", whiskers=data.whiskers),
         DifferenceQuotientTimePlotGenerator("packets_received", "sending_duration", "throughput"),
         DifferenceQuotientTimePlotGenerator("total_delay", "packets_received", "delay"),
         SenderVersusSenderPlotGenerator("window_size", (0, 1)),
