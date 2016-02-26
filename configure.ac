@@ -24,26 +24,34 @@ CPPFLAGS="-std=c++11 -pthread"
 PICKY_CXXFLAGS="-pedantic -Wall -Wextra -Werror"
 AC_SUBST([PICKY_CXXFLAGS])
 
+AC_ARG_ENABLE([graph],
+  [AS_HELP_STRING([--enable-graph],
+    [Enable live graph (ratatouille) @<:@no@:>@])],
+  [build_graph="yes"],
+  [build_graph="no"])
+AM_CONDITIONAL([BUILD_GRAPH], [test x"$build_graph" != xno])
+
 # Checks for libraries.
-PKG_CHECK_MODULES([GL], [gl])
-PKG_CHECK_MODULES([GLFW], [glfw3])
-PKG_CHECK_MODULES([GLEW], [glew])
-PKG_CHECK_MODULES([GLU], [glu])
-PKG_CHECK_MODULES([PANGOCAIRO], [pangocairo])
-PKG_CHECK_MODULES([GTKMM], [gtkmm-3.0])
+AM_COND_IF( [BUILD_GRAPH],
+[
+  PKG_CHECK_MODULES([GL], [gl])
+  PKG_CHECK_MODULES([GLFW], [glfw3])
+  PKG_CHECK_MODULES([GLEW], [glew])
+  PKG_CHECK_MODULES([GLU], [glu])
+  PKG_CHECK_MODULES([PANGOCAIRO], [pangocairo])
+  PKG_CHECK_MODULES([GTKMM], [gtkmm-3.0])
+] )
 
 # Checks for header files.
 AC_LANG_PUSH(C++)
 
-AC_CHECK_HEADERS([algorithm array cassert boost/accumulators/accumulators.hpp \
+AC_CHECK_HEADERS([boost/accumulators/accumulators.hpp \
 boost/accumulators/statistics/median.hpp \
 boost/accumulators/statistics/stats.hpp boost/functional/hash.hpp \
 boost/random/exponential_distribution.hpp boost/random/mersenne_twister.hpp \
 boost/random/poisson_distribution.hpp \
 boost/random/uniform_int_distribution.hpp \
-boost/random/uniform_real_distribution.hpp fcntl.h future cmath queue \
-cstdio string sys/stat.h sys/types.h ctime tuple unistd.h unordered_map \
-utility vector], [], [AC_MSG_ERROR([Missing header file])])
+boost/random/uniform_real_distribution.hpp], [], [AC_MSG_ERROR([Missing boost headers (need to install libboost-all-dev?)])])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
