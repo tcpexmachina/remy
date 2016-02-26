@@ -26,5 +26,5 @@ before_script:
 
 script:
   - ./autogen.sh
-  - ./configure
+  - ./configure --enable-graph
   - make distcheck || (cat remy-0.1/_build/src/tests/test-suite.log && exit 1)
