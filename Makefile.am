@@ -1,1 +1,1 @@
-SUBDIRS = protobufs src
+SUBDIRS = protobufs graph src

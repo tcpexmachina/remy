@@ -33,6 +33,7 @@ Makefile.in
 /src/inspect-config
 /src/rat-runner
 /src/remy
+/src/ratatouille
 /src/scoring-example
 /src/*.pb.cc
 /src/*.pb.h

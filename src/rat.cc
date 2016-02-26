@@ -40,11 +40,16 @@ void Rat::reset( const double & )
   _flow_id++;
   _largest_ack = _packets_sent - 1; /* Assume everything's been delivered */
   assert( _flow_id != 0 );
+
+  /* initial window and intersend time */
+  const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
+  _the_window = current_whisker.window( _the_window );
+  _intersend_time = current_whisker.intersend();
 }
 
 double Rat::next_event_time( const double & tickno ) const
 {
-  if ( _packets_sent < _largest_ack + 1 + _the_window ) {
+  if ( int(_packets_sent) < _largest_ack + 1 + _the_window ) {
     if ( _last_send_time + _intersend_time <= tickno ) {
       return tickno;
     } else {

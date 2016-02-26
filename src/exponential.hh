@@ -10,12 +10,10 @@ class Exponential
 private:
   boost::random::exponential_distribution<> distribution;
 
-  PRNG & prng;
-
 public:
-  Exponential( const double & rate, PRNG & s_prng ) : distribution( rate ), prng( s_prng ) {}
+  Exponential( const double & rate ) : distribution( rate ) {}
   
-  double sample( void ) { return distribution( prng ); }
+  double sample( PRNG & prng ) { return distribution( prng ); }
 };
 
 #endif
