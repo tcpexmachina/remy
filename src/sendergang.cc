@@ -256,7 +256,8 @@ vector< pair< double, double > > SenderGang<SenderType, SwitcherType>::throughpu
   ret.reserve( _gang.size() );
 
   for ( auto &x : _gang ) {
-    ret.emplace_back( x.utility.average_throughput(), x.utility.average_delay() );
+    ret.emplace_back( x.utility.average_throughput_normalized_to_equal_share(),
+		      x.utility.average_delay() );
   }
 
   return ret;
