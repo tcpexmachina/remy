@@ -1,6 +1,6 @@
 source = dna.proto problem.proto answer.proto
 
-AM_CPPFLAGS = $(protobuf_CFLAGS)
+AM_CPPFLAGS = $(CXX11_FLAGS) $(protobuf_CFLAGS)
 
 SUFFIXES = .proto .pb.cc
 

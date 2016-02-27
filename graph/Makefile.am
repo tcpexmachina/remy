@@ -1,18 +1,26 @@
-AM_CPPFLAGS = -I$(srcdir)/../src -I../protobufs $(GL_CFLAGS) $(GLFW_CFLAGS) $(GLEW_CFLAGS) $(GLU_CFLAGS) $(PANGOCAIRO_CFLAGS) $(GTKMM_CFLAGS)
-AM_CXXFLAGS = $(PICKY_CXXFLAGS) $(NODEBUG_CXXFLAGS)
-LDADD = ../protobufs/libremyprotos.a -lm $(protobuf_LIBS) ../src/libremycore.a $(GL_LIBS) $(GLFW_LIBS) $(GLEW_LIBS) $(GLU_LIBS) $(PANGOCAIRO_LIBS) $(GTKMM_LIBS)
+AM_CPPFLAGS = $(CXX11_FLAGS) -I$(srcdir)/../src -I../protobufs $(GL_CFLAGS) $(GLFW_CFLAGS) $(GLEW_CFLAGS) $(GLU_CFLAGS) $(PANGOCAIRO_CFLAGS) $(GTKMM_CFLAGS)
 
-common_source = gl_objects.hh gl_objects.cc \
+noinst_LIBRARIES = libfader.a
+libfader_a_SOURCES = fader.cc
+libfader_a_CXXFLAGS = $(PICKY_CXXFLAGS) -Wno-effc++ -Wno-deprecated-declarations
+
+noinst_LIBRARIES += libgraphics.a
+libgraphics_a_CXXFLAGS = $(PICKY_CXXFLAGS)
+
+libgraphics_a_SOURCES = gl_objects.hh gl_objects.cc \
 	display.hh display.cc \
 	image.hh image.cc \
 	cairo_objects.hh cairo_objects.cc \
 	graph.hh graph.cc \
-	fader.hh fader.cc fader-templates.cc bb100.hh
+	fader.hh fader-templates.cc bb100.hh
 
 bin_PROGRAMS =
 
 if BUILD_GRAPH
 bin_PROGRAMS += ratatouille
-ratatouille_SOURCES = $(common_source) ratatouille.cc 
+ratatouille_LDADD = libfader.a libgraphics.a ../protobufs/libremyprotos.a ../src/libremycore.a -lm $(protobuf_LIBS) $(GL_LIBS) $(GLFW_LIBS) $(GLEW_LIBS) $(GLU_LIBS) $(PANGOCAIRO_LIBS) $(GTKMM_LIBS)
+ratatouille_CXXFLAGS = $(PICKY_CXXFLAGS)
+ratatouille_SOURCES = ratatouille.cc 
+AM_CXXFLAGS = $(PICKY_CXXFLAGS)
 endif
 
