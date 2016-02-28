@@ -1,14 +1,14 @@
 #ifndef EXPONENTIAL_HH
 #define EXPONENTIAL_HH
 
-#include <boost/random/exponential_distribution.hpp>
+#include <random>
 
 #include "random.hh"
 
 class Exponential
 {
 private:
-  boost::random::exponential_distribution<> distribution;
+  std::exponential_distribution<> distribution;
 
 public:
   Exponential( const double & rate ) : distribution( rate ) {}

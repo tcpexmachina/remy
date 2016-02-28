@@ -1,9 +1,9 @@
 #ifndef RANDOM_HH
 #define RANDOM_HH
 
-#include <boost/random/mersenne_twister.hpp>
+#include <random>
 
-typedef boost::random::mt19937 PRNG;
+typedef std::default_random_engine PRNG;
 
 extern PRNG & global_PRNG();
 

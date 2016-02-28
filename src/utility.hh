@@ -2,6 +2,8 @@
 #define UTILITY_HH
 
 #include <cmath>
+#include <cassert>
+#include <climits>
 
 class Utility
 {

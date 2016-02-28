@@ -1,6 +1,4 @@
 #include <fcntl.h>
-#include <boost/random/uniform_real_distribution.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
 
 #include "configrange.hh"
 #include "evaluator.hh"

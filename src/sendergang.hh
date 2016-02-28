@@ -1,8 +1,6 @@
 #ifndef SENDERGANG_HH
 #define SENDERGANG_HH
 
-#include <boost/random/exponential_distribution.hpp>
-
 #include <vector>
 
 #include "exponential.hh"
