@@ -1,4 +1,4 @@
-AM_DISTCHECK_CONFIGURE_FLAGS = --enable-graph
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-graph --disable-silent-rules
 
 SUBDIRS = protobufs src tests
 
