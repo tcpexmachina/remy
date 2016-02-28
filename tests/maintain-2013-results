@@ -1,0 +1,64 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+# make sure that results with the 2013 RemyCCs don't drift
+# In this test, we don't compare against an absolute reference (e.g.
+# the ns-2 results reported in the paper); just against similar results
+# from the 2013 version of rat-runner (db1b3c3)
+
+sub score {
+  my ( $remycc ) = @_;
+
+  my $link_speed = 15;
+  my $packets_per_tick = $link_speed / 10;
+  my $RTT = 150;
+
+  my @result = qx{../src/rat-runner if=$ENV{'srcdir'}/$remycc nsrc=8 link=$packets_per_tick rtt=$RTT on=10000 off=10000};
+
+  my @normalized_throughputs_and_delays;
+
+  for ( @result ) {
+    if ( m{^sender: } ) {
+      my ( $normalized_throughput, $delay_ratio ) = m{\[tp=(.*?), del=(.*?)\]};
+      push @normalized_throughputs_and_delays, [ $normalized_throughput, $delay_ratio ];
+    }
+  }
+
+  return @normalized_throughputs_and_delays;
+}
+
+sub assert_in_range {
+  my ( $val, $min, $max ) = @_;
+  unless ( $min < $val and $val < $max ) {
+    die qq{Constraint violated: value $val not in interval [$min..$max]};
+  }
+}
+
+sub enforce_constraint {
+  my ( $link_speed, $expected_throughput, $expected_delay ) = @_;
+
+  my @throughputs_and_delays = score( $link_speed );
+
+  for ( @throughputs_and_delays ) {
+    assert_in_range( $_->[ 0 ], $expected_throughput * .97, $expected_throughput * 1.03 );
+    assert_in_range( $_->[ 1 ], $expected_delay * .97, $expected_delay * 1.03 );
+  }
+}
+
+# these triplets of link speed => { normalized throughput, normalized delay }
+# are taken by running rat-runner from the 2016 codebase
+# (commit 7692857), after making sure results were similar to
+# running rat-runner from the 2013 codebase (commit db1b3c3)
+
+# Note that because of some bugs that have been fixed in going to a
+# tickless simulator (the old code prioritized the "first" RemyCC
+# when sending during the same tick), rat-runner's results are
+# more consistent (but have less average throughput) post-2013
+# than in 2013.
+
+enforce_constraint( q{RemyCC-2013-delta10.dna}, 0.65, 1.0 );
+enforce_constraint( q{RemyCC-2013-delta1.dna}, 0.81, 1.02 );
+enforce_constraint( q{RemyCC-2013-delta0.1.dna}, 0.9, 1.11 );
+
+1;
