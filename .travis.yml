@@ -26,8 +26,8 @@ before_script:
 
 script:
   - ./autogen.sh
-  - ./configure --enable-graph
-  - make distcheck VERBOSE=1 || (cat remy-0.1/_build/src/tests/test-suite.log && exit 1)
+  - ./configure
+  - make -j4 distcheck VERBOSE=1 || (cat remy-0.1/_build/src/tests/test-suite.log && exit 1)
 
 notifications:
   slack: keithw:pcPsG04nsEuSMDabFhPDOyYq
