@@ -41,8 +41,8 @@ sub enforce_constraint {
   my @throughputs_and_delays = score( $link_speed );
 
   for ( @throughputs_and_delays ) {
-    assert_in_range( $_->[ 0 ], $expected_throughput * .97, $expected_throughput * 1.03 );
-    assert_in_range( $_->[ 1 ], $expected_delay * .97, $expected_delay * 1.03 );
+    assert_in_range( $_->[ 0 ], $expected_throughput * .95, $expected_throughput * 1.05 );
+    assert_in_range( $_->[ 1 ], $expected_delay * .95, $expected_delay * 1.05 );
   }
 }
 
