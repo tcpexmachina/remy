@@ -15,7 +15,7 @@ addons:
     - libcairo2-dev
     - libpango1.0-dev
     - libgtkmm-3.0-dev
-    - libboost-all-dev
+    - libboost-dev
     - libglu1-mesa-dev
 
 before_script:

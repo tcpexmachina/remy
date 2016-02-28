@@ -49,7 +49,7 @@ AC_LANG_PUSH(C++)
 
 AC_CHECK_HEADERS([boost/accumulators/accumulators.hpp \
 boost/accumulators/statistics/median.hpp \
-boost/accumulators/statistics/stats.hpp boost/functional/hash.hpp], [], [AC_MSG_ERROR([Missing boost headers (need to install libboost-all-dev?)])])
+boost/accumulators/statistics/stats.hpp boost/functional/hash.hpp], [], [AC_MSG_ERROR([Missing boost headers (need to install libboost-dev?)])])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
