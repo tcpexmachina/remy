@@ -33,6 +33,7 @@ Makefile.in
 /src/inspect-config
 /src/sender-runner
 /src/remy
+/src/remy-poisson
 /graph/ratatouille
 /src/scoring-example
 /src/*.pb.cc
