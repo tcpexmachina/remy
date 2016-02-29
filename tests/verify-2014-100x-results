@@ -7,8 +7,9 @@ sub score {
 
   my $packets_per_tick = $link_speed / 10;
   my $RTT = 150;
+  my $number_of_sources = 2;
 
-  my @result = qx{../src/sender-runner if=$ENV{'srcdir'}/RemyCC-2014-100x.dna nsrc=2 link=$packets_per_tick rtt=$RTT on=1000 off=1000} or die q{Can't exec sender-runner};
+  my @result = qx{../src/sender-runner if=$ENV{'srcdir'}/RemyCC-2014-100x.dna nsrc=$number_of_sources link=$packets_per_tick rtt=$RTT on=1000 off=1000} or die q{Can't exec sender-runner};
 
   my @raw_throughputs_and_delays;
 
@@ -23,6 +24,10 @@ sub score {
       my $raw_delay = $delay_ratio * $RTT;
       push @raw_throughputs_and_delays, [ $raw_throughput, $raw_delay ];
     }
+  }
+
+  if ( scalar @raw_throughputs_and_delays != $number_of_sources ) {
+    die qq{sender-runner did not give $number_of_sources results};
   }
 
   return @raw_throughputs_and_delays;

@@ -13,8 +13,9 @@ sub score {
   my $link_speed = 15;
   my $packets_per_tick = $link_speed / 10;
   my $RTT = 150;
+  my $number_of_sources = 8;
 
-  my @result = qx{../src/sender-runner if=$ENV{'srcdir'}/$remycc nsrc=8 link=$packets_per_tick rtt=$RTT on=10000 off=10000} or die q{Can't exec sender-runner};
+  my @result = qx{../src/sender-runner if=$ENV{'srcdir'}/$remycc nsrc=$number_of_sources link=$packets_per_tick rtt=$RTT on=10000 off=10000} or die q{Can't exec sender-runner};
 
   my @normalized_throughputs_and_delays;
 
@@ -23,6 +24,10 @@ sub score {
       my ( $normalized_throughput, $delay_ratio ) = m{\[tp=(.*?), del=(.*?)\]};
       push @normalized_throughputs_and_delays, [ $normalized_throughput, $delay_ratio ];
     }
+  }
+
+  if ( scalar @normalized_throughputs_and_delays != $number_of_sources ) {
+    die qq{sender-runner did not give $number_of_sources results};
   }
 
   return @normalized_throughputs_and_delays;
