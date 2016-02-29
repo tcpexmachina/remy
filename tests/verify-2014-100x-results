@@ -8,7 +8,7 @@ sub score {
   my $packets_per_tick = $link_speed / 10;
   my $RTT = 150;
 
-  my @result = qx{../src/rat-runner if=$ENV{'srcdir'}/RemyCC-2014-100x.dna nsrc=2 link=$packets_per_tick rtt=$RTT on=1000 off=1000};
+  my @result = qx{../src/sender-runner if=$ENV{'srcdir'}/RemyCC-2014-100x.dna nsrc=2 link=$packets_per_tick rtt=$RTT on=1000 off=1000} or die q{Can't exec sender-runner};
 
   my @raw_throughputs_and_delays;
 

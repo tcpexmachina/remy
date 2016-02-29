@@ -14,7 +14,7 @@ sub score {
   my $packets_per_tick = $link_speed / 10;
   my $RTT = 150;
 
-  my @result = qx{../src/rat-runner if=$ENV{'srcdir'}/$remycc nsrc=8 link=$packets_per_tick rtt=$RTT on=10000 off=10000};
+  my @result = qx{../src/sender-runner if=$ENV{'srcdir'}/$remycc nsrc=8 link=$packets_per_tick rtt=$RTT on=10000 off=10000} or die q{Can't exec sender-runner};
 
   my @normalized_throughputs_and_delays;
 
