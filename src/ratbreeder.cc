@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "ratbreeder.hh"
 
 using namespace std;

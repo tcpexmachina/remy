@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "fishbreeder.hh"
 
 using namespace std;
