@@ -68,19 +68,15 @@ int main( int argc, char *argv[] )
     exit ( 1 );
   }
 
-
-  options.config_range.link_ppt = Range( input_config.link_packets_per_ms() );
-  options.config_range.rtt = Range( input_config.rtt() );
-  options.config_range.num_senders = Range( input_config.num_senders() );
-  options.config_range.mean_on_duration = Range( input_config.mean_on_duration() );
-  options.config_range.mean_off_duration = Range( input_config.mean_off_duration() );
-  options.config_range.buffer_size = Range( input_config.buffer_size() );
+  options.config_range = ConfigRange( input_config );
 
   FishBreeder breeder( options );
 
   unsigned int run = 0;
 
   printf( "#######################\n" );
+  printf( "Evaluator simulations will run for %d ticks\n",
+    options.config_range.simulation_ticks );
   printf( "Optimizing for link packets_per_ms in [%f, %f]\n",
 	  options.config_range.link_ppt.low,
 	  options.config_range.link_ppt.high );
@@ -145,7 +141,7 @@ int main( int argc, char *argv[] )
 
       auto remycc = fins.DNA();
       remycc.mutable_config()->CopyFrom( options.config_range.DNA() );
-      remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
+      remycc.mutable_optimizer()->CopyFrom( Fin::get_optimizer().DNA() );
       remycc.mutable_configvector()->CopyFrom( training_configs );
       if ( not remycc.SerializeToFileDescriptor( fd ) ) {
 	fprintf( stderr, "Could not serialize RemyCC.\n" );

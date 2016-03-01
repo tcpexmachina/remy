@@ -88,8 +88,8 @@ RemyBuffers::MemoryRange MemoryRange::DNA( void ) const
 
   ret.mutable_lower()->CopyFrom( _lower.DNA() );
   ret.mutable_upper()->CopyFrom( _upper.DNA() );
-  for (uint i = 0; i < _active_axis.size(); i ++ ){
-    ret.set_active_axis(i, _active_axis.at(i) );
+  for (auto & x : _active_axis) {
+    ret.add_active_axis(x);
   }
   
   return ret;
@@ -104,6 +104,11 @@ MemoryRange::MemoryRange( const RemyBuffers::MemoryRange & dna )
 {
   for (auto & x : dna.active_axis()) {
     _active_axis.push_back( (Axis) x );
+  }
+  /* Backward compatibility: old remys don't have active axis; set to default */
+  if ( _active_axis.empty() ) {
+    _active_axis = vector<Axis>( { RemyBuffers::MemoryRange::SEND_EWMA, RemyBuffers::MemoryRange::REC_EWMA, 
+                                   RemyBuffers::MemoryRange::RTT_RATIO, RemyBuffers::MemoryRange::SLOW_REC_EWMA } );
   }
 }
 
