@@ -2,7 +2,7 @@ AM_CPPFLAGS = $(CXX11_FLAGS) -I../protobufs
 AM_CXXFLAGS = $(PICKY_CXXFLAGS)
 LDADD = ../protobufs/libremyprotos.a -lm $(protobuf_LIBS)
 
-bin_PROGRAMS = remy remy-poisson sender-runner scoring-example configuration inspect-config
+bin_PROGRAMS = remy remy-poisson sender-runner scoring-example configuration inspect-config inspect-simulationsdata
 
 common_source = delay.hh evaluator.cc evaluator.hh                 \
 	exponential.hh link.hh link-templates.cc                       \
@@ -10,12 +10,14 @@ common_source = delay.hh evaluator.cc evaluator.hh                 \
 	network.cc network.hh packet.hh poisson.hh                     \
 	random.cc random.hh rat.cc rat.hh rat-templates.cc             \
 	receiver.cc receiver.hh sendergang.cc sendergang.hh            \
-	sendergangofgangs.cc sendergangofgangs.hh                  \
+	sendergang-templates.cc senderdatapoint.hh                     \
+	sendergangofgangs.cc sendergangofgangs.hh                      \
 	utility.hh whisker.cc whisker.hh whiskertree.cc whiskertree.hh \
 	aimd-templates.cc aimd.cc aimd.hh                              \
-	configrange.hh configrange.cc                              \
-    action.hh fin.hh fin.cc fintree.cc fintree.hh  	               \
-    fish.hh fish.cc fish-templates.cc
+	configrange.hh configrange.cc                                  \
+	simulationresults.hh simulationresults.cc                      \
+	action.hh fin.hh fin.cc fintree.cc fintree.hh  	               \
+	fish.hh fish.cc fish-templates.cc
 
 noinst_LIBRARIES = libremycore.a
 libremycore_a_SOURCES = $(common_source)
@@ -33,3 +35,4 @@ configuration_SOURCES = input-configrange.cc
 
 inspect_config_SOURCES = inspect-configrange.cc
 
+inspect_simulationsdata_SOURCES = inspect-simulationsdata.cc

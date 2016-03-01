@@ -10,6 +10,7 @@ template <typename T>
 Evaluator< T >::Evaluator( const ConfigRange & range )
   : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _tick_count( range.simulation_ticks ),
+    _log_interval_ticks( range.simulation_log_interval_ticks ),
     _configs()
 {
   // add configs from every point in the cube of configs
@@ -76,20 +77,32 @@ Evaluator< WhiskerTree >::Outcome Evaluator< WhiskerTree >::score( WhiskerTree &
              const unsigned int prng_seed,
              const vector<NetConfig> & configs,
              const bool trace,
-             const unsigned int ticks_to_run )
+             const unsigned int ticks_to_run,
+             const double log_interval_ticks,
+             const bool log_simulation )
 {
   PRNG run_prng( prng_seed );
 
   run_whiskers.reset_counts();
 
   /* run tests */
-  Evaluator::Outcome the_outcome;
+  Evaluator< WhiskerTree >::Outcome the_outcome( run_whiskers );
+
+  if ( log_simulation ) {
+    the_outcome.simulation_results.set_prng_seed( prng_seed );
+    the_outcome.simulation_results.set_tick_count( ticks_to_run );
+    the_outcome.simulation_results.set_log_interval_ticks( log_interval_ticks );
+  }
+
   for ( auto &x : configs ) {
+    SimulationRunData * run_data = (log_simulation) ?
+        &(the_outcome.simulation_results.add_run_data( x )) : NULL;
+
     /* run once */
     Network<SenderGang<Rat, TimeSwitchedSender<Rat>>,
       SenderGang<Rat, TimeSwitchedSender<Rat>>> network1( Rat( run_whiskers, trace ), run_prng, x );
-    network1.run_simulation( ticks_to_run );
-    
+    network1.run_simulation( ticks_to_run, run_data, log_interval_ticks );
+
     the_outcome.score += network1.senders().utility();
     the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
   }
@@ -104,7 +117,9 @@ Evaluator< FinTree >::Outcome Evaluator< FinTree >::score( FinTree & run_fins,
              const unsigned int prng_seed,
              const vector<NetConfig> & configs,
              const bool trace,
-             const unsigned int ticks_to_run )
+             const unsigned int ticks_to_run,
+             const double log_interval_ticks,
+             const bool log_simulation )
 {
   PRNG run_prng( prng_seed );
   unsigned int fish_prng_seed( run_prng() );
@@ -112,13 +127,23 @@ Evaluator< FinTree >::Outcome Evaluator< FinTree >::score( FinTree & run_fins,
   run_fins.reset_counts();
 
   /* run tests */
-  Evaluator::Outcome the_outcome;
+  Evaluator< FinTree >::Outcome the_outcome( run_fins );
+
+  if ( log_simulation ) {
+    the_outcome.simulation_results.set_prng_seed( prng_seed );
+    the_outcome.simulation_results.set_tick_count( ticks_to_run );
+    the_outcome.simulation_results.set_log_interval_ticks( log_interval_ticks );
+  }
+
   for ( auto &x : configs ) {
+    SimulationRunData * run_data = (log_simulation) ?
+        &(the_outcome.simulation_results.add_run_data( x )) : NULL;
+
     /* run once */
     Network<SenderGang<Fish, TimeSwitchedSender<Fish>>,
       SenderGang<Fish, TimeSwitchedSender<Fish>>> network1( Fish( run_fins, fish_prng_seed, trace ), run_prng, x );
-    network1.run_simulation( ticks_to_run );
-    
+    network1.run_simulation( ticks_to_run, run_data, log_interval_ticks );
+
     the_outcome.score += network1.senders().utility();
     the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
   }
@@ -167,7 +192,7 @@ AnswerBuffers::Outcome Evaluator< T >::Outcome::DNA( void ) const
 
     for ( const auto & x : run.second ) {
       AnswerBuffers::SenderResults *results = tp_del->add_results();
-      results->set_throughput( x.first ); 
+      results->set_throughput( x.first );
       results->set_delay( x.second );
     }
   }
@@ -179,7 +204,7 @@ AnswerBuffers::Outcome Evaluator< T >::Outcome::DNA( void ) const
 
 template <typename T>
 Evaluator< T >::Outcome::Outcome( const AnswerBuffers::Outcome & dna )
-  : score( dna.score() ), throughputs_delays(), used_actions() {
+  : score( dna.score() ), throughputs_delays(), used_actions(), simulation_results() {
   for ( const auto &x : dna.throughputs_delays() ) {
     vector< pair< double, double > > tp_del;
     for ( const auto &result : x.results() ) {
@@ -192,9 +217,9 @@ Evaluator< T >::Outcome::Outcome( const AnswerBuffers::Outcome & dna )
 
 template <typename T>
 typename Evaluator< T >::Outcome Evaluator< T >::score( T & run_actions,
-				     const bool trace, const double carefulness ) const
+				     const bool trace, const double carefulness, const bool log_simulation ) const
 {
-  return score( run_actions, _prng_seed, _configs, trace, _tick_count * carefulness );
+  return score( run_actions, _prng_seed, _configs, trace, _tick_count * carefulness, _log_interval_ticks, log_simulation );
 }
 
 

@@ -13,4 +13,5 @@ message Problem {
 message ProblemSettings {
   optional uint32 prng_seed = 11;
   optional uint32 tick_count = 12;
+  optional uint32 log_interval_ticks = 13;
 }

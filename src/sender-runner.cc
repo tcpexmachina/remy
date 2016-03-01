@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <limits>
+#include <fstream>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -42,6 +43,25 @@ void parse_outcome( T & outcome )
   printf( "Rules: %s\n", outcome.used_actions.str().c_str() );
 }
 
+template <typename T>
+void serialize_to_file( T & outcome, string & datafilename )
+{
+  if ( !datafilename.empty() ) {
+    ofstream datafile;
+    datafile.open( datafilename );
+    if ( datafile.is_open() ) {
+      if ( !outcome.simulation_results.DNA().SerializeToOstream( &datafile ) ) {
+        fprintf( stderr, "Could not serialize to file %s\n", datafilename.c_str() );
+      } else {
+        fprintf( stderr, "Wrote simulation data to file %s\n", datafilename.c_str() );
+      }
+    } else {
+      fprintf( stderr, "Could not open file %s\n", datafilename.c_str() );
+    }
+    datafile.close();
+  }
+}
+
 int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
@@ -52,8 +72,10 @@ int main( int argc, char *argv[] )
   double delay = 100.0;
   double mean_on_duration = 5000.0;
   double mean_off_duration = 5000.0;
-  double buffer_size = numeric_limits<unsigned int>::max();
   unsigned int simulation_ticks = 1000000;
+  double simulation_log_interval_ticks = 1000;
+  double buffer_size = numeric_limits<unsigned int>::max();
+  string datafilename;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -108,12 +130,21 @@ int main( int argc, char *argv[] )
     } else if ( arg.substr( 0, 4 ) == "off=" ) {
       mean_off_duration = atof( arg.substr( 4 ).c_str() );
       fprintf( stderr, "Setting mean_off_duration to %f ms\n", mean_off_duration );
+    } else if ( arg.substr( 0, 5 ) == "time=" ) {
+      simulation_ticks = atof( arg.substr( 5 ).c_str() ) * 1000;
+      fprintf( stderr, "Setting simulation_ticks to %u ms\n", simulation_ticks );
+    } else if ( arg.substr( 0, 9 ) == "interval=" ) {
+      simulation_log_interval_ticks = atof( arg.substr( 9 ).c_str() ) * 1000;
+      fprintf( stderr, "Setting simulation_log_interval_ticks to %f ms\n", simulation_log_interval_ticks );
     } else if ( arg.substr( 0, 4 ) == "buf=" ) {
       if (arg.substr( 4 ) == "inf") {
         buffer_size = numeric_limits<unsigned int>::max();
       } else {
         buffer_size = atoi( arg.substr( 4 ).c_str() );
       }
+    } else if ( arg.substr( 0, 9 ) == "datafile=" ) {
+      datafilename = arg.substr( 9 );
+      fprintf( stderr, "Will write simulation data to %s\n", datafilename.c_str() );
     }
   }
 
@@ -125,16 +156,20 @@ int main( int argc, char *argv[] )
   configuration_range.mean_off_duration = Range( mean_off_duration, mean_off_duration, 0 );
   configuration_range.buffer_size = Range( buffer_size, buffer_size, 0 );
   configuration_range.simulation_ticks = simulation_ticks;
+  configuration_range.simulation_log_interval_ticks = simulation_log_interval_ticks;
 
   if ( is_poisson ) {
     Evaluator< FinTree > eval( configuration_range );
-    auto outcome = eval.score( fins, false, 10 );
+    auto outcome = eval.score( fins, false, 10, !datafilename.empty() );
     parse_outcome< Evaluator< FinTree >::Outcome > ( outcome );
+    serialize_to_file< Evaluator< FinTree >::Outcome >( outcome, datafilename );
   } else {
     Evaluator< WhiskerTree > eval( configuration_range );
-    auto outcome = eval.score( whiskers, false, 10 );
+    auto outcome = eval.score( whiskers, false, 10, !datafilename.empty() );
     parse_outcome< Evaluator< WhiskerTree >::Outcome > ( outcome );
+    serialize_to_file< Evaluator< WhiskerTree >::Outcome >( outcome, datafilename );
   }
+
 
   return 0;
 }

@@ -97,7 +97,8 @@ message ConfigRange {
   optional Range buffer_size = 74;
   optional Range mean_off_duration = 75;
   optional Range mean_on_duration = 76;
-  optional uint32 simulation_ticks = 77;
+  optional uint32 simulation_ticks = 77 [default = 1000000];
+  optional float simulation_log_interval_ticks = 78 [default = 1000];
 }
 
 message NetConfig {

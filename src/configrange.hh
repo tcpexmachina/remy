@@ -43,6 +43,7 @@ public:
   Range num_senders;
   Range buffer_size;
   unsigned int simulation_ticks;
+  float simulation_log_interval_ticks;
 
   ConfigRange( void );
   ConfigRange( RemyBuffers::ConfigRange configrange );

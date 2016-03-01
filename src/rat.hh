@@ -44,6 +44,11 @@ public:
   double next_event_time( const double & tickno ) const;
 
   const unsigned int & packets_sent( void ) const { return _packets_sent; }
+  int window_size( void ) const { return _the_window; }
+  double intersend_time( void ) const { return _intersend_time; }
+
+  const Memory memory( void ) const { return _memory; }
+
 };
 
 #endif

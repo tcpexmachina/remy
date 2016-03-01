@@ -10,6 +10,8 @@
 #include "random.hh"
 #include "answer.pb.h"
 
+class SimulationRunData; // from simulationresults.hh
+
 class NetConfig
 {
 public:
@@ -36,7 +38,7 @@ public:
       delay( dna.delay() ),
       buffer_size( dna.buffer_size() )
   {}
-  
+
   NetConfig & set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
   NetConfig & set_delay( const double s_delay ) { delay = s_delay; return *this; }
   NetConfig & set_num_senders( const unsigned int n ) { num_senders = n; return *this; }
@@ -84,7 +86,7 @@ public:
 
   Network( const typename Gang1Type::Sender & example_sender1, PRNG & s_prng, const NetConfig & config );
 
-  void run_simulation( const double & duration );
+  void run_simulation( const double & duration, SimulationRunData * run_data = NULL, const double interval = 1000 );
 
   void run_simulation_until( const double tick_limit );
 

@@ -169,7 +169,7 @@ void SwitchedSender<SenderType>::receive_feedback( Receiver & rec )
   if ( rec.readable( id ) ) {
     const std::vector< Packet > & packets = rec.packets_for( id );
 
-    utility.packets_received( packets );
+    utility.add_packets_received( packets );
     sender.packets_received( packets );
 
     rec.clear( id );
@@ -261,6 +261,17 @@ vector< pair< double, double > > SenderGang<SenderType, SwitcherType>::throughpu
   }
 
   return ret;
+}
+
+template <class SenderType, class SwitcherType>
+vector< SenderDataPoint > SenderGang<SenderType, SwitcherType>::statistics_for_log( void ) const
+{
+  vector < SenderDataPoint > points;
+  points.reserve( _gang.size() );
+  for ( auto &x : _gang ) {
+    points.push_back( x.statistics_for_log() );
+  }
+  return points;
 }
 
 template <class SenderType>
