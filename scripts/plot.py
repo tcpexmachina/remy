@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Runs sender-runner enough times to generate a plot, and plots the result.
+"""Runs rat-runner enough times to generate a plot, and plots the result.
 This script requires Python 3."""
 
 import sys
@@ -26,7 +26,7 @@ DEFAULT_RESULTS_DIR = "results"
 HLINE1 = "-" * 80 + "\n"
 HLINE2 = "=" * 80 + "\n"
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RATRUNNERCMD = os.path.join(ROOTDIR, "src", "sender-runner")
+RATRUNNERCMD = os.path.join(ROOTDIR, "src", "rat-runner")
 SENDER_REGEX = re.compile("^sender: \[tp=(-?\d+(?:\.\d+)?), del=(-?\d+(?:\.\d+)?)\]$", re.MULTILINE)
 NORM_SCORE_REGEX = re.compile("^normalized_score = (-?\d+(?:\.\d+)?)$", re.MULTILINE)
 LINK_PPT_PRIOR_REGEX = re.compile("^link_packets_per_ms\s+\{\n\s+low: (-?\d+(?:\.\d+)?)\n\s+high: (-?\d+(?:\.\d+)?)$", re.MULTILINE)
@@ -71,7 +71,7 @@ def run_command(command, show=True, writefile=None, includestderr=True):
     return output
 
 def run_ratrunner(remyccfilename, parameters, console_file=None):
-    """Runs sender-runner with the given parameters and returns the result.
+    """Runs rat-runner with the given parameters and returns the result.
     `remyccfilename` is the name of the RemyCC to test.
     `parameters` is a dict of parameters.
     If `console_file` is specified, it must be a file object, and the output will be written to it."""
@@ -96,7 +96,7 @@ def run_ratrunner(remyccfilename, parameters, console_file=None):
     return run_command(command, show=False, writefile=console_file, includestderr=True)
 
 def parse_ratrunner_output(result):
-    """Parses the output of sender-runner to extract the normalized score, and
+    """Parses the output of rat-runner to extract the normalized score, and
     sender throughputs and delays. Returns a 3-tuple. The first element is the
     normalized score from the rat-runnner script. The second element is a list
     of lists, one list for each sender, each inner list having two elements,
@@ -121,7 +121,7 @@ def parse_ratrunner_output(result):
         raise RuntimeError("Found no or duplicate link packets per ms prior assumptions in this output.")
     link_ppt_prior = tuple(map(float, link_ppt_prior_matches[0]))
 
-    # Divide norm_score the number of senders (sender-runner returns the sum)
+    # Divide norm_score the number of senders (rat-runner returns the sum)
     norm_score /= len(sender_data)
 
     return norm_score, sender_data, link_ppt_prior
@@ -213,7 +213,7 @@ class BaseRemyCCPerformancePlotGenerator:
 
 
 class RatRunnerFilesMixin:
-    """Provides functionality relating to sender-runner output files.
+    """Provides functionality relating to rat-runner output files.
     Subclass constructors must provide a `console_dir` attribute to objects of
     the class, which may be None."""
 
@@ -225,11 +225,11 @@ class RatRunnerFilesMixin:
 
 
 class RatRunnerRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRemyCCPerformancePlotGenerator):
-    """Generates data and plots by invoking sender-runner to generate a score for
+    """Generates data and plots by invoking rat-runner to generate a score for
     every point. In addition to the arguments taken by BaseRemyCCPerformancePlotGenerator:
 
-    `parameters` is a dictionary of parameters to pass to sender-runner.
-    `console_dir`, optional, is the directory to which sender-runner outputs will be written,
+    `parameters` is a dictionary of parameters to pass to rat-runner.
+    `console_dir`, optional, is the directory to which rat-runner outputs will be written,
         one file per data point.
     """
 
@@ -239,7 +239,7 @@ class RatRunnerRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRemyCCPer
         super(RatRunnerRemyCCPerformancePlotGenerator, self).__init__(link_ppt_range, **kwargs)
 
     def get_statistics(self, remyccfilename, link_ppt):
-        """Runs sender-runner on the given RemyCC `remyccfilename` and with the given
+        """Runs rat-runner on the given RemyCC `remyccfilename` and with the given
         parameters, and returns the normalized score and sender throughputs and delays.
         """
         parameters = dict(self.parameters)
