@@ -1,0 +1,17 @@
+ratatouille (0.1.2-1) trusty; urgency=low
+
+  * Explicitly invoke rectangle exception in GLSL 1.3
+
+ -- Keith Winstein <keithw@mit.edu>  Mon, 15 Sep 2014 13:31:37 -0500
+
+ratatouille (0.1.1-1) trusty; urgency=low
+
+  * Downgrade OpenGL requirements for use under VMware Fusion
+
+ -- Keith Winstein <keithw@mit.edu>  Mon, 15 Sep 2014 04:04:15 -0500
+
+ratatouille (0.1-1) trusty; urgency=low
+
+  * First packaging.
+
+ -- Keith Winstein <keithw@mit.edu>  Mon, 15 Sep 2014 02:35:00 -0500

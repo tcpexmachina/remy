@@ -10,18 +10,23 @@
 #include "memory.hh"
 #include "dna.pb.h"
 
+typedef RemyBuffers::MemoryRange::Axis Axis;
+
 class MemoryRange {
 private:
   Memory _lower, _upper;  
 
+  std::vector< Axis > _active_axis;
+
   mutable std::vector< boost::accumulators::accumulator_set< Memory::DataType,
 							     boost::accumulators::stats<
-							       boost::accumulators::tag::median > > > _acc;
+							     boost::accumulators::tag::median > > > _acc;
   mutable unsigned int _count;
 
 public:
-  MemoryRange( const Memory & s_lower, const Memory & s_upper )
-    : _lower( s_lower ), _upper( s_upper ), _acc( Memory::datasize ), _count( 0 )
+  MemoryRange( const Memory & s_lower, const Memory & s_upper, 
+    std::vector< Axis > s_active = { RemyBuffers::MemoryRange::SEND_EWMA, RemyBuffers::MemoryRange::REC_EWMA, RemyBuffers::MemoryRange::RTT_RATIO, RemyBuffers::MemoryRange::SLOW_REC_EWMA } )
+    : _lower( s_lower ), _upper( s_upper ), _active_axis( s_active ), _acc( Memory::datasize ), _count( 0 )
   {}
 
   std::vector< MemoryRange > bisect( void ) const;

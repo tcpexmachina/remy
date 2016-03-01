@@ -31,6 +31,10 @@ Makefile.in
 /protobufs/problem.pb.h
 /src/configuration
 /src/inspect-config
-/src/rat-runner
+/src/sender-runner
 /src/remy
+/src/remy-poisson
+/graph/ratatouille
 /src/scoring-example
+/src/*.pb.cc
+/src/*.pb.h

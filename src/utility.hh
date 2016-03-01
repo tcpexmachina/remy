@@ -2,6 +2,8 @@
 #define UTILITY_HH
 
 #include <cmath>
+#include <cassert>
+#include <climits>
 
 class Utility
 {
@@ -23,7 +25,8 @@ public:
     }
   }
 
-  double average_throughput( void ) const
+  /* returns throughput normalized to equal share of link */
+  double average_throughput_normalized_to_equal_share( void ) const
   {
     if ( _tick_share_sending == 0 ) {
       return 0.0;
@@ -49,7 +52,7 @@ public:
       return -INT_MAX;
     }
 
-    const double throughput_utility = log2( average_throughput() );
+    const double throughput_utility = log2( average_throughput_normalized_to_equal_share() );
     const double delay_penalty = log2( average_delay() / 100.0 );
 
     return throughput_utility - delay_penalty;

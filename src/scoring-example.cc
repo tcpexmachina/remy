@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <iostream>
 
 #include "evaluator.hh"
 #include "configrange.hh"
@@ -74,7 +75,7 @@ int main( int argc, char *argv[] )
   configuration_range.mean_on_duration = Range(mean_on_duration, mean_on_duration, 0);
   configuration_range.mean_off_duration = Range(mean_off_duration, mean_off_duration, 0);
 
-  Evaluator eval( configuration_range );
+  Evaluator< WhiskerTree > eval( configuration_range );
 
   // save problem to file
   ProblemBuffers::Problem serialized_problem = eval.DNA( whiskers );
@@ -114,7 +115,7 @@ int main( int argc, char *argv[] )
     exit( 1 );
   }
 
-  auto outcome = Evaluator::parse_problem_and_evaluate( problem );
+  auto outcome = Evaluator< WhiskerTree >::parse_problem_and_evaluate( problem );
 
   cerr << "Successfully scored problem." << endl;
 
@@ -157,7 +158,7 @@ int main( int argc, char *argv[] )
     exit( 1 );
   }
 
-  Evaluator::Outcome parsed_outcome( proto_outcome );
+  Evaluator< WhiskerTree >::Outcome parsed_outcome( proto_outcome );
   printf( "score = %f\n", outcome.score );
   double norm_score = 0;
 
@@ -171,7 +172,7 @@ int main( int argc, char *argv[] )
 
   printf( "normalized_score = %f\n", norm_score );
 
-  printf( "Whiskers: %s\n", outcome.used_whiskers.str().c_str() );
+  printf( "Whiskers: %s\n", outcome.used_actions.str().c_str() );
 
   return 0;
 }

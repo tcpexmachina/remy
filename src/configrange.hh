@@ -8,7 +8,7 @@ public:
   double low;
   double high;
   double incr;
-  Range ( void ) 
+  Range ( void )
     : low( 1 ),
       high ( 1 ),
       incr ( 0 )
@@ -36,13 +36,16 @@ public:
 class ConfigRange
 {
 public:
-  Range link_ppt = Range();
-  Range rtt = Range();
-  Range mean_on_duration = Range();
-  Range mean_off_duration = Range();
-  Range num_senders = Range();
-  Range buffer_size = Range();
- 
+  Range link_ppt;
+  Range rtt;
+  Range mean_on_duration;
+  Range mean_off_duration;
+  Range num_senders;
+  Range buffer_size;
+  unsigned int simulation_ticks;
+
+  ConfigRange( void );
+  ConfigRange( RemyBuffers::ConfigRange configrange );
   RemyBuffers::ConfigRange DNA( void ) const;
 };
 

@@ -14,9 +14,33 @@ message WhiskerTree {
   optional ConfigVector configvector = 6;
 }
 
+message FinTree {
+  optional MemoryRange domain = 1;
+
+  repeated FinTree children = 2;
+
+  optional Fin leaf = 3;
+
+  optional ConfigRange config = 4;
+
+  optional OptimizationSettings optimizer = 5;
+
+  optional ConfigVector configvector = 6;
+}
+
 message MemoryRange {
   optional Memory lower = 11;
   optional Memory upper = 12;
+  
+  enum Axis {
+    SEND_EWMA = 0;
+    REC_EWMA = 1;
+    RTT_RATIO = 2;
+    SLOW_REC_EWMA = 3;
+    QUEUEING_DELAY = 4;
+  }
+
+  repeated Axis active_axis = 13;
 }
 
 message Memory {
@@ -24,6 +48,7 @@ message Memory {
   optional double rec_rec_ewma = 22;
   optional double rtt_ratio = 23;
   optional double slow_rec_rec_ewma = 24;
+  optional double queueing_delay = 25;
 }
 
 message Whisker {
@@ -32,6 +57,12 @@ message Whisker {
   optional double intersend = 33;
 
   optional MemoryRange domain = 34;
+}
+
+message Fin {
+  optional double lambda = 37;
+
+  optional MemoryRange domain = 38;
 }
 
 message OptimizationSetting {
@@ -50,6 +81,7 @@ message OptimizationSettings {
   optional OptimizationSetting window_increment = 51;
   optional OptimizationSetting window_multiple = 52;
   optional OptimizationSetting intersend = 53;
+  optional OptimizationSetting lambda = 54;
 }
 
 message Range {
@@ -65,6 +97,7 @@ message ConfigRange {
   optional Range buffer_size = 74;
   optional Range mean_off_duration = 75;
   optional Range mean_on_duration = 76;
+  optional uint32 simulation_ticks = 77;
 }
 
 message NetConfig {

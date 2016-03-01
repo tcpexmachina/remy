@@ -1,21 +1,24 @@
 #ifndef EXPONENTIAL_HH
 #define EXPONENTIAL_HH
 
-#include <boost/random/exponential_distribution.hpp>
+#include <random>
 
 #include "random.hh"
 
 class Exponential
 {
 private:
-  boost::random::exponential_distribution<> distribution;
-
-  PRNG & prng;
+  std::exponential_distribution<> distribution;
 
 public:
-  Exponential( const double & rate, PRNG & s_prng ) : distribution( rate ), prng( s_prng ) {}
+  Exponential( const double & rate ) : distribution( rate ) {}
+
+  void set_lambda( const double & rate ) 
+  {
+  	distribution = std::exponential_distribution<> ( rate );
+  }
   
-  double sample( void ) { return distribution( prng ); }
+  double sample( PRNG & prng ) { return distribution( prng ); }
 };
 
 #endif

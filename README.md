@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tcpexmachina/remy.svg?branch=master)](https://travis-ci.org/tcpexmachina/remy)
+
 Remy: TCP ex Machina (computer-generated congestion control)
 ============================================================
 
@@ -31,7 +33,7 @@ Basic usage:
 * Use the if= argument to get Remy to read previous RemyCCs as the
   starting point for optimization.
 
-* The `rat-runner` tool will execute saved RemyCCs. The filename
+* The `sender-runner` tool will execute saved RemyCCs. The filename
   should be set with a `if=` argument. It also accepts `link=` to set
   the link speed (in packets per millisecond), `rtt=` to set the RTT,
   and `nsrc=` to set the maximum degree of multiplexing.

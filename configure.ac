@@ -6,6 +6,7 @@ AC_INIT([remy], [0.1], [remy@mit.edu])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([src/remy.cc])
 AC_CONFIG_HEADERS([config.h])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -18,25 +19,37 @@ AS_IF([test x"$PROTOC" = x],
 # Checks for libraries.
 PKG_CHECK_MODULES([protobuf], [protobuf])
 
-# Add picky CXXFLAGS
-CPPFLAGS="-std=c++11 -pthread"
-PICKY_CXXFLAGS="-pedantic -Wall -Wextra -Weffc++ -Werror -fno-default-inline"
+# Add compiler flags
+CXX11_FLAGS="-std=c++11 -pthread"
+AC_SUBST([CXX11_FLAGS])
+
+PICKY_CXXFLAGS="-Wall -Wpedantic -Wextra -Weffc++ -Werror"
 AC_SUBST([PICKY_CXXFLAGS])
+
+AC_ARG_ENABLE([graph],
+  [AS_HELP_STRING([--enable-graph],
+    [Enable live graph (ratatouille) @<:@no@:>@])],
+  [build_graph="yes"],
+  [build_graph="no"])
+AM_CONDITIONAL([BUILD_GRAPH], [test x"$build_graph" != xno])
+
+# Checks for libraries.
+AM_COND_IF( [BUILD_GRAPH],
+[
+  PKG_CHECK_MODULES([GL], [gl])
+  PKG_CHECK_MODULES([GLFW], [glfw3])
+  PKG_CHECK_MODULES([GLEW], [glew])
+  PKG_CHECK_MODULES([GLU], [glu])
+  PKG_CHECK_MODULES([PANGOCAIRO], [pangocairo])
+  PKG_CHECK_MODULES([GTKMM], [gtkmm-3.0])
+] )
 
 # Checks for header files.
 AC_LANG_PUSH(C++)
 
-AC_CHECK_HEADERS([algorithm array cassert boost/accumulators/accumulators.hpp \
+AC_CHECK_HEADERS([boost/accumulators/accumulators.hpp \
 boost/accumulators/statistics/median.hpp \
-boost/accumulators/statistics/stats.hpp boost/functional/hash.hpp \
-boost/random/exponential_distribution.hpp boost/random/mersenne_twister.hpp \
-boost/random/poisson_distribution.hpp \
-boost/random/uniform_int_distribution.hpp \
-boost/random/uniform_real_distribution.hpp fcntl.h future cmath queue \
-cstdio string sys/stat.h sys/types.h ctime tuple unistd.h unordered_map \
-utility vector], [], [AC_MSG_ERROR([Missing header file])])
-
-AC_CHECK_LIB(jemalloc, malloc, [], [AC_MSG_ERROR([Need jemalloc])])
+boost/accumulators/statistics/stats.hpp boost/functional/hash.hpp], [], [AC_MSG_ERROR([Missing boost headers (need to install libboost-dev?)])])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -46,5 +59,5 @@ AC_LANG_POP(C++)
 
 # Checks for library functions.
 
-AC_CONFIG_FILES([Makefile protobufs/Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile protobufs/Makefile graph/Makefile src/Makefile tests/Makefile])
 AC_OUTPUT

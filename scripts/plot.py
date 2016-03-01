@@ -1,9 +1,10 @@
 #!/usr/bin/python3
-"""Runs rat-runner enough times to generate a plot, and plots the result.
+"""Runs sender-runner enough times to generate a plot, and plots the result.
 This script requires Python 3."""
 
 import sys
 import os
+import shutil
 import argparse
 import subprocess
 import re
@@ -25,7 +26,7 @@ DEFAULT_RESULTS_DIR = "results"
 HLINE1 = "-" * 80 + "\n"
 HLINE2 = "=" * 80 + "\n"
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RATRUNNERCMD = os.path.join(ROOTDIR, "src", "rat-runner")
+RATRUNNERCMD = os.path.join(ROOTDIR, "src", "sender-runner")
 SENDER_REGEX = re.compile("^sender: \[tp=(-?\d+(?:\.\d+)?), del=(-?\d+(?:\.\d+)?)\]$", re.MULTILINE)
 NORM_SCORE_REGEX = re.compile("^normalized_score = (-?\d+(?:\.\d+)?)$", re.MULTILINE)
 LINK_PPT_PRIOR_REGEX = re.compile("^link_packets_per_ms\s+\{\n\s+low: (-?\d+(?:\.\d+)?)\n\s+high: (-?\d+(?:\.\d+)?)$", re.MULTILINE)
@@ -70,7 +71,7 @@ def run_command(command, show=True, writefile=None, includestderr=True):
     return output
 
 def run_ratrunner(remyccfilename, parameters, console_file=None):
-    """Runs rat-runner with the given parameters and returns the result.
+    """Runs sender-runner with the given parameters and returns the result.
     `remyccfilename` is the name of the RemyCC to test.
     `parameters` is a dict of parameters.
     If `console_file` is specified, it must be a file object, and the output will be written to it."""
@@ -95,7 +96,7 @@ def run_ratrunner(remyccfilename, parameters, console_file=None):
     return run_command(command, show=False, writefile=console_file, includestderr=True)
 
 def parse_ratrunner_output(result):
-    """Parses the output of rat-runner to extract the normalized score, and
+    """Parses the output of sender-runner to extract the normalized score, and
     sender throughputs and delays. Returns a 3-tuple. The first element is the
     normalized score from the rat-runnner script. The second element is a list
     of lists, one list for each sender, each inner list having two elements,
@@ -120,78 +121,183 @@ def parse_ratrunner_output(result):
         raise RuntimeError("Found no or duplicate link packets per ms prior assumptions in this output.")
     link_ppt_prior = tuple(map(float, link_ppt_prior_matches[0]))
 
-    # Divide norm_score the number of senders (rat-runner returns the sum)
+    # Divide norm_score the number of senders (sender-runner returns the sum)
     norm_score /= len(sender_data)
 
     return norm_score, sender_data, link_ppt_prior
-
-def compute_normalized_score(remyccfilename, parameters, console_dir=None):
-    """Runs rat-runner on the given RemyCC `remyccfilename` and with the given
-    parameters, and returns the normalized score and sender throughputs and delays.
-    `parameters` is a dict of parameters.
-    """
-    kwargs = {}
-    if console_dir:
-        filename = "ratrunner-{remycc}-{link_ppt:f}.out".format(
-                remycc=os.path.basename(remyccfilename), **parameters)
-        filename = os.path.join(console_dir, filename)
-        kwargs["console_file"] = open(filename, "w")
-
-    output = run_ratrunner(remyccfilename, parameters, **kwargs)
-
-    if "console_file" in kwargs:
-        kwargs["console_file"].close()
-
-    return parse_ratrunner_output(output)
 
 def add_plot(axes, link_speeds, norm_scores, **kwargs):
     """Adds a plot for the given link-packets-per-ms `link_ppts` and normalized
     scores `norm_scores` to the `axes`."""
     return plt.semilogx(link_speeds, norm_scores, axes=axes, **kwargs)
 
-def generate_data_and_plot(remyccfilename, link_ppt_range, parameters, console_dir=None, data_dir=None, axes=None):
-    """For a given RemyCC `remyccfilename`, runs rat-runner once on each link
-    speed in `link_ppt_range` (each being specified in packets per millisecond),
-    with other parameters as specified in the dict `parameters`. Returns the
-    link rates specified under "prior assumptions".
 
-    If `console_dir` is specified, the outputs of each rat-runner run are stored in
-        a file (each) in that directory.
-    If `data_dir` is specified, data from the run is written to a (single) file in
-        that directory.
-    If `axes` is specified, a plot will be added to those axes.
+class BaseRemyCCPerformancePlotGenerator:
+    """Base class for generating and plotting data for a RemyCC.
+    Subclasses should provide a constructor and a `get_statistics` method.
+
+    `link_ppt_range` is an iterable of link speeds to plot.
+    `data_dir`, optional, is a directory in which a file for each `generate()`
+        call will be written. If omitted, data files will not be generated.
+    `axes`, optional, is a `matplotlib.Axes` object to which plots will be added.
+        If omitted, plots will not be generated.
+
+    `link_ppt_prior` may be specified, in which case it should be a value
+        returned by the `get_link_ppt_prior()` method of another generator. This
+        is useful for the daisy-chaining link_ppt_prior state of multiple
+        generators.
     """
-    if data_dir:
-        data_filename = "data-{remycc}.csv".format(
-                remycc=os.path.basename(remyccfilename))
-        data_file = open(os.path.join(data_dir, data_filename), "w")
-        data_csv = csv.writer(data_file)
 
-    norm_scores = []
-    npoints = len(link_ppt_range)
+    def __init__(self, link_ppt_range, **kwargs):
+        self.link_ppt_range = link_ppt_range
+        self.data_dir = kwargs.pop("data_dir", None)
+        self.axes = kwargs.pop("axes", None)
+        self._link_ppt_priors = kwargs.pop("link_ppt_priors", [])
+        if self._link_ppt_priors is None:
+            self._link_ppt_priors = []
 
-    for i, link_ppt in enumerate(link_ppt_range, start=1):
+        if len(kwargs) > 0:
+            raise TypeError("Unrecognized arguments: " + ", ".join(kwargs.keys()))
+
+    def get_statistics(self, remyccfilename, link_ppt):
+        raise NotImplementedError("subclasses of BaseRemyCCPerformancePlotGenerator must implement get_statistics")
+
+    def get_data_file(self, remyccfilename):
+        if self.data_dir:
+            data_filename = "data-{remycc}.csv".format(
+                    remycc=os.path.basename(remyccfilename))
+            data_file = open(os.path.join(self.data_dir, data_filename), "w")
+        else:
+            return None
+
+    def generate(self, remyccfilename):
+        data_file = self.get_data_file(remyccfilename)
+        if data_file:
+            data_csv = csv.writer(data_file)
+
+        norm_scores = []
+        npoints = len(self.link_ppt_range)
+
+        for i, link_ppt in enumerate(link_ppt_range, start=1):
+            print("\033[KGenerating score for if={:s}, link={:f} ({:d} of {:d})...".format(
+                        remyccfilename, link_ppt, i, npoints),
+                        file=sys.stderr, end='\r', flush=True)
+            norm_score, sender_data, link_ppt_prior = self.get_statistics(remyccfilename, link_ppt)
+            norm_scores.append(norm_score)
+            sender_numbers = chain(*sender_data)
+            if data_file:
+                data_csv.writerow([link_ppt, norm_score] + list(sender_numbers))
+            self._update_link_ppt_prior(link_ppt_prior)
+
+        if data_file:
+            data_file.close()
+
+        if self.axes:
+            print("\033[KPlotting for file {}...".format(remyccfilename), file=sys.stderr, end='\r', flush=True)
+            link_speeds = [LINK_PPT_TO_MBPS_CONVERSION*l for l in link_ppt_range]
+            add_plot(self.axes, link_speeds, norm_scores, label=remyccfilename)
+
+        print("\033[KDone file {}.".format(remyccfilename), file=sys.stderr)
+        sys.stderr.flush()
+
+    def _update_link_ppt_prior(self, link_ppt_prior):
+        if link_ppt_prior in self._link_ppt_priors:
+            return
+        self._link_ppt_priors.append(link_ppt_prior)
+
+    def get_link_ppt_priors(self):
+        """If the prior optimizion settings for each file on which generate()
+        has been called so far are the same, returns that setting. Otherwise,
+        returns None."""
+        return self._link_ppt_priors
+
+
+class RatRunnerFilesMixin:
+    """Provides functionality relating to sender-runner output files.
+    Subclass constructors must provide a `console_dir` attribute to objects of
+    the class, which may be None."""
+
+    def get_console_filename(self, remyccfilename, link_ppt):
+        filename = "ratrunner-{remycc}-{link_ppt:f}.out".format(
+                remycc=os.path.basename(remyccfilename), link_ppt=link_ppt)
+        filename = os.path.join(self.console_dir, filename)
+        return filename
+
+
+class RatRunnerRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRemyCCPerformancePlotGenerator):
+    """Generates data and plots by invoking sender-runner to generate a score for
+    every point. In addition to the arguments taken by BaseRemyCCPerformancePlotGenerator:
+
+    `parameters` is a dictionary of parameters to pass to sender-runner.
+    `console_dir`, optional, is the directory to which sender-runner outputs will be written,
+        one file per data point.
+    """
+
+    def __init__(self, link_ppt_range, parameters, **kwargs):
+        self.parameters = parameters
+        self.console_dir = kwargs.pop("console_dir", None)
+        super(RatRunnerRemyCCPerformancePlotGenerator, self).__init__(link_ppt_range, **kwargs)
+
+    def get_statistics(self, remyccfilename, link_ppt):
+        """Runs sender-runner on the given RemyCC `remyccfilename` and with the given
+        parameters, and returns the normalized score and sender throughputs and delays.
+        """
+        parameters = dict(self.parameters)
         parameters["link_ppt"] = link_ppt
-        print("\033[KGenerating score for if={:s}, link={:f} ({:d} of {:d})...".format(
-                    remyccfilename, link_ppt, i, npoints),
-                    file=sys.stderr, end='\r', flush=True)
-        norm_score, sender_data, link_ppt_prior = compute_normalized_score(remyccfilename, parameters, console_dir)
-        norm_scores.append(norm_score)
-        sender_numbers = chain(*sender_data)
-        if data_dir:
-            data_csv.writerow([link_ppt, norm_score] + list(sender_numbers))
 
-    if axes:
-        print("\033[KPlotting for file {}...".format(remyccfilename), file=sys.stderr, end='\r', flush=True)
-        link_speeds = [LINK_PPT_TO_MBPS_CONVERSION*l for l in link_ppt_range]
-        add_plot(axes, link_speeds, norm_scores, label=remyccfilename)
+        kwargs = {}
+        if self.console_dir:
+            filename = self.get_console_filename(remyccfilename, link_ppt)
+            kwargs["console_file"] = open(filename, "w")
 
-    data_file.close()
+        output = run_ratrunner(remyccfilename, parameters, **kwargs)
 
-    print("\033[KDone file {}.".format(remyccfilename), file=sys.stderr)
-    sys.stderr.flush()
+        if "console_file" in kwargs:
+            kwargs["console_file"].close()
 
-    return link_ppt_prior
+        return parse_ratrunner_output(output)
+
+
+class OutputsDirectoryRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRemyCCPerformancePlotGenerator):
+    """Generates data and plots by parsing outputs from an existing directory.
+    In addition to the arguments taken by BaseRemyCCPerformancePlotGenerator:
+
+    `console_dir` is the directory in which existing outputs are found. The
+    relevant outputs files must all exist with the correct names. If any don't,
+    `generate()` will print a warning and skip the point.
+    """
+
+    def __init__(self, link_ppt_range, console_dir, **kwargs):
+        self.console_dir = console_dir
+        super(OutputsDirectoryRemyCCPerformancePlotGenerator, self).__init__(link_ppt_range, **kwargs)
+
+    def get_statistics(self, remyccfilename, link_ppt):
+        filename = self.get_console_filename(remyccfilename, link_ppt)
+        f = open(filename, "r")
+        contents = f.read()
+        f.close()
+        return parse_ratrunner_output(contents)
+
+
+def process_replot_argument(replot_dir, results_dir):
+    """Reads the args.json file in a results directory, copies it to an
+    appropriate location in the current results directory and returns the link
+    speed range and a list of RemyCC files."""
+    argsfilename = os.path.join(replot_dir, "args.json")
+    argsfile = open(argsfilename)
+    jsondict = json.load(argsfile)
+    argsfile.close()
+    args = jsondict["args"]
+    remyccs = args["remycc"]
+    link_ppt_range = np.logspace(np.log10(args["link_ppt"][0]), np.log10(args["link_ppt"][1]), args["num_points"])
+    console_dir = os.path.join(replot_dir, "outputs")
+
+    replots_dirname = os.path.join(results_dir, "replots", os.path.basename(replot_dir))
+    os.makedirs(replots_dirname, exist_ok=True)
+    target_filename = os.path.join(replots_dirname, "args.json")
+    shutil.copy(argsfilename, target_filename)
+
+    return remyccs, link_ppt_range, console_dir
 
 def plot_from_original_file(datafilename, axes):
     """Plots data from the file `datafile` to the axes `axes`."""
@@ -223,6 +329,8 @@ def log_arguments(argsfile, args):
     json.dump(jsondict, argsfile, indent=2, sort_keys=True)
 
 def make_results_dir(dirname):
+    """Makes a results directory with the given name and directs 'last' symlink to it."""
+
     if dirname is None:
         dirname = os.path.join(DEFAULT_RESULTS_DIR, "results" + time.strftime("%Y%m%d-%H%M%S"))
     if os.path.islink("last"):
@@ -233,6 +341,10 @@ def make_results_dir(dirname):
     return dirname
 
 def generate_remyccs_list(specs):
+    """Returns a list of RemyCC files, for example:
+        ["myremycc.5"] -> ["myremycc.5"]
+        ["myremycc.[3:3:9]"] -> ["myremycc.3", "myremycc.6", "myremycc.9"]
+    """
     result = []
     for spec in specs:
         match = REMYCCSPEC_REGEX.match(spec)
@@ -258,6 +370,8 @@ def generate_remyccs_list(specs):
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("remycc", nargs="*", type=str,
     help="RemyCC file(s) to run, can also use e.g. name.[5:5:30] to do name.5, name.10, ..., name.30")
+parser.add_argument("-R", "--replot", type=str, action="append", default=[],
+    help="Replot results in this directory from output files (can be specified multiple times)")
 parser.add_argument("-n", "--num-points", type=int, default=1000,
     help="Number of points to plot")
 parser.add_argument("-s", "--nsenders", type=int, default=2,
@@ -285,7 +399,10 @@ args = parser.parse_args()
 # Sanity-check arguments, warn user say they can stop things early
 if not os.path.isdir(args.originals):
     warn("The path {} is not a directory.".format(args.originals))
-if len(args.remycc) == 0:
+for replot_dir in args.replot:
+    if not os.path.isdir(replot_dir):
+        warn("The path {} is not a directory.".format(replot_dir))
+if len(args.remycc) == 0 and len(args.replot) == 0:
     warn("No RemyCC files specified, plotting only originals.")
 
 # Make directories
@@ -313,10 +430,20 @@ remyccfiles = generate_remyccs_list(args.remycc)
 ax = plt.axes()
 
 # Generate data and plots (the main part)
-link_ppt_priors = []
+generator = RatRunnerRemyCCPerformancePlotGenerator(link_ppt_range, parameters,
+        console_dir=console_dirname, data_dir=data_dirname, axes=ax)
 for remyccfile in remyccfiles:
-    link_ppt_prior = generate_data_and_plot(remyccfile, link_ppt_range, parameters, console_dirname, data_dirname, ax)
-    link_ppt_priors.append(link_ppt_prior)
+    generator.generate(remyccfile)
+link_ppt_priors = generator.get_link_ppt_priors()
+
+# Generate replots
+for replot_dir in args.replot:
+    remyccs, link_ppt_range, outputs_dir = process_replot_argument(replot_dir, results_dirname)
+    generator = OutputsDirectoryRemyCCPerformancePlotGenerator(link_ppt_range, outputs_dir,
+            link_ppt_priors=link_ppt_priors, data_dir=data_dirname, axes=ax)
+    for remycc in remyccs:
+        generator.generate(remycc)
+    link_ppt_priors = generator.get_link_ppt_priors()
 
 # Add the remaining plots
 if os.path.isdir(args.originals):
@@ -327,16 +454,13 @@ if os.path.isdir(args.originals):
         print("Plotting file {}...".format(path), file=sys.stderr)
         plot_from_original_file(path, ax)
 
-# If there were RemyCCs involved, check they all had the same training range.
-# If they did, highlight the range on the graph.
-if len(link_ppt_priors) > 0:
-    if not all([l == link_ppt_priors[0] for l in link_ppt_priors]):
-        print(set(link_ppt_priors))
-        warn("Not all RemyCCs had the same training range.")
-    else:
-        link_ppt_low, link_ppt_high = link_ppt_priors[0]
-        plt.axvspan(LINK_PPT_TO_MBPS_CONVERSION*link_ppt_low, LINK_PPT_TO_MBPS_CONVERSION*link_ppt_high,
-                linewidth=0.0, facecolor="0.2", alpha=0.2)
+# If all RemyCCs had the same training range, plot it on the graph.
+if len(link_ppt_priors) == 1:
+    link_ppt_low, link_ppt_high = link_ppt_priors[0]
+    plt.axvspan(LINK_PPT_TO_MBPS_CONVERSION*link_ppt_low, LINK_PPT_TO_MBPS_CONVERSION*link_ppt_high,
+            linewidth=0.0, facecolor="0.2", alpha=0.2)
+elif len(link_ppt_priors) > 1:
+    print("Multiple link_ppt_priors found, not highlighting on plot.")
 
 # Make plot pretty and save
 plot_filename = "link_ppt"

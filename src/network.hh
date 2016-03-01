@@ -65,12 +65,12 @@ public:
   }
 };
 
-template <class SenderType1, class SenderType2>
+template <class Gang1Type, class Gang2Type>
 class Network
 {
 private:
   PRNG & _prng;
-  SenderGangofGangs<SenderType1, SenderType2> _senders;
+  SenderGangofGangs<Gang1Type, Gang2Type> _senders;
   Link _link;
   Delay _delay;
   Receiver _rec;
@@ -80,13 +80,23 @@ private:
   void tick( void );
 
 public:
-  Network( const SenderType1 & example_sender1, const SenderType2 & example_sender2, PRNG & s_prng, const NetConfig & config );
+  Network( const typename Gang1Type::Sender & example_sender1, const typename Gang2Type::Sender & example_sender2, PRNG & s_prng, const NetConfig & config );
 
-  Network( const SenderType1 & example_sender1, PRNG & s_prng, const NetConfig & config );
+  Network( const typename Gang1Type::Sender & example_sender1, PRNG & s_prng, const NetConfig & config );
 
   void run_simulation( const double & duration );
 
-  const SenderGangofGangs<SenderType1,SenderType2> & senders( void ) const { return _senders; }
+  void run_simulation_until( const double tick_limit );
+
+  const SenderGangofGangs<Gang1Type, Gang2Type> & senders( void ) const { return _senders; }
+
+  SenderGangofGangs<Gang1Type, Gang2Type> & mutable_senders( void ) { return _senders; }
+
+  std::vector< unsigned int > packets_in_flight( void ) const;
+
+  const double & tickno( void ) const { return _tickno; }
+
+  Link & mutable_link( void ) { return _link; }
 };
 
 #endif

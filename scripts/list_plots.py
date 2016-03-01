@@ -36,17 +36,43 @@ for entry in entries:
         continue
 
     jsondict = json.load(argsfile)
+    argsfile.close()
     git_dict = jsondict.get("git", {})
     git_branch = git_dict.get("branch", "<unknown>")
     git_commit = git_dict.get("commit", "<unknown>")[:9]
     args_dict = jsondict.get("args", {})
     remyccs = args_dict.get("remycc", [])
-    remyccs = [os.path.basename(r) for r in remyccs]
-    npoints = args_dict.get("num_points", -1)
+    remyccs = " ".join([os.path.basename(r) for r in remyccs])
+    if remyccs:
+        npoints = args_dict.get("num_points", -1)
+    else:
+        npoints = "-"
+
+    replots = args_dict.get("replot", [])
+    if replots:
+        replots_str = (remyccs and ", replots:" or "replots:")
+        for replot in replots:
+            replot_basename = os.path.basename(replot)
+            try:
+                replot_argsfile = open(os.path.join(dirname, "replots", replot_basename, "args.json"))
+                replot_args = json.load(replot_argsfile)["args"]
+                replot_argsfile.close()
+                replot_remyccs = " ".join([os.path.basename(r) for r in replot_args["remycc"]])
+                replot_npoints = replot_args["num_points"]
+            except (IOError, KeyError):
+                replots_str += " {basename}<error>".format(basename=replot_basename)
+            else:
+                if replot_remyccs:
+                    replots_str += " {basename}[{remyccs}/{npoints}]".format(basename=replot_basename,
+                            remyccs=replot_remyccs, npoints=replot_npoints)
+                else:
+                    replots_str += " {basename}[]".format(basename=replot_basename)
+    else:
+        replots_str = ""
 
     plotsdirname = os.path.join(dirname, "plots")
     noplots = "[no plots] " if os.path.isdir(plotsdirname) and len(os.listdir(plotsdirname)) == 0 else ""
 
-    print("{dirname:30} {branch:14} {commit:9} {npoints:>5d} {noplots}{remyccs}".format(
+    print("{dirname:30} {branch:14} {commit:9} {npoints:>5} {noplots}{remyccs}{replots}".format(
         dirname=dirname, branch=git_branch, commit=git_commit, npoints=npoints,
-        remyccs=" ".join(remyccs), noplots=noplots))
+        remyccs=remyccs, noplots=noplots, replots=replots_str))

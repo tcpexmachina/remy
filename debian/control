@@ -1,0 +1,13 @@
+Source: ratatouille
+Section: net
+Priority: optional
+Maintainer: Keith Winstein <keithw@mit.edu>
+Build-Depends: debhelper (>= 7.0.50), autotools-dev, dh-autoreconf, pkg-config, protobuf-compiler, libprotobuf-dev, libgl-dev, libglfw3-dev, libglew-dev, libglu-dev, libcairo2-dev, libpango1.0-dev, libgtkmm-3.0-dev, libboost1.55-dev
+Standards-Version: 3.9.4.0
+Vcs-Git: git://github.com/keithw/remy.git
+Vcs-Browser: https://github.com/keithw/remy
+
+Package: ratatouille
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Demo of the Remy toolkit (http://mit.edu/remy)
