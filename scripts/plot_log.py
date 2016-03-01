@@ -7,6 +7,7 @@ import os
 import sys
 from textwrap import wrap
 try:
+    sys.path.append(os.path.join(os.path.dirname(__file__), "..", "protobufs"))
     import simulationresults_pb2
 except ImportError as e:
     if "google.protobuf" in str(e):
