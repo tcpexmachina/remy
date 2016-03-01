@@ -130,33 +130,7 @@ int main(int argc, char *argv[]) {
     buffer_size.set_incr( 0 );
     input_config.mutable_buffer_size()->CopyFrom(buffer_size);
   }
-  // turn the range into a vector of input points
-  RemyBuffers::ConfigVector input_networks;
-  for ( double link = input_config.link_packets_per_ms().low(); link <= input_config.link_packets_per_ms().high(); link += input_config.link_packets_per_ms().incr() ) {
-    for ( double del = input_config.rtt().low(); del <= input_config.rtt().high(); del += input_config.rtt().incr() ) {
-      for ( double senders = input_config.num_senders().low(); senders <= input_config.num_senders().high(); senders += input_config.num_senders().incr() ) {
-        for (double on = input_config.mean_on_duration().low(); on <= input_config.mean_on_duration().high(); on += input_config.mean_on_duration().incr() ) {
-          for (double off = input_config.mean_off_duration().low(); off <= input_config.mean_off_duration().high(); off += input_config.mean_off_duration().incr() ) {
-            for (double buffer = input_config.buffer_size().low(); buffer <= input_config.buffer_size().high(); buffer += input_config.buffer_size().incr() ) {
-              RemyBuffers::NetConfig* net_config = input_networks.add_config();
-              net_config->set_link_ppt(link);
-              net_config->set_delay(del);
-              net_config->set_num_senders(senders);
-              net_config->set_mean_on_duration(on);
-              net_config->set_mean_off_duration(off);
-              net_config->set_buffer_size( buffer ); // buffer size is a multiple of the BDP*/
-              if ( input_config.buffer_size().low() == input_config.buffer_size().high() ) { break; }
-            }
-            if ( input_config.mean_off_duration().low() == input_config.mean_off_duration().high() ) { break; }
-          }
-          if ( input_config.mean_on_duration().low() == input_config.mean_on_duration().high() ) { break; }
-        }
-        if ( input_config.num_senders().low() == input_config.num_senders().high() ) { break;}
-      }
-      if ( input_config.rtt().low() == input_config.rtt().high() ) { break; }
-    }
-    if ( input_config.link_packets_per_ms().low() == input_config.link_packets_per_ms().high() ) { break; }
-  }
+
    
 
   // write to file
@@ -169,8 +143,8 @@ int main(int argc, char *argv[]) {
   }
   
 
-  if ( not input_networks.SerializeToFileDescriptor( fd ) ) {
-    fprintf( stderr, "Could not serialize InputNetworks parameters.\n" );
+  if ( not input_config.SerializeToFileDescriptor( fd ) ) {
+    fprintf( stderr, "Could not serialize InputConfig parameters.\n" );
     exit( 1 );
   }
 
@@ -178,7 +152,7 @@ int main(int argc, char *argv[]) {
     perror( "close" );
     exit( 1 );
   }
-  printf( "Wrote config vector protobuf to \"%s\"\n", output_filename.c_str() );
+  printf( "Wrote config range protobuf to \"%s\"\n", output_filename.c_str() );
   return 0;
 
 }

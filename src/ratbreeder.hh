@@ -6,7 +6,7 @@
 #include <future>
 #include <vector>
 
-#include "configvector.hh"
+#include "configrange.hh"
 #include "evaluator.hh"
 
 struct WhiskerImproverOptions
@@ -18,7 +18,7 @@ struct WhiskerImproverOptions
 
 struct RatBreederOptions
 {
-  ConfigVector config_vector = ConfigVector();
+  ConfigRange config_range = ConfigRange();
   WhiskerImproverOptions improver_options = WhiskerImproverOptions();
 };
 
