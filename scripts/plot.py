@@ -70,7 +70,7 @@ def run_command(command, show=True, writefile=None, includestderr=True):
 
     return output
 
-def run_ratrunner(remyccfilename, parameters, console_file=None):
+def run_ratrunner(remyccfilename, parameters, console_file=None, ratrunnercmd=None):
     """Runs sender-runner with the given parameters and returns the result.
     `remyccfilename` is the name of the RemyCC to test.
     `parameters` is a dict of parameters.
@@ -83,7 +83,7 @@ def run_ratrunner(remyccfilename, parameters, console_file=None):
     parameters = defaults
 
     command = [
-        RATRUNNERCMD,
+        ratrunnercmd or RATRUNNERCMD,
         "sender={:s}".format(parameters["sender"]),
         "if={:s}".format(remyccfilename),
         "nsrc={:d}".format(parameters["nsenders"]),
@@ -168,6 +168,7 @@ class BaseRemyCCPerformancePlotGenerator:
             data_filename = "data-{remycc}.csv".format(
                     remycc=os.path.basename(remyccfilename))
             data_file = open(os.path.join(self.data_dir, data_filename), "w")
+            return data_file
         else:
             return None
 
@@ -237,6 +238,7 @@ class RatRunnerRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRemyCCPer
     def __init__(self, link_ppt_range, parameters, **kwargs):
         self.parameters = parameters
         self.console_dir = kwargs.pop("console_dir", None)
+        self.ratrunnercmd = kwargs.pop("ratrunnercmd", None)
         super(RatRunnerRemyCCPerformancePlotGenerator, self).__init__(link_ppt_range, **kwargs)
 
     def get_statistics(self, remyccfilename, link_ppt):
@@ -250,6 +252,8 @@ class RatRunnerRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRemyCCPer
         if self.console_dir:
             filename = self.get_console_filename(remyccfilename, link_ppt)
             kwargs["console_file"] = open(filename, "w")
+        if self.ratrunnercmd:
+            kwargs["ratrunnercmd"] = self.ratrunnercmd
 
         output = run_ratrunner(remyccfilename, parameters, **kwargs)
 
@@ -311,6 +315,7 @@ def plot_from_original_file(datafilename, axes):
             row = [float(x) for x in row]
             link_speeds.append(row[0])
             norm_score = log2(row[1]/row[0]) - log2(row[2]/150)
+            norm_score -= log2(0.75) # reverse the reversal of the equal-share normalization
             norm_scores.append(norm_score)
         datafile.close()
         add_plot(axes, link_speeds, norm_scores, label=datafilename)
@@ -397,6 +402,8 @@ parser.add_argument("--no-console-output-files", action="store_false", default=T
     help="Don't generate console output files")
 parser.add_argument("--originals", type=str, default="originals",
     help="Directory in which to look for original data files to add to plot.")
+parser.add_argument("--sender-runner", type=str, default=None,
+    help="sender-runner executable location, defaults to ../src/sender-runner")
 args = parser.parse_args()
 
 # Sanity-check arguments, warn user say they can stop things early
@@ -434,7 +441,7 @@ ax = plt.axes()
 
 # Generate data and plots (the main part)
 generator = RatRunnerRemyCCPerformancePlotGenerator(link_ppt_range, parameters,
-        console_dir=console_dirname, data_dir=data_dirname, axes=ax)
+        console_dir=console_dirname, data_dir=data_dirname, axes=ax, ratrunnercmd=args.sender_runner)
 for remyccfile in remyccfiles:
     generator.generate(remyccfile)
 link_ppt_priors = generator.get_link_ppt_priors()

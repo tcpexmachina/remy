@@ -17,6 +17,8 @@ addons:
     - libgtkmm-3.0-dev
     - libboost-dev
     - libglu1-mesa-dev
+    - python3-matplotlib
+    - python3-numpy
 
 before_script:
   - sudo -E add-apt-repository -y 'deb http://ftp.us.debian.org/debian unstable main contrib non-free'

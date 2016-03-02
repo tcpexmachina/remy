@@ -29,6 +29,7 @@ Makefile.in
 /protobufs/dna.pb.h
 /protobufs/problem.pb.cc
 /protobufs/problem.pb.h
+/protobufs/*_pb2.py
 /src/configuration
 /src/inspect-config
 /src/sender-runner
