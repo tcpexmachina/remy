@@ -8,8 +8,10 @@ using namespace std;
 template <class NextHop>
 void Fish::send( const unsigned int id, NextHop & next, const double & tickno )
 {
-  assert( _packets_sent >= _largest_ack + 1 );
+  if ( tickno < _next_send_time ) { return; }
   
+  assert( _packets_sent >= _largest_ack + 1 );
+
   if ( _lambda == 0 ) {
     /* initial lambda  */
     const Fin & current_fin( _fins.use_fin( _memory, _track ) );

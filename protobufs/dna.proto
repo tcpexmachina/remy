@@ -15,17 +15,17 @@ message WhiskerTree {
 }
 
 message FinTree {
-  optional MemoryRange domain = 1;
+  optional MemoryRange domain = 90;
 
-  repeated FinTree children = 2;
+  repeated FinTree children = 91;
 
-  optional Fin leaf = 3;
+  optional Fin leaf = 92;
 
-  optional ConfigRange config = 4;
+  optional ConfigRange config = 93;
 
-  optional OptimizationSettings optimizer = 5;
+  optional OptimizationSettings optimizer = 94;
 
-  optional ConfigVector configvector = 6;
+  optional ConfigVector configvector = 95;
 }
 
 message MemoryRange {
@@ -37,7 +37,8 @@ message MemoryRange {
     REC_EWMA = 1;
     RTT_RATIO = 2;
     SLOW_REC_EWMA = 3;
-    QUEUEING_DELAY = 4;
+    RTT_DIFF = 4;
+    QUEUEING_DELAY = 5;
   }
 
   repeated Axis active_axis = 13;
@@ -48,7 +49,8 @@ message Memory {
   optional double rec_rec_ewma = 22;
   optional double rtt_ratio = 23;
   optional double slow_rec_rec_ewma = 24;
-  optional double queueing_delay = 25;
+  optional double rtt_diff = 25;
+  optional double queueing_delay = 26;
 }
 
 message Whisker {

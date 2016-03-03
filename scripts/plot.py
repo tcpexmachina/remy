@@ -75,7 +75,7 @@ def run_ratrunner(remyccfilename, parameters, console_file=None):
     `remyccfilename` is the name of the RemyCC to test.
     `parameters` is a dict of parameters.
     If `console_file` is specified, it must be a file object, and the output will be written to it."""
-    defaults = dict(nsenders=2, link_ppt=1.0, delay=100.0, mean_on=5000.0, mean_off=5000.0, buffer_size="inf")
+    defaults = dict(nsenders=2, link_ppt=1.0, delay=100.0, mean_on=5000.0, mean_off=5000.0, buffer_size="inf", sender="")
     unrecognized_parameters = [k for k in parameters if k not in defaults]
     if unrecognized_parameters:
         warn("Unrecognized parameters: {}".format(unrecognized_parameters))
@@ -84,6 +84,7 @@ def run_ratrunner(remyccfilename, parameters, console_file=None):
 
     command = [
         RATRUNNERCMD,
+        "sender={:s}".format(parameters["sender"]),
         "if={:s}".format(remyccfilename),
         "nsrc={:d}".format(parameters["nsenders"]),
         "link={:f}".format(parameters["link_ppt"]),
@@ -370,6 +371,8 @@ def generate_remyccs_list(specs):
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("remycc", nargs="*", type=str,
     help="RemyCC file(s) to run, can also use e.g. name.[5:5:30] to do name.5, name.10, ..., name.30")
+parser.add_argument("--sender", type=str, default="",
+    help="Indicate that we are running poisson senders. ")
 parser.add_argument("-R", "--replot", type=str, action="append", default=[],
     help="Replot results in this directory from output files (can be specified multiple times)")
 parser.add_argument("-n", "--num-points", type=int, default=1000,
@@ -422,7 +425,7 @@ args_file.close()
 
 # Generate parameters
 link_ppt_range = np.logspace(np.log10(args.link_ppt[0]), np.log10(args.link_ppt[1]), args.num_points)
-parameter_keys = ["nsenders", "delay", "mean_on", "mean_off"]
+parameter_keys = ["sender", "nsenders", "delay", "mean_on", "mean_off"]
 parameters = {key: getattr(args, key) for key in parameter_keys}
 
 remyccfiles = generate_remyccs_list(args.remycc)
