@@ -25,8 +25,8 @@ Fish::Fish( const FinTree & fins, const unsigned int s_prng_seed, const bool s_t
 
 void Fish::packets_received( const vector< Packet > & packets ) {
     _packets_received += packets.size();
+    _memory.packets_received( packets, _flow_id, _largest_ack );
     _largest_ack = max( packets.at( packets.size() - 1 ).seq_num, _largest_ack );
-    _memory.packets_received( packets, _flow_id );
     
     const Fin & current_fin( _fins.use_fin( _memory, _track ) );
     _update_lambda( current_fin.lambda() );
