@@ -326,12 +326,17 @@ def log_arguments(argsfile, args):
     jsondict = {
         "start-time": time.asctime(),
         "machine-name": gethostname(),
-        "git": {
-            "commit": subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip(),
-            "branch": subprocess.check_output(['git', 'symbolic-ref', '--short', '--quiet', 'HEAD']).decode().strip(),
-        },
-        "args": vars(args)
+        "args": vars(args),
+        "git": {},
     }
+    try:
+        jsondict["git"]["commit"] = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+    except subprocess.CalledProcessError:
+        pass
+    try:
+        jsondict["git"]["branch"] = subprocess.check_output(['git', 'symbolic-ref', '--short', '--quiet', 'HEAD']).decode().strip()
+    except subprocess.CalledProcessError:
+        pass
     json.dump(jsondict, argsfile, indent=2, sort_keys=True)
 
 def make_results_dir(dirname):
