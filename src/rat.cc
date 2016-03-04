@@ -49,7 +49,7 @@ void Rat::reset( const double & )
 
 double Rat::next_event_time( const double & tickno ) const
 {
-  if ( _packets_sent < _largest_ack + 1 + _the_window ) {
+  if ( int( _packets_sent ) < _largest_ack + 1 + _the_window ) {
     if ( _last_send_time + _intersend_time <= tickno ) {
       return tickno;
     } else {

@@ -48,6 +48,8 @@ public:
       sending( false ),
       id( s_id )
   {}
+
+  virtual ~SwitchedSender() {}
 };
 
 template <class SenderType>
