@@ -17,9 +17,9 @@ using namespace std;
 // If the input arugments are invalid, or if mandatory is true and no input arguments
 // are found, calls exit(1).
 // If all input arguments were found, updates the range and returns true.
-bool update_config_with_range(RemyBuffers::Range * range, int argc,
+RemyBuffers::Range update_config_with_range(int argc,
     char *argv[], string arg_name, bool mandatory) {
-
+  RemyBuffers::Range range;
   string min_string = "min_" + arg_name + "=";
   string max_string = "max_" + arg_name + "=";
   string incr_string = arg_name + "_incr=";
@@ -45,7 +45,7 @@ bool update_config_with_range(RemyBuffers::Range * range, int argc,
 
   if ( (min == -1 ) && (max == -1) && !mandatory ) {
     fprintf( stderr, "No arguments found for %s\n", arg_name.c_str() );
-    return false;
+    exit(1);
   }
 
   if ( (min == -1) || (max == -1) ) {
@@ -65,15 +65,17 @@ bool update_config_with_range(RemyBuffers::Range * range, int argc,
   } else if ( min > max ){
     fprintf( stderr, "Please provide valid min and max for %s\n.", arg_name.c_str());
     exit(1);
+  } else if ( (min == max) && ( incr != 0 ) ) {
+    fprintf( stderr, "Please provide valid incr for %s\n.", arg_name.c_str());
+    exit(1);
   }
 
-  range->set_low(min);
-  range->set_high(max);
-  range->set_incr(incr);
+  range.set_low(min);
+  range.set_high(max);
+  range.set_incr(incr);
 
-  return true;
+  return range;
 }
-
 // Parses input arguments, sets a uint32 field.
 // If mandatory is false and no input arguments are found, skips and returns false.
 // If the input arugments are invalid, or if mandatory is true and no input arguments
@@ -112,7 +114,6 @@ bool update_config_with_uint32(RemyBuffers::ConfigRange & range,
   return false;
 }
 
-
 int main(int argc, char *argv[]) {
   string input_filename, output_filename;
   bool infinite_buffers = false;
@@ -139,6 +140,7 @@ int main(int argc, char *argv[]) {
   RemyBuffers::ConfigRange input_config;
   bool mandatory = true;
 
+  // read all of the necessary input params from command line
   // If there's an input file, read it and use it
   if (!input_filename.empty()) {
     mandatory = false;
@@ -153,27 +155,51 @@ int main(int argc, char *argv[]) {
     }
     input_file.close();
   }
-
-  update_config_with_range(input_config.mutable_link_packets_per_ms(), argc, argv, "link_ppt", mandatory);
-  update_config_with_range(input_config.mutable_rtt(), argc, argv, "rtt", mandatory);
-  update_config_with_range(input_config.mutable_num_senders(), argc, argv, "nsrc", mandatory);
-  update_config_with_range(input_config.mutable_mean_on_duration(), argc, argv, "on", mandatory);
-  update_config_with_range(input_config.mutable_mean_off_duration(), argc, argv, "off", mandatory);
+  RemyBuffers::Range link_packets_per_ms = update_config_with_range(argc, argv, "link_ppt", mandatory);
+  RemyBuffers::Range rtt = update_config_with_range(argc, argv, "rtt", mandatory);
+  RemyBuffers::Range num_senders = update_config_with_range(argc, argv, "nsrc", mandatory);
+  RemyBuffers::Range mean_on_duration = update_config_with_range(argc, argv, "on", mandatory);
+  RemyBuffers::Range mean_off_duration = update_config_with_range(argc, argv, "off", mandatory);
 
   update_config_with_uint32(input_config, &RemyBuffers::ConfigRange::set_simulation_ticks, argc, argv, "ticks", mandatory);
-
+  RemyBuffers::Range buffer_size;
   if ( !(infinite_buffers) ) {
-    update_config_with_range(input_config.mutable_buffer_size(), argc, argv, "buf_size", mandatory);
+    buffer_size = update_config_with_range(argc, argv, "buf_size", mandatory);
   } else {
-    RemyBuffers::Range buffer_size;
     buffer_size.set_low( numeric_limits<unsigned int>::max() );
     buffer_size.set_high( numeric_limits<unsigned int>::max() );
     buffer_size.set_incr( 0 );
-    input_config.mutable_buffer_size()->CopyFrom(buffer_size);
   }
 
-   
+  // now loop through the range objects to read the config out
+  RemyBuffers::ConfigVector input_networks;
+  for ( double link = link_packets_per_ms.low(); link <= link_packets_per_ms.high(); link += link_packets_per_ms.incr() ) {
+    for ( double del = rtt.low(); del <= rtt.high(); del += rtt.incr() ) {
+      for ( double senders = num_senders.low(); senders <= num_senders.high(); senders += num_senders.incr() ) {
+        for (double on = mean_on_duration.low(); on <= mean_on_duration.high(); on += mean_on_duration.incr() ) {
+          for (double off = mean_off_duration.low(); off <= mean_off_duration.high(); off += mean_off_duration.incr() ) {
+            for (double buffer = buffer_size.low(); buffer <= buffer_size.high(); buffer += buffer_size.incr() ) {
+              RemyBuffers::NetConfig* net_config = input_networks.add_config();
+              net_config->set_link_ppt(link);
+              net_config->set_delay(del);
+              net_config->set_num_senders(senders);
+              net_config->set_mean_on_duration(on);
+              net_config->set_mean_off_duration(off);
+              net_config->set_buffer_size( buffer ); // buffer size is a multiple of the BDP*/
+              if ( buffer_size.low() == buffer_size.high() ) { break; }
+            }
+            if ( mean_off_duration.low() == mean_off_duration.high() ) { break; }
+          }
+          if ( mean_on_duration.low() == mean_on_duration.high() ) { break; }
+        }
+        if ( num_senders.low() == num_senders.high() ) { break;}
+      }
+      if ( rtt.low() == rtt.high() ) { break; }
+    }
+    if ( link_packets_per_ms.low() == link_packets_per_ms.high() ) { break; }
+  }  
 
+  input_config.mutable_configvector()->CopyFrom( input_networks );
   // write to file
   char of[ 128 ];
   snprintf( of, 128, "%s", output_filename.c_str());

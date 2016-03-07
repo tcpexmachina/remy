@@ -2,46 +2,35 @@
 
 using namespace std;
 
-static RemyBuffers::Range pair_to_range( const Range &p )
-{
-  RemyBuffers::Range ret;
-  ret.set_low( p.low );
-  ret.set_high( p.high );
-  ret.set_incr( p.incr );
-  return ret;
-}
 
 ConfigRange::ConfigRange( void ) :
-  link_ppt( Range() ),
-  rtt( Range() ),
-  mean_on_duration( Range() ),
-  mean_off_duration( Range() ),
-  num_senders( Range() ),
-  buffer_size( Range() ),
+  configs(std::vector< NetConfig >()),
   simulation_ticks( 1000000 )
 {
 }
 
 ConfigRange::ConfigRange( RemyBuffers::ConfigRange input_config ) :
-  link_ppt( Range( input_config.link_packets_per_ms() ) ),
-  rtt( Range( input_config.rtt() ) ),
-  mean_on_duration( Range( input_config.mean_on_duration() ) ),
-  mean_off_duration( Range( input_config.mean_off_duration() ) ),
-  num_senders( Range( input_config.num_senders() ) ),
-  buffer_size( Range( input_config.buffer_size() ) ),
+  configs( std::vector< NetConfig >()),
   simulation_ticks( input_config.simulation_ticks() )
 {
+  // read the config vectors from the protobuf
+  for (int i=0; i < input_config.configvector().config_size(); i++ ) {
+  const RemyBuffers::NetConfig &config = input_config.configvector().config(i);
+  configs.push_back( NetConfig().set_link_ppt( config.link_ppt() ).set_delay( config.delay() ).set_num_senders( config.num_senders() ).set_on_duration( config.mean_on_duration() ).set_off_duration( config.mean_off_duration() ).set_buffer_size( config.buffer_size() ));
+   
+  }
+
 }
 
 RemyBuffers::ConfigRange ConfigRange::DNA( void ) const
 {
+  RemyBuffers::ConfigVector vector;
+  for ( auto &config : configs ) {
+    RemyBuffers::NetConfig* net_config = vector.add_config();
+    *net_config = config.DNA();
+  }
   RemyBuffers::ConfigRange ret;
-  ret.mutable_link_packets_per_ms()->CopyFrom( pair_to_range( link_ppt) );
-  ret.mutable_rtt()->CopyFrom( pair_to_range( rtt ) );
-  ret.mutable_num_senders()->CopyFrom( pair_to_range( num_senders ) );
-  ret.mutable_mean_on_duration()->CopyFrom( pair_to_range( mean_on_duration ) );
-  ret.mutable_mean_off_duration()->CopyFrom( pair_to_range( mean_off_duration ) );
-  ret.mutable_buffer_size()->CopyFrom( pair_to_range( buffer_size ) );
+  ret.mutable_configvector()->CopyFrom( vector );
   ret.set_simulation_ticks( simulation_ticks );
 
   return ret;

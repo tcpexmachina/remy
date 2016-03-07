@@ -93,12 +93,7 @@ message Range {
 }
 
 message ConfigRange {
-  optional Range link_packets_per_ms = 71;
-  optional Range rtt = 72;
-  optional Range num_senders = 73;
-  optional Range buffer_size = 74;
-  optional Range mean_off_duration = 75;
-  optional Range mean_on_duration = 76;
+  optional ConfigVector configvector = 76;
   optional uint32 simulation_ticks = 77;
 }
 
