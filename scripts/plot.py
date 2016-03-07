@@ -26,7 +26,7 @@ DEFAULT_RESULTS_DIR = "results"
 HLINE1 = "-" * 80 + "\n"
 HLINE2 = "=" * 80 + "\n"
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RATRUNNERCMD = os.path.join(ROOTDIR, "src", "sender-runner")
+SENDERRUNNERCMD = os.path.join(ROOTDIR, "src", "sender-runner")
 SENDER_REGEX = re.compile("^sender: \[tp=(-?\d+(?:\.\d+)?), del=(-?\d+(?:\.\d+)?)\]$", re.MULTILINE)
 NORM_SCORE_REGEX = re.compile("^normalized_score = (-?\d+(?:\.\d+)?)$", re.MULTILINE)
 LINK_PPT_PRIOR_REGEX = re.compile("^link_packets_per_ms\s+\{\n\s+low: (-?\d+(?:\.\d+)?)\n\s+high: (-?\d+(?:\.\d+)?)$", re.MULTILINE)
@@ -70,7 +70,7 @@ def run_command(command, show=True, writefile=None, includestderr=True):
 
     return output
 
-def run_ratrunner(remyccfilename, parameters, console_file=None):
+def run_senderrunner(remyccfilename, parameters, console_file=None, senderrunnercmd=None):
     """Runs sender-runner with the given parameters and returns the result.
     `remyccfilename` is the name of the RemyCC to test.
     `parameters` is a dict of parameters.
@@ -83,7 +83,7 @@ def run_ratrunner(remyccfilename, parameters, console_file=None):
     parameters = defaults
 
     command = [
-        RATRUNNERCMD,
+        senderrunnercmd or SENDERRUNNERCMD,
         "sender={:s}".format(parameters["sender"]),
         "if={:s}".format(remyccfilename),
         "nsrc={:d}".format(parameters["nsenders"]),
@@ -96,10 +96,10 @@ def run_ratrunner(remyccfilename, parameters, console_file=None):
 
     return run_command(command, show=False, writefile=console_file, includestderr=True)
 
-def parse_ratrunner_output(result):
+def parse_senderrunner_output(result):
     """Parses the output of sender-runner to extract the normalized score, and
     sender throughputs and delays. Returns a 3-tuple. The first element is the
-    normalized score from the rat-runnner script. The second element is a list
+    normalized score from the sender-runner script. The second element is a list
     of lists, one list for each sender, each inner list having two elements,
     [throughput, delay]. The third element is a list [low, high], being
     the link rate range under "prior assumptions"."""
@@ -168,6 +168,7 @@ class BaseRemyCCPerformancePlotGenerator:
             data_filename = "data-{remycc}.csv".format(
                     remycc=os.path.basename(remyccfilename))
             data_file = open(os.path.join(self.data_dir, data_filename), "w")
+            return data_file
         else:
             return None
 
@@ -213,19 +214,19 @@ class BaseRemyCCPerformancePlotGenerator:
         return self._link_ppt_priors
 
 
-class RatRunnerFilesMixin:
+class SenderRunnerFilesMixin:
     """Provides functionality relating to sender-runner output files.
     Subclass constructors must provide a `console_dir` attribute to objects of
     the class, which may be None."""
 
     def get_console_filename(self, remyccfilename, link_ppt):
-        filename = "ratrunner-{remycc}-{link_ppt:f}.out".format(
+        filename = "senderrunner-{remycc}-{link_ppt:f}.out".format(
                 remycc=os.path.basename(remyccfilename), link_ppt=link_ppt)
         filename = os.path.join(self.console_dir, filename)
         return filename
 
 
-class RatRunnerRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRemyCCPerformancePlotGenerator):
+class SenderRunnerRemyCCPerformancePlotGenerator(SenderRunnerFilesMixin, BaseRemyCCPerformancePlotGenerator):
     """Generates data and plots by invoking sender-runner to generate a score for
     every point. In addition to the arguments taken by BaseRemyCCPerformancePlotGenerator:
 
@@ -237,7 +238,8 @@ class RatRunnerRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRemyCCPer
     def __init__(self, link_ppt_range, parameters, **kwargs):
         self.parameters = parameters
         self.console_dir = kwargs.pop("console_dir", None)
-        super(RatRunnerRemyCCPerformancePlotGenerator, self).__init__(link_ppt_range, **kwargs)
+        self.senderrunnercmd = kwargs.pop("senderrunnercmd", None)
+        super(SenderRunnerRemyCCPerformancePlotGenerator, self).__init__(link_ppt_range, **kwargs)
 
     def get_statistics(self, remyccfilename, link_ppt):
         """Runs sender-runner on the given RemyCC `remyccfilename` and with the given
@@ -250,16 +252,18 @@ class RatRunnerRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRemyCCPer
         if self.console_dir:
             filename = self.get_console_filename(remyccfilename, link_ppt)
             kwargs["console_file"] = open(filename, "w")
+        if self.senderrunnercmd:
+            kwargs["senderrunnercmd"] = self.senderrunnercmd
 
-        output = run_ratrunner(remyccfilename, parameters, **kwargs)
+        output = run_senderrunner(remyccfilename, parameters, **kwargs)
 
         if "console_file" in kwargs:
             kwargs["console_file"].close()
 
-        return parse_ratrunner_output(output)
+        return parse_senderrunner_output(output)
 
 
-class OutputsDirectoryRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRemyCCPerformancePlotGenerator):
+class OutputsDirectoryRemyCCPerformancePlotGenerator(SenderRunnerFilesMixin, BaseRemyCCPerformancePlotGenerator):
     """Generates data and plots by parsing outputs from an existing directory.
     In addition to the arguments taken by BaseRemyCCPerformancePlotGenerator:
 
@@ -277,7 +281,7 @@ class OutputsDirectoryRemyCCPerformancePlotGenerator(RatRunnerFilesMixin, BaseRe
         f = open(filename, "r")
         contents = f.read()
         f.close()
-        return parse_ratrunner_output(contents)
+        return parse_senderrunner_output(contents)
 
 
 def process_replot_argument(replot_dir, results_dir):
@@ -311,6 +315,7 @@ def plot_from_original_file(datafilename, axes):
             row = [float(x) for x in row]
             link_speeds.append(row[0])
             norm_score = log2(row[1]/row[0]) - log2(row[2]/150)
+            norm_score -= log2(0.75) # reverse the reversal of the equal-share normalization
             norm_scores.append(norm_score)
         datafile.close()
         add_plot(axes, link_speeds, norm_scores, label=datafilename)
@@ -321,12 +326,17 @@ def log_arguments(argsfile, args):
     jsondict = {
         "start-time": time.asctime(),
         "machine-name": gethostname(),
-        "git": {
-            "commit": subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip(),
-            "branch": subprocess.check_output(['git', 'symbolic-ref', '--short', '--quiet', 'HEAD']).decode().strip(),
-        },
-        "args": vars(args)
+        "args": vars(args),
+        "git": {},
     }
+    try:
+        jsondict["git"]["commit"] = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+    except subprocess.CalledProcessError:
+        pass
+    try:
+        jsondict["git"]["branch"] = subprocess.check_output(['git', 'symbolic-ref', '--short', '--quiet', 'HEAD']).decode().strip()
+    except subprocess.CalledProcessError:
+        pass
     json.dump(jsondict, argsfile, indent=2, sort_keys=True)
 
 def make_results_dir(dirname):
@@ -397,6 +407,8 @@ parser.add_argument("--no-console-output-files", action="store_false", default=T
     help="Don't generate console output files")
 parser.add_argument("--originals", type=str, default="originals",
     help="Directory in which to look for original data files to add to plot.")
+parser.add_argument("--sender-runner", type=str, default=None,
+    help="sender-runner executable location, defaults to ../src/sender-runner")
 args = parser.parse_args()
 
 # Sanity-check arguments, warn user say they can stop things early
@@ -433,8 +445,8 @@ remyccfiles = generate_remyccs_list(args.remycc)
 ax = plt.axes()
 
 # Generate data and plots (the main part)
-generator = RatRunnerRemyCCPerformancePlotGenerator(link_ppt_range, parameters,
-        console_dir=console_dirname, data_dir=data_dirname, axes=ax)
+generator = SenderRunnerRemyCCPerformancePlotGenerator(link_ppt_range, parameters,
+        console_dir=console_dirname, data_dir=data_dirname, axes=ax, senderrunnercmd=args.sender_runner)
 for remyccfile in remyccfiles:
     generator.generate(remyccfile)
 link_ppt_priors = generator.get_link_ppt_priors()

@@ -17,6 +17,8 @@ addons:
     - libgtkmm-3.0-dev
     - libboost-dev
     - libglu1-mesa-dev
+    - python3-matplotlib
+    - python3-numpy
 
 before_script:
   - sudo -E add-apt-repository -y 'deb http://ftp.us.debian.org/debian unstable main contrib non-free'
@@ -27,7 +29,7 @@ before_script:
 script:
   - ./autogen.sh
   - ./configure
-  - make -j4 distcheck || (cat remy-0.1/_build/src/tests/test-suite.log && exit 1)
+  - make -j4 distcheck || (cat remy-0.1/_build/tests/test-suite.log && exit 1)
 
 notifications:
   slack: keithw:pcPsG04nsEuSMDabFhPDOyYq
