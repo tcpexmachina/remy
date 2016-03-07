@@ -210,8 +210,8 @@ int main(int argc, char *argv[]) {
   }
   
 
-  if ( not input_config.SerializeToFileDescriptor( fd ) ) {
-    fprintf( stderr, "Could not serialize InputConfig parameters.\n" );
+  if ( not input_networks.SerializeToFileDescriptor( fd ) ) {
+    fprintf( stderr, "Could not serialize InputNetworks parameters.\n" );
     exit( 1 );
   }
 
@@ -219,7 +219,7 @@ int main(int argc, char *argv[]) {
     perror( "close" );
     exit( 1 );
   }
-  printf( "Wrote config range protobuf to \"%s\"\n", output_filename.c_str() );
+  printf( "Wrote config vector protobuf to \"%s\"\n", output_filename.c_str() );
   return 0;
 
 }

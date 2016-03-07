@@ -8,7 +8,7 @@
 #include <fcntl.h>
 
 #include "evaluator.hh"
-#include "configrange.hh"
+#include "configvector.hh"
 using namespace std;
 
 template <typename T>
@@ -54,6 +54,7 @@ int main( int argc, char *argv[] )
   double mean_off_duration = 5000.0;
   double buffer_size = numeric_limits<unsigned int>::max();
   unsigned int simulation_ticks = 1000000;
+  string config_filename;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -93,7 +94,7 @@ int main( int argc, char *argv[] )
         perror( "close" );
         exit( 1 );
       }
-    } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
+  } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
       num_senders = atoi( arg.substr( 5 ).c_str() );
       fprintf( stderr, "Setting num_senders to %d\n", num_senders );
     } else if ( arg.substr( 0, 5 ) == "link=" ) {
@@ -115,12 +116,11 @@ int main( int argc, char *argv[] )
         buffer_size = atoi( arg.substr( 4 ).c_str() );
       }
     }
-  }
 
+ }
   ConfigRange configuration_range;
   configuration_range.configs.push_back(NetConfig().set_link_ppt(link_ppt).set_delay(delay).set_num_senders(num_senders).set_on_duration(mean_on_duration).set_off_duration(mean_off_duration).set_buffer_size(buffer_size));
   configuration_range.simulation_ticks = simulation_ticks;
-
   if ( is_poisson ) {
     Evaluator< FinTree > eval( configuration_range );
     auto outcome = eval.score( fins, false, 10 );
@@ -130,6 +130,8 @@ int main( int argc, char *argv[] )
     auto outcome = eval.score( whiskers, false, 10 );
     parse_outcome< Evaluator< WhiskerTree >::Outcome > ( outcome );
   }
+
+
 
   return 0;
 }

@@ -102,6 +102,7 @@ int main( int argc, char *argv[] )
   printf( "Evaluator simulations will run for %d ticks\n",
     options.config_range.simulation_ticks );
   printf( "Evaluating over a specific set of networks specified\n");
+
   printf( "Initial rules (use if=FILENAME to read from disk): %s\n", whiskers.str().c_str() );
   printf( "#######################\n" );
 
@@ -147,7 +148,6 @@ int main( int argc, char *argv[] )
       }
 
       auto remycc = whiskers.DNA();
-      remycc.mutable_config()->CopyFrom( options.config_range.DNA() );
       remycc.mutable_optimizer()->CopyFrom( Whisker::get_optimizer().DNA() );
       remycc.mutable_configvector()->CopyFrom( training_configs );
       if ( not remycc.SerializeToFileDescriptor( fd ) ) {
