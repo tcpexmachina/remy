@@ -2,6 +2,8 @@
 #define CONFIG_RANGE_HH
 
 #include "dna.pb.h"
+#include "network.hh"
+
 class Range
 {
 public:
@@ -36,12 +38,7 @@ public:
 class ConfigRange
 {
 public:
-  Range link_ppt;
-  Range rtt;
-  Range mean_on_duration;
-  Range mean_off_duration;
-  Range num_senders;
-  Range buffer_size;
+  std::vector< NetConfig > configs;
   unsigned int simulation_ticks;
 
   ConfigRange( void );
