@@ -1,5 +1,4 @@
 #include "dna.pb.h"
-#include "configvector.hh"
 #include <iostream>
 #include <string>
 #include <fstream>

@@ -8,7 +8,6 @@
 #include <iostream>
 
 #include "evaluator.hh"
-#include "configvector.hh"
 using namespace std;
 
 

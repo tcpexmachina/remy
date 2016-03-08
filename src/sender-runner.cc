@@ -8,7 +8,6 @@
 #include <fcntl.h>
 
 #include "evaluator.hh"
-#include "configvector.hh"
 using namespace std;
 
 template <typename T>
