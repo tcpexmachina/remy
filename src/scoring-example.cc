@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "evaluator.hh"
+#include "configrange.hh"
 using namespace std;
 
 
@@ -21,8 +22,6 @@ int main( int argc, char *argv[] )
   double mean_off_duration = 5000.0;
   unsigned int simulation_ticks = 1000000;
   double buffer_size = numeric_limits<unsigned int>::max();
-  string config_filename;
-
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
     if ( arg.substr( 0, 3 ) == "if=" ) {
@@ -74,11 +73,6 @@ int main( int argc, char *argv[] )
   configuration_range.configs.push_back(NetConfig().set_link_ppt(link_ppt).set_delay(delay).set_num_senders(num_senders).set_on_duration(mean_on_duration).set_off_duration(mean_off_duration).set_buffer_size(buffer_size));
   configuration_range.simulation_ticks = simulation_ticks;
   Evaluator< WhiskerTree > eval( configuration_range );
-  if ( config_filename.empty() ) {
-    fprintf( stderr, "An input configuration protobuf must be provided via the cf= option. \n");
-    fprintf( stderr, "You can generate one using './configuration'. \n");
-    exit ( 1 );
-  }
 
   // save problem to file
   ProblemBuffers::Problem serialized_problem = eval.DNA( whiskers );
