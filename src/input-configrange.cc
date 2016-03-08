@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
   }
   
 
-  if ( not input_networks.SerializeToFileDescriptor( fd ) ) {
+  if ( not input_config.SerializeToFileDescriptor( fd ) ) {
     fprintf( stderr, "Could not serialize InputNetworks parameters.\n" );
     exit( 1 );
   }
