@@ -1,4 +1,4 @@
-include "dna.pb.h"
+#include "dna.pb.h"
 #include <iostream>
 #include <string>
 #include <fstream>
