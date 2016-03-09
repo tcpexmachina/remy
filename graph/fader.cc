@@ -71,16 +71,18 @@ GTKFader::GTKFader( const unsigned int & num_senders )
       window.add( stack );
 
       /* AIMD and RemyCC controls */
-      HBox senders;
-      stack.pack_start( senders, PACK_SHRINK );
-
       deque<LabeledToggle> sender_controls;
+
+      HBox aimd_senders;
+      stack.pack_start( aimd_senders, PACK_SHRINK );
       for ( unsigned int i = 0; i < num_senders; i++ ) {
-	sender_controls.emplace_back( senders, mutex_, "AIMD", aimd_.get()[ i ] );
+        sender_controls.emplace_back( aimd_senders, mutex_, "AIMD" + to_string(i + 1), aimd_.get()[ i ] );
       }
 
+      HBox remy_senders;
+      stack.pack_start( remy_senders, PACK_SHRINK );
       for ( unsigned int i = 0; i < num_senders; i++ ) {
-	sender_controls.emplace_back( senders, mutex_, "RemyCC", remy_.get()[ i ] );
+        sender_controls.emplace_back( remy_senders, mutex_, "RemyCC" + to_string(i + 1), remy_.get()[ i ] );
       }
 
       /* numerical sliders */
@@ -88,6 +90,7 @@ GTKFader::GTKFader( const unsigned int & num_senders )
       stack.pack_start( numeric );
 
       LabeledScale link_rate( numeric, "<b>Link rate</b> (Mbps)", 0.3, 300.1, 0.1, 10, link_rate_ );
+      LabeledScale rtt( numeric, "<b>RTT</b> (ms)", 5, 500, 5, 1, rtt_ );
       LabeledScale buffer( numeric, "<b>Buffer cap</b> (pkts)", 0, 20000, 1, 1, buffer_size_ );
       LabeledScale speed( numeric, "<b>Speed</b> (%)", 0, 5000, 1, 60 * 100, time_increment_ );
       LabeledScale width( numeric, "<b>Width</b> (s)", 1, 100, 0.1, 1, horizontal_size_ );

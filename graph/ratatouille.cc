@@ -24,8 +24,6 @@ typedef SenderGang<Aimd, ExternalSwitchedSender<Aimd>> AimdGang;
 typedef SenderGang<Fish, ExternalSwitchedSender<Fish>> FishGang;
 typedef SenderGang<Rat, ExternalSwitchedSender<Rat>> RatGang;
 
-const double delay = 150.0;
-
 template <typename T>
 void print_tree(T & tree)
 {
@@ -43,7 +41,7 @@ void simulate(T & network, Graph & graph, GTKFader & fader)
 {
   float t = 0.0;
 
-  float upper_limit = fader.link_rate() * delay * 1.2;
+  float upper_limit = fader.link_rate() * fader.rtt() * 1.2;
 
   while ( true ) {
     if ( fader.quit() ) {
@@ -54,8 +52,10 @@ void simulate(T & network, Graph & graph, GTKFader & fader)
 
     network.mutable_link().set_rate( fader.link_rate() );
     network.mutable_link().set_limit( fader.buffer_size() );
+    network.mutable_delay().set_delay( fader.rtt() );
 
     double link_ppt = network.mutable_link().rate();
+    double delay = network.mutable_delay().delay();
 
     char buf[ 256 ];
     snprintf( buf, 256, "link: %.1f Mbps, delay: %.0f ms, buffer: %.0f pkts, active = %d RemyCC & %d AIMD",
@@ -108,7 +108,11 @@ void simulate(T & network, Graph & graph, GTKFader & fader)
 
 int main( int argc, char *argv[] )
 {
-  const unsigned int num_senders = 2;
+  unsigned int num_senders = 4;
+  const int RGB_base[6][3] = {
+    {1, 0, 0}, {0, 1, 0}, {0, 0, 1}, {1, 1, 0}, {1, 0, 1}, {0, 1, 1}
+  };
+
   bool is_poisson = false;
 
   RemyBuffers::WhiskerTree default_tree;
@@ -126,6 +130,7 @@ int main( int argc, char *argv[] )
         string sender_type( arg.substr( 7 ) );
         if ( sender_type == "poisson" ) {
           is_poisson = true;
+          fprintf( stderr, "Running poisson sender\n" );
         }
     }
   }
@@ -161,27 +166,33 @@ int main( int argc, char *argv[] )
         perror( "close" );
         exit( 1 );
       }
+    } else if ( arg.substr( 0, 5 ) == "nsrc=" ) {
+      num_senders = atoi( arg.substr( 5 ).c_str() );
+      fprintf( stderr, "Setting num_senders to %d\n", num_senders );
     }
   }
 
-  Graph graph( 2 * num_senders + 2, 950, 600, "Ratatouille", 0, 1 );
+  unsigned int num_lines = 2 * num_senders + 2;
+
+  Graph graph( num_lines, 950, 600, "Ratatouille", 0, 1 );
 
   GTKFader fader( num_senders );
 
-  NetConfig configuration = NetConfig().set_link_ppt( fader.link_rate() ).set_delay( delay ).set_num_senders( num_senders );
+  NetConfig configuration = NetConfig().set_link_ppt( fader.link_rate() ).set_delay( fader.rtt() ).set_num_senders( num_senders );
 
   PRNG prng( 50 );
   unsigned int fish_prng_seed( prng() );
 
   graph.set_color( 0, 0, 0, 0, 1.0 );
-  graph.set_color( 1, 1, 0.38, 0, 0.8 );
-  graph.set_color( 2, 0, 0.2, 1, 0.8 );
-  graph.set_color( 3, 1, 0, 0, 0.8 );
-  graph.set_color( 4, 0.5, 0, 0.5, 0.8 );
-  graph.set_color( 5, 0, 0.5, 0.5, 0.8 );
-  graph.set_color( 6, 0.5, 0.5, 0.5, 0.8 );
-  graph.set_color( 7, 0.2, 0.2, 0.5, 0.8 );
-  graph.set_color( 8, 0.2, 0.5, 0.2, 0.8 );
+  double m = 1.0;
+  unsigned int i = 1;
+  while ( i < num_lines ) {
+    for ( unsigned int j = 0; j < 6 && i < num_lines; j ++ ) {
+      graph.set_color(i, m * RGB_base[j][0], m * RGB_base[j][1], m * RGB_base[j][2], 0.8);
+      i ++;
+    }
+    m /= 2;
+  }
 
   if ( is_poisson ) {
     Network< FishGang, AimdGang > network( Fish( fins, fish_prng_seed, false ), Aimd(), prng, configuration );

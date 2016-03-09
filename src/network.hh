@@ -97,6 +97,8 @@ public:
   const double & tickno( void ) const { return _tickno; }
 
   Link & mutable_link( void ) { return _link; }
+
+  Delay & mutable_delay( void ) { return _delay; }
 };
 
 #endif
