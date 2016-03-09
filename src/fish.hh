@@ -10,6 +10,7 @@
 #include "random.hh"
 #include "exponential.hh"
 #include "fintree.hh"
+#include "simulationresults.pb.h"
 
 class Fish
 {
@@ -51,6 +52,9 @@ public:
   double next_event_time( const double & tickno ) const;
 
   const int & packets_sent( void ) const { return _packets_sent; }
+
+  SimulationResultBuffers::SenderState state_DNA() const;
+
 };
 
 #endif

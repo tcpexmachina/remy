@@ -1,0 +1,78 @@
+import "dna.proto";
+import "problem.proto";
+
+package SimulationResultBuffers;
+
+/*
+ * SimulationsDataBank stores results for lots of simulations which may or may
+ * not have any relation to each other. It has no purpose other than to be a
+ * container, to allow the serialization of lots of data into a single file.
+ * [Not currently used.]
+message SimulationsDataBank {
+    repeated SimulationsData = 31;
+}*/
+
+/*
+ * SimulationsData stores results for multiple simulations, each of which will
+ * have different configurations, but all of which will have the same whiskers.
+ */
+message SimulationsData {
+    optional ProblemBuffers.ProblemSettings settings = 21;
+    optional RemyBuffers.WhiskerTree whiskers = 22;
+    optional RemyBuffers.FinTree fins = 24;
+    repeated SimulationRunData run_data = 23; // one for each config
+}
+
+/*
+ * SimulationRunData stores the data relating to a single simulation, i.e. some
+ * known configuration, lots of data points.
+ */
+message SimulationRunData {
+    optional RemyBuffers.NetConfig config = 11;
+    optional float log_interval_ticks = 13;
+    repeated SimulationRunDataPoint point = 12; // one for each timestamp
+}
+
+/*
+ * SimulationRunDataPoint stores the data associated with a single point (in
+ * time). Currently, it only has fields for metrics calculated for the entire
+ * time since the start of the simulation (as opposed to instantaneous or moving
+ * average measures), because the evaluator only supports this calculation.
+ * There are lots of these, so use small numbers.
+ */
+message SimulationRunDataPoint {
+    repeated SenderDataPoint sender_data = 1; // one for each sender
+    optional float seconds = 2;
+}
+
+/*
+ * SenderDataPoint stores the data associated with a single point (in time) and
+ * sender.
+ */
+message SenderDataPoint {
+    optional SenderState sender_state = 1;
+    optional UtilityData utility_data = 2;
+    optional bool sending = 10;
+    optional uint32 packets_in_flight = 11;
+}
+
+/**
+ * SenderState stores the data associated with the current state of each sender
+ * type (as a given point in time), and possibly other information about the
+ * sender. Using a single class simplifies the code for handling this; since
+ * protobufs doesn't store empty fields, there's no wasted memory. Sender
+ * classes (Fish, Rat) just populate the fields that are relevant to them.
+ */
+message SenderState {
+    optional RemyBuffers.Memory memory = 1;
+    optional uint32 packets_sent = 2;
+    optional uint32 window_size = 3;
+    optional float intersend_time = 4;
+    optional float lambda = 5;
+}
+
+message UtilityData {
+    optional float sending_duration = 1;
+    optional uint32 packets_received = 2;
+    optional float total_delay = 3;
+}

@@ -6,6 +6,7 @@
 #include "exponential.hh"
 #include "receiver.hh"
 #include "utility.hh"
+#include "senderdatapoint.hh"
 
 template <class SenderType>
 class SwitchedSender {
@@ -32,6 +33,7 @@ public:
   void switch_off( const double & tickno, const unsigned int num_sending );
 
   double next_event_time( const double & tickno ) const;
+  SenderDataPoint statistics_for_log( void ) const;
   Utility utility;
   bool sending;
   unsigned int id;
@@ -153,6 +155,7 @@ public:
   double utility( void ) const;
 
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
+  std::vector< SenderDataPoint > statistics_for_log( void ) const;
 
   double next_event_time( const double & tickno ) const;
 

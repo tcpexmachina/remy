@@ -68,3 +68,12 @@ void Fish::_update_lambda( const double lambda )
   _max_intersend = 2.0 / lambda;
   _distribution.set_lambda( lambda );
 }
+
+SimulationResultBuffers::SenderState Fish::state_DNA() const
+{
+  SimulationResultBuffers::SenderState ret;
+  ret.mutable_memory()->CopyFrom( _memory.DNA() );
+  ret.set_packets_sent( _packets_sent );
+  ret.set_lambda( _lambda );
+  return ret;
+}

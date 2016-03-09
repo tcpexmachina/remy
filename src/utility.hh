@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cassert>
 #include <climits>
+#include "simulationresults.pb.h"
 
 class Utility
 {
@@ -57,6 +58,15 @@ public:
 
     return throughput_utility - delay_penalty;
   }
+
+  SimulationResultBuffers::UtilityData DNA() const {
+    SimulationResultBuffers::UtilityData ret;
+    ret.set_sending_duration( _tick_share_sending );
+    ret.set_packets_received( _packets_received );
+    ret.set_total_delay( _total_delay );
+    return ret;
+  }
+
 };
 
 #endif
