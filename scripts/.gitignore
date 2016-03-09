@@ -1,2 +1,7 @@
 last
 results
+last-plots
+log-plots
+*.data
+*.out
+
