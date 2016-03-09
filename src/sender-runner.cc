@@ -55,7 +55,7 @@ int main( int argc, char *argv[] )
   double buffer_size = numeric_limits<unsigned int>::max();
   unsigned int simulation_ticks = 1000000;
 
-  for ( int i = 1; i < argc; i++ ) {
+  for ( int i = 1; i < argc && !is_poisson; i++ ) {
     string arg( argv[ i ] );
     if ( arg.substr( 0, 7) == "sender=" ) {
         string sender_type( arg.substr( 7 ) );
@@ -63,7 +63,11 @@ int main( int argc, char *argv[] )
           is_poisson = true;
           fprintf( stderr, "Running poisson sender\n" );
         }
-    } else if ( arg.substr( 0, 3 ) == "if=" ) {
+    } 
+  }
+  for ( int i = 1; i < argc; i++ ) {
+     string arg( argv[ i ] );
+     if ( arg.substr( 0, 3 ) == "if=" ) {
       string filename( arg.substr( 3 ) );
       int fd = open( filename.c_str(), O_RDONLY );
       if ( fd < 0 ) {
