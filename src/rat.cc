@@ -60,3 +60,12 @@ double Rat::next_event_time( const double & tickno ) const
     return std::numeric_limits<double>::max();
   }
 }
+
+SimulationResultBuffers::SenderState Rat::state_DNA() const
+{
+  SimulationResultBuffers::SenderState ret;
+  ret.mutable_memory()->CopyFrom( _memory.DNA() );
+  ret.set_window_size( _the_window );
+  ret.set_intersend_time( _intersend_time );
+  return ret;
+}

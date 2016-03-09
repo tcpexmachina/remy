@@ -33,6 +33,8 @@ Makefile.in
 /src/configuration
 /src/inspect-config
 /src/sender-runner
+/src/sender-logger
+/src/inspect-simulationsdata
 /src/remy
 /src/remy-poisson
 /graph/ratatouille

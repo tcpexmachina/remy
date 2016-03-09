@@ -10,6 +10,8 @@
 #include "random.hh"
 #include "answer.pb.h"
 
+class SimulationRunData; // from simulationresults.hh
+
 class NetConfig
 {
 public:
@@ -85,6 +87,8 @@ public:
   Network( const typename Gang1Type::Sender & example_sender1, PRNG & s_prng, const NetConfig & config );
 
   void run_simulation( const double & duration );
+
+  void run_simulation_with_logging( const double & duration, SimulationRunData &, const double interval );
 
   void run_simulation_until( const double tick_limit );
 
