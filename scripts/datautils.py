@@ -27,16 +27,16 @@ def contains_memory(memoryrange, memory):
             return False
     return True
 
-def find_whisker(tree, memory):
-    """Returns the whisker in the whisker tree for the given memory."""
+def find_action(tree, memory):
+    """Returns the action in the action tree for the given memory."""
     while tree.children:
         for child in tree.children:
             if contains_memory(child.domain, memory):
                 tree = child
                 break # then continue in while loop
         else:
-            raise RuntimeError("Couldn't find whisker for {!r}".format(point.memory))
-    assert tree.HasField("leaf"), "WhiskerTree has neither leaf nor children"
+            raise RuntimeError("Couldn't find action for {!r}".format(point.memory))
+    assert tree.HasField("leaf"), "Action tree has neither leaf nor children"
     assert contains_memory(tree.leaf.domain, memory)
     return tree.leaf
 
@@ -58,9 +58,11 @@ class RunData(object):
         "rec_rec_ewma": ("sender_state", "memory", "rec_rec_ewma"),
         "rtt_ratio": ("sender_state", "memory", "rtt_ratio"),
         "slow_rec_rec_ewma": ("sender_state", "memory", "slow_rec_rec_ewma"),
+        "queueing_delay": ("sender_state", "memory", "queueing_delay"),
+        "rtt_diff": ("sender_state", "memory", "rtt_diff"),
     }
 
-    WHISKER_ATTRIBUTES = [
+    ACTION_ATTRIBUTES = [
         "window_increment",
         "window_multiple",
         "intersend",
@@ -81,11 +83,15 @@ class RunData(object):
         "actual_intersend": ("packets_sent", 1000),
     }
 
-    def __init__(self, pb, start_time=0, end_time=None, whiskers=None):
+    FUNCTION_ATTRIBUTES = {
+        "lambda_reciprocal": (lambda x: 1/x, "lambda")
+    }
+
+    def __init__(self, pb, start_time=0, end_time=None, actions=None):
         """`pb` is a protobuf for a SimulationRunData.
-        `whiskers` is a Whiskers object."""
+        `actions` is a WhiskerTree or FinTree protobuf."""
         self.pb = pb
-        self.whiskers = whiskers
+        self.actions = actions
         self.start_time = start_time
         self.end_time = end_time
 
@@ -114,12 +120,12 @@ class RunData(object):
     def get_data(self, sender, name):
         if name in self.RAW_ATTRIBUTES:
             return self._get_raw_data(sender, *self.RAW_ATTRIBUTES[name])
-        elif name in self.MEMORY_ATTRIBUTES:
-            return self._get_memory_data(sender, name)
-        elif name in self.WHISKER_ATTRIBUTES:
-            return self._get_whisker_data(sender, name)
+        elif name in self.ACTION_ATTRIBUTES:
+            return self._get_action_data(sender, name)
         elif name in self.DIFFERENCE_QUOTIENT_ATTRIBUTES:
             return self._get_difference_quotient_data(sender, *self.DIFFERENCE_QUOTIENT_ATTRIBUTES[name])
+        elif name in self.FUNCTION_ATTRIBUTES:
+            return self._get_function_data(sender, *self.FUNCTION_ATTRIBUTES[name])
         else:
             raise ValueError("Unknown attribute for get_data(): " + repr(name))
 
@@ -128,14 +134,16 @@ class RunData(object):
         for the sender with index `sender`, and returns it in a list."""
         if name in self.RAW_ATTRIBUTES:
             return self.get_times(), self._get_raw_data(sender, *self.RAW_ATTRIBUTES[name])
-        elif name in self.WHISKER_ATTRIBUTES:
-            return self.get_times(), self._get_whisker_data(sender, name)
+        elif name in self.ACTION_ATTRIBUTES:
+            return self.get_times(), self._get_action_data(sender, name)
         elif name in self.DIFFERENCE_QUOTIENT_ATTRIBUTES:
             return self.get_times(), self._get_difference_quotient_data(sender, *self.DIFFERENCE_QUOTIENT_ATTRIBUTES[name])
         elif name in self.DIFFERENCE_ATTRIBUTES:
             return self._get_difference_data(sender, *self.DIFFERENCE_ATTRIBUTES[name])
         elif name in self.INTEREVENT_ATTRIBUTES:
             return self._get_interevent_data(sender, *self.INTEREVENT_ATTRIBUTES[name])
+        elif name in self.FUNCTION_ATTRIBUTES:
+            return self.get_times(), self._get_function_data(sender, *self.FUNCTION_ATTRIBUTES[name])
         else:
             raise ValueError("Unknown attribute for get_time_data(): " + repr(name))
 
@@ -151,19 +159,19 @@ class RunData(object):
             data.append(value)
         return data
 
-    def _get_whisker_data(self, sender, attrname):
-        """Returns a list, each element being the attribute of the whisker
-        specified by `attrname` for the whisker that would be active at each a
+    def _get_action_data(self, sender, attrname):
+        """Returns a list, each element being the attribute of the action
+        specified by `attrname` for the action that would be active at each a
         point in time. The times correspond to those returned by
         `self.get_times()`.
         """
         # This is a little hacky, it should be refactored into a proper
         # structure for Memory and MemoryRange if it needs to be touched again.
-        assert self.whiskers is not None, "RunData needs a whiskers object for this function"
+        assert self.actions is not None, "RunData needs a actions object for this function"
         data = []
         for point in filter(self._in_range, self.pb.point):
-            whisker = find_whisker(self.whiskers, point.sender_data[sender].sender_state.memory)
-            value = getattr(whisker, attrname)
+            action = find_action(self.actions, point.sender_data[sender].sender_state.memory)
+            value = getattr(action, attrname)
             data.append(value)
         return data
 
@@ -221,36 +229,44 @@ class RunData(object):
                 t_last = t_raw[i]
         return t, y
 
+    def _get_function_data(self, sender, fn, *attrnames):
+        """Applies a function to the data retrieved from the given attributes.
+        That is, returns data of the form:
+            y[i] = f(x1[i], x2[i], ...)
+        where x1, x2, etc. are data retrieved using get_data(), and f is the
+        function `fn`."""
+        data = zip(*(self.get_data(sender, attrname) for attrname in attrnames))
+        return [fn(*datum) for datum in data]
 
-    def get_whisker_bounds(self, sender, attrname):
+    def get_action_bounds(self, sender, attrname):
         """Returns two lists. The first list is the lower bound of the domain of
-        the whisker that would be active at each point in time. The second list
+        the action that would be active at each point in time. The second list
         is the upper bound. The time for each element in the list (i.e., for
         each tuple) corresponds to that in the list returned by
-        `self.get_whisker_change_times()`. This can be used to track when
-        signals reach the boundary of the whisker.
+        `self.get_action_change_times()`. This can be used to track when
+        signals reach the boundary of the action.
         """
-        assert self.whiskers is not None, "RunData needs a whiskers object for this function"
+        assert self.actions is not None, "RunData needs a actions object for this function"
         lower = []
         upper = []
-        last_whisker = None
+        last_action = None
         for point in filter(self._in_range, self.pb.point):
-            whisker = find_whisker(self.whiskers, point.sender_data[sender].sender_state.memory)
-            if whisker == last_whisker:
+            action = find_action(self.actions, point.sender_data[sender].sender_state.memory)
+            if action == last_action:
                 continue
-            lower.append(getattr(whisker.domain.lower, attrname))
-            upper.append(getattr(whisker.domain.upper, attrname))
-            last_whisker = whisker
+            lower.append(getattr(action.domain.lower, attrname))
+            upper.append(getattr(action.domain.upper, attrname))
+            last_action = action
         return lower, upper
 
-    def get_whisker_change_times(self, sender):
-        """Returns a list of times where the whisker changes."""
-        assert self.whiskers is not None, "RunData needs a whiskers object for this function"
+    def get_action_change_times(self, sender):
+        """Returns a list of times where the action changes."""
+        assert self.actions is not None, "RunData needs a actions object for this function"
         times = []
-        last_whisker = None
+        last_action = None
         for point in filter(self._in_range, self.pb.point):
-            whisker = find_whisker(self.whiskers, point.sender_data[sender].sender_state.memory)
-            if whisker != last_whisker:
+            action = find_action(self.actions, point.sender_data[sender].sender_state.memory)
+            if action != last_action:
                 times.append(point.seconds)
-            last_whisker = whisker
+            last_action = action
         return times

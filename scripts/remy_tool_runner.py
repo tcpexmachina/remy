@@ -103,6 +103,7 @@ class SenderRunnerRunner(BaseRemyToolRunner):
 class SenderLoggerRunner(BaseRemyToolRunner):
 
     general_default_parameters = {
+        'sender': '',
         'nsenders': 2,
         'link_ppt': 1.0,
         'delay': 150.0,
@@ -114,6 +115,7 @@ class SenderLoggerRunner(BaseRemyToolRunner):
 
     program_parameters = [
     #   (sender-runner option name, Python option name)
+        ("sender", "sender"),
         ("nsrc", "nsenders"),
         ("link", "link_ppt"),
         ("rtt", "delay"),
