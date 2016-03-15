@@ -71,7 +71,7 @@ int main( int argc, char *argv[] )
   unsigned int simulation_ticks = 1000000;
   double log_interval_ticks = 1000;
   double buffer_size = numeric_limits<unsigned int>::max();
-  string datafilename;
+  string inputfilename, datafilename;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -82,34 +82,7 @@ int main( int argc, char *argv[] )
           cerr << "Running poisson sender" << endl;
         }
     } else if ( arg.substr( 0, 3 ) == "if=" ) {
-      string filename( arg.substr( 3 ) );
-      ifstream file;
-      file.open( filename );
-      if ( !file.is_open() ) {
-        cerr << "Could not open file " << filename << endl;
-        exit( 1 );
-      }
-
-      if ( is_poisson ) {
-        RemyBuffers::FinTree tree;
-        if ( !tree.ParseFromIstream( &file ) ) {
-          cerr << "Could not parse " << filename << endl;
-          exit( 1 );
-        }
-        fins = FinTree( tree );
-        print_tree< RemyBuffers::FinTree >(tree);
-      } else {
-        RemyBuffers::WhiskerTree tree;
-        if ( !tree.ParseFromIstream( &file ) ) {
-          cerr << "Could not parse " << filename << endl;
-          exit( 1 );
-        }
-        whiskers = WhiskerTree( tree );
-        print_tree< RemyBuffers::WhiskerTree >(tree);
-      }
-
-      file.close();
-
+      inputfilename = arg.substr( 3 );
     } else if ( arg.substr( 0, 5 ) == "link=" ) {
       link_ppt = atof( arg.substr( 5 ).c_str() );
       cerr << "Setting link packets per ms to " << link_ppt << " ms" << endl;
@@ -133,6 +106,34 @@ int main( int argc, char *argv[] )
       cerr << "Will write simulation data to " << datafilename << endl;
     }
   }
+
+  // file input depends on sender= argument, so read it after all arguments parsed
+  ifstream file;
+  file.open( inputfilename );
+  if ( !file.is_open() ) {
+    cerr << "Could not open file " << inputfilename << endl;
+    exit( 1 );
+  }
+
+  if ( is_poisson ) {
+    RemyBuffers::FinTree tree;
+    if ( !tree.ParseFromIstream( &file ) ) {
+      cerr << "Could not parse " << inputfilename << endl;
+      exit( 1 );
+    }
+    fins = FinTree( tree );
+    print_tree< RemyBuffers::FinTree >(tree);
+  } else {
+    RemyBuffers::WhiskerTree tree;
+    if ( !tree.ParseFromIstream( &file ) ) {
+      cerr << "Could not parse " << inputfilename << endl;
+      exit( 1 );
+    }
+    whiskers = WhiskerTree( tree );
+    print_tree< RemyBuffers::WhiskerTree >(tree);
+  }
+
+  file.close();
 
   if ( datafilename.empty() ) {
     cerr << "Warning: No data file supplied. Use of= option to get this to log data to a file." << endl;
