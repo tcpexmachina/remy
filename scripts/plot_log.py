@@ -99,11 +99,11 @@ class BasePlotGenerator(BaseFigureGenerator):
         The two lists must have the same length."""
         raise NotImplementedError("Subclasses must implement either get_plot_data() or iter_plot_data()")
 
-    def generate(self, run_data, whiskers=None):
+    def generate(self, run_data, actions=None):
         """Generates the figure for `run_data`, which should be a
         SimulationRunData instance."""
         self._print_generating_line()
-        self.whiskers = whiskers
+        self.actions = actions
         self.fig = plt.figure()
         self.generate_plot(run_data)
         for ext in self.file_extension:
@@ -292,25 +292,25 @@ class TimePlotMixin(object):
     """Provides functions for plots where the x-axis is time."""
 
     xlabel = "Time (s)"
-    overlay_whiskers = False
+    overlay_actions = False
 
     def __init__(self, **kwargs):
-        self._overlay_whiskers = kwargs.pop('overlay_whiskers', self.overlay_whiskers)
+        self._overlay_actions = kwargs.pop('overlay_actions', self.overlay_actions)
         super(TimePlotMixin, self).__init__(**kwargs)
 
     def get_xlim(self, run_data):
         x = run_data.get_times()
         return [min(x), max(x)]
 
-    def plot_whisker_change_times(self, ax, run_data, index):
-        """Adds dots for whisker changes times on the axes `ax`."""
-        times = run_data.get_whisker_change_times(index)
+    def plot_action_change_times(self, ax, run_data, index):
+        """Adds dots for action changes times on the axes `ax`."""
+        times = run_data.get_action_change_times(index)
         for time in times:
             ax.axvline(time, color=(0.5, 0.5, 0.5))
 
-    def plot_whisker_bounds(self, ax, run_data, index, attrname):
-        lower, upper = run_data.get_whisker_bounds(index, attrname)
-        t_start = run_data.get_whisker_change_times(index)
+    def plot_action_bounds(self, ax, run_data, index, attrname):
+        lower, upper = run_data.get_action_bounds(index, attrname)
+        t_start = run_data.get_action_change_times(index)
         t_end = t_start[1:] + [run_data.get_times()[-1]]
         ymin, ymax = ax.get_ylim()
         for t1, t2, l, u in zip(t_start, t_end, lower, upper):
@@ -364,13 +364,13 @@ class TimePlotGenerator(TimePlotMixin, BasePlotGenerator):
 
     def generate_plot(self, run_data):
         super(TimePlotGenerator, self).generate_plot(run_data)
-        if self._overlay_whiskers and self.senders is not None and len(self.senders) == 1:
+        if self._overlay_actions and self.senders is not None and len(self.senders) == 1:
             sender = self.senders[0]
-            self.plot_whisker_change_times(self.ax, run_data, sender)
+            self.plot_action_change_times(self.ax, run_data, sender)
 
             if len(self.attrnames) == 1 and "memory" in datautils.RunData.RAW_ATTRIBUTES[self.attrnames[0]]:
                 ylim = self.ax.get_ylim()
-                self.plot_whisker_bounds(self.ax, run_data, sender, self.attrnames[0])
+                self.plot_action_bounds(self.ax, run_data, sender, self.attrnames[0])
                 self.ax.set_ylim(ylim)
 
 
@@ -414,8 +414,8 @@ class TwoScalesTimePlotGenerator(TimePlotMixin, BasePlotGenerator):
             tl.set_color(self.colors[1])
         ax2.set_xlim([min_t, max_t])
 
-        if self._overlay_whiskers:
-            self.plot_whisker_change_times(ax1, run_data, self.spec1[1])
+        if self._overlay_actions:
+            self.plot_action_change_times(ax1, run_data, self.spec1[1])
 
 
 class BaseParametricPlotGenerator(BasePlotGenerator):
@@ -527,6 +527,8 @@ senderrunner_group.add_argument("-i", "--interval", type=float, default=0.1,
     help="Logging interval (seconds)")
 senderrunner_group.add_argument("-T", "--sim-time", type=float, default=100,
     help="Simulation time to run for (seconds)")
+senderrunner_group.add_argument("--sender", type=str, default="rat",
+    help="Sender type (poisson or rat)", choices=('poisson', 'rat'))
 parser.add_argument("-O", "--plots-dir", type=str, default=None,
     help="Directory to place output files in.")
 parser.add_argument("--plots-only", action="store_true", default=False,
@@ -535,8 +537,8 @@ parser.add_argument("--animations-only", action="store_true", default=False,
     help="Only generate animations, not plots")
 parser.add_argument("--start-time", type=float, default=0,
     help="Start plotting from this time")
-parser.add_argument("--whiskers-overlay", action="store_true", default=False,
-    help="Overlay information about whiskers")
+parser.add_argument("--actions-overlay", action="store_true", default=False,
+    help="Overlay information about actions")
 args = parser.parse_args()
 
 # First, try reading it as a data file
@@ -544,7 +546,7 @@ data = datautils.read_data_file(args.inputfile)
 
 # If there's nothing in it, it was probably a RemyCC
 if not data.run_data:
-    parameter_keys = ["nsenders", "link_ppt", "delay", "buffer_size", "interval", "sim_time"]
+    parameter_keys = ["nsenders", "link_ppt", "delay", "buffer_size", "interval", "sim_time", "sender"]
     parameters = {key: getattr(args, key) for key in parameter_keys}
     datafile = args.inputfile + ".data"
     parameters["datafile"] = datafile
@@ -557,9 +559,10 @@ if not data.run_data:
 plotsdir = make_plots_dir(args.plots_dir, args.inputfile)
 BaseFigureGenerator.plotsdir = plotsdir
 BaseFigureGenerator.start_time = args.start_time
+BaseFigureGenerator.end_time = args.sim_time
 utils.log_arguments(plotsdir, args)
 
-TimePlotMixin.overlay_whiskers = args.whiskers_overlay
+TimePlotMixin.overlay_actions = args.actions_overlay
 
 generators = []
 
@@ -573,57 +576,79 @@ if not args.animations_only:
         TimePlotGenerator("packets_sent", senders=1),
         TimePlotGenerator("packets_in_flight", senders=1),
         TimePlotGenerator("total_delay", unit="ms"),
-        TimePlotGenerator("window_size"),
-        TimePlotGenerator("intersend_time", unit="ms"),
         TimePlotGenerator("rec_send_ewma", unit="ms", senders=0),
         TimePlotGenerator("rec_rec_ewma", unit="ms", senders=0),
-        TimePlotGenerator("rtt_ratio", unit="ms", senders=0),
+        TimePlotGenerator("rtt_ratio", senders=0),
         TimePlotGenerator("slow_rec_rec_ewma", unit="ms", senders=0),
+        TimePlotGenerator("queueing_delay", senders=0),
+        TimePlotGenerator("rtt_diff", unit="ms", senders=0),
         TimePlotGenerator("rec_send_ewma", unit="ms", senders=1),
         TimePlotGenerator("rec_rec_ewma", unit="ms", senders=1),
-        TimePlotGenerator("rtt_ratio", unit="ms", senders=1),
+        TimePlotGenerator("rtt_ratio", senders=1),
         TimePlotGenerator("slow_rec_rec_ewma", unit="ms", senders=1),
+        TimePlotGenerator("queueing_delay", senders=1),
+        TimePlotGenerator("rtt_diff", unit="ms", senders=1),
         TimePlotGenerator("sending"),
-        TimePlotGenerator("window_increment"),
-        TimePlotGenerator("window_multiple"),
-        TimePlotGenerator("intersend"),
         TimePlotGenerator("throughput"),
         TimePlotGenerator("delay"),
         TimePlotGenerator("receive_times", plot_kwargs={'linestyle': 'None', 'marker': 'x'}),
         TimePlotGenerator("send_times", plot_kwargs={'linestyle': 'None', 'marker': 'x'}),
         TimePlotGenerator("actual_interreceive", plot_kwargs={'linestyle': 'None', 'marker': 'x'}),
         TimePlotGenerator("actual_intersend", plot_kwargs={'linestyle': 'None', 'marker': 'x'}),
-        TimePlotGenerator("actual_intersend", "intersend", senders=0, plot_kwargs=[{'linestyle': 'None', 'marker': 'x'}, {}]),
-        TimePlotGenerator("actual_intersend", "intersend_time", senders=0, plot_kwargs=[{'linestyle': 'None', 'marker': 'x'}, {}]),
         TimePlotGenerator("packets_in_flight", "window_size", senders=0),
-        SenderVersusSenderPlotGenerator("window_size", (0, 1)),
-        SenderVersusSenderPlotGenerator("intersend_time", (0, 1)),
         SenderVersusSenderPlotGenerator("rec_send_ewma", (0, 1)),
         SenderVersusSenderPlotGenerator("rec_rec_ewma", (0, 1)),
         SenderVersusSenderPlotGenerator("rtt_ratio", (0, 1)),
+        SenderVersusSenderPlotGenerator("queueing_delay", (0, 1)),
+        SenderVersusSenderPlotGenerator("rtt_diff", (0, 1)),
         SenderVersusSenderPlotGenerator("slow_rec_rec_ewma", (0, 1)),
-        SingleSenderParametricPlotGenerator(("window_size", "intersend_time"), 0),
-        SingleSenderParametricPlotGenerator(("window_size", "intersend_time"), 1),
         SingleSenderParametricPlotGenerator(("rec_send_ewma", "rec_rec_ewma"), 0),
         SingleSenderParametricPlotGenerator(("rec_send_ewma", "rec_rec_ewma"), 1),
         TwoScalesTimePlotGenerator(("rec_send_ewma", 0), ("rec_rec_ewma", 0)),
         TwoScalesTimePlotGenerator(("rec_send_ewma", 0), ("rtt_ratio", 0)),
         TwoScalesTimePlotGenerator(("rec_rec_ewma", 0), ("slow_rec_rec_ewma", 0)),
-        TwoScalesTimePlotGenerator(("rtt_ratio", 0), ("intersend", 0)),
-        TwoScalesTimePlotGenerator(("rtt_ratio", 0), ("window_size", 0)),
-        TwoScalesTimePlotGenerator(("rec_rec_ewma", 0), ("window_multiple", 0)),
-        TwoScalesTimePlotGenerator(("rec_send_ewma", 0), ("window_multiple", 0)),
-        TwoScalesTimePlotGenerator(("rec_rec_ewma", 0), ("window_increment", 0)),
-        TwoScalesTimePlotGenerator(("rec_send_ewma", 0), ("window_increment", 0)),
-        TwoScalesTimePlotGenerator(("window_increment", 0), ("window_multiple", 0)),
-        TwoScalesTimePlotGenerator(("window_increment", 0), ("intersend", 0)),
-        TwoScalesTimePlotGenerator(("intersend", 0), ("window_multiple", 0)),
-        TwoScalesTimePlotGenerator(("window_increment", 0), ("window_size", 0)),
-        TwoScalesTimePlotGenerator(("window_multiple", 0), ("window_size", 0)),
-        TwoScalesTimePlotGenerator(("window_size", 0), ("intersend_time", 0)),
     ])
 
-if not args.plots_only:
+    if args.sender == "poisson":
+        generators.extend([
+            TimePlotGenerator("lambda", unit="/ms"),
+            TimePlotGenerator("actual_intersend", "lambda_reciprocal", senders=0, plot_kwargs=[{'linestyle': 'None', 'marker': 'x'}, {}]),
+            TwoScalesTimePlotGenerator(("rtt_diff", 0), ("lambda", 0)),
+            TwoScalesTimePlotGenerator(("rtt_diff", 0), ("lambda_reciprocal", 0)),
+            TwoScalesTimePlotGenerator(("rtt_diff", 0), ("packets_in_flight", 0)),
+            TwoScalesTimePlotGenerator(("lambda_reciprocal", 0), ("rtt_diff", 0)),
+            SingleSenderParametricPlotGenerator(("lambda_reciprocal", "rtt_diff"), 0),
+        ])
+
+    elif args.sender == "rat":
+        generators.extend([
+            TimePlotGenerator("window_increment"),
+            TimePlotGenerator("window_multiple"),
+            TimePlotGenerator("window_size"),
+            TimePlotGenerator("intersend_time", unit="ms"),
+            TimePlotGenerator("intersend"),
+            SenderVersusSenderPlotGenerator("window_size", (0, 1)),
+            SenderVersusSenderPlotGenerator("intersend_time", (0, 1)),
+            SingleSenderParametricPlotGenerator(("window_size", "intersend_time"), 0),
+            SingleSenderParametricPlotGenerator(("window_size", "intersend_time"), 1),
+            SingleSenderParametricPlotGenerator(("rtt_ratio", "lambda"), 0),
+            TwoScalesTimePlotGenerator(("rtt_ratio", 0), ("intersend", 0)),
+            TwoScalesTimePlotGenerator(("rtt_ratio", 0), ("window_size", 0)),
+            TwoScalesTimePlotGenerator(("rec_rec_ewma", 0), ("window_multiple", 0)),
+            TwoScalesTimePlotGenerator(("rec_send_ewma", 0), ("window_multiple", 0)),
+            TwoScalesTimePlotGenerator(("rec_rec_ewma", 0), ("window_increment", 0)),
+            TwoScalesTimePlotGenerator(("rec_send_ewma", 0), ("window_increment", 0)),
+            TwoScalesTimePlotGenerator(("window_increment", 0), ("window_multiple", 0)),
+            TwoScalesTimePlotGenerator(("window_increment", 0), ("intersend", 0)),
+            TwoScalesTimePlotGenerator(("intersend", 0), ("window_multiple", 0)),
+            TwoScalesTimePlotGenerator(("window_increment", 0), ("window_size", 0)),
+            TwoScalesTimePlotGenerator(("window_multiple", 0), ("window_size", 0)),
+            TwoScalesTimePlotGenerator(("window_size", 0), ("intersend_time", 0)),
+            TimePlotGenerator("actual_intersend", "intersend", senders=0, plot_kwargs=[{'linestyle': 'None', 'marker': 'x'}, {}]),
+            TimePlotGenerator("actual_intersend", "intersend_time", senders=0, plot_kwargs=[{'linestyle': 'None', 'marker': 'x'}, {}]),
+        ])
+
+if not args.plots_only and not args.interval == 0:
     generators.extend([
         SenderVersusSenderAnimationGenerator("window_size", (0, 1)),
         SenderVersusSenderAnimationGenerator("intersend_time", (0, 1)),
@@ -646,7 +671,11 @@ if not args.plots_only:
             ("slow_rec_rec_ewma", 1),
         )
     ])
+elif args.interval == 0:
+    print("Warning: Animations don't work with --interval=0")
+
+actions = data.fins if args.sender == "poisson" else data.whiskers
 
 for run_data in data.run_data:
     for generator in generators:
-        generator.generate(datautils.RunData(run_data, start_time=args.start_time, whiskers=data.whiskers))
+        generator.generate(datautils.RunData(run_data, start_time=args.start_time, actions=actions))
