@@ -32,13 +32,9 @@ class BaseFigureGenerator(object):
     plotsdir = '.'
     plot_kwargs = {}
     file_extension = None
-    start_time = 0
-    end_time = None
 
     def __init__(self, **kwargs):
         self._plotsdir = kwargs.pop('plotsdir', self.plotsdir)
-        self._start_time = kwargs.pop('start_time', self.start_time)
-        self._end_time = kwargs.pop('end_time', self.end_time)
         self._plot_kwargs = kwargs.pop('plot_kwargs', None)
         super(BaseFigureGenerator, self).__init__(**kwargs)
 
@@ -306,7 +302,7 @@ class TimePlotMixin(object):
         """Adds dots for action changes times on the axes `ax`."""
         times = run_data.get_action_change_times(index)
         for time in times:
-            ax.axvline(time, color=(0.5, 0.5, 0.5))
+            ax.axvline(time, color=(0.5, 0.5, 0.5), linewidth=0.25)
 
     def plot_action_bounds(self, ax, run_data, index, attrname):
         lower, upper = run_data.get_action_bounds(index, attrname)
@@ -558,8 +554,6 @@ if not data.run_data:
 
 plotsdir = make_plots_dir(args.plots_dir, args.inputfile)
 BaseFigureGenerator.plotsdir = plotsdir
-BaseFigureGenerator.start_time = args.start_time
-BaseFigureGenerator.end_time = args.sim_time
 utils.log_arguments(plotsdir, args)
 
 TimePlotMixin.overlay_actions = args.actions_overlay
@@ -678,4 +672,4 @@ actions = data.fins if args.sender == "poisson" else data.whiskers
 
 for run_data in data.run_data:
     for generator in generators:
-        generator.generate(datautils.RunData(run_data, start_time=args.start_time, actions=actions))
+        generator.generate(datautils.RunData(run_data, start_time=args.start_time, end_time=args.sim_time, actions=actions))
