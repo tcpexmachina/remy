@@ -18,7 +18,7 @@ bin_PROGRAMS =
 
 if BUILD_GRAPH
 bin_PROGRAMS += ratatouille
-ratatouille_LDADD = libfader.a libgraphics.a ../protobufs/libremyprotos.a ../src/libremycore.a -lm $(protobuf_LIBS) $(GL_LIBS) $(GLFW_LIBS) $(GLEW_LIBS) $(GLU_LIBS) $(PANGOCAIRO_LIBS) $(GTKMM_LIBS)
+ratatouille_LDADD = libfader.a libgraphics.a ../src/libremycore.a ../protobufs/libremyprotos.a -lm $(protobuf_LIBS) $(GL_LIBS) $(GLFW_LIBS) $(GLEW_LIBS) $(GLU_LIBS) $(PANGOCAIRO_LIBS) $(GTKMM_LIBS)
 ratatouille_CXXFLAGS = $(PICKY_CXXFLAGS)
 ratatouille_SOURCES = ratatouille.cc 
 AM_CXXFLAGS = $(PICKY_CXXFLAGS)
