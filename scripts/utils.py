@@ -20,11 +20,7 @@ def log_arguments(argsfile, args):
         "git": {},
     }
     try:
-        jsondict["git"]["commit"] = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
-    except subprocess.CalledProcessError:
-        pass
-    try:
-        jsondict["git"]["branch"] = subprocess.check_output(['git', 'symbolic-ref', '--short', '--quiet', 'HEAD']).decode().strip()
+        jsondict["git"]["describe"] = subprocess.check_output(['git', 'describe', '--always', '--dirty']).decode().strip()
     except subprocess.CalledProcessError:
         pass
     json.dump(jsondict, argsfile, indent=2, sort_keys=True)
