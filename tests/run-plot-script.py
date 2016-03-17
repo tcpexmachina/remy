@@ -18,7 +18,7 @@ class TestPlotScript(unittest.TestCase):
 
         # Run as command line, not as Python import, to check command line interface
         subprocess.check_output([self.PLOT_SCRIPT, self.REMYCC_NAME, "-n=10", "-O", self.RESULTS_DIR,
-                "--originals", self.ORIGINALS_DIR, "--sender-runner", self.SENDERRUNNER])
+                "--originals", self.ORIGINALS_DIR, "--sender-runner", self.SENDERRUNNER, "--newlines"])
 
         # Check data matches what was expected
         EXPECTED_DATA = [

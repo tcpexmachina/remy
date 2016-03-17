@@ -55,6 +55,7 @@ class BaseRemyCCPerformancePlotGenerator:
         self.data_dir = kwargs.pop("data_dir", None)
         self.axes = kwargs.pop("axes", None)
         self._link_ppt_priors = kwargs.pop("link_ppt_priors", [])
+        self._progress_end_char = kwargs.pop("progress_end_char", '\r')
         if self._link_ppt_priors is None:
             self._link_ppt_priors = []
 
@@ -91,7 +92,7 @@ class BaseRemyCCPerformancePlotGenerator:
         for i, link_ppt in enumerate(link_ppt_range, start=1):
             print("\033[KGenerating score for if={:s}, link={:f} ({:d} of {:d})...".format(
                         remyccfilename, link_ppt, i, npoints),
-                        file=sys.stderr, end='\r', flush=True)
+                        file=sys.stderr, end=self._progress_end_char, flush=True)
             norm_score, sender_data, link_ppt_prior = self.get_statistics(remyccfilename, link_ppt)
             norm_scores.append(norm_score)
             sender_numbers = chain(*sender_data)
@@ -103,7 +104,8 @@ class BaseRemyCCPerformancePlotGenerator:
             data_file.close()
 
         if self.axes:
-            print("\033[KPlotting for file {}...".format(remyccfilename), file=sys.stderr, end='\r', flush=True)
+            print("\033[KPlotting for file {}...".format(remyccfilename), file=sys.stderr,
+                    end=self._progress_end_char, flush=True)
             link_speeds = [LINK_PPT_TO_MBPS_CONVERSION*l for l in link_ppt_range]
             add_plot(self.axes, link_speeds, norm_scores, label=remyccfilename)
 
@@ -306,6 +308,8 @@ parser.add_argument("--originals", type=str, default="originals",
     help="Directory in which to look for original data files to add to plot.")
 parser.add_argument("--sender-runner", type=str, default=None,
     help="sender-runner executable location, defaults to ../src/sender-runner")
+parser.add_argument("--newlines", action="store_const", dest="progress_end_char", const='\n', default='\r',
+    help="Print newlines (\\n) instead of carriage returns (\\r) when reporting progress")
 senderrunner_group = parser.add_argument_group("sender-runner arguments")
 senderrunner_group.add_argument("-s", "--nsenders", type=int, default=2,
     help="Number of senders")
@@ -351,7 +355,8 @@ ax = plt.axes()
 
 # Generate data and plots (the main part)
 generator = SenderRunnerRemyCCPerformancePlotGenerator(link_ppt_range, parameters,
-        console_dir=console_dirname, data_dir=data_dirname, axes=ax, senderrunnercmd=args.sender_runner)
+        console_dir=console_dirname, data_dir=data_dirname, axes=ax, senderrunnercmd=args.sender_runner,
+        progress_end_char=args.progress_end_char)
 for remyccfile in remyccfiles:
     generator.generate(remyccfile)
 link_ppt_priors = generator.get_link_ppt_priors()
@@ -360,7 +365,8 @@ link_ppt_priors = generator.get_link_ppt_priors()
 for replot_dir in args.replot:
     remyccs, link_ppt_range, outputs_dir = process_replot_argument(replot_dir, results_dirname)
     generator = OutputsDirectoryRemyCCPerformancePlotGenerator(link_ppt_range, outputs_dir,
-            link_ppt_priors=link_ppt_priors, data_dir=data_dirname, axes=ax)
+            link_ppt_priors=link_ppt_priors, data_dir=data_dirname, axes=ax,
+            progress_end_char=args.progress_end_char)
     for remycc in remyccs:
         generator.generate(remycc)
     link_ppt_priors = generator.get_link_ppt_priors()
