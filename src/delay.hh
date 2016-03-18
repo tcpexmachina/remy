@@ -12,21 +12,41 @@
 class Delay
 {
 private:
-  std::deque< std::tuple< double, Packet > > _queue;
+  std::deque< std::tuple< double, Packet, bool > > _queue;
+  /* queue members: release time, contents, whether release time was adjusted after-the-fact */
   double _delay;
+
+  void fixup_adjusted_packets( const double tickno )
+  {
+    /* for packets that were in-flight when delay was reduced,
+       make sure that they get released asap */
+    for ( auto & p : _queue ) {
+      if ( std::get< 2 >( p ) and std::get< 0 >( p ) < tickno ) {
+	std::get< 0 >( p ) = tickno;
+	std::get< 2 >( p ) = false;
+      }
+    }
+  }
 
 public:
   Delay( const double s_delay ) : _queue(), _delay( s_delay ) {}
  
   void accept( const Packet & p, const double & tickno ) noexcept
   {
-    _queue.emplace_back( tickno + _delay, p );
+    /* Make sure that we haven't reordered packets when delay was adjusted
+       on packets already in-flight */
+    if ( not _queue.empty() ) {
+      assert( tickno + _delay >= std::get< 0 >( _queue.front() ) );
+    }
+
+    _queue.emplace_back( tickno + _delay, p, false );
   }
 
   template <class NextHop>
   void tick( NextHop & next, const double & tickno )
   {
     while ( (!_queue.empty()) && (std::get< 0 >( _queue.front() ) <= tickno) ) {
+      fixup_adjusted_packets( tickno );
       assert( std::get< 0 >( _queue.front() ) == tickno );
       next.accept( std::get< 1 >( _queue.front() ), tickno );
       _queue.pop_front();
@@ -37,14 +57,17 @@ public:
   {
     if ( _queue.empty() ) {
       return std::numeric_limits<double>::max();
-    } else {
-      if ( tickno > std::get< 0 >( _queue.front() ) ) {
-	fprintf( stderr, "Error, tickno = %f but packet should have been released at time %f\n",
-		 tickno, std::get< 0 >( _queue.front() ) );
-	assert( false );
-      }
-      return std::get< 0 >( _queue.front() );
     }
+
+    if ( std::get< 0 >( _queue.front() ) < tickno
+	 and std::get< 2 >( _queue.front() ) ) {
+      return tickno; /* packet's delay was adjusted to be earlier than present time,
+			so just release asap */
+    }
+
+    assert( std::get< 0 >( _queue.front() ) >= tickno );
+
+    return std::get< 0 >( _queue.front() );
   }
 
   bool empty( void ) const { return _queue.empty(); }
@@ -58,7 +81,24 @@ public:
     return ret;
   }
 
-  void set_delay( const double delay ) { _delay = delay; }
+  void set_delay( const double delay )
+  {
+    /* Step 1: By how much is the delay changing? */
+    const double delay_difference = delay - _delay;
+
+    /* Step 2: Adjust existing packets-in-flight */
+    for ( auto & p : _queue ) {
+      std::get< 0 >( p ) += delay_difference;
+
+      if ( delay_difference < 0 ) {
+	std::get< 2 >( p ) = true;
+      }
+    }
+
+    /* Step 3: Change delay that will be applied to future packets */
+    _delay = delay;
+  }
+
   const double & delay( void ) const { return _delay; }
 };
 
