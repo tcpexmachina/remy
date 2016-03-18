@@ -38,7 +38,7 @@ public:
       delay( dna.delay() ),
       buffer_size( dna.buffer_size() )
   {}
-  
+
   NetConfig & set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
   NetConfig & set_delay( const double s_delay ) { delay = s_delay; return *this; }
   NetConfig & set_num_senders( const unsigned int n ) { num_senders = n; return *this; }
@@ -88,7 +88,7 @@ public:
 
   void run_simulation( const double & duration );
 
-  void run_simulation_with_logging( const double & duration, SimulationRunData &, const double interval );
+  void run_simulation_with_logging_until( const double tick_limit, SimulationRunData &, const double interval );
 
   void run_simulation_until( const double tick_limit );
 

@@ -87,23 +87,31 @@ void Network<Gang1Type, Gang2Type>::run_simulation_until( const double tick_limi
 }
 
 template <class Gang1Type, class Gang2Type>
-void Network<Gang1Type, Gang2Type>::run_simulation_with_logging( const double & duration,
-                                                                 SimulationRunData & run_data,
-                                                                 const double interval )
+void Network<Gang1Type, Gang2Type>::run_simulation_with_logging_until( const double tick_limit,
+                                                                       SimulationRunData & run_data,
+                                                                       const double interval )
 {
-  assert( _tickno == 0 );
+  if ( _tickno >= tick_limit ) {
+    return;
+  }
+
   double next_log_time = interval;
 
-  while ( _tickno < duration ) {
+  while ( true ) {
     /* find element with soonest event */
-    _tickno = min( min( _senders.next_event_time( _tickno ),
+    double next_tickno = min( min( _senders.next_event_time( _tickno ),
       _link.next_event_time( _tickno ) ),
        min( _delay.next_event_time( _tickno ),
       _rec.next_event_time( _tickno ) ) );
 
-    if ( _tickno > duration ) break;
-    assert( _tickno < std::numeric_limits<double>::max() );
+    if ( next_tickno > tick_limit ) {
+      _tickno = tick_limit;
+      break;
+    }
 
+    assert( next_tickno < std::numeric_limits<double>::max() );
+
+    _tickno = next_tickno;
     tick();
 
     if ( _tickno > next_log_time ) {

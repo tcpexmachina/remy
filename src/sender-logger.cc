@@ -24,7 +24,7 @@ void print_tree(ActionTree & tree)
 
 template <typename Sender, typename ActionTree>
 SimulationResults< ActionTree > run_simulation_for_results(ActionTree & tree, NetConfig & config,
-    Sender & example_sender, unsigned int ticks_to_run, double interval) {
+    Sender & example_sender, unsigned int ticks_to_run, unsigned int sender1_on_ticks, double interval) {
 
   unsigned int prng_seed = global_PRNG()();
   PRNG run_prng( prng_seed );
@@ -36,8 +36,15 @@ SimulationResults< ActionTree > run_simulation_for_results(ActionTree & tree, Ne
   SimulationRunData & run_data = results.add_run_data( config, interval );
   Network<SenderGang<Sender, ExternalSwitchedSender<Sender>>,
     SenderGang<Sender, ExternalSwitchedSender<Sender>>> network1( example_sender, run_prng, config );
+
   network1.mutable_senders().mutable_gang1().mutable_sender(0).switch_on(network1.tickno());
-  network1.run_simulation_with_logging( ticks_to_run, run_data, interval );
+
+  if ( sender1_on_ticks < ticks_to_run ) { // turn on sender 1
+    network1.run_simulation_with_logging_until( sender1_on_ticks, run_data, interval );
+    network1.mutable_senders().mutable_gang1().mutable_sender(1).switch_on(network1.tickno());
+  }
+
+  network1.run_simulation_with_logging_until( ticks_to_run, run_data, interval );
 
   return results;
 }
@@ -69,6 +76,7 @@ int main( int argc, char *argv[] )
   double link_ppt = 1.0;
   double delay = 100.0;
   unsigned int simulation_ticks = 1000000;
+  unsigned int sender1_on_ticks = numeric_limits<unsigned int>::max();
   double log_interval_ticks = 1000;
   double buffer_size = numeric_limits<unsigned int>::max();
   string inputfilename, datafilename;
@@ -104,6 +112,9 @@ int main( int argc, char *argv[] )
     } else if ( arg.substr( 0, 3 ) == "of=" ) {
       datafilename = arg.substr( 3 );
       cerr << "Will write simulation data to " << datafilename << endl;
+    } else if ( arg.substr( 0, 10 ) == "sender1on=") {
+      sender1_on_ticks = stof( arg.substr( 10 ) ) * 1000;
+      cerr << "Will turn on sender 1 at " << sender1_on_ticks << " ms" << endl;
     }
   }
 
@@ -149,12 +160,12 @@ int main( int argc, char *argv[] )
   if ( is_poisson ) {
     SimulationResults<FinTree> results;
     Fish example_sender = Fish( fins, global_PRNG()(), true );
-    results = run_simulation_for_results<Fish, FinTree>( fins, config, example_sender, simulation_ticks, log_interval_ticks );
+    results = run_simulation_for_results<Fish, FinTree>( fins, config, example_sender, simulation_ticks, sender1_on_ticks, log_interval_ticks );
     serialize_to_file( results, datafilename );
   } else {
     SimulationResults<WhiskerTree> results;
     Rat example_sender = Rat( whiskers, true );
-    results = run_simulation_for_results<Rat, WhiskerTree>( whiskers, config, example_sender, simulation_ticks, log_interval_ticks );
+    results = run_simulation_for_results<Rat, WhiskerTree>( whiskers, config, example_sender, simulation_ticks, sender1_on_ticks, log_interval_ticks );
     serialize_to_file( results, datafilename );
   }
 
