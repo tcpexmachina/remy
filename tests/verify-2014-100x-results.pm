@@ -1,5 +1,3 @@
-#!/usr/bin/perl -w
-
 use strict;
 
 sub score {
@@ -50,17 +48,5 @@ sub enforce_constraint {
     assert_in_range( $_->[ 1 ], $expected_delay * .95, $expected_delay * 1.05 );
   }
 }
-
-# these triplets of link speed => { raw throughput, raw delay }
-# are taken from the 2014 learnability paper Figure 2 for the "100x" RemyCC,
-# http://web.mit.edu/remy/learnability/resultslogarithmic.tar.gz
-
-enforce_constraint( 2.21, 1.8, 346 );
-enforce_constraint( 9.93, 6.0, 165 );
-enforce_constraint( 29.41, 18.0, 174 );
-enforce_constraint( 185.04, 91.1, 157 );
-enforce_constraint( 300.25, 133.1, 152 );
-enforce_constraint( 401.4, 146, 151 );
-enforce_constraint( 801.5, 156, 150 );
 
 1;
