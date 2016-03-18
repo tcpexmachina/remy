@@ -15,9 +15,14 @@ private:
   std::deque< std::tuple< double, Packet, bool > > _queue;
   /* queue members: release time, contents, whether release time was adjusted after-the-fact */
   double _delay;
+  bool _adjusted_packets_are_in_flight;
 
   void fixup_adjusted_packets( const double tickno )
   {
+    if ( not _adjusted_packets_are_in_flight ) {
+      return;
+    }
+
     /* for packets that were in-flight when delay was reduced,
        make sure that they get released asap */
     for ( auto & p : _queue ) {
@@ -26,10 +31,12 @@ private:
 	std::get< 2 >( p ) = false;
       }
     }
+
+    _adjusted_packets_are_in_flight = false;
   }
 
 public:
-  Delay( const double s_delay ) : _queue(), _delay( s_delay ) {}
+  Delay( const double s_delay ) : _queue(), _delay( s_delay ), _adjusted_packets_are_in_flight( false ) {}
  
   void accept( const Packet & p, const double & tickno ) noexcept
   {
@@ -45,8 +52,9 @@ public:
   template <class NextHop>
   void tick( NextHop & next, const double & tickno )
   {
+    fixup_adjusted_packets( tickno );
+
     while ( (!_queue.empty()) && (std::get< 0 >( _queue.front() ) <= tickno) ) {
-      fixup_adjusted_packets( tickno );
       assert( std::get< 0 >( _queue.front() ) == tickno );
       next.accept( std::get< 1 >( _queue.front() ), tickno );
       _queue.pop_front();
@@ -92,6 +100,7 @@ public:
 
       if ( delay_difference < 0 ) {
 	std::get< 2 >( p ) = true;
+	_adjusted_packets_are_in_flight = true;
       }
     }
 
