@@ -12,7 +12,7 @@ class BaseRemyToolRunner(object):
         self.command = kwargs.pop('command', self.COMMAND)
 
         self.default_parameters = dict(self.general_default_parameters)
-        for key in self.default_parameters:
+        for _, key in self.program_parameters:
             if key in kwargs:
                 self.default_parameters[key] = kwargs.pop(key)
 
@@ -22,7 +22,8 @@ class BaseRemyToolRunner(object):
     def _get_parameters(self, parameters, quiet=False):
         """Returns a dict of parameters, including default parameters.
         Warns if any parameters were unrecognized."""
-        unrecognized = [k for k in parameters if k not in self.default_parameters]
+        recognized = [p[1] for p in self.program_parameters]
+        unrecognized = [k for k in parameters if k not in recognized]
         if unrecognized and not quiet:
             warn("Unrecognized parameters: {}".format(unrecognized))
         result = dict(self.default_parameters)
@@ -66,7 +67,7 @@ class BaseRemyToolRunner(object):
         parameters = self._get_parameters(parameters)
         command = [self.command, "if={:s}".format(remyccfilename)]
         command += ["{}={}".format(rroptname, parameters[paramname]) for rroptname, paramname in
-                self.program_parameters]
+                self.program_parameters if paramname in parameters]
         output = subprocess.check_output(command, stderr=subprocess.STDOUT)
         output = output.decode()
         self._write_to_file(command, output, outfile)
@@ -76,7 +77,6 @@ class BaseRemyToolRunner(object):
 class SenderRunnerRunner(BaseRemyToolRunner):
 
     general_default_parameters = {
-        'sender': '',
         'nsenders': 2,
         'link_ppt': 1.0,
         'delay': 150.0,
@@ -103,14 +103,12 @@ class SenderRunnerRunner(BaseRemyToolRunner):
 class SenderLoggerRunner(BaseRemyToolRunner):
 
     general_default_parameters = {
-        'sender': '',
         'nsenders': 2,
         'link_ppt': 1.0,
         'delay': 150.0,
         'buffer_size': 'inf',
         'interval': 1.0,
         'sim_time': 1000.0,
-        'datafile': '',
     }
 
     program_parameters = [
@@ -123,6 +121,7 @@ class SenderLoggerRunner(BaseRemyToolRunner):
         ("interval", "interval"),
         ("time", "sim_time"),
         ("of", "datafile"),
+        ("sender1on", "sender1_on"),
     ]
 
     COMMAND = os.path.join(ROOTDIR, "src", "sender-logger")

@@ -523,6 +523,8 @@ senderrunner_group.add_argument("-i", "--interval", type=float, default=0.1,
     help="Logging interval (seconds)")
 senderrunner_group.add_argument("-T", "--sim-time", type=float, default=100,
     help="Simulation time to run for (seconds)")
+senderrunner_group.add_argument("--sender1-on", type=float, default=None,
+    help="Time to turn sender 1 on (seconds)")
 senderrunner_group.add_argument("--sender", type=str, default="rat",
     help="Sender type (poisson or rat)", choices=('poisson', 'rat'))
 parser.add_argument("-O", "--plots-dir", type=str, default=None,
@@ -542,8 +544,8 @@ data = datautils.read_data_file(args.inputfile)
 
 # If there's nothing in it, it was probably a RemyCC
 if not data.run_data:
-    parameter_keys = ["nsenders", "link_ppt", "delay", "buffer_size", "interval", "sim_time", "sender"]
-    parameters = {key: getattr(args, key) for key in parameter_keys}
+    parameter_keys = ["nsenders", "link_ppt", "delay", "buffer_size", "interval", "sim_time", "sender", "sender1_on"]
+    parameters = {key: getattr(args, key) for key in parameter_keys if getattr(args, key) is not None}
     datafile = args.inputfile + ".data"
     parameters["datafile"] = datafile
     outfile = args.inputfile + ".out"
@@ -612,6 +614,12 @@ if not args.animations_only:
             TwoScalesTimePlotGenerator(("rtt_diff", 0), ("packets_in_flight", 0)),
             TwoScalesTimePlotGenerator(("lambda_reciprocal", 0), ("rtt_diff", 0)),
             SingleSenderParametricPlotGenerator(("lambda_reciprocal", "rtt_diff"), 0),
+            TimePlotGenerator("actual_intersend", "lambda_reciprocal", senders=1, plot_kwargs=[{'linestyle': 'None', 'marker': 'x'}, {}]),
+            TwoScalesTimePlotGenerator(("rtt_diff", 1), ("lambda", 1)),
+            TwoScalesTimePlotGenerator(("rtt_diff", 1), ("lambda_reciprocal", 1)),
+            TwoScalesTimePlotGenerator(("rtt_diff", 1), ("packets_in_flight", 1)),
+            TwoScalesTimePlotGenerator(("lambda_reciprocal", 1), ("rtt_diff", 1)),
+            SingleSenderParametricPlotGenerator(("lambda_reciprocal", "rtt_diff"), 1),
         ])
 
     elif args.sender == "rat":

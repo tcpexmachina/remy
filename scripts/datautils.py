@@ -84,7 +84,7 @@ class RunData(object):
     }
 
     FUNCTION_ATTRIBUTES = {
-        "lambda_reciprocal": (lambda x: 1/x, "lambda")
+        "lambda_reciprocal": (lambda x: 1/x if x != 0 else None, "lambda")
     }
 
     def __init__(self, pb, start_time=0, end_time=None, actions=None):
