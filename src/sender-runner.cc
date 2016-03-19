@@ -14,8 +14,27 @@ using namespace std;
 template <typename T>
 void print_tree(T & tree) 
 {
-  if ( tree.has_config() ) {
-    printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
+  if ( tree.has_configvector() ) {
+    printf( "Prior assumptions:\n%s\n\n", tree.configvector().DebugString().c_str() );
+    // now go through the config vector and record the max and min link ppt for the graph output:
+    double min_link_ppt = std::numeric_limits<double>::infinity();
+    double max_link_ppt = 0;
+    
+    for ( int i = 0; i < tree.configvector().config_size(); i++ ) {
+      const RemyBuffers::NetConfig &config = tree.configvector().config(i);
+      if (config.link_ppt() > max_link_ppt) {
+        max_link_ppt = config.link_ppt();
+      }
+      if (config.link_ppt() < min_link_ppt) {
+        min_link_ppt = config.link_ppt();
+      }
+    }
+    // now construct a Range object
+    RemyBuffers::Range link_range;
+    link_range.set_low(min_link_ppt);
+    link_range.set_high(max_link_ppt);
+    // print correct output for plot script to work
+    printf( "link_packets_per_ms {\n  low: %f\n  high: %f\n}\n\n", link_range.low(), link_range.high() ); 
   }
 
   if ( tree.has_optimizer() ) {
