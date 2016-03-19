@@ -16,6 +16,9 @@ class MemoryRange {
 private:
   Memory _lower, _upper;  
 
+  /* _active_axis specifies the group of signals in Memory used by the sender. 
+     For example, Fish only uses signal rtt_diff, while Rat uses four signals: 
+     rec_send_ewma, rec_rec_ewma, rtt_ratio and slow_rec_rec_rewma. */
   std::vector< Axis > _active_axis;
 
   mutable std::vector< boost::accumulators::accumulator_set< Memory::DataType,

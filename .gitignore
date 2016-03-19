@@ -23,19 +23,15 @@ Makefile.in
 /stamp-h1
 /test-driver
 
-/protobufs/answer.pb.cc
-/protobufs/answer.pb.h
-/protobufs/dna.pb.cc
-/protobufs/dna.pb.h
-/protobufs/problem.pb.cc
-/protobufs/problem.pb.h
+/protobufs/*.pb.cc
+/protobufs/*.pb.h
 /protobufs/*_pb2.py
 /src/configuration
 /src/inspect-config
 /src/sender-runner
+/src/sender-logger
+/src/inspect-simulationsdata
 /src/remy
 /src/remy-poisson
 /graph/ratatouille
 /src/scoring-example
-/src/*.pb.cc
-/src/*.pb.h

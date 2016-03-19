@@ -35,7 +35,12 @@ for entry in entries:
             print("{} - could not open args.json: {}".format(dirname, e))
         continue
 
-    jsondict = json.load(argsfile)
+    try:
+        jsondict = json.load(argsfile)
+    except ValueError as e:
+        if args.verbosity >= 1:
+            print("{} - could not parse args.json: {}".format(dirname, e))
+        continue
     argsfile.close()
     git_dict = jsondict.get("git", {})
     git_branch = git_dict.get("branch", "<unknown>")

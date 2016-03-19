@@ -51,7 +51,10 @@ Memory MemoryRange::range_median( void ) const
 
 bool MemoryRange::contains( const Memory & query ) const
 {
-  return (query >= _lower) && (query < _upper);
+  for ( auto & i : _active_axis ) {
+    if (!((query.field(i) >= _lower.field(i)) && (query.field(i) < _upper.field(i)))) { return false; }
+  }
+  return true;
 }
 
 void MemoryRange::track( const Memory & query ) const
@@ -64,7 +67,10 @@ void MemoryRange::track( const Memory & query ) const
 
 bool MemoryRange::operator==( const MemoryRange & other ) const
 {
-  return (_lower == other._lower) && (_upper == other._upper); /* ignore median estimator for now */
+  for ( auto & i : _active_axis ) {
+    if (!((_lower.field(i) == other._lower.field(i)) && (_upper.field(i) == other._upper.field(i)))) { return false; }
+  }
+  return true;
 }
 
 string MemoryRange::str( void ) const

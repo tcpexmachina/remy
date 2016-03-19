@@ -1,5 +1,5 @@
 #include "network.hh"
-
+#include "simulationresults.hh"
 #include "sendergangofgangs.cc"
 #include "link-templates.cc"
 
@@ -83,6 +83,44 @@ void Network<Gang1Type, Gang2Type>::run_simulation_until( const double tick_limi
     _tickno = next_tickno;
 
     tick();
+  }
+}
+
+template <class Gang1Type, class Gang2Type>
+void Network<Gang1Type, Gang2Type>::run_simulation_with_logging_until( const double tick_limit,
+                                                                       SimulationRunData & run_data,
+                                                                       const double interval )
+{
+  if ( _tickno >= tick_limit ) {
+    return;
+  }
+
+  double next_log_time = interval;
+
+  while ( true ) {
+    /* find element with soonest event */
+    double next_tickno = min( min( _senders.next_event_time( _tickno ),
+      _link.next_event_time( _tickno ) ),
+       min( _delay.next_event_time( _tickno ),
+      _rec.next_event_time( _tickno ) ) );
+
+    if ( next_tickno > tick_limit ) {
+      _tickno = tick_limit;
+      break;
+    }
+
+    assert( next_tickno < std::numeric_limits<double>::max() );
+
+    _tickno = next_tickno;
+    tick();
+
+    if ( _tickno > next_log_time ) {
+      SimulationRunDataPoint & datum = run_data.add_datum( _tickno / 1000.0 );
+      datum.add_sender_data( _senders.statistics_for_log() );
+      datum.add_network_data( packets_in_flight() );
+      next_log_time += interval;
+    }
+
   }
 }
 

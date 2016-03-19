@@ -70,6 +70,15 @@ vector< pair< double, double > > SenderGangofGangs<Gang1Type, Gang2Type>::throug
 }
 
 template <class Gang1Type, class Gang2Type>
+vector < SenderDataPoint > SenderGangofGangs<Gang1Type,Gang2Type>::statistics_for_log( void ) const
+{
+  auto ret = gang1_.statistics_for_log();
+  const auto gang2_stats = gang2_.statistics_for_log();
+  ret.insert( ret.end(), gang2_stats.begin(), gang2_stats.end() );
+  return ret;
+}
+
+template <class Gang1Type, class Gang2Type>
 double SenderGangofGangs<Gang1Type, Gang2Type>::next_event_time( const double & tickno ) const
 {
   return min( gang1_.next_event_time( tickno ), gang2_.next_event_time( tickno ) );

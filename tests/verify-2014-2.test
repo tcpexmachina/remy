@@ -1,0 +1,14 @@
+#!/usr/bin/perl -w
+
+BEGIN { push @INC, $ENV{ srcdir } }
+
+use strict;
+require q{verify-2014-100x-results.pm};
+
+# these triplets of link speed => { raw throughput, raw delay }
+# are taken from the 2014 learnability paper Figure 2 for the "100x" RemyCC,
+# http://web.mit.edu/remy/learnability/resultslogarithmic.tar.gz
+
+enforce_constraint( 2.21, 1.8, 346 );
+
+1;

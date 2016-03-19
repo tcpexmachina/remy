@@ -8,6 +8,7 @@
 #include "packet.hh"
 #include "whiskertree.hh"
 #include "memory.hh"
+#include "simulationresults.pb.h"
 
 class Rat
 {
@@ -44,6 +45,9 @@ public:
   double next_event_time( const double & tickno ) const;
 
   const unsigned int & packets_sent( void ) const { return _packets_sent; }
+
+  SimulationResultBuffers::SenderState state_DNA() const;
+
 };
 
 #endif
