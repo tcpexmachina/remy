@@ -8,6 +8,8 @@ template <class SenderType, class SwitcherType>
 SenderGang<SenderType, SwitcherType>::SenderGang( const double mean_on_duration,
 						  const double mean_off_duration,
 						  const unsigned int num_senders,
+                                                  const double stochastic_loss_rate,
+                                                  const double delay_penalty,
 						  const SenderType & exemplar,
 						  PRNG & prng,
 						  const unsigned int id_range_begin )
@@ -20,6 +22,10 @@ SenderGang<SenderType, SwitcherType>::SenderGang( const double mean_on_duration,
     _gang.emplace_back( i + id_range_begin,
 			_start_distribution.sample( _prng ),
 			exemplar );
+  }
+  for ( auto &x : _gang ) {
+    x.utility.set_delay_penalty( delay_penalty );
+    x.stochastic_link.set_rate( stochastic_loss_rate );
   }
 }
 
@@ -168,9 +174,12 @@ void SwitchedSender<SenderType>::receive_feedback( Receiver & rec )
 {
   if ( rec.readable( id ) ) {
     const std::vector< Packet > & packets = rec.packets_for( id );
-
-    utility.packets_received( packets );
-    sender.packets_received( packets );
+    std::vector< Packet > new_packets;
+    new_packets = stochastic_link.drop_packets(packets, global_PRNG() );
+    if ( !(new_packets.empty()) ) {
+      utility.packets_received( new_packets );
+      sender.packets_received( new_packets );
+    }
 
     rec.clear( id );
   }

@@ -20,6 +20,8 @@ public:
   double link_ppt;
   double delay;
   double buffer_size;
+  double utility_penalty;
+  double stochastic_loss_rate;
 
   NetConfig( void )
     : mean_on_duration( 5000.0 ),
@@ -27,7 +29,9 @@ public:
       num_senders( 8 ),
       link_ppt( 1.0 ),
       delay( 150 ),
-      buffer_size( std::numeric_limits<unsigned int>::max() )
+      buffer_size( std::numeric_limits<unsigned int>::max() ),
+      utility_penalty( 0 ),
+      stochastic_loss_rate( 0 )
   {}
 
   NetConfig( const RemyBuffers::NetConfig & dna )
@@ -36,7 +40,9 @@ public:
       num_senders( dna.num_senders() ),
       link_ppt( dna.link_ppt() ),
       delay( dna.delay() ),
-      buffer_size( dna.buffer_size() )
+      buffer_size( dna.buffer_size() ),
+      utility_penalty( dna.utility_penalty() ),
+      stochastic_loss_rate( dna.stochastic_loss_rate() )
   {}
 
   NetConfig & set_link_ppt( const double s_link_ppt ) { link_ppt = s_link_ppt; return *this; }
@@ -45,6 +51,8 @@ public:
   NetConfig & set_on_duration( const double & duration ) { mean_on_duration = duration; return *this; }
   NetConfig & set_off_duration( const double & duration ) { mean_off_duration = duration; return *this; }
   NetConfig & set_buffer_size( const unsigned int n ) { buffer_size = n; return *this; }
+  NetConfig & set_utility_penalty( const double penalty ) { utility_penalty = penalty; return *this; }
+  NetConfig & set_stochastic_loss_rate ( const double rate ) { stochastic_loss_rate = rate; return *this; }
 
   RemyBuffers::NetConfig DNA( void ) const
   {
@@ -55,14 +63,16 @@ public:
       ret.set_delay( delay );
       ret.set_link_ppt( link_ppt );
       ret.set_buffer_size( buffer_size );
+      ret.set_utility_penalty( utility_penalty );
+      ret.set_stochastic_loss_rate( stochastic_loss_rate );
       return ret;
   }
 
   std::string str( void ) const
   {
     char tmp[ 256 ];
-    snprintf( tmp, 256, "mean_on=%f, mean_off=%f, nsrc=%f, link_ppt=%f, delay=%f, buffer_size=%f\n",
-	     mean_on_duration, mean_off_duration, num_senders, link_ppt, delay, buffer_size );
+    snprintf( tmp, 256, "mean_on=%f, mean_off=%f, nsrc=%f, link_ppt=%f, delay=%f, buffer_size=%f, utility_penalty=%f, stochastic_loss_rate=%f\n",
+	    mean_on_duration, mean_off_duration, num_senders, link_ppt, delay, buffer_size, utility_penalty, stochastic_loss_rate );
     return tmp;
   }
 };

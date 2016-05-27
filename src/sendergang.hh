@@ -7,6 +7,7 @@
 #include "receiver.hh"
 #include "utility.hh"
 #include "senderdatapoint.hh"
+#include "stochastic-loss.hh"
 
 template <class SenderType>
 class SwitchedSender {
@@ -35,6 +36,7 @@ public:
   double next_event_time( const double & tickno ) const;
   SenderDataPoint statistics_for_log( void ) const;
   Utility utility;
+  StochasticLoss stochastic_link;
   bool sending;
   unsigned int id;
 
@@ -45,6 +47,7 @@ public:
       next_switch_tick( start_tick ),
       sender( s_sender ),
       utility(),
+      stochastic_link(StochasticLoss( 0 ) ),
       sending( false ),
       id( s_id )
   {}
@@ -131,6 +134,8 @@ public:
   SenderGang( const double mean_on_duration,
 	      const double mean_off_duration,
 	      const unsigned int num_senders,
+              const double stochastic_loss_rate,
+              const double delay_penalty,
 	      const SenderType & exemplar,
 	      PRNG & s_prng,
 	      const unsigned int id_range_begin = 0 );
