@@ -10,7 +10,7 @@ addons:
     - g++-4.9
     - protobuf-compiler
     - libprotobuf-dev
-    - libgl-dev
+    - libgl1-mesa-dev
     - libglew-dev
     - libcairo2-dev
     - libpango1.0-dev
