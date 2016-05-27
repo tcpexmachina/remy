@@ -19,7 +19,7 @@ Evaluator< T >::Evaluator( const ConfigRange & range )
         for (double on = range.mean_on_duration.low; on <= range.mean_on_duration.high; on += range.mean_on_duration.incr) {
           for (double off = range.mean_off_duration.low; off <= range.mean_off_duration.high; off += range.mean_off_duration.incr) {
             for ( double buffer_size = range.buffer_size.low; buffer_size <= range.buffer_size.high; buffer_size += range.buffer_size.incr) {
-              _configs.push_back( NetConfig().set_link_ppt( link_ppt ).set_delay( rtt ).set_num_senders( senders ).set_on_duration( on ).set_off_duration(off).set_buffer_size( buffer_size ) );
+              _configs.push_back( NetConfig().set_link_ppt( link_ppt ).set_delay( rtt ).set_num_senders( senders ).set_on_duration( on ).set_off_duration(off).set_buffer_size( buffer_size ).set_utility_penalty( range.utility_penalty ).set_stochastic_loss_rate( range.stochastic_loss_rate ) );
               if ( range.buffer_size.isOne() ) { break; }
             }
             if ( range.mean_off_duration.isOne() ) { break; }

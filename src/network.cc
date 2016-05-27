@@ -9,8 +9,8 @@ Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & examp
 					PRNG & s_prng,
 					const NetConfig & config )
   : _prng( s_prng ),
-    _senders( Gang1Type( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender1, _prng ),
-	      Gang2Type( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender2, _prng, config.num_senders ) ),
+    _senders( Gang1Type( config.mean_on_duration, config.mean_off_duration, config.num_senders, config.stochastic_loss_rate, config.utility_penalty, example_sender1, _prng ),
+	      Gang2Type( config.mean_on_duration, config.mean_off_duration, config.num_senders, config.stochastic_loss_rate, config.utility_penalty, example_sender2, _prng, config.num_senders ) ),
     _link( config.link_ppt, config.buffer_size ),
     _delay( config.delay ),
     _rec(),
@@ -23,7 +23,7 @@ Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & examp
 					PRNG & s_prng,
 					const NetConfig & config )
   : _prng( s_prng ),
-    _senders( Gang1Type( config.mean_on_duration, config.mean_off_duration, config.num_senders, example_sender1, _prng ),
+    _senders( Gang1Type( config.mean_on_duration, config.mean_off_duration, config.num_senders, config.stochastic_loss_rate, config.utility_penalty, example_sender1, _prng ),
 	      Gang2Type() ),
     _link( config.link_ppt, config.buffer_size ),
     _delay( config.delay ),

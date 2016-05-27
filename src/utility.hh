@@ -12,9 +12,10 @@ private:
   double _tick_share_sending;
   unsigned int _packets_received;
   double _total_delay;
-
+  double _last_seqnum;
+  double _loss_penalty_rate; // rate to penalize delay term in objective calculate for a loss
 public:
-  Utility( void ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ) {}
+  Utility( void ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ), _last_seqnum( -1 ),  _loss_penalty_rate( 0 ) {}
 
   void sending_duration( const double & duration, const unsigned int num_sending ) { _tick_share_sending += duration / double( num_sending ); }
   void packets_received( const std::vector< Packet > & packets ) {
@@ -22,8 +23,19 @@ public:
 
     for ( auto &x : packets ) {
       assert( x.tick_received >= x.tick_sent );
-      _total_delay += x.tick_received - x.tick_sent;
+      double outstanding_pkts = 1;
+      if ( x.seq_num > _last_seqnum && ( _loss_penalty_rate > 0 ) ) {
+        // if there is a positive loss penalty rate,
+        // multiply the loss penalty by the outstanding packets amount
+        outstanding_pkts = ( x.seq_num - _last_seqnum )*_loss_penalty_rate;
+      }
+      _last_seqnum = x.seq_num;
+      _total_delay += ( x.tick_received - x.tick_sent )* outstanding_pkts;
     }
+  }
+  
+  void set_delay_penalty( double penalty ) {
+    _loss_penalty_rate = penalty;
   }
 
   /* returns throughput normalized to equal share of link */
