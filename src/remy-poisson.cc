@@ -77,24 +77,7 @@ int main( int argc, char *argv[] )
   printf( "#######################\n" );
   printf( "Evaluator simulations will run for %d ticks\n",
     options.config_range.simulation_ticks );
-  printf( "Optimizing for link packets_per_ms in [%f, %f]\n",
-	  options.config_range.link_ppt.low,
-	  options.config_range.link_ppt.high );
-  printf( "Optimizing for rtt_ms in [%f, %f]\n",
-	  options.config_range.rtt.low,
-	  options.config_range.rtt.high );
-  printf( "Optimizing for num_senders in [%f, %f]\n",
-	  options.config_range.num_senders.low, options.config_range.num_senders.high );
-  printf( "Optimizing for mean_on_duration in [%f, %f], mean_off_duration in [ %f, %f]\n",
-	  options.config_range.mean_on_duration.low, options.config_range.mean_on_duration.high, options.config_range.mean_off_duration.low, options.config_range.mean_off_duration.high );
-  if ( options.config_range.buffer_size.low != numeric_limits<unsigned int>::max() ) {
-    printf( "Optimizing for buffer_size in [%f, %f]\n",
-            options.config_range.buffer_size.low,
-            options.config_range.buffer_size.high );
-  } else {
-    printf( "Optimizing for infinitely sized buffers. \n");
-  }
-
+  printf( "Optimizing for a specific set of networks specified\n");
   printf( "Initial rules (use if=FILENAME to read from disk): %s\n", fins.str().c_str() );
   printf( "#######################\n" );
 
