@@ -101,21 +101,7 @@ int main( int argc, char *argv[] )
   printf( "#######################\n" );
   printf( "Evaluator simulations will run for %d ticks\n",
     options.config_range.simulation_ticks );
-  printf( "Optimizing window increment: %d, window multiple: %d, intersend: %d\n",
-          whisker_options.optimize_window_increment, whisker_options.optimize_window_multiple,
-          whisker_options.optimize_intersend);
-  print_range( options.config_range.link_ppt, "link packets_per_ms" );
-  print_range( options.config_range.rtt, "rtt_ms" );
-  print_range( options.config_range.num_senders, "num_senders" );
-  print_range( options.config_range.mean_on_duration, "mean_on_duration" );
-  print_range( options.config_range.mean_off_duration, "mean_off_duration" );
-
-  if ( options.config_range.buffer_size.low != numeric_limits<unsigned int>::max() ) {
-    print_range( options.config_range.buffer_size, "buffer_size" );
-  } else {
-    printf( "Optimizing for infinitely sized buffers. \n");
-  }
-
+  printf( "Evaluating over a specific set of networks specified\n");
   printf( "Initial rules (use if=FILENAME to read from disk): %s\n", whiskers.str().c_str() );
   printf( "#######################\n" );
 

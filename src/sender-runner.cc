@@ -122,12 +122,7 @@ int main( int argc, char *argv[] )
   }
 
   ConfigRange configuration_range;
-  configuration_range.link_ppt = Range( link_ppt,link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
-  configuration_range.rtt = Range( delay, delay, 0 ); /* ms */
-  configuration_range.num_senders = Range( num_senders, num_senders, 0 );
-  configuration_range.mean_on_duration = Range( mean_on_duration, mean_on_duration, 0 );
-  configuration_range.mean_off_duration = Range( mean_off_duration, mean_off_duration, 0 );
-  configuration_range.buffer_size = Range( buffer_size, buffer_size, 0 );
+  configuration_range.configs.push_back(NetConfig().set_link_ppt(link_ppt).set_delay(delay).set_num_senders(num_senders).set_on_duration(mean_on_duration).set_off_duration(mean_off_duration).set_buffer_size(buffer_size));
   configuration_range.simulation_ticks = simulation_ticks;
 
   if ( is_poisson ) {
