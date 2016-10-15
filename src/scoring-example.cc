@@ -20,7 +20,7 @@ int main( int argc, char *argv[] )
   double delay = 100.0;
   double mean_on_duration = 5000.0;
   double mean_off_duration = 5000.0;
-
+  double stochastic_loss_rate = 0;
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
     if ( arg.substr( 0, 3 ) == "if=" ) {
@@ -65,6 +65,9 @@ int main( int argc, char *argv[] )
     } else if ( arg.substr( 0, 4 ) == "off=" ) {
       mean_off_duration = atof( arg.substr( 4 ).c_str() );
       fprintf( stderr, "Setting mean_off_duration to %f ms\n", mean_off_duration );
+    } else if ( arg.substr(0, 6 ) == "sloss=" ) {
+      stochastic_loss_rate = atof( arg.substr( 6 ).c_str() );
+      fprintf( stderr, "Setting stochastic loss rate to %f\n", stochastic_loss_rate );
     }
   }
 
@@ -74,7 +77,7 @@ int main( int argc, char *argv[] )
   configuration_range.num_senders = Range(num_senders, num_senders, 0 );
   configuration_range.mean_on_duration = Range(mean_on_duration, mean_on_duration, 0);
   configuration_range.mean_off_duration = Range(mean_off_duration, mean_off_duration, 0);
-
+  configuration_range.stochastic_loss_rate = Range(stochastic_loss_rate, stochastic_loss_rate, 0);
   Evaluator< WhiskerTree > eval( configuration_range );
 
   // save problem to file

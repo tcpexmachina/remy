@@ -15,7 +15,7 @@ Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & examp
     _delay( config.delay ),
     _rec(),
     _tickno( 0 ),
-    _stochastic_loss( 0 , _prng)
+    _stochastic_loss( config.stochastic_loss_rate , _prng)
 {
 }
 
@@ -30,7 +30,7 @@ Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & examp
     _delay( config.delay ),
     _rec(),
     _tickno( 0 ),
-    _stochastic_loss( 0 , _prng)
+    _stochastic_loss( config.stochastic_loss_rate , _prng)
 {
 }
 

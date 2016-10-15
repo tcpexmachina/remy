@@ -53,6 +53,7 @@ int main( int argc, char *argv[] )
   double mean_on_duration = 5000.0;
   double mean_off_duration = 5000.0;
   double buffer_size = numeric_limits<unsigned int>::max();
+  double stochastic_loss_rate = 0;
   unsigned int simulation_ticks = 1000000;
 
   for ( int i = 1; i < argc && !is_poisson; i++ ) {
@@ -118,6 +119,9 @@ int main( int argc, char *argv[] )
       } else {
         buffer_size = atoi( arg.substr( 4 ).c_str() );
       }
+    } else if ( arg.substr( 0, 6 ) == "sloss=" ) {
+      stochastic_loss_rate = atof( arg.substr( 6 ).c_str() );
+      fprintf( stderr, "Setting stochastic loss rate to %f\n", stochastic_loss_rate );
     }
   }
 
@@ -128,6 +132,7 @@ int main( int argc, char *argv[] )
   configuration_range.mean_on_duration = Range( mean_on_duration, mean_on_duration, 0 );
   configuration_range.mean_off_duration = Range( mean_off_duration, mean_off_duration, 0 );
   configuration_range.buffer_size = Range( buffer_size, buffer_size, 0 );
+  configuration_range.stochastic_loss_rate = Range( stochastic_loss_rate, stochastic_loss_rate, 0);
   configuration_range.simulation_ticks = simulation_ticks;
 
   if ( is_poisson ) {

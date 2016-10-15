@@ -87,6 +87,7 @@ int main( int argc, char *argv[] )
 	  options.config_range.num_senders.low, options.config_range.num_senders.high );
   printf( "Optimizing for mean_on_duration in [%f, %f], mean_off_duration in [ %f, %f]\n",
 	  options.config_range.mean_on_duration.low, options.config_range.mean_on_duration.high, options.config_range.mean_off_duration.low, options.config_range.mean_off_duration.high );
+  printf( "Optimizing for stochastic_loss_rate in [%f, %f]\n", options.config_range.stochastic_loss_rate.low, options.config_range.stochastic_loss_rate.high );
   if ( options.config_range.buffer_size.low != numeric_limits<unsigned int>::max() ) {
     printf( "Optimizing for buffer_size in [%f, %f]\n",
             options.config_range.buffer_size.low,

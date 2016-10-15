@@ -109,7 +109,7 @@ int main( int argc, char *argv[] )
   print_range( options.config_range.num_senders, "num_senders" );
   print_range( options.config_range.mean_on_duration, "mean_on_duration" );
   print_range( options.config_range.mean_off_duration, "mean_off_duration" );
-
+  print_range( options.config_range.stochastic_loss_rate, "stochastic_loss_rate" );
   if ( options.config_range.buffer_size.low != numeric_limits<unsigned int>::max() ) {
     print_range( options.config_range.buffer_size, "buffer_size" );
   } else {

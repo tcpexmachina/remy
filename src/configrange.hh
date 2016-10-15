@@ -43,6 +43,7 @@ public:
   Range num_senders;
   Range buffer_size;
   unsigned int simulation_ticks;
+  Range stochastic_loss_rate;
 
   ConfigRange( void );
   ConfigRange( RemyBuffers::ConfigRange configrange );

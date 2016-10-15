@@ -18,7 +18,8 @@ ConfigRange::ConfigRange( void ) :
   mean_off_duration( Range() ),
   num_senders( Range() ),
   buffer_size( Range() ),
-  simulation_ticks( 1000000 )
+  simulation_ticks( 1000000 ),
+  stochastic_loss_rate( Range().set_low(0).set_high(0).set_incr(0) )
 {
 }
 
@@ -29,7 +30,8 @@ ConfigRange::ConfigRange( RemyBuffers::ConfigRange input_config ) :
   mean_off_duration( Range( input_config.mean_off_duration() ) ),
   num_senders( Range( input_config.num_senders() ) ),
   buffer_size( Range( input_config.buffer_size() ) ),
-  simulation_ticks( input_config.simulation_ticks() )
+  simulation_ticks( input_config.simulation_ticks() ),
+  stochastic_loss_rate( Range( input_config.stochastic_loss_rate() ) )
 {
 }
 
@@ -43,6 +45,6 @@ RemyBuffers::ConfigRange ConfigRange::DNA( void ) const
   ret.mutable_mean_off_duration()->CopyFrom( pair_to_range( mean_off_duration ) );
   ret.mutable_buffer_size()->CopyFrom( pair_to_range( buffer_size ) );
   ret.set_simulation_ticks( simulation_ticks );
-
+  ret.mutable_stochastic_loss_rate()->CopyFrom( pair_to_range( stochastic_loss_rate ) );
   return ret;
 }

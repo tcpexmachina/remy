@@ -112,6 +112,37 @@ bool update_config_with_uint32(RemyBuffers::ConfigRange & range,
   return false;
 }
 
+bool update_config_with_double(RemyBuffers::ConfigRange & range,
+    void (RemyBuffers::ConfigRange::*set_fn)(double), int argc, char *argv[],
+    string arg_name, bool mandatory) {
+  bool found = false;
+  double value = -1;
+  int arg_name_size = arg_name.size();
+  for ( int i = 1; i < argc; i++ ) {
+    string arg( argv[i] );
+    if ( arg.substr( 0, arg_name_size+1 ) == arg_name + "=" ) {
+      found = true;
+      try {
+        value = atof( arg.substr( arg_name_size + 1 ).c_str() );
+      } catch ( invalid_argument ) {
+        fprintf( stderr, "Could not parse %s argument: %s\n", arg_name.c_str(), arg.c_str() );
+        exit(1);
+      }
+      break;
+    }
+  }
+  if ( !found && mandatory ) {
+    fprintf( stderr, "Please provide an argument for %s\n", arg_name.c_str() );
+    exit(1);
+  }
+  if ( found ) {
+    fprintf( stderr, "Setting %s to %f\n", arg_name.c_str(), value );
+    (range.*set_fn)(value);
+    return true;
+  }
+  fprintf( stderr, "No argument found for %s\n", arg_name.c_str() );
+  return false;
+}
 
 int main(int argc, char *argv[]) {
   string input_filename, output_filename;
@@ -159,9 +190,8 @@ int main(int argc, char *argv[]) {
   update_config_with_range(input_config.mutable_num_senders(), argc, argv, "nsrc", mandatory);
   update_config_with_range(input_config.mutable_mean_on_duration(), argc, argv, "on", mandatory);
   update_config_with_range(input_config.mutable_mean_off_duration(), argc, argv, "off", mandatory);
-
+  update_config_with_range(input_config.mutable_stochastic_loss_rate(), argc, argv, "sloss", mandatory);
   update_config_with_uint32(input_config, &RemyBuffers::ConfigRange::set_simulation_ticks, argc, argv, "ticks", mandatory);
-
   if ( !(infinite_buffers) ) {
     update_config_with_range(input_config.mutable_buffer_size(), argc, argv, "buf_size", mandatory);
   } else {
@@ -172,7 +202,6 @@ int main(int argc, char *argv[]) {
     input_config.mutable_buffer_size()->CopyFrom(buffer_size);
   }
 
-   
 
   // write to file
   char of[ 128 ];
@@ -182,7 +211,7 @@ int main(int argc, char *argv[]) {
     perror( "open" );
     exit( 1 );
   }
-  
+
 
   if ( not input_config.SerializeToFileDescriptor( fd ) ) {
     fprintf( stderr, "Could not serialize InputConfig parameters.\n" );
