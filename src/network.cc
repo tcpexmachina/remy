@@ -2,7 +2,7 @@
 #include "simulationresults.hh"
 #include "sendergangofgangs.cc"
 #include "link-templates.cc"
-
+#include "stochastic-loss.hh"
 template <class Gang1Type, class Gang2Type>
 Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & example_sender1,
 					const typename Gang2Type::Sender & example_sender2,
@@ -14,7 +14,8 @@ Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & examp
     _link( config.link_ppt, config.buffer_size ),
     _delay( config.delay ),
     _rec(),
-    _tickno( 0 )
+    _tickno( 0 ),
+    _stochastic_loss( 0 , _prng)
 {
 }
 
@@ -28,7 +29,8 @@ Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & examp
     _link( config.link_ppt, config.buffer_size ),
     _delay( config.delay ),
     _rec(),
-    _tickno( 0 )
+    _tickno( 0 ),
+    _stochastic_loss( 0 , _prng)
 {
 }
 
@@ -36,7 +38,8 @@ template <class Gang1Type, class Gang2Type>
 void Network<Gang1Type, Gang2Type>::tick( void )
 {
   _senders.tick( _link, _rec, _tickno );
-  _link.tick( _delay, _tickno );
+  _link.tick( _stochastic_loss, _tickno );
+  _stochastic_loss.tick( _delay, _tickno );
   _delay.tick( _rec, _tickno );
 }
 
@@ -48,7 +51,7 @@ void Network<Gang1Type, Gang2Type>::run_simulation( const double & duration )
   while ( _tickno < duration ) {
     /* find element with soonest event */
     _tickno = min( min( _senders.next_event_time( _tickno ),
-			_link.next_event_time( _tickno ) ),
+			min(_link.next_event_time( _tickno ), _stochastic_loss.next_event_time( _tickno)) ),
 		   min( _delay.next_event_time( _tickno ),
 			_rec.next_event_time( _tickno ) ) );
 

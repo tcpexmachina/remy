@@ -6,6 +6,7 @@
 #include "sendergangofgangs.hh"
 #include "link.hh"
 #include "delay.hh"
+#include "stochastic-loss.hh"
 #include "receiver.hh"
 #include "random.hh"
 #include "answer.pb.h"
@@ -78,7 +79,7 @@ private:
   Receiver _rec;
 
   double _tickno;
-
+  StochasticLoss _stochastic_loss;
   void tick( void );
 
 public:
