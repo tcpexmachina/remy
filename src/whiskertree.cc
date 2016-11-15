@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cmath>
 #include <algorithm>
+#include <numeric>
 
 #include "whiskertree.hh"
 

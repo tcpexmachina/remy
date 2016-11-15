@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <numeric>
 
 #include "whiskertree.hh"
 #include "network.cc"
