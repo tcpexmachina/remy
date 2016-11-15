@@ -1,3 +1,5 @@
+#include <numeric>
+
 #include "fintree.hh"
 
 using namespace std;
