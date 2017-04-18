@@ -27,6 +27,9 @@ Basic usage:
   sender "on" for an exponentially-distributed amount of time (mean 5
   s) and off for durations drawn from the same distribution.
 
+* Use `./configuration` to create a configuration file to pass into Remy
+  with the `cf=` option.
+
 * Use the of= argument to have Remy save its RemyCCs to disk. It will
   save every step of the iteration.
 
