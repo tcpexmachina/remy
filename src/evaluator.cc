@@ -14,7 +14,7 @@ Evaluator< T >::Evaluator( const ConfigRange & range )
 {
   // add configs from every point in the cube of configs
   for (double link_ppt = range.link_ppt.low; link_ppt <= range.link_ppt.high; link_ppt += range.link_ppt.incr) {
-    for (double rtt = range.rtt.high; rtt <= range.rtt.high; rtt += range.rtt.incr) {
+    for (double rtt = range.rtt.low; rtt <= range.rtt.high; rtt += range.rtt.incr) {
       for (unsigned int senders = range.num_senders.low; senders <= range.num_senders.high; senders += range.num_senders.incr) {
         for (double on = range.mean_on_duration.low; on <= range.mean_on_duration.high; on += range.mean_on_duration.incr) {
           for (double off = range.mean_off_duration.low; off <= range.mean_off_duration.high; off += range.mean_off_duration.incr) {
