@@ -92,7 +92,7 @@ bool update_config_with_uint32(RemyBuffers::ConfigRange & range,
       found = true;
       try {
         value = stoul( arg.substr( arg_name_size+1 ) );
-      } catch ( invalid_argument ) {
+      } catch ( const invalid_argument & ) {
         fprintf( stderr, "Could not parse %s argument: %s", arg_name.c_str(), arg.c_str() );
         exit(1);
       }
@@ -124,7 +124,7 @@ bool update_config_with_double(RemyBuffers::ConfigRange & range,
       found = true;
       try {
         value = atof( arg.substr( arg_name_size + 1 ).c_str() );
-      } catch ( invalid_argument ) {
+      } catch ( const invalid_argument & ) {
         fprintf( stderr, "Could not parse %s argument: %s\n", arg_name.c_str(), arg.c_str() );
         exit(1);
       }
