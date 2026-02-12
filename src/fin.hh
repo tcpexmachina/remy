@@ -17,6 +17,8 @@ public:
   Fin( const MemoryRange & s_domain ) : Fin( get_optimizer().lambda.default_value, s_domain ) {};
   virtual ~Fin() {};
 
+  Fin& operator=( const Fin & ) = default;
+
   const double & lambda( void ) const { return _lambda; }
   
   std::vector< Fin > next_generation( void ) const;

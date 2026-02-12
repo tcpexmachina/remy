@@ -29,6 +29,8 @@ private:
 public:
   Aimd();
 
+  Aimd( const Aimd & ) = default;
+
   void packets_received( const std::vector< Packet > & packets );
   void reset( const double & tickno ); /* start new flow */
 

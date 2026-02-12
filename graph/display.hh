@@ -3,6 +3,7 @@
 
 #include <deque>
 #include <string>
+#include <functional>
 
 #include "gl_objects.hh"
 

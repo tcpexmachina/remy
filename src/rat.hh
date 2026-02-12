@@ -29,6 +29,7 @@ private:
   int _largest_ack;
 
 public:
+  Rat( const Rat& ) = default;
   Rat( WhiskerTree & s_whiskers, const bool s_track=false );
 
   void packets_received( const std::vector< Packet > & packets );

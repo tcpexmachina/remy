@@ -16,7 +16,8 @@ protected:
 
 public:
   Action( const Action & other ) : _generation( other._generation ), _domain( other._domain ) {};
-  Action( const MemoryRange & s_domain ) : _generation( 0 ), _domain( s_domain ) {};
+  Action( const MemoryRange &s_domain ) : _generation( 0 ), _domain( s_domain ) {};
+  Action& operator=( const Action& ) = default;
   virtual ~Action() {};
 
   virtual std::string str( const unsigned int total=1 ) const = 0;

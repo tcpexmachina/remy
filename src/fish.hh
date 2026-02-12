@@ -37,6 +37,7 @@ private:
   void _update_lambda( const double lambda );
 
 public:
+  Fish( const Fish & ) = default;
   Fish( const FinTree & fins, const unsigned int s_prng_seed, const bool s_track );
 
   void packets_received( const std::vector< Packet > & packets );

@@ -13,9 +13,12 @@ private:
   int _window_increment;
   double _window_multiple;
   double _intersend;
+
 public:
   Whisker( const Whisker & other );
   Whisker( const unsigned int s_window_increment, const double s_window_multiple, const double s_intersend, const MemoryRange & s_domain );
+
+  Whisker& operator=( const Whisker & ) = default;
   
   Whisker( const MemoryRange & s_domain ) : Whisker( get_optimizer().window_increment.default_value,
                  get_optimizer().window_multiple.default_value,
